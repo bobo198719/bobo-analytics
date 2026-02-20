@@ -9,12 +9,12 @@ const industries = [
 ];
 ---
 
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<title>BOBO Analytics</title>
+<title>Bobo Analytics</title>
 
 <style>
 body{
@@ -22,29 +22,50 @@ margin:0;
 font-family:Inter,system-ui;
 background:#000;
 color:white;
-text-align:center;
 }
 
+/* ================= NAVBAR ================= */
 header{
-padding:20px;
-background:#020617;
-position:sticky;
+position:fixed;
 top:0;
+width:100%;
+background:rgba(2,6,23,0.8);
+backdrop-filter:blur(10px);
+border-bottom:1px solid #1e293b;
+z-index:1000;
+}
+
+.nav-container{
+display:flex;
+justify-content:space-between;
+align-items:center;
+max-width:1200px;
+margin:auto;
+padding:18px 20px;
 }
 
 nav a{
-margin:0 15px;
-color:#ccc;
+margin-left:25px;
+color:#cbd5e1;
 text-decoration:none;
+font-size:14px;
+transition:.3s;
 }
 
+nav a:hover{
+color:white;
+}
+
+/* ================= HERO ================= */
 .hero{
-padding:120px 20px;
+padding:160px 20px 120px;
+text-align:center;
 background:linear-gradient(120deg,#03131d,#15001f);
 }
 
 h1{
 font-size:54px;
+margin-bottom:20px;
 }
 
 .gradient{
@@ -53,36 +74,82 @@ background:linear-gradient(90deg,#22d3ee,#ff2fd1);
 color:transparent;
 }
 
+.hero p{
+color:#94a3b8;
+font-size:18px;
+}
+
+/* ================= SECTIONS ================= */
+section{
+padding:80px 20px;
+text-align:center;
+}
+
+h2{
+font-size:36px;
+margin-bottom:40px;
+}
+
+/* ================= GRID ================= */
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
 gap:25px;
-padding:60px;
+max-width:1200px;
+margin:auto;
 }
 
 .card{
 background:#020617;
-padding:25px;
-border-radius:12px;
+padding:30px;
+border-radius:14px;
 border:1px solid #1e293b;
+transition:.3s;
+}
+
+.card:hover{
+transform:translateY(-6px);
+border-color:#22d3ee;
+}
+
+/* ================= FOOTER ================= */
+footer{
+padding:40px;
+background:#020617;
+color:#94a3b8;
+margin-top:60px;
 }
 </style>
 </head>
 
 <body>
 
+<!-- ================= NAVBAR ================= -->
 <header>
+<div class="nav-container">
+
+<!-- LOGO -->
+<div style="display:flex;align-items:center;gap:10px;">
+<img src="/logo.png" alt="Bobo Analytics" height="40"/>
+<strong>Bobo Analytics</strong>
+</div>
+
+<!-- MENU -->
 <nav>
-<a href="#">Services</a>
-<a href="#">Solutions</a>
-<a href="#">About</a>
-<a href="#">Blog</a>
+<a href="#services">Services</a>
+<a href="#solutions">Solutions</a>
+<a href="#about">About</a>
+<a href="#blog">Blog</a>
 </nav>
+
+</div>
 </header>
 
+<!-- ================= HERO ================= -->
 <section class="hero">
 <h1>
 AI Analytics Platform
+<br/>
 <span class="gradient">Built for Modern Businesses</span>
 </h1>
 
@@ -91,7 +158,8 @@ Transform pharmacy, retail and enterprise data into intelligent decisions.
 </p>
 </section>
 
-<section>
+<!-- ================= SERVICES ================= -->
+<section id="services">
 <h2>Industries We Serve</h2>
 
 <div class="grid">
@@ -102,8 +170,39 @@ Transform pharmacy, retail and enterprise data into intelligent decisions.
 </div>
 ))}
 </div>
-
 </section>
+
+<!-- ================= SOLUTIONS ================= -->
+<section id="solutions">
+<h2>Solutions</h2>
+<p style="max-width:700px;margin:auto;color:#94a3b8;">
+Bobo Analytics provides scalable AI-powered dashboards, predictive analytics,
+and automated reporting solutions tailored for multiple industries.
+</p>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section id="about">
+<h2>About Bobo Analytics</h2>
+<p style="max-width:700px;margin:auto;color:#94a3b8;">
+Bobo Analytics is a next-generation analytics SaaS platform designed to help
+businesses convert raw data into actionable insights using automation,
+AI models, and intelligent visualization.
+</p>
+</section>
+
+<!-- ================= BLOG ================= -->
+<section id="blog">
+<h2>Blog</h2>
+<p style="color:#94a3b8;">
+Coming Soon — Industry analytics insights and case studies.
+</p>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+© 2026 Bobo Analytics — All Rights Reserved
+</footer>
 
 </body>
 </html>
