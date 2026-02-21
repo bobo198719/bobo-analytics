@@ -26,15 +26,24 @@ color:white;
 scroll-behavior:smooth;
 }
 
-/* ===== NAVBAR ===== */
+/* ===== DYNAMIC NAVBAR ===== */
 
 header{
 position:fixed;
 top:0;
 width:100%;
-background:#020617;
 z-index:1000;
-border-bottom:2px solid #22d3ee; /* STRONG LINE FIX */
+transition:all .35s ease;
+background:transparent;
+border-bottom:1px solid transparent;
+}
+
+/* ACTIVE STATE AFTER SCROLL */
+header.scrolled{
+background:#020617;
+backdrop-filter:blur(12px);
+border-bottom:2px solid #22d3ee;
+box-shadow:0 6px 20px rgba(0,0,0,.5);
 }
 
 .nav-container{
@@ -46,7 +55,7 @@ margin:auto;
 padding:20px 24px;
 }
 
-/* LOGO SIZE FIX */
+/* LOGO */
 .logo{
 display:flex;
 align-items:center;
@@ -54,18 +63,19 @@ gap:14px;
 }
 
 .logo img{
-height:52px; /* BIGGER LOGO */
+height:54px;
+transition:.3s;
 }
 
 .logo strong{
-font-size:22px; /* BIGGER TEXT */
+font-size:22px;
 font-weight:700;
 letter-spacing:.5px;
 }
 
 /* HERO */
 .hero{
-padding:180px 20px 120px;
+padding:190px 20px 120px;
 background:linear-gradient(120deg,#03131d,#15001f);
 }
 
@@ -197,7 +207,7 @@ text-align:center;
 
 <body>
 
-<header>
+<header id="navbar">
 <div class="nav-container">
 <div class="logo">
 <img src="/logo.png"/>
@@ -221,6 +231,7 @@ AI Analytics Platform<br>
 <a href="#contact">
 <button class="btn">Request Demo</button>
 </a>
+
 </div>
 
 <div class="hero-image">
@@ -276,6 +287,19 @@ placeholder="Tell us about your business"></textarea>
 </footer>
 
 <script>
+
+/* NAVBAR SCROLL EFFECT */
+const navbar = document.getElementById("navbar");
+
+window.addEventListener("scroll", () => {
+if(window.scrollY > 50){
+navbar.classList.add("scrolled");
+}else{
+navbar.classList.remove("scrolled");
+}
+});
+
+/* CARD GLOW */
 document.querySelectorAll('.card').forEach(card=>{
 card.addEventListener('mousemove',e=>{
 const rect=card.getBoundingClientRect();
@@ -283,6 +307,7 @@ card.style.setProperty('--x',e.clientX-rect.left+'px');
 card.style.setProperty('--y',e.clientY-rect.top+'px');
 });
 });
+
 </script>
 
 </body>
