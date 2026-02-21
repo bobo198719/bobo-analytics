@@ -15,10 +15,7 @@ const industries = [
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 
-<title>Bobo Analytics | Smart Analytics for Smarter Business</title>
-
-<meta name="description"
-content="AI-powered analytics platform helping businesses transform data into intelligent decisions."/>
+<title>Bobo Analytics</title>
 
 <link rel="icon" href="/logo.png"/>
 
@@ -30,10 +27,9 @@ margin:0;
 font-family:Inter,system-ui;
 background:#000;
 color:white;
-overflow-x:hidden;
 }
 
-/* ===== HEADER ===== */
+/* ===== NAVBAR ===== */
 header{
 position:fixed;
 top:0;
@@ -47,23 +43,34 @@ z-index:1000;
 max-width:1200px;
 margin:auto;
 display:flex;
+justify-content:space-between;
 align-items:center;
-gap:14px;
-padding:18px 20px;
+padding:16px 20px;
 }
 
-.nav img{
-height:60px;
+.logo{
+display:flex;
+align-items:center;
+gap:12px;
 }
 
-.nav h2{
-margin:0;
-font-size:24px;
+.logo img{height:52px;}
+.logo h2{margin:0;font-size:22px;}
+
+.menu a{
+margin-left:22px;
+color:#cbd5e1;
+text-decoration:none;
+font-size:15px;
+}
+
+.menu a:hover{
+color:#22d3ee;
 }
 
 /* ===== HERO ===== */
 .hero{
-padding:160px 20px 120px;
+padding:150px 20px 120px;
 background:linear-gradient(120deg,#03131d,#15001f);
 }
 
@@ -77,14 +84,7 @@ gap:60px;
 flex-wrap:wrap;
 }
 
-.hero-text{
-flex:1;
-min-width:320px;
-}
-
-.hero-text h1{
-font-size:42px;
-}
+.hero-text{flex:1;}
 
 .gradient{
 background:linear-gradient(90deg,#22d3ee,#ff2fd1);
@@ -109,10 +109,10 @@ animation:float 6s ease-in-out infinite;
 }
 
 @keyframes float{
-50%{transform:translateY(-18px);}
+50%{transform:translateY(-15px);}
 }
 
-/* ===== SECTIONS ===== */
+/* ===== INDUSTRIES ===== */
 section{
 padding:80px 20px;
 text-align:center;
@@ -170,11 +170,6 @@ border-radius:50%;
 font-size:28px;
 text-decoration:none;
 box-shadow:0 6px 20px rgba(0,0,0,.4);
-transition:.3s;
-}
-
-.whatsapp:hover{
-transform:scale(1.1);
 }
 
 </style>
@@ -182,11 +177,22 @@ transform:scale(1.1);
 
 <body>
 
-<!-- HEADER -->
+<!-- NAVBAR -->
 <header>
 <div class="nav">
-<img src="/logo.png" alt="Bobo Analytics"/>
+
+<div class="logo">
+<img src="/logo.png" alt="Logo"/>
 <h2>Bobo Analytics</h2>
+</div>
+
+<div class="menu">
+<a href="#services">Services</a>
+<a href="#solutions">Solutions</a>
+<a href="#about">About</a>
+<a href="#blog">Blog</a>
+</div>
+
 </div>
 </header>
 
@@ -211,7 +217,7 @@ AI Analytics Platform<br>
 </section>
 
 <!-- INDUSTRIES -->
-<section>
+<section id="services">
 <h2>Industries We Serve</h2>
 
 <div class="grid">
@@ -227,14 +233,12 @@ AI Analytics Platform<br>
 
 <!-- FOOTER -->
 <footer>
-
 <a href="/privacy">Privacy Policy</a> |
 <a href="/disclaimer">Disclaimer</a>
 
 <p style="margin-top:10px;">
 ©2026 Bobo Analytics® All Rights Reserved
 </p>
-
 </footer>
 
 <!-- WHATSAPP -->
