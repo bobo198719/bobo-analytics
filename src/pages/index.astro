@@ -51,3 +51,328 @@ padding:14px 20px;
 .logo{
 display:flex;
 align-items:center;
+gap:10px;
+font-size:20px;
+font-weight:600;
+}
+
+.logo img{height:48px;}
+
+.menu{display:flex;}
+.menu a{
+margin-left:20px;
+color:#cbd5e1;
+text-decoration:none;
+}
+
+.menu a:hover{color:#22d3ee;}
+
+.hamburger{
+display:none;
+font-size:28px;
+cursor:pointer;
+}
+
+/* MOBILE MENU */
+.mobile-menu{
+display:none;
+flex-direction:column;
+background:#020617;
+position:absolute;
+top:70px;
+width:100%;
+}
+
+.mobile-menu a{
+padding:15px;
+border-top:1px solid #1e293b;
+text-align:center;
+text-decoration:none;
+color:#cbd5e1;
+}
+
+.mobile-menu.show{display:flex;}
+
+/* ================= HERO ================= */
+.hero{
+padding:130px 20px 80px;
+background:linear-gradient(120deg,#03131d,#15001f);
+}
+
+.hero-container{
+max-width:1200px;
+margin:auto;
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:50px;
+flex-wrap:wrap;
+}
+
+.gradient{
+background:linear-gradient(90deg,#22d3ee,#ff2fd1);
+-webkit-background-clip:text;
+color:transparent;
+}
+
+.hero-image img{
+width:100%;
+max-width:580px;
+border-radius:16px;
+box-shadow:
+0 0 40px rgba(34,211,238,.4),
+0 0 100px rgba(255,47,209,.25);
+animation:float 6s ease-in-out infinite;
+}
+
+@keyframes float{
+0%,100%{transform:translateY(0);}
+50%{transform:translateY(-15px);}
+}
+
+/* ================= SECTIONS ================= */
+section{
+padding:70px 20px;
+text-align:center;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+max-width:1100px;
+margin:auto;
+}
+
+.card{
+background:#020617;
+padding:25px;
+border-radius:12px;
+border:1px solid #1e293b;
+transition:.3s;
+opacity:0;
+transform:translateY(40px);
+}
+
+.card:hover{
+transform:translateY(-8px);
+border-color:#22d3ee;
+}
+
+/* ================= FORM ================= */
+.form-box{
+max-width:600px;
+margin:auto;
+background:#020617;
+padding:25px;
+border-radius:12px;
+border:1px solid #1e293b;
+opacity:0;
+transform:translateY(40px);
+}
+
+.form-box input,
+.form-box textarea{
+width:100%;
+padding:12px;
+margin-top:12px;
+background:#000;
+border:1px solid #334155;
+border-radius:8px;
+color:white;
+}
+
+.form-box button{
+margin-top:15px;
+width:100%;
+padding:14px;
+background:#22d3ee;
+border:none;
+border-radius:8px;
+font-weight:bold;
+}
+
+/* ================= FOOTER ================= */
+footer{
+background:#020617;
+padding:35px;
+text-align:center;
+color:#94a3b8;
+}
+
+/* ================= WHATSAPP ================= */
+.whatsapp{
+position:fixed;
+bottom:20px;
+right:20px;
+width:55px;
+height:55px;
+background:#25D366;
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:50%;
+font-size:26px;
+text-decoration:none;
+color:white;
+z-index:999;
+}
+
+/* ================= STICKY CTA ================= */
+.cta-button{
+position:fixed;
+bottom:90px;
+right:20px;
+background:linear-gradient(90deg,#22d3ee,#ff2fd1);
+color:white;
+padding:14px 20px;
+border-radius:40px;
+font-weight:600;
+text-decoration:none;
+box-shadow:0 0 25px rgba(34,211,238,.6);
+animation:pulse 2s infinite;
+z-index:999;
+}
+
+@keyframes pulse{
+0%{transform:scale(1);}
+50%{transform:scale(1.06);}
+100%{transform:scale(1);}
+}
+
+/* ================= MOBILE ================= */
+@media(max-width:900px){
+
+.menu{display:none;}
+.hamburger{display:block;}
+
+.hero-container{
+flex-direction:column;
+text-align:center;
+}
+
+h1{font-size:28px;}
+}
+
+.show{
+opacity:1;
+transform:translateY(0);
+transition:all .8s ease;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="nav">
+
+<div class="logo">
+<img src="/logo.png"/> Bobo Analytics
+</div>
+
+<div class="menu">
+<a href="#services">Services</a>
+<a href="#demo">Demo</a>
+</div>
+
+<div class="hamburger" onclick="toggleMenu()">☰</div>
+
+</div>
+
+<div id="mobileMenu" class="mobile-menu">
+<a href="#services" onclick="toggleMenu()">Services</a>
+<a href="#demo" onclick="toggleMenu()">Demo</a>
+</div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+<div class="hero-container">
+
+<div class="reveal">
+<h1>AI Analytics Platform<br>
+<span class="gradient">Built for Modern Businesses</span></h1>
+<p>Turn business data into intelligent decisions.</p>
+</div>
+
+<div class="hero-image reveal">
+<img src="/dashboard-image.png"/>
+</div>
+
+</div>
+</section>
+
+<!-- INDUSTRIES -->
+<section id="services">
+<h2 class="reveal">Industries We Serve</h2>
+
+<div class="grid">
+{industries.map(i => (
+<div class="card reveal">
+<h3>{i.icon} {i.title}</h3>
+<p>{i.desc}</p>
+</div>
+))}
+</div>
+</section>
+
+<!-- DEMO -->
+<section id="demo">
+<h2 class="reveal">Request a Demo</h2>
+
+<form class="form-box reveal"
+action="https://formsubmit.co/support@boboanalytics.com"
+method="POST">
+
+<input name="name" placeholder="Your Name" required>
+<input name="email" type="email" placeholder="Email Address" required>
+<input name="phone" placeholder="Phone Number" required>
+
+<textarea name="message" rows="4"
+placeholder="Tell us about your business"></textarea>
+
+<input type="hidden" name="_captcha" value="false">
+
+<button type="submit">Request Demo</button>
+
+</form>
+</section>
+
+<footer>
+<a href="/privacy">Privacy Policy</a> |
+<a href="/disclaimer">Disclaimer</a>
+<p>©2026 Bobo Analytics® All Rights Reserved</p>
+</footer>
+
+<!-- FLOATING BUTTONS -->
+<a class="cta-button" href="#demo">🚀 Book Demo</a>
+
+<a class="whatsapp"
+href="https://wa.me/919156484328?text=Hi%20I%20want%20a%20demo%20of%20Bobo%20Analytics"
+target="_blank">💬</a>
+
+<script>
+
+function toggleMenu(){
+document.getElementById("mobileMenu").classList.toggle("show");
+}
+
+/* SCROLL ANIMATION */
+const observer=new IntersectionObserver(entries=>{
+entries.forEach(entry=>{
+if(entry.isIntersecting){
+entry.target.classList.add("show");
+}
+});
+},{threshold:0.15});
+
+document.querySelectorAll(".reveal").forEach(el=>{
+observer.observe(el);
+});
+
+</script>
+
+</body>
+</html>
