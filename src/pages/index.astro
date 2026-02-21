@@ -11,11 +11,21 @@ const industries = [
 
 <html lang="en">
 <head>
+
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Bobo Analytics</title>
+
+<title>Bobo Analytics | Smart Analytics for Smarter Business</title>
+
+<meta name="description"
+content="Bobo Analytics provides AI-powered analytics software helping pharmacy, retail and enterprise businesses transform data into decisions."/>
+
+<meta name="robots" content="index, follow"/>
+
+<link rel="icon" href="/logo.png"/>
 
 <style>
+
 body{
 margin:0;
 font-family:Inter,system-ui;
@@ -24,10 +34,63 @@ color:white;
 scroll-behavior:smooth;
 }
 
+/* NAVBAR */
+header{
+position:fixed;
+top:0;
+width:100%;
+background:#020617;
+border-bottom:2px solid #22d3ee;
+z-index:1000;
+}
+
+.nav-container{
+display:flex;
+align-items:center;
+max-width:1200px;
+margin:auto;
+padding:20px;
+gap:14px;
+}
+
+.logo img{height:54px;}
+.logo strong{font-size:22px;font-weight:700;}
+
+/* HERO */
+.hero{
+padding:180px 20px 120px;
+background:linear-gradient(120deg,#03131d,#15001f);
+text-align:center;
+}
+
+.gradient{
+background:linear-gradient(90deg,#22d3ee,#ff2fd1);
+-webkit-background-clip:text;
+color:transparent;
+}
+
+/* GRID */
+section{padding:80px 20px;text-align:center;}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:25px;
+max-width:1100px;
+margin:auto;
+}
+
+.card{
+background:#020617;
+padding:30px;
+border-radius:12px;
+border:1px solid #1e293b;
+}
+
 /* FOOTER */
 footer{
 background:#020617;
-padding:40px 20px;
+padding:40px;
 text-align:center;
 color:#94a3b8;
 border-top:1px solid #1e293b;
@@ -39,24 +102,56 @@ text-decoration:none;
 margin:0 10px;
 }
 
-footer a:hover{
-text-decoration:underline;
-}
+footer a:hover{ text-decoration:underline; }
+
 </style>
 </head>
 
 <body>
 
-<!-- YOUR EXISTING WEBSITE CONTENT REMAINS ABOVE -->
-<!-- (Hero, Services, Form etc stay same) -->
+<!-- NAVBAR -->
+<header>
+<div class="nav-container logo">
+<img src="/logo.png"/>
+<strong>Bobo Analytics</strong>
+</div>
+</header>
 
+<!-- HERO -->
+<section class="hero">
+<h1>
+AI Analytics Platform<br>
+<span class="gradient">Built for Modern Businesses</span>
+</h1>
+
+<p>Turn business data into intelligent decisions.</p>
+</section>
+
+<!-- SERVICES -->
+<section>
+<h2>Industries We Serve</h2>
+
+<div class="grid">
+{industries.map(i => (
+<div class="card">
+<h3>{i.icon} {i.title}</h3>
+<p>{i.desc}</p>
+</div>
+))}
+</div>
+
+</section>
+
+<!-- FOOTER -->
 <footer>
+
 <a href="/privacy">Privacy Policy</a> |
 <a href="/disclaimer">Disclaimer</a>
 
 <p style="margin-top:10px;">
 ©2026 Bobo Analytics® All Rights Reserved
 </p>
+
 </footer>
 
 </body>
