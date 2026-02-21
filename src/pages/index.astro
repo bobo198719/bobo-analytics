@@ -14,8 +14,8 @@ const industries = [
 
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-
 <title>Bobo Analytics</title>
+
 <link rel="icon" href="/logo.png"/>
 
 <style>
@@ -54,6 +54,7 @@ gap:12px;
 }
 
 .logo img{height:52px;}
+
 .menu a{
 margin-left:20px;
 color:#cbd5e1;
@@ -83,10 +84,19 @@ background:linear-gradient(90deg,#22d3ee,#ff2fd1);
 color:transparent;
 }
 
+/* FLOATING IMAGE */
 .hero-image img{
 max-width:650px;
 border-radius:18px;
-box-shadow:0 0 60px rgba(34,211,238,.4);
+box-shadow:
+0 0 50px rgba(34,211,238,.45),
+0 0 120px rgba(255,47,209,.25);
+animation:float 6s ease-in-out infinite;
+}
+
+@keyframes float{
+0%,100%{transform:translateY(0);}
+50%{transform:translateY(-18px);}
 }
 
 /* SECTIONS */
@@ -95,6 +105,7 @@ padding:80px 20px;
 text-align:center;
 }
 
+/* GLOW CARDS */
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
@@ -108,6 +119,34 @@ background:#020617;
 padding:30px;
 border-radius:12px;
 border:1px solid #1e293b;
+position:relative;
+overflow:hidden;
+transition:.3s;
+}
+
+.card::before{
+content:"";
+position:absolute;
+width:200px;
+height:200px;
+background:radial-gradient(circle,
+rgba(34,211,238,.35),
+transparent 60%);
+top:var(--y);
+left:var(--x);
+transform:translate(-50%,-50%);
+opacity:0;
+transition:.2s;
+pointer-events:none;
+}
+
+.card:hover::before{
+opacity:1;
+}
+
+.card:hover{
+transform:translateY(-8px);
+border-color:#22d3ee;
 }
 
 /* FORM */
@@ -179,10 +218,8 @@ text-decoration:none;
 
 <body>
 
-<!-- NAVBAR -->
 <header>
 <div class="nav">
-
 <div class="logo">
 <img src="/logo.png"/>
 <strong>Bobo Analytics</strong>
@@ -192,7 +229,6 @@ text-decoration:none;
 <a href="#services">Services</a>
 <a href="#demo">Demo</a>
 </div>
-
 </div>
 </header>
 
@@ -209,7 +245,7 @@ AI Analytics Platform<br>
 </div>
 
 <div class="hero-image">
-<img src="/dashboard-image.png" alt="Dashboard">
+<img src="/dashboard-image.png">
 </div>
 
 </div>
@@ -227,7 +263,6 @@ AI Analytics Platform<br>
 </div>
 ))}
 </div>
-
 </section>
 
 <!-- DEMO FORM -->
@@ -250,21 +285,28 @@ placeholder="Tell us about your business"></textarea>
 <button type="submit">Request Demo</button>
 
 </form>
-
 </section>
 
-<!-- FOOTER -->
 <footer>
 <a href="/privacy">Privacy Policy</a> |
 <a href="/disclaimer">Disclaimer</a>
-
 <p>©2026 Bobo Analytics® All Rights Reserved</p>
 </footer>
 
-<!-- WHATSAPP -->
 <a class="whatsapp"
 href="https://wa.me/919156484328?text=Hi%20I%20want%20a%20demo%20of%20Bobo%20Analytics"
 target="_blank">💬</a>
+
+<script>
+/* MOUSE GLOW EFFECT */
+document.querySelectorAll('.card').forEach(card=>{
+card.addEventListener('mousemove',e=>{
+const rect=card.getBoundingClientRect();
+card.style.setProperty('--x',(e.clientX-rect.left)+'px');
+card.style.setProperty('--y',(e.clientY-rect.top)+'px');
+});
+});
+</script>
 
 </body>
 </html>
