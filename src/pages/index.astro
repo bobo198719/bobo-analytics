@@ -15,20 +15,9 @@ const industries = [
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 
-<title>Bobo Analytics | Smart Analytics for Smarter Business</title>
-
-<meta name="description"
-content="Bobo Analytics provides AI-powered analytics software helping pharmacy, retail and enterprise businesses transform data into decisions."/>
-
-<meta name="robots" content="index, follow"/>
+<title>Bobo Analytics | Smart Analytics</title>
 
 <link rel="icon" href="/logo.png"/>
-
-<!-- OPEN GRAPH -->
-<meta property="og:title" content="Bobo Analytics"/>
-<meta property="og:description" content="Smart Analytics for Smarter Business"/>
-<meta property="og:image" content="https://boboanalytics.com/dashboard.png"/>
-<meta property="og:type" content="website"/>
 
 <style>
 
@@ -38,23 +27,16 @@ margin:0;
 font-family:Inter,system-ui;
 background:#000;
 color:white;
-scroll-behavior:smooth;
 }
 
-/* NAVBAR */
+/* ===== HEADER ===== */
 header{
 position:fixed;
 top:0;
 width:100%;
-background:transparent;
-transition:.35s;
-z-index:1000;
-}
-
-header.scrolled{
-background:#020617;
+background:#020617; /* FIXED VISIBILITY */
 border-bottom:2px solid #22d3ee;
-box-shadow:0 6px 20px rgba(0,0,0,.5);
+z-index:1000;
 }
 
 .nav-container{
@@ -62,21 +44,53 @@ display:flex;
 align-items:center;
 max-width:1200px;
 margin:auto;
-padding:20px;
+padding:18px 20px;
 gap:14px;
 }
 
-.logo img{height:56px;}
+.logo img{height:60px;}
 .logo strong{
 font-size:24px;
 font-weight:700;
 }
 
-/* HERO */
+/* ===== HERO ===== */
 .hero{
-padding:190px 20px 120px;
+padding:160px 20px 120px;
 background:linear-gradient(120deg,#03131d,#15001f);
-text-align:center;
+}
+
+.hero-container{
+display:flex;
+align-items:center;
+justify-content:space-between;
+max-width:1200px;
+margin:auto;
+gap:60px;
+flex-wrap:wrap;
+}
+
+.hero-text{
+flex:1;
+min-width:320px;
+}
+
+.hero-image{
+flex:1;
+display:flex;
+justify-content:center;
+}
+
+.hero-image img{
+width:100%;
+max-width:650px;
+border-radius:18px;
+box-shadow:0 0 70px rgba(34,211,238,.35);
+animation:float 5s ease-in-out infinite;
+}
+
+@keyframes float{
+50%{transform:translateY(-15px);}
 }
 
 .gradient{
@@ -85,7 +99,7 @@ background:linear-gradient(90deg,#22d3ee,#ff2fd1);
 color:transparent;
 }
 
-/* SECTIONS */
+/* ===== SECTIONS ===== */
 section{
 padding:80px 20px;
 text-align:center;
@@ -112,7 +126,7 @@ transform:translateY(-8px);
 border-color:#22d3ee;
 }
 
-/* FOOTER */
+/* ===== FOOTER ===== */
 footer{
 background:#020617;
 padding:40px;
@@ -123,16 +137,12 @@ border-top:1px solid #1e293b;
 
 footer a{
 color:#22d3ee;
-text-decoration:none;
 margin:0 10px;
+text-decoration:none;
 }
 
-footer a:hover{
-text-decoration:underline;
-}
-
-/* WHATSAPP BUTTON */
-.whatsapp-float{
+/* ===== WHATSAPP ===== */
+.whatsapp{
 position:fixed;
 bottom:25px;
 right:25px;
@@ -140,19 +150,13 @@ width:60px;
 height:60px;
 background:#25D366;
 color:white;
-font-size:28px;
 display:flex;
 align-items:center;
 justify-content:center;
 border-radius:50%;
+font-size:28px;
 text-decoration:none;
 box-shadow:0 6px 20px rgba(0,0,0,.4);
-z-index:9999;
-transition:.3s;
-}
-
-.whatsapp-float:hover{
-transform:scale(1.1);
 }
 
 </style>
@@ -160,8 +164,8 @@ transform:scale(1.1);
 
 <body>
 
-<!-- NAVBAR -->
-<header id="navbar">
+<!-- HEADER -->
+<header>
 <div class="nav-container logo">
 <img src="/logo.png"/>
 <strong>Bobo Analytics</strong>
@@ -170,12 +174,22 @@ transform:scale(1.1);
 
 <!-- HERO -->
 <section class="hero">
+<div class="hero-container">
+
+<div class="hero-text">
 <h1>
 AI Analytics Platform<br>
 <span class="gradient">Built for Modern Businesses</span>
 </h1>
 
 <p>Turn business data into intelligent decisions.</p>
+</div>
+
+<div class="hero-image">
+<img src="/dashboard.png" alt="Dashboard"/>
+</div>
+
+</div>
 </section>
 
 <!-- INDUSTRIES -->
@@ -205,27 +219,10 @@ AI Analytics Platform<br>
 
 </footer>
 
-<!-- WHATSAPP BUTTON -->
-<a href="https://wa.me/919156484328?text=Hi%20I%20want%20a%20demo%20of%20Bobo%20Analytics"
-target="_blank"
-class="whatsapp-float">
-💬
-</a>
-
-<script>
-
-/* DYNAMIC NAVBAR */
-const navbar=document.getElementById("navbar");
-
-window.addEventListener("scroll",()=>{
-if(window.scrollY>50){
-navbar.classList.add("scrolled");
-}else{
-navbar.classList.remove("scrolled");
-}
-});
-
-</script>
+<!-- WHATSAPP -->
+<a class="whatsapp"
+href="https://wa.me/919156484328?text=Hi%20I%20want%20a%20demo%20of%20Bobo%20Analytics"
+target="_blank">💬</a>
 
 </body>
 </html>
