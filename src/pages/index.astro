@@ -15,26 +15,22 @@ const industries = [
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 
-<title>Bobo Analytics | AI Analytics Platform</title>
-<meta name="description" content="Bobo Analytics helps businesses transform data into intelligent decisions using AI analytics dashboards."/>
+<title>Bobo Analytics</title>
 
 <link rel="icon" href="/logo.png"/>
 
-<!-- APPLE STYLE SCROLL ANIMATION -->
-<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
-
 <style>
 
-/* GLOBAL */
+/* ---------- GLOBAL ---------- */
 body{
 margin:0;
 font-family:Inter,system-ui;
 background:#000;
 color:white;
-scroll-behavior:smooth;
+overflow-x:hidden;
 }
 
-/* NAVBAR */
+/* ---------- NAVBAR ---------- */
 header{
 position:fixed;
 top:0;
@@ -70,7 +66,7 @@ text-decoration:none;
 }
 .menu a:hover{color:#22d3ee;}
 
-/* HERO */
+/* ---------- HERO ---------- */
 .hero{
 padding:150px 20px 120px;
 background:linear-gradient(120deg,#03131d,#15001f);
@@ -94,7 +90,7 @@ color:transparent;
 
 /* FLOAT IMAGE */
 .hero-image img{
-max-width:650px;
+max-width:620px;
 border-radius:18px;
 box-shadow:
 0 0 50px rgba(34,211,238,.45),
@@ -104,16 +100,16 @@ animation:float 6s ease-in-out infinite;
 
 @keyframes float{
 0%,100%{transform:translateY(0);}
-50%{transform:translateY(-20px);}
+50%{transform:translateY(-18px);}
 }
 
-/* SECTIONS */
+/* ---------- SECTIONS ---------- */
 section{
 padding:90px 20px;
 text-align:center;
 }
 
-/* GRID */
+/* ---------- GRID ---------- */
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
@@ -122,17 +118,20 @@ max-width:1100px;
 margin:auto;
 }
 
-/* GLOW CARDS */
+/* ---------- CARD ---------- */
 .card{
 background:#020617;
 padding:30px;
 border-radius:12px;
 border:1px solid #1e293b;
+transition:.35s;
 position:relative;
 overflow:hidden;
-transition:.35s;
+opacity:0;
+transform:translateY(40px);
 }
 
+/* glow */
 .card::before{
 content:"";
 position:absolute;
@@ -146,17 +145,23 @@ left:var(--x);
 transform:translate(-50%,-50%);
 opacity:0;
 transition:.2s;
-pointer-events:none;
 }
 
 .card:hover::before{opacity:1;}
 
 .card:hover{
-transform:translateY(-10px) scale(1.02);
+transform:translateY(-8px) scale(1.02);
 border-color:#22d3ee;
 }
 
-/* FORM */
+/* visible animation */
+.show{
+opacity:1 !important;
+transform:translateY(0) !important;
+transition:all .8s ease;
+}
+
+/* ---------- FORM ---------- */
 .form-box{
 max-width:600px;
 margin:auto;
@@ -164,6 +169,8 @@ background:#020617;
 padding:30px;
 border-radius:12px;
 border:1px solid #1e293b;
+opacity:0;
+transform:translateY(40px);
 }
 
 .form-box input,
@@ -188,7 +195,7 @@ font-weight:bold;
 cursor:pointer;
 }
 
-/* FOOTER */
+/* ---------- FOOTER ---------- */
 footer{
 background:#020617;
 padding:40px;
@@ -203,7 +210,7 @@ margin:0 10px;
 text-decoration:none;
 }
 
-/* WHATSAPP */
+/* ---------- WHATSAPP ---------- */
 .whatsapp{
 position:fixed;
 bottom:25px;
@@ -243,7 +250,7 @@ Bobo Analytics
 <section class="hero">
 <div class="hero-container">
 
-<div data-aos="fade-right">
+<div class="reveal">
 <h1>
 AI Analytics Platform<br>
 <span class="gradient">Built for Modern Businesses</span>
@@ -251,7 +258,7 @@ AI Analytics Platform<br>
 <p>Turn business data into intelligent decisions.</p>
 </div>
 
-<div class="hero-image" data-aos="zoom-in">
+<div class="hero-image reveal">
 <img src="/dashboard-image.png"/>
 </div>
 
@@ -260,13 +267,11 @@ AI Analytics Platform<br>
 
 <!-- INDUSTRIES -->
 <section id="services">
-<h2 data-aos="fade-up">Industries We Serve</h2>
+<h2 class="reveal">Industries We Serve</h2>
 
 <div class="grid">
-{industries.map((i,index) => (
-<div class="card"
-data-aos="fade-up"
-data-aos-delay={index*100}>
+{industries.map(i => (
+<div class="card reveal">
 <h3>{i.icon} {i.title}</h3>
 <p>{i.desc}</p>
 </div>
@@ -276,10 +281,9 @@ data-aos-delay={index*100}>
 
 <!-- DEMO -->
 <section id="demo">
-<h2 data-aos="fade-up">Request a Demo</h2>
+<h2 class="reveal">Request a Demo</h2>
 
-<form class="form-box"
-data-aos="zoom-in"
+<form class="form-box reveal"
 action="https://formsubmit.co/support@boboanalytics.com"
 method="POST">
 
@@ -307,17 +311,22 @@ placeholder="Tell us about your business"></textarea>
 href="https://wa.me/919156484328?text=Hi%20I%20want%20a%20demo%20of%20Bobo%20Analytics"
 target="_blank">💬</a>
 
-<!-- AOS SCRIPT -->
-<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-
 <script>
-AOS.init({
-duration:1000,
-once:true,
-offset:120
+
+/* SCROLL REVEAL (APPLE STYLE — LOCAL & SAFE) */
+const observer=new IntersectionObserver(entries=>{
+entries.forEach(entry=>{
+if(entry.isIntersecting){
+entry.target.classList.add("show");
+}
+});
+},{threshold:0.15});
+
+document.querySelectorAll(".reveal").forEach(el=>{
+observer.observe(el);
 });
 
-/* MOUSE GLOW */
+/* GLOW EFFECT */
 document.querySelectorAll('.card').forEach(card=>{
 card.addEventListener('mousemove',e=>{
 const rect=card.getBoundingClientRect();
@@ -325,6 +334,7 @@ card.style.setProperty('--x',(e.clientX-rect.left)+'px');
 card.style.setProperty('--y',(e.clientY-rect.top)+'px');
 });
 });
+
 </script>
 
 </body>
