@@ -26,15 +26,32 @@ color:white;
 scroll-behavior:smooth;
 }
 
-/* NAVBAR */
+/* ===== HEADER ===== */
+
 header{
 position:fixed;
 top:0;
 width:100%;
-background:rgba(2,6,23,.75);
+background:rgba(2,6,23,.85);
 backdrop-filter:blur(14px);
-border-bottom:1px solid #1e293b;
 z-index:1000;
+}
+
+/* HEADER LINE FIX */
+header::after{
+content:"";
+position:absolute;
+bottom:0;
+left:0;
+width:100%;
+height:1px;
+background:linear-gradient(
+90deg,
+transparent,
+#22d3ee,
+transparent
+);
+opacity:.6;
 }
 
 .nav-container{
@@ -46,7 +63,11 @@ margin:auto;
 padding:18px 20px;
 }
 
-.logo{display:flex;align-items:center;gap:10px;}
+.logo{
+display:flex;
+align-items:center;
+gap:10px;
+}
 
 nav a{
 margin-left:25px;
@@ -102,7 +123,10 @@ color:white;
 }
 
 /* SECTIONS */
-section{padding:90px 20px;text-align:center;}
+section{
+padding:90px 20px;
+text-align:center;
+}
 
 .grid{
 display:grid;
@@ -112,7 +136,7 @@ max-width:1100px;
 margin:auto;
 }
 
-/* GLOW CARDS */
+/* GLOW CARD */
 .card{
 background:#020617;
 padding:30px;
@@ -136,10 +160,7 @@ opacity:0;
 transition:.2s;
 }
 
-.card:hover::before{
-opacity:1;
-}
-
+.card:hover::before{opacity:1;}
 .card:hover{
 transform:translateY(-8px);
 border-color:#22d3ee;
@@ -212,7 +233,6 @@ AI Analytics Platform<br>
 <a href="#contact">
 <button class="btn">Request Demo</button>
 </a>
-
 </div>
 
 <div class="hero-image">
@@ -268,7 +288,6 @@ placeholder="Tell us about your business"></textarea>
 </footer>
 
 <script>
-/* Mouse glow tracking */
 document.querySelectorAll('.card').forEach(card=>{
 card.addEventListener('mousemove',e=>{
 const rect=card.getBoundingClientRect();
