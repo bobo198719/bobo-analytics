@@ -16,12 +16,11 @@ const industries = [
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 
 <title>Bobo Analytics</title>
-
 <link rel="icon" href="/logo.png"/>
 
 <style>
 
-/* ===== GLOBAL ===== */
+/* GLOBAL */
 body{
 margin:0;
 font-family:Inter,system-ui;
@@ -29,7 +28,7 @@ background:#000;
 color:white;
 }
 
-/* ===== NAVBAR ===== */
+/* NAVBAR */
 header{
 position:fixed;
 top:0;
@@ -55,20 +54,14 @@ gap:12px;
 }
 
 .logo img{height:52px;}
-.logo h2{margin:0;font-size:22px;}
-
 .menu a{
-margin-left:22px;
+margin-left:20px;
 color:#cbd5e1;
 text-decoration:none;
-font-size:15px;
 }
+.menu a:hover{color:#22d3ee;}
 
-.menu a:hover{
-color:#22d3ee;
-}
-
-/* ===== HERO ===== */
+/* HERO */
 .hero{
 padding:150px 20px 120px;
 background:linear-gradient(120deg,#03131d,#15001f);
@@ -84,35 +77,19 @@ gap:60px;
 flex-wrap:wrap;
 }
 
-.hero-text{flex:1;}
-
 .gradient{
 background:linear-gradient(90deg,#22d3ee,#ff2fd1);
 -webkit-background-clip:text;
 color:transparent;
 }
 
-.hero-image{
-flex:1;
-display:flex;
-justify-content:center;
-}
-
 .hero-image img{
-width:100%;
-max-width:680px;
+max-width:650px;
 border-radius:18px;
-box-shadow:
-0 0 40px rgba(34,211,238,.4),
-0 0 120px rgba(255,47,209,.25);
-animation:float 6s ease-in-out infinite;
+box-shadow:0 0 60px rgba(34,211,238,.4);
 }
 
-@keyframes float{
-50%{transform:translateY(-15px);}
-}
-
-/* ===== INDUSTRIES ===== */
+/* SECTIONS */
 section{
 padding:80px 20px;
 text-align:center;
@@ -131,15 +108,41 @@ background:#020617;
 padding:30px;
 border-radius:12px;
 border:1px solid #1e293b;
-transition:.3s;
 }
 
-.card:hover{
-transform:translateY(-8px);
-border-color:#22d3ee;
+/* FORM */
+.form-box{
+max-width:600px;
+margin:auto;
+background:#020617;
+padding:30px;
+border-radius:12px;
+border:1px solid #1e293b;
 }
 
-/* ===== FOOTER ===== */
+.form-box input,
+.form-box textarea{
+width:100%;
+padding:14px;
+margin-top:12px;
+background:#000;
+border:1px solid #334155;
+border-radius:8px;
+color:white;
+}
+
+.form-box button{
+margin-top:15px;
+width:100%;
+padding:14px;
+background:#22d3ee;
+border:none;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+}
+
+/* FOOTER */
 footer{
 background:#020617;
 padding:40px;
@@ -150,11 +153,11 @@ border-top:1px solid #1e293b;
 
 footer a{
 color:#22d3ee;
-text-decoration:none;
 margin:0 10px;
+text-decoration:none;
 }
 
-/* ===== WHATSAPP ===== */
+/* WHATSAPP */
 .whatsapp{
 position:fixed;
 bottom:25px;
@@ -169,7 +172,6 @@ justify-content:center;
 border-radius:50%;
 font-size:28px;
 text-decoration:none;
-box-shadow:0 6px 20px rgba(0,0,0,.4);
 }
 
 </style>
@@ -182,15 +184,13 @@ box-shadow:0 6px 20px rgba(0,0,0,.4);
 <div class="nav">
 
 <div class="logo">
-<img src="/logo.png" alt="Logo"/>
-<h2>Bobo Analytics</h2>
+<img src="/logo.png"/>
+<strong>Bobo Analytics</strong>
 </div>
 
 <div class="menu">
 <a href="#services">Services</a>
-<a href="#solutions">Solutions</a>
-<a href="#about">About</a>
-<a href="#blog">Blog</a>
+<a href="#demo">Demo</a>
 </div>
 
 </div>
@@ -200,17 +200,16 @@ box-shadow:0 6px 20px rgba(0,0,0,.4);
 <section class="hero">
 <div class="hero-container">
 
-<div class="hero-text">
+<div>
 <h1>
 AI Analytics Platform<br>
 <span class="gradient">Built for Modern Businesses</span>
 </h1>
-
 <p>Turn business data into intelligent decisions.</p>
 </div>
 
 <div class="hero-image">
-<img src="/dashboard-image.png" alt="Dashboard"/>
+<img src="/dashboard-image.png" alt="Dashboard">
 </div>
 
 </div>
@@ -231,14 +230,35 @@ AI Analytics Platform<br>
 
 </section>
 
+<!-- DEMO FORM -->
+<section id="demo">
+<h2>Request a Demo</h2>
+
+<form class="form-box"
+action="https://formsubmit.co/support@boboanalytics.com"
+method="POST">
+
+<input type="text" name="name" placeholder="Your Name" required>
+<input type="email" name="email" placeholder="Email Address" required>
+<input type="tel" name="phone" placeholder="Phone Number" required>
+
+<textarea name="message" rows="4"
+placeholder="Tell us about your business"></textarea>
+
+<input type="hidden" name="_captcha" value="false">
+
+<button type="submit">Request Demo</button>
+
+</form>
+
+</section>
+
 <!-- FOOTER -->
 <footer>
 <a href="/privacy">Privacy Policy</a> |
 <a href="/disclaimer">Disclaimer</a>
 
-<p style="margin-top:10px;">
-©2026 Bobo Analytics® All Rights Reserved
-</p>
+<p>©2026 Bobo Analytics® All Rights Reserved</p>
 </footer>
 
 <!-- WHATSAPP -->
