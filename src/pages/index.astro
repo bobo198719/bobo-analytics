@@ -13,7 +13,6 @@ const industries = [
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-
 <title>Bobo Analytics</title>
 
 <style>
@@ -50,35 +49,55 @@ nav a{
 margin-left:25px;
 color:#cbd5e1;
 text-decoration:none;
-font-size:14px;
-transition:.3s;
-}
-
-nav a:hover{
-color:white;
 }
 
 /* HERO */
 .hero{
 padding:160px 20px 120px;
-text-align:center;
 background:linear-gradient(120deg,#03131d,#15001f);
 }
 
+.hero-container{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:40px;
+max-width:1200px;
+margin:auto;
+flex-wrap:wrap;
+}
+
+.hero-text{
+flex:1;
+}
+
+.hero-image{
+flex:1;
+text-align:center;
+}
+
+.hero-image img{
+width:100%;
+max-width:520px;
+animation:float 5s ease-in-out infinite;
+border-radius:14px;
+box-shadow:0 0 40px rgba(34,211,238,.2);
+}
+
+@keyframes float{
+0%{transform:translateY(0);}
+50%{transform:translateY(-15px);}
+100%{transform:translateY(0);}
+}
+
 h1{
-font-size:54px;
-margin-bottom:20px;
+font-size:52px;
 }
 
 .gradient{
 background:linear-gradient(90deg,#22d3ee,#ff2fd1);
 -webkit-background-clip:text;
 color:transparent;
-}
-
-.hero p{
-color:#94a3b8;
-font-size:18px;
 }
 
 /* SECTIONS */
@@ -92,7 +111,6 @@ font-size:36px;
 margin-bottom:40px;
 }
 
-/* GRID */
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
@@ -101,15 +119,12 @@ max-width:1200px;
 margin:auto;
 }
 
-/* CARD */
 .card{
 background:#020617;
 padding:35px;
 border-radius:14px;
 border:1px solid #1e293b;
 transition:.4s;
-position:relative;
-overflow:hidden;
 }
 
 .card:hover{
@@ -124,35 +139,17 @@ display:block;
 margin-bottom:15px;
 }
 
-/* SOLUTION TEXT */
 .text{
 max-width:700px;
 margin:auto;
 color:#94a3b8;
-font-size:17px;
-line-height:1.6;
 }
 
-/* FOOTER */
 footer{
 padding:40px;
 background:#020617;
 color:#94a3b8;
 margin-top:60px;
-}
-
-/* FADE ANIMATION */
-.fade{
-opacity:0;
-transform:translateY(30px);
-animation:fadeUp 1s ease forwards;
-}
-
-@keyframes fadeUp{
-to{
-opacity:1;
-transform:translateY(0);
-}
 }
 
 </style>
@@ -163,7 +160,6 @@ transform:translateY(0);
 <!-- NAVBAR -->
 <header>
 <div class="nav-container">
-
 <div style="display:flex;align-items:center;gap:10px;">
 <img src="/logo.png" height="40"/>
 <strong>Bobo Analytics</strong>
@@ -175,24 +171,33 @@ transform:translateY(0);
 <a href="#about">About</a>
 <a href="#blog">Blog</a>
 </nav>
-
 </div>
 </header>
 
 <!-- HERO -->
-<section class="hero fade">
+<section class="hero">
+<div class="hero-container">
+
+<div class="hero-text">
 <h1>
 AI Analytics Platform<br/>
 <span class="gradient">Built for Modern Businesses</span>
 </h1>
 
-<p>
+<p style="color:#94a3b8;font-size:18px;">
 Transform pharmacy, retail and enterprise data into intelligent decisions.
 </p>
+</div>
+
+<div class="hero-image">
+<img src="/dashboard.png" alt="Dashboard"/>
+</div>
+
+</div>
 </section>
 
 <!-- SERVICES -->
-<section id="services" class="fade">
+<section id="services">
 <h2>Industries We Serve</h2>
 
 <div class="grid">
@@ -208,30 +213,27 @@ Transform pharmacy, retail and enterprise data into intelligent decisions.
 </section>
 
 <!-- SOLUTIONS -->
-<section id="solutions" class="fade">
+<section id="solutions">
 <h2>Solutions</h2>
 <p class="text">
-Bobo Analytics provides scalable AI-powered dashboards, predictive analytics,
-and automated reporting solutions tailored for modern businesses across industries.
+AI-powered dashboards, predictive analytics and automated reporting designed
+for scalable business intelligence.
 </p>
 </section>
 
 <!-- ABOUT -->
-<section id="about" class="fade">
+<section id="about">
 <h2>About Bobo Analytics</h2>
 <p class="text">
-Bobo Analytics is a next-generation analytics SaaS platform designed to help
-organizations convert raw data into actionable insights using automation,
-AI models, and intelligent visualization.
+Bobo Analytics simplifies analytics by transforming complex datasets into
+clear business insights through intelligent automation.
 </p>
 </section>
 
 <!-- BLOG -->
-<section id="blog" class="fade">
+<section id="blog">
 <h2>Blog</h2>
-<p class="text">
-Coming Soon — Industry analytics insights, tutorials, and case studies.
-</p>
+<p class="text">Coming Soon — Insights & Analytics Guides.</p>
 </section>
 
 <footer>
