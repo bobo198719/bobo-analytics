@@ -17,7 +17,7 @@ const industries = [
 
 <style>
 
-/* ===== GLOBAL ===== */
+/* ========= GLOBAL ========= */
 
 body{
 margin:0;
@@ -27,7 +27,6 @@ color:white;
 overflow-x:hidden;
 }
 
-/* Animated background glow */
 body::before{
 content:"";
 position:fixed;
@@ -41,18 +40,17 @@ z-index:-1;
 }
 
 @keyframes moveGlow{
-from{transform:translate(0,0);}
-to{transform:translate(200px,120px);}
+to{transform:translate(220px,140px);}
 }
 
-/* ===== NAVBAR ===== */
+/* ========= NAVBAR ========= */
 
 header{
 position:fixed;
 top:0;
 width:100%;
+background:rgba(2,6,23,.7);
 backdrop-filter:blur(14px);
-background:rgba(2,6,23,.65);
 border-bottom:1px solid #1e293b;
 z-index:1000;
 }
@@ -70,12 +68,9 @@ nav a{
 margin-left:25px;
 color:#cbd5e1;
 text-decoration:none;
-transition:.3s;
 }
 
-nav a:hover{color:white}
-
-/* ===== HERO ===== */
+/* ========= HERO ========= */
 
 .hero{
 padding:170px 20px 130px;
@@ -84,24 +79,16 @@ background:linear-gradient(120deg,#03131d,#15001f);
 
 .hero-container{
 display:flex;
-align-items:center;
 justify-content:space-between;
+align-items:center;
 max-width:1200px;
 margin:auto;
 gap:80px;
 flex-wrap:wrap;
 }
 
-.hero-text{
-flex:1;
-min-width:420px;
-}
-
-.hero-image{
-flex:1;
-display:flex;
-justify-content:center;
-}
+.hero-text{flex:1;min-width:420px;}
+.hero-image{flex:1;text-align:center;}
 
 .hero-image img{
 width:100%;
@@ -112,15 +99,10 @@ animation:float 5s ease-in-out infinite;
 }
 
 @keyframes float{
-0%{transform:translateY(0)}
-50%{transform:translateY(-18px)}
-100%{transform:translateY(0)}
+50%{transform:translateY(-18px);}
 }
 
-h1{
-font-size:56px;
-margin-bottom:20px;
-}
+h1{font-size:56px;margin-bottom:20px;}
 
 .gradient{
 background:linear-gradient(90deg,#22d3ee,#ff2fd1);
@@ -128,13 +110,7 @@ background:linear-gradient(90deg,#22d3ee,#ff2fd1);
 color:transparent;
 }
 
-.hero p{
-color:#94a3b8;
-font-size:18px;
-margin-bottom:35px;
-}
-
-/* CTA Buttons */
+.hero p{color:#94a3b8;font-size:18px;margin-bottom:35px;}
 
 .btn{
 padding:14px 26px;
@@ -162,21 +138,10 @@ border:1px solid #334155;
 color:white;
 }
 
-.secondary:hover{
-border-color:#22d3ee;
-}
+/* ========= SECTIONS ========= */
 
-/* ===== SECTIONS ===== */
-
-section{
-padding:90px 20px;
-text-align:center;
-}
-
-h2{
-font-size:38px;
-margin-bottom:45px;
-}
+section{padding:90px 20px;text-align:center;}
+h2{font-size:38px;margin-bottom:45px;}
 
 .grid{
 display:grid;
@@ -213,7 +178,42 @@ color:#94a3b8;
 line-height:1.7;
 }
 
-/* ===== FOOTER ===== */
+/* ========= STATS ========= */
+
+.stats{
+display:flex;
+justify-content:center;
+gap:80px;
+flex-wrap:wrap;
+font-size:28px;
+font-weight:bold;
+}
+
+.stats div span{
+display:block;
+font-size:14px;
+color:#94a3b8;
+margin-top:8px;
+}
+
+/* ========= TESTIMONIAL ========= */
+
+.testimonial{
+max-width:800px;
+margin:auto;
+font-style:italic;
+color:#cbd5e1;
+}
+
+/* ========= PRICING ========= */
+
+.price{
+font-size:42px;
+margin:15px 0;
+color:#22d3ee;
+}
+
+/* ========= FOOTER ========= */
 
 footer{
 padding:45px;
@@ -222,13 +222,8 @@ color:#94a3b8;
 margin-top:60px;
 }
 
-/* ===== MOBILE ===== */
-
 @media(max-width:900px){
-.hero-container{
-flex-direction:column;
-text-align:center;
-}
+.hero-container{flex-direction:column;text-align:center;}
 }
 
 </style>
@@ -245,9 +240,8 @@ text-align:center;
 
 <nav>
 <a href="#services">Services</a>
-<a href="#solutions">Solutions</a>
+<a href="#pricing">Pricing</a>
 <a href="#about">About</a>
-<a href="#blog">Blog</a>
 </nav>
 </div>
 </header>
@@ -262,9 +256,7 @@ AI Analytics Platform<br>
 <span class="gradient">Built for Modern Businesses</span>
 </h1>
 
-<p>
-Transform pharmacy, retail and enterprise data into intelligent decisions.
-</p>
+<p>Transform pharmacy, retail and enterprise data into intelligent decisions.</p>
 
 <button class="btn primary">Start Free Demo</button>
 <button class="btn secondary">View Solutions</button>
@@ -272,9 +264,18 @@ Transform pharmacy, retail and enterprise data into intelligent decisions.
 </div>
 
 <div class="hero-image">
-<img src="/dashboard.png" alt="Dashboard">
+<img src="/dashboard.png">
 </div>
 
+</div>
+</section>
+
+<!-- STATS -->
+<section>
+<div class="stats">
+<div>1000+<span>Reports Generated</span></div>
+<div>50+<span>Businesses</span></div>
+<div>10+<span>Industries Supported</span></div>
 </div>
 </section>
 
@@ -292,28 +293,48 @@ Transform pharmacy, retail and enterprise data into intelligent decisions.
 </div>
 </section>
 
-<!-- SOLUTIONS -->
-<section id="solutions">
-<h2>Solutions</h2>
-<p class="text">
-AI-powered dashboards, predictive analytics and automated reporting designed
-for scalable business intelligence.
+<!-- TESTIMONIAL -->
+<section>
+<h2>What Businesses Say</h2>
+<p class="testimonial">
+“Bobo Analytics helped us understand our sales patterns instantly.
+Decision-making became faster and smarter.”
 </p>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+<h2>Simple Pricing</h2>
+
+<div class="grid">
+
+<div class="card">
+<h3>Starter</h3>
+<div class="price">₹999/mo</div>
+<p>Basic analytics dashboards</p>
+</div>
+
+<div class="card">
+<h3>Professional</h3>
+<div class="price">₹2499/mo</div>
+<p>Automation + advanced reports</p>
+</div>
+
+<div class="card">
+<h3>Enterprise</h3>
+<div class="price">Custom</div>
+<p>Full analytics platform solution</p>
+</div>
+
+</div>
 </section>
 
 <!-- ABOUT -->
 <section id="about">
 <h2>About Bobo Analytics</h2>
 <p class="text">
-Bobo Analytics simplifies analytics by transforming complex datasets into
-clear business insights using intelligent automation.
+Bobo Analytics transforms complex business data into clear insights using AI-powered analytics and automation.
 </p>
-</section>
-
-<!-- BLOG -->
-<section id="blog">
-<h2>Blog</h2>
-<p class="text">Coming Soon — Insights & Analytics Guides.</p>
 </section>
 
 <footer>
