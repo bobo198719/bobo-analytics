@@ -1,24 +1,23 @@
 ---
 const industries = [
-  { title: "Healthcare", desc: "Improve patient insights and operational efficiency.", icon:"🏥" },
-  { title: "Pharmacy", desc: "Inventory analytics & expiry prediction.", icon:"💊" },
-  { title: "Retail & E-Commerce", desc: "Demand forecasting and customer analytics.", icon:"🛍️" },
-  { title: "Clothing & Fashion", desc: "Sales trends and seasonal predictions.", icon:"👕" },
-  { title: "Finance & Banking", desc: "Fraud detection and forecasting.", icon:"💰" },
-  { title: "Energy & Utilities", desc: "Monitor consumption and optimize performance.", icon:"⚡" }
+  { title:"Healthcare",desc:"Improve patient insights.",icon:"🏥"},
+  { title:"Pharmacy",desc:"Inventory & expiry analytics.",icon:"💊"},
+  { title:"Retail",desc:"Customer demand forecasting.",icon:"🛍️"},
+  { title:"Fashion",desc:"Seasonal sales predictions.",icon:"👕"},
+  { title:"Finance",desc:"Fraud detection analytics.",icon:"💰"},
+  { title:"Energy",desc:"Consumption optimization.",icon:"⚡"}
 ];
 ---
 
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Bobo Analytics</title>
 
 <style>
 
-/* ========= GLOBAL ========= */
-
+/* ===== GLOBAL ===== */
 body{
 margin:0;
 font-family:Inter,system-ui;
@@ -35,16 +34,12 @@ height:700px;
 background:radial-gradient(circle,#22d3ee33,transparent 60%);
 top:-150px;
 left:-150px;
-animation:moveGlow 10s infinite alternate ease-in-out;
+animation:moveGlow 12s infinite alternate ease-in-out;
 z-index:-1;
 }
+@keyframes moveGlow{to{transform:translate(200px,120px);}}
 
-@keyframes moveGlow{
-to{transform:translate(220px,140px);}
-}
-
-/* ========= NAVBAR ========= */
-
+/* ===== NAVBAR ===== */
 header{
 position:fixed;
 top:0;
@@ -70,8 +65,7 @@ color:#cbd5e1;
 text-decoration:none;
 }
 
-/* ========= HERO ========= */
-
+/* ===== HERO ===== */
 .hero{
 padding:170px 20px 130px;
 background:linear-gradient(120deg,#03131d,#15001f);
@@ -119,7 +113,6 @@ font-weight:600;
 margin-right:15px;
 cursor:pointer;
 border:none;
-transition:.3s;
 }
 
 .primary{
@@ -127,19 +120,7 @@ background:linear-gradient(90deg,#22d3ee,#ff2fd1);
 color:white;
 }
 
-.primary:hover{
-transform:translateY(-3px);
-box-shadow:0 10px 25px rgba(255,47,209,.4);
-}
-
-.secondary{
-background:#020617;
-border:1px solid #334155;
-color:white;
-}
-
-/* ========= SECTIONS ========= */
-
+/* ===== SECTIONS ===== */
 section{padding:90px 20px;text-align:center;}
 h2{font-size:38px;margin-bottom:45px;}
 
@@ -162,7 +143,6 @@ transition:.4s;
 .card:hover{
 transform:translateY(-10px);
 border-color:#22d3ee;
-box-shadow:0 0 30px rgba(34,211,238,.25);
 }
 
 .card span{
@@ -178,47 +158,39 @@ color:#94a3b8;
 line-height:1.7;
 }
 
-/* ========= STATS ========= */
-
-.stats{
+/* ===== CONTACT FORM ===== */
+.form{
+max-width:600px;
+margin:auto;
 display:flex;
-justify-content:center;
-gap:80px;
-flex-wrap:wrap;
-font-size:28px;
+flex-direction:column;
+gap:15px;
+}
+
+.form input,
+.form textarea{
+padding:14px;
+border-radius:8px;
+border:1px solid #334155;
+background:#020617;
+color:white;
+}
+
+.form button{
+background:#22d3ee;
+border:none;
+padding:14px;
+border-radius:8px;
+cursor:pointer;
 font-weight:bold;
 }
 
-.stats div span{
-display:block;
-font-size:14px;
-color:#94a3b8;
-margin-top:8px;
-}
-
-/* ========= TESTIMONIAL ========= */
-
-.testimonial{
-max-width:800px;
-margin:auto;
-font-style:italic;
-color:#cbd5e1;
-}
-
-/* ========= PRICING ========= */
-
-.price{
-font-size:42px;
-margin:15px 0;
-color:#22d3ee;
-}
-
-/* ========= FOOTER ========= */
-
+/* ===== FOOTER ===== */
 footer{
-padding:45px;
+padding:50px 20px;
 background:#020617;
 color:#94a3b8;
+text-align:center;
 margin-top:60px;
 }
 
@@ -240,8 +212,7 @@ margin-top:60px;
 
 <nav>
 <a href="#services">Services</a>
-<a href="#pricing">Pricing</a>
-<a href="#about">About</a>
+<a href="#contact">Contact</a>
 </nav>
 </div>
 </header>
@@ -258,8 +229,7 @@ AI Analytics Platform<br>
 
 <p>Transform pharmacy, retail and enterprise data into intelligent decisions.</p>
 
-<button class="btn primary">Start Free Demo</button>
-<button class="btn secondary">View Solutions</button>
+<button class="btn primary">Request Demo</button>
 
 </div>
 
@@ -267,15 +237,6 @@ AI Analytics Platform<br>
 <img src="/dashboard.png">
 </div>
 
-</div>
-</section>
-
-<!-- STATS -->
-<section>
-<div class="stats">
-<div>1000+<span>Reports Generated</span></div>
-<div>50+<span>Businesses</span></div>
-<div>10+<span>Industries Supported</span></div>
 </div>
 </section>
 
@@ -293,52 +254,24 @@ AI Analytics Platform<br>
 </div>
 </section>
 
-<!-- TESTIMONIAL -->
-<section>
-<h2>What Businesses Say</h2>
-<p class="testimonial">
-“Bobo Analytics helped us understand our sales patterns instantly.
-Decision-making became faster and smarter.”
-</p>
-</section>
+<!-- CONTACT -->
+<section id="contact">
+<h2>Request a Demo</h2>
 
-<!-- PRICING -->
-<section id="pricing">
-<h2>Simple Pricing</h2>
+<form class="form">
+<input type="text" placeholder="Your Name" required>
+<input type="email" placeholder="Email Address" required>
+<textarea rows="4" placeholder="Tell us about your business"></textarea>
+<button type="submit">Send Request</button>
+</form>
 
-<div class="grid">
-
-<div class="card">
-<h3>Starter</h3>
-<div class="price">₹999/mo</div>
-<p>Basic analytics dashboards</p>
-</div>
-
-<div class="card">
-<h3>Professional</h3>
-<div class="price">₹2499/mo</div>
-<p>Automation + advanced reports</p>
-</div>
-
-<div class="card">
-<h3>Enterprise</h3>
-<div class="price">Custom</div>
-<p>Full analytics platform solution</p>
-</div>
-
-</div>
-</section>
-
-<!-- ABOUT -->
-<section id="about">
-<h2>About Bobo Analytics</h2>
-<p class="text">
-Bobo Analytics transforms complex business data into clear insights using AI-powered analytics and automation.
-</p>
 </section>
 
 <footer>
-© 2026 Bobo Analytics — All Rights Reserved
+<p><strong>Bobo Analytics</strong></p>
+<p>Smart Analytics for Smarter Business</p>
+<p>Email: support@boboanalytics.com</p>
+<p>© 2026 Bobo Analytics</p>
 </footer>
 
 </body>
