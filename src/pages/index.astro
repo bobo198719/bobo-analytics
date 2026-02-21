@@ -26,32 +26,15 @@ color:white;
 scroll-behavior:smooth;
 }
 
-/* ===== HEADER ===== */
+/* ===== NAVBAR ===== */
 
 header{
 position:fixed;
 top:0;
 width:100%;
-background:rgba(2,6,23,.85);
-backdrop-filter:blur(14px);
+background:#020617;
 z-index:1000;
-}
-
-/* HEADER LINE FIX */
-header::after{
-content:"";
-position:absolute;
-bottom:0;
-left:0;
-width:100%;
-height:1px;
-background:linear-gradient(
-90deg,
-transparent,
-#22d3ee,
-transparent
-);
-opacity:.6;
+border-bottom:2px solid #22d3ee; /* STRONG LINE FIX */
 }
 
 .nav-container{
@@ -60,24 +43,29 @@ justify-content:space-between;
 align-items:center;
 max-width:1200px;
 margin:auto;
-padding:18px 20px;
+padding:20px 24px;
 }
 
+/* LOGO SIZE FIX */
 .logo{
 display:flex;
 align-items:center;
-gap:10px;
+gap:14px;
 }
 
-nav a{
-margin-left:25px;
-color:#cbd5e1;
-text-decoration:none;
+.logo img{
+height:52px; /* BIGGER LOGO */
+}
+
+.logo strong{
+font-size:22px; /* BIGGER TEXT */
+font-weight:700;
+letter-spacing:.5px;
 }
 
 /* HERO */
 .hero{
-padding:170px 20px 120px;
+padding:180px 20px 120px;
 background:linear-gradient(120deg,#03131d,#15001f);
 }
 
@@ -212,7 +200,7 @@ text-align:center;
 <header>
 <div class="nav-container">
 <div class="logo">
-<img src="/logo.png" height="40"/>
+<img src="/logo.png"/>
 <strong>Bobo Analytics</strong>
 </div>
 </div>
