@@ -15,18 +15,22 @@ const industries = [
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 
-<title>Bobo Analytics | Smart Analytics</title>
+<title>Bobo Analytics | Smart Analytics for Smarter Business</title>
+
+<meta name="description"
+content="AI-powered analytics platform helping businesses transform data into intelligent decisions."/>
 
 <link rel="icon" href="/logo.png"/>
 
 <style>
 
-/* GLOBAL */
+/* ===== GLOBAL ===== */
 body{
 margin:0;
 font-family:Inter,system-ui;
 background:#000;
 color:white;
+overflow-x:hidden;
 }
 
 /* ===== HEADER ===== */
@@ -34,24 +38,27 @@ header{
 position:fixed;
 top:0;
 width:100%;
-background:#020617; /* FIXED VISIBILITY */
+background:#020617;
 border-bottom:2px solid #22d3ee;
 z-index:1000;
 }
 
-.nav-container{
-display:flex;
-align-items:center;
+.nav{
 max-width:1200px;
 margin:auto;
-padding:18px 20px;
+display:flex;
+align-items:center;
 gap:14px;
+padding:18px 20px;
 }
 
-.logo img{height:60px;}
-.logo strong{
+.nav img{
+height:60px;
+}
+
+.nav h2{
+margin:0;
 font-size:24px;
-font-weight:700;
 }
 
 /* ===== HERO ===== */
@@ -61,11 +68,11 @@ background:linear-gradient(120deg,#03131d,#15001f);
 }
 
 .hero-container{
+max-width:1200px;
+margin:auto;
 display:flex;
 align-items:center;
 justify-content:space-between;
-max-width:1200px;
-margin:auto;
 gap:60px;
 flex-wrap:wrap;
 }
@@ -73,6 +80,16 @@ flex-wrap:wrap;
 .hero-text{
 flex:1;
 min-width:320px;
+}
+
+.hero-text h1{
+font-size:42px;
+}
+
+.gradient{
+background:linear-gradient(90deg,#22d3ee,#ff2fd1);
+-webkit-background-clip:text;
+color:transparent;
 }
 
 .hero-image{
@@ -83,20 +100,16 @@ justify-content:center;
 
 .hero-image img{
 width:100%;
-max-width:650px;
+max-width:680px;
 border-radius:18px;
-box-shadow:0 0 70px rgba(34,211,238,.35);
-animation:float 5s ease-in-out infinite;
+box-shadow:
+0 0 40px rgba(34,211,238,.4),
+0 0 120px rgba(255,47,209,.25);
+animation:float 6s ease-in-out infinite;
 }
 
 @keyframes float{
-50%{transform:translateY(-15px);}
-}
-
-.gradient{
-background:linear-gradient(90deg,#22d3ee,#ff2fd1);
--webkit-background-clip:text;
-color:transparent;
+50%{transform:translateY(-18px);}
 }
 
 /* ===== SECTIONS ===== */
@@ -137,8 +150,8 @@ border-top:1px solid #1e293b;
 
 footer a{
 color:#22d3ee;
-margin:0 10px;
 text-decoration:none;
+margin:0 10px;
 }
 
 /* ===== WHATSAPP ===== */
@@ -157,6 +170,11 @@ border-radius:50%;
 font-size:28px;
 text-decoration:none;
 box-shadow:0 6px 20px rgba(0,0,0,.4);
+transition:.3s;
+}
+
+.whatsapp:hover{
+transform:scale(1.1);
 }
 
 </style>
@@ -166,9 +184,9 @@ box-shadow:0 6px 20px rgba(0,0,0,.4);
 
 <!-- HEADER -->
 <header>
-<div class="nav-container logo">
-<img src="/logo.png"/>
-<strong>Bobo Analytics</strong>
+<div class="nav">
+<img src="/logo.png" alt="Bobo Analytics"/>
+<h2>Bobo Analytics</h2>
 </div>
 </header>
 
@@ -186,7 +204,7 @@ AI Analytics Platform<br>
 </div>
 
 <div class="hero-image">
-<img src="/dashboard.png" alt="Dashboard"/>
+<img src="/dashboard-image.png" alt="Dashboard"/>
 </div>
 
 </div>
