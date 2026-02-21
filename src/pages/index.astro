@@ -16,8 +16,6 @@ const industries = [
 <title>Bobo Analytics</title>
 
 <style>
-
-/* GLOBAL */
 body{
 margin:0;
 font-family:Inter,system-ui;
@@ -26,289 +24,40 @@ color:white;
 scroll-behavior:smooth;
 }
 
-/* ===== DYNAMIC NAVBAR ===== */
-
-header{
-position:fixed;
-top:0;
-width:100%;
-z-index:1000;
-transition:all .35s ease;
-background:transparent;
-border-bottom:1px solid transparent;
-}
-
-/* ACTIVE STATE AFTER SCROLL */
-header.scrolled{
-background:#020617;
-backdrop-filter:blur(12px);
-border-bottom:2px solid #22d3ee;
-box-shadow:0 6px 20px rgba(0,0,0,.5);
-}
-
-.nav-container{
-display:flex;
-justify-content:space-between;
-align-items:center;
-max-width:1200px;
-margin:auto;
-padding:20px 24px;
-}
-
-/* LOGO */
-.logo{
-display:flex;
-align-items:center;
-gap:14px;
-}
-
-.logo img{
-height:54px;
-transition:.3s;
-}
-
-.logo strong{
-font-size:22px;
-font-weight:700;
-letter-spacing:.5px;
-}
-
-/* HERO */
-.hero{
-padding:190px 20px 120px;
-background:linear-gradient(120deg,#03131d,#15001f);
-}
-
-.hero-container{
-display:flex;
-align-items:center;
-justify-content:space-between;
-max-width:1200px;
-margin:auto;
-gap:80px;
-flex-wrap:wrap;
-}
-
-.hero-text{flex:1;min-width:420px;}
-.hero-image{flex:1;display:flex;justify-content:center;}
-
-.hero-image img{
-width:100%;
-max-width:720px;
-border-radius:18px;
-box-shadow:0 0 80px rgba(34,211,238,.35);
-animation:float 5s ease-in-out infinite;
-}
-
-@keyframes float{
-50%{transform:translateY(-18px);}
-}
-
-.gradient{
-background:linear-gradient(90deg,#22d3ee,#ff2fd1);
--webkit-background-clip:text;
-color:transparent;
-}
-
-.btn{
-padding:14px 26px;
-border-radius:10px;
-border:none;
-cursor:pointer;
-font-weight:600;
-background:linear-gradient(90deg,#22d3ee,#ff2fd1);
-color:white;
-}
-
-/* SECTIONS */
-section{
-padding:90px 20px;
-text-align:center;
-}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-gap:25px;
-max-width:1100px;
-margin:auto;
-}
-
-/* GLOW CARD */
-.card{
-background:#020617;
-padding:30px;
-border-radius:12px;
-border:1px solid #1e293b;
-transition:.3s;
-position:relative;
-overflow:hidden;
-}
-
-.card::before{
-content:"";
-position:absolute;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:radial-gradient(circle at var(--x) var(--y),
-rgba(34,211,238,.25),transparent 40%);
-opacity:0;
-transition:.2s;
-}
-
-.card:hover::before{opacity:1;}
-.card:hover{
-transform:translateY(-8px);
-border-color:#22d3ee;
-}
-
-/* FORM */
-.form{
-max-width:600px;
-margin:auto;
-display:flex;
-flex-direction:column;
-gap:15px;
-}
-
-.form input,.form textarea{
-padding:14px;
-border-radius:8px;
-border:1px solid #334155;
-background:#020617;
-color:white;
-}
-
-.form button{
-background:#22d3ee;
-border:none;
-padding:14px;
-border-radius:8px;
-font-weight:bold;
-cursor:pointer;
-}
-
 /* FOOTER */
 footer{
 background:#020617;
-padding:40px;
-color:#94a3b8;
+padding:40px 20px;
 text-align:center;
+color:#94a3b8;
+border-top:1px solid #1e293b;
 }
 
-@media(max-width:900px){
-.hero-container{flex-direction:column;text-align:center;}
+footer a{
+color:#22d3ee;
+text-decoration:none;
+margin:0 10px;
 }
 
+footer a:hover{
+text-decoration:underline;
+}
 </style>
 </head>
 
 <body>
 
-<header id="navbar">
-<div class="nav-container">
-<div class="logo">
-<img src="/logo.png"/>
-<strong>Bobo Analytics</strong>
-</div>
-</div>
-</header>
-
-<!-- HERO -->
-<section class="hero">
-<div class="hero-container">
-
-<div class="hero-text">
-<h1>
-AI Analytics Platform<br>
-<span class="gradient">Built for Modern Businesses</span>
-</h1>
-
-<p>Turn business data into intelligent decisions.</p>
-
-<a href="#contact">
-<button class="btn">Request Demo</button>
-</a>
-
-</div>
-
-<div class="hero-image">
-<img src="/dashboard.png">
-</div>
-
-</div>
-</section>
-
-<!-- SERVICES -->
-<section>
-<h2>Industries We Serve</h2>
-
-<div class="grid">
-{industries.map(i => (
-<div class="card">
-<h3>{i.icon} {i.title}</h3>
-<p>{i.desc}</p>
-</div>
-))}
-</div>
-
-</section>
-
-<!-- CONTACT -->
-<section id="contact">
-<h2>Request a Demo</h2>
-
-<form class="form"
-action="https://formsubmit.co/support@boboanalytics.com"
-method="POST">
-
-<input type="text" name="name" placeholder="Your Name" required>
-<input type="email" name="email" placeholder="Email Address" required>
-<input type="tel" name="phone" placeholder="Phone Number" required>
-
-<textarea name="message" rows="4"
-placeholder="Tell us about your business"></textarea>
-
-<input type="hidden" name="_captcha" value="false">
-<input type="hidden" name="_subject" value="New Demo Request">
-
-<button type="submit">Send Request</button>
-
-</form>
-
-</section>
+<!-- YOUR EXISTING WEBSITE CONTENT REMAINS ABOVE -->
+<!-- (Hero, Services, Form etc stay same) -->
 
 <footer>
-<p><strong>Bobo Analytics</strong></p>
-<p>support@boboanalytics.com</p>
-<p>© 2026 Bobo Analytics</p>
+<a href="/privacy">Privacy Policy</a> |
+<a href="/disclaimer">Disclaimer</a>
+
+<p style="margin-top:10px;">
+©2026 Bobo Analytics® All Rights Reserved
+</p>
 </footer>
-
-<script>
-
-/* NAVBAR SCROLL EFFECT */
-const navbar = document.getElementById("navbar");
-
-window.addEventListener("scroll", () => {
-if(window.scrollY > 50){
-navbar.classList.add("scrolled");
-}else{
-navbar.classList.remove("scrolled");
-}
-});
-
-/* CARD GLOW */
-document.querySelectorAll('.card').forEach(card=>{
-card.addEventListener('mousemove',e=>{
-const rect=card.getBoundingClientRect();
-card.style.setProperty('--x',e.clientX-rect.left+'px');
-card.style.setProperty('--y',e.clientY-rect.top+'px');
-});
-});
-
-</script>
 
 </body>
 </html>
