@@ -2,7 +2,7 @@
 const industries = [
  {title:"Healthcare",desc:"Improve patient insights.",icon:"🏥"},
  {title:"Pharmacy",desc:"Inventory & expiry analytics.",icon:"💊"},
- {title:"Retail",desc:"Customer forecasting.",icon:"🛍️"},
+ {title:"Retail",desc:"Demand forecasting.",icon:"🛍️"},
  {title:"Fashion",desc:"Seasonal predictions.",icon:"👕"},
  {title:"Finance",desc:"Fraud detection.",icon:"💰"},
  {title:"Energy",desc:"Consumption optimization.",icon:"⚡"}
@@ -13,14 +13,13 @@ const industries = [
 <head>
 
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 
 <title>Bobo Analytics</title>
-<link rel="icon" href="/logo.png"/>
 
 <style>
 
-/* ===== RESET ===== */
+/* ===== BASE ===== */
 body{
 margin:0;
 font-family:Inter,system-ui;
@@ -35,8 +34,8 @@ position:fixed;
 top:0;
 width:100%;
 background:#020617;
-border-bottom:1px solid #0ea5e9;
-z-index:1000;
+border-bottom:1px solid #22d3ee;
+z-index:999;
 }
 
 .nav{
@@ -56,7 +55,7 @@ font-size:20px;
 font-weight:600;
 }
 
-.logo img{height:40px}
+.logo img{height:42px}
 
 .menu{
 display:flex;
@@ -67,6 +66,8 @@ gap:25px;
 color:#cbd5e1;
 text-decoration:none;
 }
+
+.menu a:hover{color:white;}
 
 .hamburger{
 display:none;
@@ -88,20 +89,21 @@ color:transparent;
 }
 
 .hero img{
-max-width:600px;
+max-width:620px;
 width:100%;
 margin-top:30px;
 border-radius:14px;
 animation:float 6s ease-in-out infinite;
+box-shadow:0 0 60px #22d3ee33;
 }
 
 @keyframes float{
 0%{transform:translateY(0)}
-50%{transform:translateY(-12px)}
+50%{transform:translateY(-14px)}
 100%{transform:translateY(0)}
 }
 
-/* ===== SECTIONS ===== */
+/* ===== GRID ===== */
 section{padding:80px 20px;text-align:center;}
 
 .grid{
@@ -117,12 +119,22 @@ background:#020617;
 border:1px solid #1e293b;
 padding:25px;
 border-radius:14px;
-transition:.3s;
+transition:.35s;
 }
 
 .card:hover{
 transform:translateY(-8px);
-box-shadow:0 0 25px #22d3ee55;
+box-shadow:0 0 30px #22d3ee55;
+}
+
+/* ===== TRUST BADGES ===== */
+.trust{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:25px;
+margin-top:30px;
+color:#94a3b8;
 }
 
 /* ===== FORM ===== */
@@ -136,7 +148,7 @@ gap:12px;
 
 input,textarea{
 padding:12px;
-background:#000;
+background:black;
 border:1px solid #334155;
 color:white;
 border-radius:8px;
@@ -146,38 +158,50 @@ button{
 padding:12px;
 background:linear-gradient(90deg,#22d3ee,#ff2fd1);
 border:none;
-color:white;
 border-radius:8px;
+color:white;
 cursor:pointer;
 }
 
-/* ===== FOOTER ===== */
-footer{
-padding:30px;
-background:#020617;
-text-align:center;
-color:#94a3b8;
+/* ===== FLOATING CTA ===== */
+.cta{
+position:fixed;
+bottom:20px;
+right:20px;
+background:linear-gradient(90deg,#22d3ee,#ff2fd1);
+padding:14px 18px;
+border-radius:30px;
+font-weight:600;
+cursor:pointer;
+z-index:998;
+animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+0%{transform:scale(1)}
+50%{transform:scale(1.05)}
+100%{transform:scale(1)}
 }
 
 /* ===== AI CHAT ===== */
 .chat-btn{
 position:fixed;
-bottom:20px;
+bottom:90px;
 left:20px;
 width:60px;height:60px;
 border-radius:50%;
 display:flex;
 align-items:center;
 justify-content:center;
-background:linear-gradient(90deg,#22d3ee,#ff2fd1);
 font-size:26px;
+background:linear-gradient(90deg,#22d3ee,#ff2fd1);
 cursor:pointer;
 z-index:999;
 }
 
 .chat-box{
 position:fixed;
-bottom:90px;
+bottom:160px;
 left:20px;
 width:300px;
 background:#020617;
@@ -197,20 +221,44 @@ overflow:hidden;
 .bot{background:#111827;padding:8px;margin:6px;border-radius:8px;}
 .user{background:#22d3ee;color:black;padding:8px;margin:6px;border-radius:8px;text-align:right;}
 
+/* ===== LIVE VISITOR POPUP ===== */
+.popup{
+position:fixed;
+bottom:20px;
+left:100px;
+background:#020617;
+border:1px solid #22d3ee;
+padding:10px 14px;
+border-radius:8px;
+font-size:13px;
+display:none;
+z-index:997;
+}
+
 /* ===== MOBILE ===== */
 @media(max-width:768px){
+
 .menu{
 display:none;
 flex-direction:column;
-background:#020617;
 position:absolute;
-top:60px;
 right:0;
+top:60px;
+background:#020617;
 width:200px;
 padding:20px;
 }
+
 .menu.show{display:flex;}
+
 .hamburger{display:block;}
+
+}
+
+footer{
+padding:30px;
+background:#020617;
+color:#94a3b8;
 }
 
 </style>
@@ -223,8 +271,7 @@ padding:20px;
 <div class="nav">
 
 <div class="logo">
-<img src="/logo.png"/>
-Bobo Analytics
+<img src="/logo.png"/> Bobo Analytics
 </div>
 
 <div class="hamburger" onclick="toggleMenu()">☰</div>
@@ -245,7 +292,7 @@ Bobo Analytics
 
 <p>Turn business data into intelligent decisions.</p>
 
-<img src="/dashboard-image.png" alt="dashboard"/>
+<img src="/dashboard-image.png"/>
 </section>
 
 <!-- INDUSTRIES -->
@@ -260,15 +307,22 @@ Bobo Analytics
 </div>
 ))}
 </div>
+
+<div class="trust">
+<div>✅ Trusted by growing businesses</div>
+<div>🔒 Secure Cloud Platform</div>
+<div>⚡ AI Powered Insights</div>
+</div>
+
 </section>
 
-<!-- DEMO FORM -->
+<!-- DEMO -->
 <section id="demo">
 <h2>Request Demo</h2>
 
 <form>
-<input placeholder="Name" required/>
-<input placeholder="Email" required/>
+<input placeholder="Name"/>
+<input placeholder="Email"/>
 <input placeholder="Phone Number"/>
 <textarea placeholder="Message"></textarea>
 <button>Request Demo</button>
@@ -276,13 +330,14 @@ Bobo Analytics
 
 </section>
 
-<!-- FOOTER -->
 <footer>
-<a href="/privacy">Privacy Policy</a> |
-<a href="/disclaimer">Disclaimer</a>
-<br/><br/>
-© 2026 Bobo Analytics — All Rights Reserved
+© 2026 Bobo Analytics | <a href="/privacy">Privacy</a>
 </footer>
+
+<!-- FLOAT CTA -->
+<div class="cta" onclick="document.getElementById('demo').scrollIntoView()">
+🚀 Book Demo
+</div>
 
 <!-- AI CHAT -->
 <div class="chat-btn" onclick="toggleChat()">🤖</div>
@@ -291,7 +346,7 @@ Bobo Analytics
 <div class="chat-header">Bobo AI Assistant</div>
 
 <div id="chatMessages" class="chat-messages">
-<div class="bot">Hi 👋 Ask me about Bobo Analytics!</div>
+<div class="bot">Hi 👋 Ask about services or demo.</div>
 </div>
 
 <div class="chat-input">
@@ -300,12 +355,17 @@ Bobo Analytics
 </div>
 </div>
 
+<!-- LIVE VISITOR -->
+<div id="popup" class="popup"></div>
+
 <script>
 
+/* ===== HAMBURGER ===== */
 function toggleMenu(){
 document.getElementById("menu").classList.toggle("show");
 }
 
+/* ===== CHAT ===== */
 function toggleChat(){
 const box=document.getElementById("chatBox");
 box.style.display=box.style.display==="flex"?"none":"flex";
@@ -313,10 +373,10 @@ box.style.display=box.style.display==="flex"?"none":"flex";
 
 function aiReply(t){
 t=t.toLowerCase();
-if(t.includes("demo")) return "Please fill the demo form above 🚀";
+if(t.includes("demo")) return "Please scroll to demo form 🚀";
 if(t.includes("price")) return "Pricing depends on business size.";
-if(t.includes("pharmacy")) return "Yes 👍 pharmacy analytics supported.";
-return "Thanks! Our team will assist you soon.";
+if(t.includes("pharmacy")) return "Yes 👍 Pharmacy analytics supported.";
+return "Thanks! Our team will contact you soon.";
 }
 
 function sendMessage(){
@@ -334,6 +394,22 @@ chat.innerHTML+=`<div class="bot">${aiReply(msg)}</div>`;
 chat.scrollTop=chat.scrollHeight;
 },600);
 }
+
+/* ===== LIVE VISITOR EFFECT ===== */
+const activities=[
+"Someone from Mumbai requested demo",
+"Retail business joined",
+"Pharmacy owner viewing pricing",
+"New visitor exploring analytics"
+];
+
+setInterval(()=>{
+const p=document.getElementById("popup");
+p.innerText=activities[Math.floor(Math.random()*activities.length)];
+p.style.display="block";
+
+setTimeout(()=>p.style.display="none",4000);
+},9000);
 
 </script>
 
