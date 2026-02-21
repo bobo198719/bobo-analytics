@@ -16,11 +16,14 @@ const industries = [
 <title>Bobo Analytics</title>
 
 <style>
+
+/* GLOBAL */
 body{
 margin:0;
 font-family:Inter,system-ui;
 background:#000;
 color:white;
+overflow-x:hidden;
 }
 
 /* NAVBAR */
@@ -28,9 +31,10 @@ header{
 position:fixed;
 top:0;
 width:100%;
-background:rgba(2,6,23,.7);
+background:rgba(2,6,23,.75);
 backdrop-filter:blur(14px);
 border-bottom:1px solid #1e293b;
+z-index:1000;
 }
 
 .nav-container{
@@ -42,12 +46,58 @@ margin:auto;
 padding:18px 20px;
 }
 
+.logo{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+nav a{
+margin-left:25px;
+color:#cbd5e1;
+text-decoration:none;
+}
+
 /* HERO */
 .hero{
 padding:170px 20px 120px;
 background:linear-gradient(120deg,#03131d,#15001f);
-text-align:center;
 }
+
+.hero-container{
+display:flex;
+align-items:center;
+justify-content:space-between;
+max-width:1200px;
+margin:auto;
+gap:80px;
+flex-wrap:wrap;
+}
+
+.hero-text{
+flex:1;
+min-width:420px;
+}
+
+.hero-image{
+flex:1;
+display:flex;
+justify-content:center;
+}
+
+.hero-image img{
+width:100%;
+max-width:720px;
+border-radius:18px;
+box-shadow:0 0 80px rgba(34,211,238,.35);
+animation:float 5s ease-in-out infinite;
+}
+
+@keyframes float{
+50%{transform:translateY(-18px);}
+}
+
+h1{font-size:56px;margin-bottom:20px;}
 
 .gradient{
 background:linear-gradient(90deg,#22d3ee,#ff2fd1);
@@ -55,7 +105,28 @@ background:linear-gradient(90deg,#22d3ee,#ff2fd1);
 color:transparent;
 }
 
-/* GRID */
+.hero p{
+color:#94a3b8;
+font-size:18px;
+margin-bottom:35px;
+}
+
+.btn{
+padding:14px 26px;
+border-radius:10px;
+font-weight:600;
+border:none;
+cursor:pointer;
+background:linear-gradient(90deg,#22d3ee,#ff2fd1);
+color:white;
+}
+
+/* SECTIONS */
+section{
+padding:90px 20px;
+text-align:center;
+}
+
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
@@ -71,7 +142,7 @@ border-radius:12px;
 border:1px solid #1e293b;
 }
 
-/* CONTACT FORM */
+/* FORM */
 .form{
 max-width:600px;
 margin:auto;
@@ -80,8 +151,7 @@ flex-direction:column;
 gap:15px;
 }
 
-.form input,
-.form textarea{
+.form input,.form textarea{
 padding:14px;
 border-radius:8px;
 border:1px solid #334155;
@@ -98,39 +168,64 @@ font-weight:bold;
 cursor:pointer;
 }
 
-section{
-padding:80px 20px;
-text-align:center;
-}
-
+/* FOOTER */
 footer{
 background:#020617;
 padding:40px;
 color:#94a3b8;
 text-align:center;
 }
+
+@media(max-width:900px){
+.hero-container{flex-direction:column;text-align:center;}
+}
+
 </style>
 </head>
 
 <body>
 
+<!-- NAVBAR -->
 <header>
 <div class="nav-container">
+
+<div class="logo">
+<img src="/logo.png" height="40"/>
 <strong>Bobo Analytics</strong>
+</div>
+
+<nav>
+<a href="#services">Services</a>
+<a href="#contact">Contact</a>
+</nav>
+
 </div>
 </header>
 
 <!-- HERO -->
 <section class="hero">
+<div class="hero-container">
+
+<div class="hero-text">
 <h1>
 AI Analytics Platform<br>
 <span class="gradient">Built for Modern Businesses</span>
 </h1>
+
 <p>Turn business data into intelligent decisions.</p>
+
+<button class="btn">Request Demo</button>
+</div>
+
+<div class="hero-image">
+<img src="/dashboard.png" alt="Dashboard">
+</div>
+
+</div>
 </section>
 
 <!-- SERVICES -->
-<section>
+<section id="services">
 <h2>Industries We Serve</h2>
 
 <div class="grid">
@@ -144,7 +239,7 @@ AI Analytics Platform<br>
 
 </section>
 
-<!-- CONTACT FORM (EMAIL CONNECTED) -->
+<!-- CONTACT -->
 <section id="contact">
 <h2>Request a Demo</h2>
 
@@ -157,9 +252,8 @@ method="POST">
 <textarea name="message" rows="4"
 placeholder="Tell us about your business"></textarea>
 
-<!-- Hidden settings -->
 <input type="hidden" name="_captcha" value="false">
-<input type="hidden" name="_subject" value="New Demo Request - Bobo Analytics">
+<input type="hidden" name="_subject" value="New Demo Request">
 
 <button type="submit">Send Request</button>
 
