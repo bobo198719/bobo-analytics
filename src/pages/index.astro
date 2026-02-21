@@ -14,9 +14,14 @@ const industries = [
 
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Bobo Analytics</title>
+
+<title>Bobo Analytics | AI Analytics Platform</title>
+<meta name="description" content="Bobo Analytics helps businesses transform data into intelligent decisions using AI analytics dashboards."/>
 
 <link rel="icon" href="/logo.png"/>
+
+<!-- APPLE STYLE SCROLL ANIMATION -->
+<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
 
 <style>
 
@@ -26,6 +31,7 @@ margin:0;
 font-family:Inter,system-ui;
 background:#000;
 color:white;
+scroll-behavior:smooth;
 }
 
 /* NAVBAR */
@@ -51,9 +57,11 @@ padding:16px 20px;
 display:flex;
 align-items:center;
 gap:12px;
+font-size:20px;
+font-weight:600;
 }
 
-.logo img{height:52px;}
+.logo img{height:56px;}
 
 .menu a{
 margin-left:20px;
@@ -84,7 +92,7 @@ background:linear-gradient(90deg,#22d3ee,#ff2fd1);
 color:transparent;
 }
 
-/* FLOATING IMAGE */
+/* FLOAT IMAGE */
 .hero-image img{
 max-width:650px;
 border-radius:18px;
@@ -96,16 +104,16 @@ animation:float 6s ease-in-out infinite;
 
 @keyframes float{
 0%,100%{transform:translateY(0);}
-50%{transform:translateY(-18px);}
+50%{transform:translateY(-20px);}
 }
 
 /* SECTIONS */
 section{
-padding:80px 20px;
+padding:90px 20px;
 text-align:center;
 }
 
-/* GLOW CARDS */
+/* GRID */
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
@@ -114,6 +122,7 @@ max-width:1100px;
 margin:auto;
 }
 
+/* GLOW CARDS */
 .card{
 background:#020617;
 padding:30px;
@@ -121,14 +130,14 @@ border-radius:12px;
 border:1px solid #1e293b;
 position:relative;
 overflow:hidden;
-transition:.3s;
+transition:.35s;
 }
 
 .card::before{
 content:"";
 position:absolute;
-width:200px;
-height:200px;
+width:220px;
+height:220px;
 background:radial-gradient(circle,
 rgba(34,211,238,.35),
 transparent 60%);
@@ -140,12 +149,10 @@ transition:.2s;
 pointer-events:none;
 }
 
-.card:hover::before{
-opacity:1;
-}
+.card:hover::before{opacity:1;}
 
 .card:hover{
-transform:translateY(-8px);
+transform:translateY(-10px) scale(1.02);
 border-color:#22d3ee;
 }
 
@@ -204,13 +211,13 @@ right:25px;
 width:60px;
 height:60px;
 background:#25D366;
-color:white;
 display:flex;
 align-items:center;
 justify-content:center;
 border-radius:50%;
 font-size:28px;
 text-decoration:none;
+color:white;
 }
 
 </style>
@@ -222,7 +229,7 @@ text-decoration:none;
 <div class="nav">
 <div class="logo">
 <img src="/logo.png"/>
-<strong>Bobo Analytics</strong>
+Bobo Analytics
 </div>
 
 <div class="menu">
@@ -236,7 +243,7 @@ text-decoration:none;
 <section class="hero">
 <div class="hero-container">
 
-<div>
+<div data-aos="fade-right">
 <h1>
 AI Analytics Platform<br>
 <span class="gradient">Built for Modern Businesses</span>
@@ -244,8 +251,8 @@ AI Analytics Platform<br>
 <p>Turn business data into intelligent decisions.</p>
 </div>
 
-<div class="hero-image">
-<img src="/dashboard-image.png">
+<div class="hero-image" data-aos="zoom-in">
+<img src="/dashboard-image.png"/>
 </div>
 
 </div>
@@ -253,11 +260,13 @@ AI Analytics Platform<br>
 
 <!-- INDUSTRIES -->
 <section id="services">
-<h2>Industries We Serve</h2>
+<h2 data-aos="fade-up">Industries We Serve</h2>
 
 <div class="grid">
-{industries.map(i => (
-<div class="card">
+{industries.map((i,index) => (
+<div class="card"
+data-aos="fade-up"
+data-aos-delay={index*100}>
 <h3>{i.icon} {i.title}</h3>
 <p>{i.desc}</p>
 </div>
@@ -265,11 +274,12 @@ AI Analytics Platform<br>
 </div>
 </section>
 
-<!-- DEMO FORM -->
+<!-- DEMO -->
 <section id="demo">
-<h2>Request a Demo</h2>
+<h2 data-aos="fade-up">Request a Demo</h2>
 
 <form class="form-box"
+data-aos="zoom-in"
 action="https://formsubmit.co/support@boboanalytics.com"
 method="POST">
 
@@ -297,8 +307,17 @@ placeholder="Tell us about your business"></textarea>
 href="https://wa.me/919156484328?text=Hi%20I%20want%20a%20demo%20of%20Bobo%20Analytics"
 target="_blank">💬</a>
 
+<!-- AOS SCRIPT -->
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+
 <script>
-/* MOUSE GLOW EFFECT */
+AOS.init({
+duration:1000,
+once:true,
+offset:120
+});
+
+/* MOUSE GLOW */
 document.querySelectorAll('.card').forEach(card=>{
 card.addEventListener('mousemove',e=>{
 const rect=card.getBoundingClientRect();
