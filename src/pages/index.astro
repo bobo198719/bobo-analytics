@@ -1,11 +1,11 @@
 ---
 const industries = [
-  { title: "Healthcare", desc: "Improve patient insights and operational efficiency." },
-  { title: "Pharmacy", desc: "Inventory analytics & expiry prediction." },
-  { title: "Retail & E-Commerce", desc: "Demand forecasting and customer analytics." },
-  { title: "Clothing & Fashion", desc: "Sales trends and seasonal predictions." },
-  { title: "Finance & Banking", desc: "Fraud detection and forecasting." },
-  { title: "Energy & Utilities", desc: "Monitor consumption and optimize performance." }
+  { title: "Healthcare", desc: "Improve patient insights and operational efficiency.", icon:"🏥" },
+  { title: "Pharmacy", desc: "Inventory analytics & expiry prediction.", icon:"💊" },
+  { title: "Retail & E-Commerce", desc: "Demand forecasting and customer analytics.", icon:"🛍️" },
+  { title: "Clothing & Fashion", desc: "Sales trends and seasonal predictions.", icon:"👕" },
+  { title: "Finance & Banking", desc: "Fraud detection and forecasting.", icon:"💰" },
+  { title: "Energy & Utilities", desc: "Monitor consumption and optimize performance.", icon:"⚡" }
 ];
 ---
 
@@ -17,14 +17,16 @@ const industries = [
 <title>Bobo Analytics</title>
 
 <style>
+
 body{
 margin:0;
 font-family:Inter,system-ui;
 background:#000;
 color:white;
+scroll-behavior:smooth;
 }
 
-/* ================= NAVBAR ================= */
+/* NAVBAR */
 header{
 position:fixed;
 top:0;
@@ -56,7 +58,7 @@ nav a:hover{
 color:white;
 }
 
-/* ================= HERO ================= */
+/* HERO */
 .hero{
 padding:160px 20px 120px;
 text-align:center;
@@ -79,9 +81,9 @@ color:#94a3b8;
 font-size:18px;
 }
 
-/* ================= SECTIONS ================= */
+/* SECTIONS */
 section{
-padding:80px 20px;
+padding:90px 20px;
 text-align:center;
 }
 
@@ -90,7 +92,7 @@ font-size:36px;
 margin-bottom:40px;
 }
 
-/* ================= GRID ================= */
+/* GRID */
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
@@ -99,42 +101,74 @@ max-width:1200px;
 margin:auto;
 }
 
+/* CARD */
 .card{
 background:#020617;
-padding:30px;
+padding:35px;
 border-radius:14px;
 border:1px solid #1e293b;
-transition:.3s;
+transition:.4s;
+position:relative;
+overflow:hidden;
 }
 
 .card:hover{
-transform:translateY(-6px);
+transform:translateY(-10px);
 border-color:#22d3ee;
+box-shadow:0 0 25px rgba(34,211,238,.25);
 }
 
-/* ================= FOOTER ================= */
+.card span{
+font-size:40px;
+display:block;
+margin-bottom:15px;
+}
+
+/* SOLUTION TEXT */
+.text{
+max-width:700px;
+margin:auto;
+color:#94a3b8;
+font-size:17px;
+line-height:1.6;
+}
+
+/* FOOTER */
 footer{
 padding:40px;
 background:#020617;
 color:#94a3b8;
 margin-top:60px;
 }
+
+/* FADE ANIMATION */
+.fade{
+opacity:0;
+transform:translateY(30px);
+animation:fadeUp 1s ease forwards;
+}
+
+@keyframes fadeUp{
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
 </style>
 </head>
 
 <body>
 
-<!-- ================= NAVBAR ================= -->
+<!-- NAVBAR -->
 <header>
 <div class="nav-container">
 
-<!-- LOGO -->
 <div style="display:flex;align-items:center;gap:10px;">
-<img src="/logo.png" alt="Bobo Analytics" height="40"/>
+<img src="/logo.png" height="40"/>
 <strong>Bobo Analytics</strong>
 </div>
 
-<!-- MENU -->
 <nav>
 <a href="#services">Services</a>
 <a href="#solutions">Solutions</a>
@@ -145,11 +179,10 @@ margin-top:60px;
 </div>
 </header>
 
-<!-- ================= HERO ================= -->
-<section class="hero">
+<!-- HERO -->
+<section class="hero fade">
 <h1>
-AI Analytics Platform
-<br/>
+AI Analytics Platform<br/>
 <span class="gradient">Built for Modern Businesses</span>
 </h1>
 
@@ -158,52 +191,52 @@ Transform pharmacy, retail and enterprise data into intelligent decisions.
 </p>
 </section>
 
-<!-- ================= SERVICES ================= -->
-<section id="services">
+<!-- SERVICES -->
+<section id="services" class="fade">
 <h2>Industries We Serve</h2>
 
 <div class="grid">
 {industries.map(i => (
 <div class="card">
+<span>{i.icon}</span>
 <h3>{i.title}</h3>
 <p>{i.desc}</p>
 </div>
 ))}
 </div>
+
 </section>
 
-<!-- ================= SOLUTIONS ================= -->
-<section id="solutions">
+<!-- SOLUTIONS -->
+<section id="solutions" class="fade">
 <h2>Solutions</h2>
-<p style="max-width:700px;margin:auto;color:#94a3b8;">
+<p class="text">
 Bobo Analytics provides scalable AI-powered dashboards, predictive analytics,
-and automated reporting solutions tailored for multiple industries.
+and automated reporting solutions tailored for modern businesses across industries.
 </p>
 </section>
 
-<!-- ================= ABOUT ================= -->
-<section id="about">
+<!-- ABOUT -->
+<section id="about" class="fade">
 <h2>About Bobo Analytics</h2>
-<p style="max-width:700px;margin:auto;color:#94a3b8;">
+<p class="text">
 Bobo Analytics is a next-generation analytics SaaS platform designed to help
-businesses convert raw data into actionable insights using automation,
+organizations convert raw data into actionable insights using automation,
 AI models, and intelligent visualization.
 </p>
 </section>
 
-<!-- ================= BLOG ================= -->
-<section id="blog">
+<!-- BLOG -->
+<section id="blog" class="fade">
 <h2>Blog</h2>
-<p style="color:#94a3b8;">
-Coming Soon — Industry analytics insights and case studies.
+<p class="text">
+Coming Soon — Industry analytics insights, tutorials, and case studies.
 </p>
 </section>
 
-<!-- ================= FOOTER ================= -->
 <footer>
 © 2026 Bobo Analytics — All Rights Reserved
 </footer>
 
 </body>
 </html>
-<h2 style="color:red;">TEST EDIT SUCCESS ✅</h2>
