@@ -1,13 +1,7 @@
-export default async function handler(req, res) {
-
-  // Allow only POST
-  if (req.method !== "POST") {
-    return res.status(405).json({ message: "Only POST allowed" });
-  }
-
+export async function POST({ request }) {
   try {
 
-    const { message } = req.body;
+    const { message } = await request.json();
 
     const response = await fetch(
       "https://api.openai.com/v1/chat/completions",
@@ -15,7 +9,7 @@ export default async function handler(req, res) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+          "Authorization": `Bearer ${import.meta.env.OPENAI_API_KEY}`
         },
         body: JSON.stringify({
           model: "gpt-4o-mini",
@@ -23,7 +17,7 @@ export default async function handler(req, res) {
             {
               role: "system",
               content:
-                "You are Bobo Analytics AI sales assistant. Help users understand analytics software, explain services, and guide them to request a demo."
+                "You are Bobo Analytics AI sales assistant. Help visitors understand analytics software, explain services, and guide them to book a demo."
             },
             {
               role: "user",
@@ -36,12 +30,21 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    res.status(200).json({
-      reply: data.choices?.[0]?.message?.content || "AI unavailable."
-    });
+    return new Response(
+      JSON.stringify({
+        reply:
+          data.choices?.[0]?.message?.content ||
+          "AI unavailable"
+      }),
+      { status: 200 }
+    );
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ reply: "Server error. Try again." });
+
+    return new Response(
+      JSON.stringify({ reply: "Server error" }),
+      { status: 500 }
+    );
   }
 }
