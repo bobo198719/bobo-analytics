@@ -1,71 +1,206 @@
 ---
+const year = new Date().getFullYear();
 ---
 
 <html lang="en">
 <head>
+
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Bobo Analytics</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Bobo Analytics | AI Analytics Platform</title>
+
+<meta name="description"
+content="Bobo Analytics helps businesses transform data into intelligent decisions using AI analytics software." />
 
 <style>
+
+/* ===== GLOBAL ===== */
 body{
 margin:0;
 font-family:Arial, sans-serif;
-background:linear-gradient(120deg,#020617,#1e0033);
+background:linear-gradient(90deg,#020617,#1a0033);
 color:white;
-text-align:center;
+overflow-x:hidden;
 }
 
-/* NAVBAR */
-header{
-position:fixed;
+/* ===== NAVBAR ===== */
+.nav{
+position:sticky;
 top:0;
-width:100%;
-background:#020617;
-border-bottom:1px solid #22d3ee;
-padding:15px 20px;
 display:flex;
-align-items:center;
 justify-content:space-between;
-z-index:1000;
+align-items:center;
+padding:14px 40px;
+background:#020617;
+border-bottom:1px solid #00eaff55;
+z-index:999;
 }
 
 .logo{
 display:flex;
 align-items:center;
-gap:10px;
+gap:12px;
 font-weight:bold;
 font-size:20px;
 }
 
-nav a{
-color:#cbd5e1;
-margin-left:20px;
+.logo img{height:40px}
+
+.menu{
+display:flex;
+gap:25px;
+}
+
+.menu a{
+color:white;
 text-decoration:none;
 }
 
-.hero{
-padding-top:140px;
-padding-bottom:60px;
+/* MOBILE MENU */
+.hamburger{
+display:none;
+font-size:26px;
+cursor:pointer;
 }
 
-h1{
-font-size:42px;
-margin-bottom:10px;
+.mobile-menu{
+display:none;
+flex-direction:column;
+background:#020617;
+padding:20px;
 }
+
+.mobile-menu a{
+padding:10px 0;
+color:white;
+text-decoration:none;
+}
+
+/* ===== HERO ===== */
+.hero{
+text-align:center;
+padding:80px 20px;
+}
+
+.hero h1{font-size:42px;}
 
 .gradient{
-background:linear-gradient(90deg,#22d3ee,#ff2fd1);
+background:linear-gradient(90deg,#00eaff,#ff4fd8);
 -webkit-background-clip:text;
 color:transparent;
 }
 
 .hero img{
+width:420px;
+border-radius:14px;
 margin-top:30px;
-width:90%;
-max-width:500px;
+box-shadow:0 0 40px #ff00ff55;
+animation:float 4s ease-in-out infinite;
+}
+
+@keyframes float{
+0%,100%{transform:translateY(0)}
+50%{transform:translateY(-10px)}
+}
+
+/* ===== CARDS ===== */
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:25px;
+padding:40px;
+}
+
+.card{
+background:#030b25;
+padding:25px;
 border-radius:12px;
-box-shadow:0 0 40px rgba(255,0,255,.3);
+transition:.3s;
+border:1px solid #00eaff33;
+}
+
+.card:hover{
+transform:translateY(-8px);
+box-shadow:0 0 25px #00eaff66;
+}
+
+/* ===== DEMO FORM ===== */
+.form{
+text-align:center;
+padding:40px;
+}
+
+input{
+padding:10px;
+margin:8px;
+width:220px;
+}
+
+/* ===== CTA ===== */
+.cta{
+position:fixed;
+bottom:20px;
+left:20px;
+background:linear-gradient(90deg,#00eaff,#ff4fd8);
+padding:14px 22px;
+border-radius:30px;
+font-weight:bold;
+animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+0%{transform:scale(1)}
+50%{transform:scale(1.05)}
+100%{transform:scale(1)}
+}
+
+/* ===== AI CHAT ===== */
+.chat-btn{
+position:fixed;
+bottom:20px;
+right:20px;
+width:65px;
+height:65px;
+border-radius:50%;
+background:linear-gradient(45deg,#00eaff,#ff4fd8);
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:26px;
+cursor:pointer;
+}
+
+.chat-box{
+display:none;
+position:fixed;
+bottom:95px;
+right:20px;
+width:300px;
+background:#020617;
+border-radius:12px;
+padding:15px;
+}
+
+.chat-box input{
+width:100%;
+}
+
+/* ===== FOOTER ===== */
+footer{
+text-align:center;
+padding:20px;
+border-top:1px solid #00eaff33;
+margin-top:40px;
+}
+
+/* ===== MOBILE ===== */
+@media(max-width:768px){
+
+.menu{display:none}
+.hamburger{display:block}
+.hero img{width:90%}
+
 }
 
 </style>
@@ -73,40 +208,107 @@ box-shadow:0 0 40px rgba(255,0,255,.3);
 
 <body>
 
-<header>
+<!-- NAVBAR -->
+<div class="nav">
 <div class="logo">
-<img src="/logo.png" height="45"/>
-<span>Bobo Analytics</span>
+<img src="/logo.png"/>
+Bobo Analytics
 </div>
 
-<nav>
-<a href="#services">Services</a>
+<div class="menu">
+<a href="#">Services</a>
 <a href="#demo">Demo</a>
-</nav>
-</header>
+</div>
 
+<div class="hamburger" onclick="toggleMenu()">☰</div>
+</div>
+
+<div id="mobileMenu" class="mobile-menu">
+<a href="#">Services</a>
+<a href="#demo">Demo</a>
+</div>
+
+<!-- HERO -->
 <section class="hero">
 <h1>AI Analytics Platform</h1>
 <h1 class="gradient">Built for Modern Businesses</h1>
-
 <p>Turn business data into intelligent decisions.</p>
 
 <img src="/dashboard-image.png" alt="Dashboard"/>
 </section>
 
-<section id="services">
-<h2>Industries We Serve</h2>
-<p>Healthcare • Pharmacy • Retail • Finance • Energy</p>
+<!-- INDUSTRIES -->
+<div class="grid">
+<div class="card">Healthcare Analytics</div>
+<div class="card">Pharmacy Intelligence</div>
+<div class="card">Retail Forecasting</div>
+<div class="card">Finance Insights</div>
+</div>
+
+<!-- DEMO FORM -->
+<section id="demo" class="form">
+<h2>Request Demo</h2>
+
+<input placeholder="Your Name"/>
+<input placeholder="Email"/>
+<input placeholder="Phone Number"/><br/>
+
+<button>Submit</button>
 </section>
 
-<section id="demo">
-<h2>Request Demo</h2>
-<form>
-<input placeholder="Your Name" required/><br/><br/>
-<input placeholder="Email" required/><br/><br/>
-<button>Submit</button>
-</form>
-</section>
+<!-- CTA -->
+<div class="cta">🚀 Book Demo</div>
+
+<!-- AI CHAT -->
+<div class="chat-btn" onclick="openChat()">🤖</div>
+
+<div id="chat" class="chat-box">
+<div id="messages"></div>
+<input id="msg" placeholder="Ask about Bobo Analytics..." />
+<button onclick="sendMsg()">Send</button>
+</div>
+
+<!-- FOOTER -->
+<footer>
+<a href="/privacy">Privacy Policy</a> |
+<a href="/disclaimer">Disclaimer</a>
+<br/>
+© {year} Bobo Analytics
+</footer>
+
+<script>
+
+function toggleMenu(){
+const m=document.getElementById("mobileMenu");
+m.style.display=m.style.display==="flex"?"none":"flex";
+}
+
+function openChat(){
+const c=document.getElementById("chat");
+c.style.display=c.style.display==="block"?"none":"block";
+}
+
+async function sendMsg(){
+
+const input=document.getElementById("msg");
+const text=input.value;
+
+const res=await fetch("/api/chat",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({message:text})
+});
+
+const data=await res.json();
+
+document.getElementById("messages").innerHTML+=
+`<p><b>You:</b> ${text}</p>
+<p><b>AI:</b> ${data.reply}</p>`;
+
+input.value="";
+}
+
+</script>
 
 </body>
 </html>
