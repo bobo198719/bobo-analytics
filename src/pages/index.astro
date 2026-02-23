@@ -9,7 +9,7 @@
   <style>
     body {
       margin: 0;
-      font-family: Arial;
+      font-family: Arial, sans-serif;
       background: linear-gradient(90deg,#050028,#3b0a8f);
       color: white;
       text-align: center;
@@ -33,12 +33,15 @@
       background: #020617;
       padding: 20px;
       border-radius: 12px;
-      width: 300px;
+      width: 320px;
+      box-shadow: 0 0 20px rgba(0,0,0,.4);
     }
 
     input {
       width: 70%;
       padding: 8px;
+      border-radius: 6px;
+      border: none;
     }
 
     button {
@@ -46,13 +49,15 @@
       background: #7c3aed;
       border: none;
       color: white;
+      border-radius: 6px;
       cursor: pointer;
     }
 
     #response {
-      margin-top: 10px;
+      margin-top: 12px;
       font-size: 14px;
       color: #cbd5e1;
+      min-height: 20px;
     }
   </style>
 </head>
@@ -70,26 +75,50 @@
   <h3>AI Assistant</h3>
 
   <input id="msg" placeholder="Ask something..." />
-  <button onclick="sendMsg()">Send</button>
+  <button id="sendBtn">Send</button>
 
   <div id="response"></div>
 </div>
 
-<script>
-async function sendMsg() {
-  const message = document.getElementById("msg").value;
+<!-- ✅ IMPORTANT: SCRIPT MUST BE MODULE -->
+<script type="module">
 
-  const res = await fetch("/api/chat", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ message })
-  });
+const btn = document.getElementById("sendBtn");
 
-  const data = await res.json();
-  document.getElementById("response").innerText = data.reply;
-}
+btn.addEventListener("click", async () => {
+
+  const input = document.getElementById("msg");
+  const responseBox = document.getElementById("response");
+
+  const message = input.value;
+
+  if(!message){
+    responseBox.innerText = "Please type something.";
+    return;
+  }
+
+  responseBox.innerText = "Thinking...";
+
+  try {
+
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message })
+    });
+
+    const data = await res.json();
+
+    responseBox.innerText = data.reply;
+
+  } catch (err) {
+    responseBox.innerText = "Connection error.";
+  }
+
+});
+
 </script>
 
 </body>
