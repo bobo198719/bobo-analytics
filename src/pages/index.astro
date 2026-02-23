@@ -10,65 +10,69 @@
     body {
       margin: 0;
       font-family: Arial;
-      background: linear-gradient(90deg,#020024,#3a0ca3);
+      background: linear-gradient(90deg,#050028,#3b0a8f);
       color: white;
+      text-align: center;
     }
 
-    nav {
-      background:#020617;
-      padding:15px;
-      text-align:center;
-      font-size:22px;
-      font-weight:bold;
+    header {
+      background: #020617;
+      padding: 15px;
+      font-size: 24px;
+      font-weight: bold;
     }
 
     .container {
-      display:flex;
-      justify-content:space-around;
-      align-items:center;
-      padding:60px;
+      margin-top: 80px;
     }
 
-    .chat-box {
-      background:#020617;
-      padding:20px;
-      border-radius:12px;
-      width:300px;
+    .chatbox {
+      position: fixed;
+      right: 40px;
+      bottom: 40px;
+      background: #020617;
+      padding: 20px;
+      border-radius: 12px;
+      width: 300px;
     }
 
     input {
-      width:70%;
-      padding:8px;
+      width: 70%;
+      padding: 8px;
     }
 
     button {
-      padding:8px 14px;
-      background:#7c3aed;
-      border:none;
-      color:white;
-      border-radius:6px;
+      padding: 8px 12px;
+      background: #7c3aed;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+
+    #response {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #cbd5e1;
     }
   </style>
 </head>
 
 <body>
 
-<nav>Bobo Analytics</nav>
+<header>Bobo Analytics</header>
 
 <div class="container">
-  <div>
-    <h1>AI Analytics Platform</h1>
-    <p>Turn business data into intelligent decisions.</p>
-  </div>
+  <h1>AI Analytics Platform</h1>
+  <p>Turn business data into intelligent decisions.</p>
+</div>
 
-  <div class="chat-box">
-    <h3>AI Assistant</h3>
+<div class="chatbox">
+  <h3>AI Assistant</h3>
 
-    <input id="msg" placeholder="Ask something..." />
-    <button onclick="sendMsg()">Send</button>
+  <input id="msg" placeholder="Ask something..." />
+  <button onclick="sendMsg()">Send</button>
 
-    <p id="reply"></p>
-  </div>
+  <div id="response"></div>
 </div>
 
 <script>
@@ -77,12 +81,14 @@ async function sendMsg() {
 
   const res = await fetch("/api/chat", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({ message })
   });
 
   const data = await res.json();
-  document.getElementById("reply").innerText = data.reply;
+  document.getElementById("response").innerText = data.reply;
 }
 </script>
 
