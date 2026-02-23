@@ -1,1 +1,90 @@
-1
+---
+---
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bobo Analytics</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: linear-gradient(90deg,#020024,#3a0ca3);
+      color: white;
+    }
+
+    nav {
+      background:#020617;
+      padding:15px;
+      text-align:center;
+      font-size:22px;
+      font-weight:bold;
+    }
+
+    .container {
+      display:flex;
+      justify-content:space-around;
+      align-items:center;
+      padding:60px;
+    }
+
+    .chat-box {
+      background:#020617;
+      padding:20px;
+      border-radius:12px;
+      width:300px;
+    }
+
+    input {
+      width:70%;
+      padding:8px;
+    }
+
+    button {
+      padding:8px 14px;
+      background:#7c3aed;
+      border:none;
+      color:white;
+      border-radius:6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<nav>Bobo Analytics</nav>
+
+<div class="container">
+  <div>
+    <h1>AI Analytics Platform</h1>
+    <p>Turn business data into intelligent decisions.</p>
+  </div>
+
+  <div class="chat-box">
+    <h3>AI Assistant</h3>
+
+    <input id="msg" placeholder="Ask something..." />
+    <button onclick="sendMsg()">Send</button>
+
+    <p id="reply"></p>
+  </div>
+</div>
+
+<script>
+async function sendMsg() {
+  const message = document.getElementById("msg").value;
+
+  const res = await fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message })
+  });
+
+  const data = await res.json();
+  document.getElementById("reply").innerText = data.reply;
+}
+</script>
+
+</body>
+</html>
