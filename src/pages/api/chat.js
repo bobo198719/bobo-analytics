@@ -1,5 +1,4 @@
 export async function POST({ request }) {
-
   try {
     const { message } = await request.json();
 
@@ -9,7 +8,7 @@ export async function POST({ request }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
         },
         body: JSON.stringify({
           model: "gpt-4o-mini",
@@ -17,14 +16,14 @@ export async function POST({ request }) {
             {
               role: "system",
               content:
-                "You are Bobo Analytics AI sales assistant. Help visitors understand analytics software, explain services, and guide them to request demo."
+                "You are Bobo Analytics AI sales assistant. Explain analytics software, help users understand services, and guide them to request a demo politely."
             },
             {
               role: "user",
               content: message
             }
-          ]
-        })
+          ],
+        }),
       }
     );
 
@@ -34,11 +33,10 @@ export async function POST({ request }) {
       JSON.stringify({
         reply:
           data.choices?.[0]?.message?.content ||
-          "AI unavailable."
+          "AI unavailable",
       }),
       { status: 200 }
     );
-
   } catch (error) {
     console.error(error);
 
