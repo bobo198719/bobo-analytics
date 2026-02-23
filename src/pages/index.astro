@@ -1,385 +1,30 @@
----
-const industries = [
- {title:"Healthcare",desc:"Improve patient insights.",icon:"🏥"},
- {title:"Pharmacy",desc:"Inventory & expiry analytics.",icon:"💊"},
- {title:"Retail",desc:"Demand forecasting.",icon:"🛍️"},
- {title:"Fashion",desc:"Seasonal predictions.",icon:"👕"},
- {title:"Finance",desc:"Fraud detection.",icon:"💰"},
- {title:"Energy",desc:"Consumption optimization.",icon:"⚡"}
-];
----
-
-<html lang="en">
-<head>
-
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-
-<title>Bobo Analytics</title>
-
-<style>
-
-/* ===== BASE ===== */
-body{
-margin:0;
-font-family:Inter,system-ui;
-background:#000;
-color:white;
-scroll-behavior:smooth;
-}
-
-/* ===== NAVBAR ===== */
-header{
-position:fixed;
-top:0;
-width:100%;
-background:#020617;
-border-bottom:1px solid #22d3ee;
-z-index:999;
-}
-
-.nav{
-max-width:1200px;
-margin:auto;
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:14px 20px;
-}
-
-.logo{
-display:flex;
-align-items:center;
-gap:10px;
-font-size:20px;
-font-weight:600;
-}
-
-.logo img{height:42px}
-
-.menu{
-display:flex;
-gap:25px;
-}
-
-.menu a{
-color:#cbd5e1;
-text-decoration:none;
-}
-
-.menu a:hover{color:white;}
-
-.hamburger{
-display:none;
-font-size:26px;
-cursor:pointer;
-}
-
-/* ===== HERO ===== */
-.hero{
-padding:140px 20px 80px;
-text-align:center;
-background:linear-gradient(120deg,#03131d,#15001f);
-}
-
-.gradient{
-background:linear-gradient(90deg,#22d3ee,#ff2fd1);
--webkit-background-clip:text;
-color:transparent;
-}
-
-.hero img{
-max-width:620px;
-width:100%;
-margin-top:30px;
-border-radius:14px;
-animation:float 6s ease-in-out infinite;
-box-shadow:0 0 60px #22d3ee33;
-}
-
-@keyframes float{
-0%{transform:translateY(0)}
-50%{transform:translateY(-14px)}
-100%{transform:translateY(0)}
-}
-
-/* ===== GRID ===== */
-section{padding:80px 20px;text-align:center;}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:25px;
-max-width:1100px;
-margin:auto;
-}
-
-.card{
-background:#020617;
-border:1px solid #1e293b;
-padding:25px;
-border-radius:14px;
-transition:.35s;
-}
-
-.card:hover{
-transform:translateY(-8px);
-box-shadow:0 0 30px #22d3ee55;
-}
-
-/* ===== TRUST BADGES ===== */
-.trust{
-display:flex;
-flex-wrap:wrap;
-justify-content:center;
-gap:25px;
-margin-top:30px;
-color:#94a3b8;
-}
-
-/* ===== FORM ===== */
-form{
-max-width:500px;
-margin:auto;
-display:flex;
-flex-direction:column;
-gap:12px;
-}
-
-input,textarea{
-padding:12px;
-background:black;
-border:1px solid #334155;
-color:white;
-border-radius:8px;
-}
-
-button{
-padding:12px;
-background:linear-gradient(90deg,#22d3ee,#ff2fd1);
-border:none;
-border-radius:8px;
-color:white;
-cursor:pointer;
-}
-
-/* ===== FLOATING CTA ===== */
-.cta{
-position:fixed;
-bottom:20px;
-right:20px;
-background:linear-gradient(90deg,#22d3ee,#ff2fd1);
-padding:14px 18px;
-border-radius:30px;
-font-weight:600;
-cursor:pointer;
-z-index:998;
-animation:pulse 2s infinite;
-}
-
-@keyframes pulse{
-0%{transform:scale(1)}
-50%{transform:scale(1.05)}
-100%{transform:scale(1)}
-}
-
-/* ===== AI CHAT ===== */
-.chat-btn{
-position:fixed;
-bottom:90px;
-left:20px;
-width:60px;height:60px;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:26px;
-background:linear-gradient(90deg,#22d3ee,#ff2fd1);
-cursor:pointer;
-z-index:999;
-}
-
-.chat-box{
-position:fixed;
-bottom:160px;
-left:20px;
-width:300px;
-background:#020617;
-border:1px solid #1e293b;
-border-radius:12px;
-display:none;
-flex-direction:column;
-overflow:hidden;
-}
-
-.chat-header{padding:10px;border-bottom:1px solid #1e293b;}
-.chat-messages{height:240px;overflow:auto;padding:10px;font-size:14px;}
-.chat-input{display:flex;border-top:1px solid #1e293b;}
-.chat-input input{flex:1;background:black;border:none;color:white;padding:10px;}
-.chat-input button{background:#22d3ee;border:none;padding:10px;}
-
-.bot{background:#111827;padding:8px;margin:6px;border-radius:8px;}
-.user{background:#22d3ee;color:black;padding:8px;margin:6px;border-radius:8px;text-align:right;}
-
-/* ===== LIVE VISITOR POPUP ===== */
-.popup{
-position:fixed;
-bottom:20px;
-left:100px;
-background:#020617;
-border:1px solid #22d3ee;
-padding:10px 14px;
-border-radius:8px;
-font-size:13px;
-display:none;
-z-index:997;
-}
-
-/* ===== MOBILE ===== */
-@media(max-width:768px){
-
-.menu{
-display:none;
-flex-direction:column;
-position:absolute;
-right:0;
-top:60px;
-background:#020617;
-width:200px;
-padding:20px;
-}
-
-.menu.show{display:flex;}
-
-.hamburger{display:block;}
-
-}
-
-footer{
-padding:30px;
-background:#020617;
-color:#94a3b8;
-}
-
-</style>
-</head>
-
-<body>
-
-<!-- NAVBAR -->
-<header>
-<div class="nav">
-
-<div class="logo">
-<img src="/logo.png"/> Bobo Analytics
-</div>
-
-<div class="hamburger" onclick="toggleMenu()">☰</div>
-
-<nav id="menu" class="menu">
-<a href="#services">Services</a>
-<a href="#demo">Demo</a>
-</nav>
-
-</div>
-</header>
-
-<!-- HERO -->
-<section class="hero">
-<h1>AI Analytics Platform<br>
-<span class="gradient">Built for Modern Businesses</span>
-</h1>
-
-<p>Turn business data into intelligent decisions.</p>
-
-<img src="/dashboard-image.png"/>
-</section>
-
-<!-- INDUSTRIES -->
-<section id="services">
-<h2>Industries We Serve</h2>
-
-<div class="grid">
-{industries.map(i=>(
-<div class="card">
-<h3>{i.icon} {i.title}</h3>
-<p>{i.desc}</p>
-</div>
-))}
-</div>
-
-<div class="trust">
-<div>✅ Trusted by growing businesses</div>
-<div>🔒 Secure Cloud Platform</div>
-<div>⚡ AI Powered Insights</div>
-</div>
-
-</section>
-
-<!-- DEMO -->
-<section id="demo">
-<h2>Request Demo</h2>
-
-<form>
-<input placeholder="Name"/>
-<input placeholder="Email"/>
-<input placeholder="Phone Number"/>
-<textarea placeholder="Message"></textarea>
-<button>Request Demo</button>
-</form>
-
-</section>
-
-<footer>
-© 2026 Bobo Analytics | <a href="/privacy">Privacy</a>
-</footer>
-
-<!-- FLOAT CTA -->
-<div class="cta" onclick="document.getElementById('demo').scrollIntoView()">
-🚀 Book Demo
-</div>
-
-<!-- AI CHAT -->
-<div class="chat-btn" onclick="toggleChat()">🤖</div>
-
-<div id="chatBox" class="chat-box">
-<div class="chat-header">Bobo AI Assistant</div>
-
-<div id="chatMessages" class="chat-messages">
-<div class="bot">Hi 👋 Ask about services or demo.</div>
-</div>
-
-<div class="chat-input">
-<input id="chatInput" placeholder="Type message"/>
-<button onclick="sendMessage()">Send</button>
-</div>
-</div>
-
-<!-- LIVE VISITOR -->
-<div id="popup" class="popup"></div>
-
 <script>
 
-/* ===== HAMBURGER ===== */
-function toggleMenu(){
-document.getElementById("menu").classList.toggle("show");
-}
+/* ===============================
+   FORCE CHAT BUTTON TO WORK
+================================= */
 
-/* ===== CHAT ===== */
-function toggleChat(){
-const box=document.getElementById("chatBox");
-box.style.display=box.style.display==="flex"?"none":"flex";
-}
+document.addEventListener("DOMContentLoaded", () => {
 
-function aiReply(t){
-t=t.toLowerCase();
-if(t.includes("demo")) return "Please scroll to demo form 🚀";
-if(t.includes("price")) return "Pricing depends on business size.";
-if(t.includes("pharmacy")) return "Yes 👍 Pharmacy analytics supported.";
-return "Thanks! Our team will contact you soon.";
-}
+  const chatBtn = document.querySelector(".chat-btn");
+  const chatBox = document.getElementById("chatBox");
 
-function sendMessage(){
+  if(chatBtn){
+    chatBtn.addEventListener("click", () => {
+      chatBox.style.display =
+        chatBox.style.display === "flex" ? "none" : "flex";
+    });
+  }
+
+});
+
+
+/* ===============================
+   AI MESSAGE SYSTEM
+================================= */
+
+async function sendMessage(){
+
 const input=document.getElementById("chatInput");
 const msg=input.value.trim();
 if(!msg) return;
@@ -389,29 +34,32 @@ const chat=document.getElementById("chatMessages");
 chat.innerHTML+=`<div class="user">${msg}</div>`;
 input.value="";
 
-setTimeout(()=>{
-chat.innerHTML+=`<div class="bot">${aiReply(msg)}</div>`;
+const thinking=document.createElement("div");
+thinking.className="bot";
+thinking.innerText="Thinking...";
+chat.appendChild(thinking);
+
+try{
+
+const res = await fetch("/api/chat",{
+method:"POST",
+headers:{ "Content-Type":"application/json"},
+body:JSON.stringify({message:msg})
+});
+
+const data = await res.json();
+
+thinking.remove();
+
+chat.innerHTML+=`<div class="bot">${data.reply}</div>`;
 chat.scrollTop=chat.scrollHeight;
-},600);
+
+}catch(e){
+
+thinking.innerText="AI connection error.";
+
 }
 
-/* ===== LIVE VISITOR EFFECT ===== */
-const activities=[
-"Someone from Mumbai requested demo",
-"Retail business joined",
-"Pharmacy owner viewing pricing",
-"New visitor exploring analytics"
-];
-
-setInterval(()=>{
-const p=document.getElementById("popup");
-p.innerText=activities[Math.floor(Math.random()*activities.length)];
-p.style.display="block";
-
-setTimeout(()=>p.style.display="none",4000);
-},9000);
+}
 
 </script>
-
-</body>
-</html>
