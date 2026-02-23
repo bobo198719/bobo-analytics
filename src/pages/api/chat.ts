@@ -1,37 +1,32 @@
+export async function GET() {
+  return new Response(
+    JSON.stringify({
+      message: "Bobo Analytics AI API is running ✅",
+    }),
+    {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    }
+  );
+}
+
 export async function POST({ request }) {
   try {
     const { message } = await request.json();
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${import.meta.env.OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are Bobo Analytics AI assistant helping businesses with analytics insights.",
-          },
-          { role: "user", content: message },
-        ],
-      }),
-    });
-
-    const data = await response.json();
+    // TEMP AI RESPONSE (no external AI yet)
+    const reply = `AI Assistant: You asked -> "${message}"`;
 
     return new Response(
-      JSON.stringify({
-        reply: data.choices?.[0]?.message?.content || "No response",
-      }),
-      { status: 200 }
+      JSON.stringify({ reply }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }
     );
   } catch (error) {
     return new Response(
-      JSON.stringify({ reply: "Server error occurred." }),
+      JSON.stringify({ reply: "Error processing request." }),
       { status: 500 }
     );
   }
