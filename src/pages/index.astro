@@ -1,1 +1,36 @@
+---
+---
 
+<html>
+<head>
+  <title>Bobo Analytics</title>
+</head>
+
+<body style="background:#0b0120;color:white;font-family:sans-serif">
+
+<h1>Bobo Analytics</h1>
+<h2>AI Analytics Platform</h2>
+
+<div id="chat">
+  <input id="msg" placeholder="Ask something..." />
+  <button onclick="send()">Send</button>
+  <p id="reply"></p>
+</div>
+
+<script>
+async function send() {
+  const message = document.getElementById("msg").value;
+
+  const res = await fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message })
+  });
+
+  const data = await res.json();
+  document.getElementById("reply").innerText = data.reply;
+}
+</script>
+
+</body>
+</html>
