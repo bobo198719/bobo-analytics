@@ -16,14 +16,14 @@ export async function POST({ request }) {
             {
               role: "system",
               content:
-                "You are Bobo Analytics AI sales assistant. Help visitors understand analytics software and guide them to request a demo.",
+                "You are Bobo Analytics AI sales assistant. Help visitors understand analytics software and guide them to request a demo."
             },
             {
               role: "user",
-              content: message,
-            },
-          ],
-        }),
+              content: message
+            }
+          ]
+        })
       }
     );
 
@@ -33,10 +33,11 @@ export async function POST({ request }) {
       JSON.stringify({
         reply:
           data?.choices?.[0]?.message?.content ||
-          "AI temporarily unavailable.",
+          "AI temporarily unavailable."
       }),
       { status: 200 }
     );
+
   } catch (error) {
     return new Response(
       JSON.stringify({ reply: "Server error." }),
