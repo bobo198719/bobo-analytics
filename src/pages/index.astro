@@ -1,244 +1,153 @@
 ---
-const industries = [
-  { title: "Healthcare", desc: "Improve patient insights." },
-  { title: "Pharmacy", desc: "Inventory & expiry analytics." },
-  { title: "Retail", desc: "Customer demand forecasting." }
-];
 ---
 
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bobo Analytics | AI Analytics Platform</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Bobo Analytics</title>
 
-  <style>
-    body{
-      margin:0;
-      font-family:Arial, sans-serif;
-      color:white;
-      background:linear-gradient(135deg,#020617,#22003d);
-    }
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:linear-gradient(135deg,#020617,#2e026d);
+color:white;
+}
 
-    /* NAVBAR */
-    nav{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:15px 25px;
-      background:#020617;
-      border-bottom:1px solid #00eaff55;
-      position:sticky;
-      top:0;
-      z-index:1000;
-    }
+/* NAVBAR */
+nav{
+display:flex;
+justify-content:space-between;
+padding:15px 30px;
+background:#020617;
+position:sticky;
+top:0;
+z-index:1000;
+}
 
-    nav img{
-      height:40px;
-      margin-right:10px;
-    }
+.logo{
+display:flex;
+align-items:center;
+gap:10px;
+font-weight:bold;
+}
 
-    .nav-left{
-      display:flex;
-      align-items:center;
-      font-weight:bold;
-      font-size:20px;
-    }
+.hero{
+text-align:center;
+padding:80px 20px;
+}
 
-    .nav-links{
-      display:flex;
-      gap:20px;
-    }
+.hero img{
+width:420px;
+border-radius:15px;
+box-shadow:0 0 40px purple;
+}
 
-    /* HERO */
-    .hero{
-      text-align:center;
-      padding:80px 20px;
-    }
+/* AI BUTTON */
+#aiBtn{
+position:fixed;
+right:20px;
+bottom:20px;
+width:70px;
+height:70px;
+border-radius:50%;
+background:linear-gradient(45deg,#22d3ee,#a855f7);
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+font-size:28px;
+}
 
-    .hero h1{
-      font-size:42px;
-      margin-bottom:10px;
-    }
+/* CHAT BOX */
+#chatBox{
+position:fixed;
+right:20px;
+bottom:100px;
+width:320px;
+height:420px;
+background:#020617;
+border-radius:12px;
+display:none;
+flex-direction:column;
+overflow:hidden;
+}
 
-    .gradient{
-      background:linear-gradient(90deg,#4facfe,#e94cff);
-      -webkit-background-clip:text;
-      color:transparent;
-    }
+#messages{
+flex:1;
+padding:10px;
+overflow:auto;
+}
 
-    .hero img{
-      width:90%;
-      max-width:450px;
-      border-radius:14px;
-      margin-top:30px;
-      box-shadow:0 0 40px rgba(200,100,255,.3);
-    }
-
-    /* INDUSTRIES */
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-      gap:20px;
-      padding:40px;
-      text-align:center;
-    }
-
-    .card{
-      background:#020a2a;
-      padding:25px;
-      border-radius:12px;
-      border:1px solid #ffffff11;
-    }
-
-    /* DEMO FORM */
-    form{
-      text-align:center;
-      padding:40px;
-    }
-
-    input{
-      padding:10px;
-      margin:5px;
-      width:220px;
-    }
-
-    button{
-      padding:10px 20px;
-      cursor:pointer;
-    }
-
-    /* AI BUTTON */
-    #aiButton{
-      position:fixed;
-      bottom:25px;
-      right:25px;
-      width:65px;
-      height:65px;
-      border-radius:50%;
-      background:linear-gradient(135deg,#4facfe,#e94cff);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      cursor:pointer;
-      font-size:28px;
-      z-index:9999;
-      box-shadow:0 0 25px rgba(140,80,255,.6);
-    }
-
-    #chatBox{
-      position:fixed;
-      bottom:100px;
-      right:25px;
-      width:320px;
-      height:420px;
-      background:#0b0f2a;
-      border-radius:14px;
-      display:none;
-      flex-direction:column;
-      overflow:hidden;
-      z-index:9999;
-    }
-
-    #chatMessages{
-      flex:1;
-      padding:12px;
-      overflow-y:auto;
-      font-size:14px;
-    }
-
-    #chatInput{
-      border:none;
-      padding:12px;
-      outline:none;
-      width:100%;
-    }
-  </style>
+input{
+border:none;
+padding:12px;
+width:100%;
+}
+</style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
 <nav>
-  <div class="nav-left">
-    <img src="/logo.png" />
-    Bobo Analytics
-  </div>
-
-  <div class="nav-links">
-    <a>Services</a>
-    <a>Demo</a>
-  </div>
+<div class="logo">🚀 Bobo Analytics</div>
+<div>Services | Demo</div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
-  <h1>AI Analytics Platform</h1>
-  <h1 class="gradient">Built for Modern Businesses</h1>
-  <p>Turn business data into intelligent decisions.</p>
+<h1>AI Analytics Platform</h1>
+<h2>Built for Modern Businesses</h2>
+<p>Turn business data into intelligent decisions.</p>
 
-  <img src="/dashboard-image.png" />
+<img src="/dashboard-image.png" />
 </section>
-
-<!-- INDUSTRIES -->
-<section class="grid">
-  {industries.map(i => (
-    <div class="card">
-      <h3>{i.title}</h3>
-      <p>{i.desc}</p>
-    </div>
-  ))}
-</section>
-
-<!-- DEMO FORM -->
-<form>
-  <h2>Request Demo</h2>
-  <input placeholder="Your Name" />
-  <input placeholder="Email" />
-  <br/>
-  <button>Submit</button>
-</form>
 
 <!-- AI CHAT -->
-<div id="aiButton">🤖</div>
-
 <div id="chatBox">
-  <div id="chatMessages">
-    <b>AI Assistant:</b><br/>
-    Hi 👋 I’m Bobo Analytics AI.<hr/>
-  </div>
-  <input id="chatInput" placeholder="Ask something..." onkeypress="sendMessage(event)" />
+<div id="messages">
+<b>AI Assistant:</b><br/>
+Hi 👋 I'm Bobo Analytics AI.
 </div>
 
-<script>
-const btn=document.getElementById("aiButton");
-const box=document.getElementById("chatBox");
-const messages=document.getElementById("chatMessages");
+<input
+id="chatInput"
+placeholder="Ask something..."
+onkeypress="sendMessage(event)"
+/>
+</div>
 
-btn.onclick=()=>{
-  box.style.display=box.style.display==="flex"?"none":"flex";
+<div id="aiBtn">🤖</div>
+
+<script>
+const btn=document.getElementById("aiBtn");
+const chat=document.getElementById("chatBox");
+const messages=document.getElementById("messages");
+
+btn.onclick=()=> {
+chat.style.display =
+chat.style.display==="flex"?"none":"flex";
 };
 
 async function sendMessage(e){
-  if(e.key!=="Enter") return;
+if(e.key!=="Enter") return;
 
-  const input=e.target;
-  const text=input.value.trim();
-  if(!text) return;
+const input=e.target;
+const text=input.value;
+input.value="";
 
-  messages.innerHTML+=`<div><b>You:</b> ${text}</div>`;
-  input.value="";
+messages.innerHTML+=`<p><b>You:</b> ${text}</p>`;
 
-  const res=await fetch("/api/chat",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({message:text})
-  });
+const res=await fetch("/api/chat",{
+method:"POST",
+headers:{ "Content-Type":"application/json"},
+body:JSON.stringify({message:text})
+});
 
-  const data=await res.json();
+const data=await res.json();
 
-  messages.innerHTML+=`<div><b>AI:</b> ${data.reply}</div>`;
-  messages.scrollTop=messages.scrollHeight;
+messages.innerHTML+=`<p><b>AI:</b> ${data.reply}</p>`;
+messages.scrollTop=messages.scrollHeight;
 }
 </script>
 
