@@ -1,65 +1,112 @@
-<script>
+---
+---
 
-/* ===============================
-   FORCE CHAT BUTTON TO WORK
-================================= */
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bobo Analytics</title>
 
-document.addEventListener("DOMContentLoaded", () => {
-
-  const chatBtn = document.querySelector(".chat-btn");
-  const chatBox = document.getElementById("chatBox");
-
-  if(chatBtn){
-    chatBtn.addEventListener("click", () => {
-      chatBox.style.display =
-        chatBox.style.display === "flex" ? "none" : "flex";
-    });
-  }
-
-});
-
-
-/* ===============================
-   AI MESSAGE SYSTEM
-================================= */
-
-async function sendMessage(){
-
-const input=document.getElementById("chatInput");
-const msg=input.value.trim();
-if(!msg) return;
-
-const chat=document.getElementById("chatMessages");
-
-chat.innerHTML+=`<div class="user">${msg}</div>`;
-input.value="";
-
-const thinking=document.createElement("div");
-thinking.className="bot";
-thinking.innerText="Thinking...";
-chat.appendChild(thinking);
-
-try{
-
-const res = await fetch("/api/chat",{
-method:"POST",
-headers:{ "Content-Type":"application/json"},
-body:JSON.stringify({message:msg})
-});
-
-const data = await res.json();
-
-thinking.remove();
-
-chat.innerHTML+=`<div class="bot">${data.reply}</div>`;
-chat.scrollTop=chat.scrollHeight;
-
-}catch(e){
-
-thinking.innerText="AI connection error.";
-
+<style>
+body{
+margin:0;
+font-family:Arial, sans-serif;
+background:linear-gradient(120deg,#020617,#1e0033);
+color:white;
+text-align:center;
 }
 
+/* NAVBAR */
+header{
+position:fixed;
+top:0;
+width:100%;
+background:#020617;
+border-bottom:1px solid #22d3ee;
+padding:15px 20px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+z-index:1000;
 }
 
-</script>
+.logo{
+display:flex;
+align-items:center;
+gap:10px;
+font-weight:bold;
+font-size:20px;
+}
+
+nav a{
+color:#cbd5e1;
+margin-left:20px;
+text-decoration:none;
+}
+
+.hero{
+padding-top:140px;
+padding-bottom:60px;
+}
+
+h1{
+font-size:42px;
+margin-bottom:10px;
+}
+
+.gradient{
+background:linear-gradient(90deg,#22d3ee,#ff2fd1);
+-webkit-background-clip:text;
+color:transparent;
+}
+
+.hero img{
+margin-top:30px;
+width:90%;
+max-width:500px;
+border-radius:12px;
+box-shadow:0 0 40px rgba(255,0,255,.3);
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="logo">
+<img src="/logo.png" height="45"/>
+<span>Bobo Analytics</span>
+</div>
+
+<nav>
+<a href="#services">Services</a>
+<a href="#demo">Demo</a>
+</nav>
+</header>
+
+<section class="hero">
+<h1>AI Analytics Platform</h1>
+<h1 class="gradient">Built for Modern Businesses</h1>
+
+<p>Turn business data into intelligent decisions.</p>
+
+<img src="/dashboard-image.png" alt="Dashboard"/>
+</section>
+
+<section id="services">
+<h2>Industries We Serve</h2>
+<p>Healthcare • Pharmacy • Retail • Finance • Energy</p>
+</section>
+
+<section id="demo">
+<h2>Request Demo</h2>
+<form>
+<input placeholder="Your Name" required/><br/><br/>
+<input placeholder="Email" required/><br/><br/>
+<button>Submit</button>
+</form>
+</section>
+
+</body>
+</html>
