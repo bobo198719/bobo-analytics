@@ -1,50 +1,47 @@
-export async function POST({ request }) {
+export default async function handler(req, res) {
+
+  if (req.method !== "POST") {
+    return res.status(405).json({ message: "Only POST allowed" });
+  }
+
   try {
 
-    const { message } = await request.json();
+    const { message } = req.body;
 
-    const response = await fetch(
-      "https://api.openai.com/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${import.meta.env.OPENAI_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: "gpt-4o-mini",
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are Bobo Analytics AI sales assistant. Help visitors understand analytics software, explain services, and guide them to book a demo."
-            },
-            {
-              role: "user",
-              content: message
-            }
-          ]
-        })
-      }
-    );
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are Bobo Analytics AI sales assistant. Explain analytics software, answer business questions, and encourage users to request a demo politely."
+          },
+          {
+            role: "user",
+            content: message
+          }
+        ]
+      })
+    });
 
     const data = await response.json();
 
-    return new Response(
-      JSON.stringify({
-        reply:
-          data.choices?.[0]?.message?.content ||
-          "AI unavailable"
-      }),
-      { status: 200 }
-    );
+    res.status(200).json({
+      reply:
+        data?.choices?.[0]?.message?.content ||
+        "Sorry, AI is temporarily unavailable."
+    });
 
   } catch (error) {
     console.error(error);
-
-    return new Response(
-      JSON.stringify({ reply: "Server error" }),
-      { status: 500 }
-    );
+    res.status(500).json({
+      reply: "Server error. Please try again."
+    });
   }
 }
