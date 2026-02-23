@@ -16,7 +16,7 @@ export async function POST({ request }) {
             {
               role: "system",
               content:
-                "You are Bobo Analytics AI assistant. Help visitors understand analytics software and encourage demo booking.",
+                "You are Bobo Analytics AI assistant. Help visitors understand analytics software and guide them to request a demo.",
             },
             {
               role: "user",
