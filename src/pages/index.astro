@@ -1,53 +1,45 @@
 ---
 ---
 
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
   <title>Bobo Analytics</title>
 
   <style>
     body {
       margin:0;
       font-family: Arial;
-      background: linear-gradient(135deg,#020024,#2b004a);
+      background: linear-gradient(90deg,#070b2c,#3a0066);
       color:white;
       text-align:center;
     }
 
-    h1 { margin-top:40px; }
-
-    .chat-box{
+    .chatbox{
       position:fixed;
       right:40px;
       bottom:40px;
-      width:320px;
-      background:#0b132b;
+      background:#08122c;
       padding:20px;
       border-radius:12px;
+      width:300px;
     }
 
     input{
       width:70%;
-      padding:10px;
-      border-radius:6px;
-      border:none;
+      padding:8px;
     }
 
     button{
-      padding:10px;
-      border:none;
-      border-radius:6px;
+      padding:8px 12px;
       background:#7c3aed;
       color:white;
+      border:none;
       cursor:pointer;
     }
 
     #reply{
-      margin-top:15px;
+      margin-top:10px;
       font-size:14px;
-      text-align:left;
-      min-height:40px;
     }
   </style>
 </head>
@@ -56,9 +48,8 @@
 
 <h1>Bobo Analytics</h1>
 <h2>AI Analytics Platform</h2>
-<p>Turn business data into intelligent decisions.</p>
 
-<div class="chat-box">
+<div class="chatbox">
   <h3>AI Assistant</h3>
 
   <input id="msg" placeholder="Ask something..." />
@@ -70,24 +61,19 @@
 <script>
 async function sendMessage() {
 
-  const input = document.getElementById("msg");
-  const reply = document.getElementById("reply");
-
-  reply.innerHTML = "Thinking...";
+  const message = document.getElementById("msg").value;
 
   const res = await fetch("/api/chat", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-      message: input.value
-    })
+    body: JSON.stringify({ message })
   });
 
   const data = await res.json();
 
-  reply.innerHTML = data.reply;
+  document.getElementById("reply").innerText = data.reply;
 }
 </script>
 
