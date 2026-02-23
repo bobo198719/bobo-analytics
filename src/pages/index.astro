@@ -1,313 +1,245 @@
 ---
-const year = new Date().getFullYear();
+const industries = [
+  { title: "Healthcare", desc: "Improve patient insights." },
+  { title: "Pharmacy", desc: "Inventory & expiry analytics." },
+  { title: "Retail", desc: "Customer demand forecasting." }
+];
 ---
 
 <html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bobo Analytics | AI Analytics Platform</title>
 
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body{
+      margin:0;
+      font-family:Arial, sans-serif;
+      color:white;
+      background:linear-gradient(135deg,#020617,#22003d);
+    }
 
-<title>Bobo Analytics | AI Analytics Platform</title>
+    /* NAVBAR */
+    nav{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:15px 25px;
+      background:#020617;
+      border-bottom:1px solid #00eaff55;
+      position:sticky;
+      top:0;
+      z-index:1000;
+    }
 
-<meta name="description"
-content="Bobo Analytics helps businesses transform data into intelligent decisions using AI analytics software." />
+    nav img{
+      height:40px;
+      margin-right:10px;
+    }
 
-<style>
+    .nav-left{
+      display:flex;
+      align-items:center;
+      font-weight:bold;
+      font-size:20px;
+    }
 
-/* ===== GLOBAL ===== */
-body{
-margin:0;
-font-family:Arial, sans-serif;
-background:linear-gradient(90deg,#020617,#1a0033);
-color:white;
-overflow-x:hidden;
-}
+    .nav-links{
+      display:flex;
+      gap:20px;
+    }
 
-/* ===== NAVBAR ===== */
-.nav{
-position:sticky;
-top:0;
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:14px 40px;
-background:#020617;
-border-bottom:1px solid #00eaff55;
-z-index:999;
-}
+    /* HERO */
+    .hero{
+      text-align:center;
+      padding:80px 20px;
+    }
 
-.logo{
-display:flex;
-align-items:center;
-gap:12px;
-font-weight:bold;
-font-size:20px;
-}
+    .hero h1{
+      font-size:42px;
+      margin-bottom:10px;
+    }
 
-.logo img{height:40px}
+    .gradient{
+      background:linear-gradient(90deg,#4facfe,#e94cff);
+      -webkit-background-clip:text;
+      color:transparent;
+    }
 
-.menu{
-display:flex;
-gap:25px;
-}
+    .hero img{
+      width:90%;
+      max-width:450px;
+      border-radius:14px;
+      margin-top:30px;
+      box-shadow:0 0 40px rgba(200,100,255,.3);
+    }
 
-.menu a{
-color:white;
-text-decoration:none;
-}
+    /* INDUSTRIES */
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:20px;
+      padding:40px;
+      text-align:center;
+    }
 
-/* MOBILE MENU */
-.hamburger{
-display:none;
-font-size:26px;
-cursor:pointer;
-}
+    .card{
+      background:#020a2a;
+      padding:25px;
+      border-radius:12px;
+      border:1px solid #ffffff11;
+    }
 
-.mobile-menu{
-display:none;
-flex-direction:column;
-background:#020617;
-padding:20px;
-}
+    /* DEMO FORM */
+    form{
+      text-align:center;
+      padding:40px;
+    }
 
-.mobile-menu a{
-padding:10px 0;
-color:white;
-text-decoration:none;
-}
+    input{
+      padding:10px;
+      margin:5px;
+      width:220px;
+    }
 
-/* ===== HERO ===== */
-.hero{
-text-align:center;
-padding:80px 20px;
-}
+    button{
+      padding:10px 20px;
+      cursor:pointer;
+    }
 
-.hero h1{font-size:42px;}
+    /* AI BUTTON */
+    #aiButton{
+      position:fixed;
+      bottom:25px;
+      right:25px;
+      width:65px;
+      height:65px;
+      border-radius:50%;
+      background:linear-gradient(135deg,#4facfe,#e94cff);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      font-size:28px;
+      z-index:9999;
+      box-shadow:0 0 25px rgba(140,80,255,.6);
+    }
 
-.gradient{
-background:linear-gradient(90deg,#00eaff,#ff4fd8);
--webkit-background-clip:text;
-color:transparent;
-}
+    #chatBox{
+      position:fixed;
+      bottom:100px;
+      right:25px;
+      width:320px;
+      height:420px;
+      background:#0b0f2a;
+      border-radius:14px;
+      display:none;
+      flex-direction:column;
+      overflow:hidden;
+      z-index:9999;
+    }
 
-.hero img{
-width:420px;
-border-radius:14px;
-margin-top:30px;
-box-shadow:0 0 40px #ff00ff55;
-animation:float 4s ease-in-out infinite;
-}
+    #chatMessages{
+      flex:1;
+      padding:12px;
+      overflow-y:auto;
+      font-size:14px;
+    }
 
-@keyframes float{
-0%,100%{transform:translateY(0)}
-50%{transform:translateY(-10px)}
-}
-
-/* ===== CARDS ===== */
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:25px;
-padding:40px;
-}
-
-.card{
-background:#030b25;
-padding:25px;
-border-radius:12px;
-transition:.3s;
-border:1px solid #00eaff33;
-}
-
-.card:hover{
-transform:translateY(-8px);
-box-shadow:0 0 25px #00eaff66;
-}
-
-/* ===== DEMO FORM ===== */
-.form{
-text-align:center;
-padding:40px;
-}
-
-input{
-padding:10px;
-margin:8px;
-width:220px;
-}
-
-/* ===== CTA ===== */
-.cta{
-position:fixed;
-bottom:20px;
-left:20px;
-background:linear-gradient(90deg,#00eaff,#ff4fd8);
-padding:14px 22px;
-border-radius:30px;
-font-weight:bold;
-animation:pulse 2s infinite;
-}
-
-@keyframes pulse{
-0%{transform:scale(1)}
-50%{transform:scale(1.05)}
-100%{transform:scale(1)}
-}
-
-/* ===== AI CHAT ===== */
-.chat-btn{
-position:fixed;
-bottom:20px;
-right:20px;
-width:65px;
-height:65px;
-border-radius:50%;
-background:linear-gradient(45deg,#00eaff,#ff4fd8);
-display:flex;
-justify-content:center;
-align-items:center;
-font-size:26px;
-cursor:pointer;
-}
-
-.chat-box{
-display:none;
-position:fixed;
-bottom:95px;
-right:20px;
-width:300px;
-background:#020617;
-border-radius:12px;
-padding:15px;
-}
-
-.chat-box input{
-width:100%;
-}
-
-/* ===== FOOTER ===== */
-footer{
-text-align:center;
-padding:20px;
-border-top:1px solid #00eaff33;
-margin-top:40px;
-}
-
-/* ===== MOBILE ===== */
-@media(max-width:768px){
-
-.menu{display:none}
-.hamburger{display:block}
-.hero img{width:90%}
-
-}
-
-</style>
+    #chatInput{
+      border:none;
+      padding:12px;
+      outline:none;
+      width:100%;
+    }
+  </style>
 </head>
 
 <body>
 
 <!-- NAVBAR -->
-<div class="nav">
-<div class="logo">
-<img src="/logo.png"/>
-Bobo Analytics
-</div>
+<nav>
+  <div class="nav-left">
+    <img src="/logo.png" />
+    Bobo Analytics
+  </div>
 
-<div class="menu">
-<a href="#">Services</a>
-<a href="#demo">Demo</a>
-</div>
-
-<div class="hamburger" onclick="toggleMenu()">☰</div>
-</div>
-
-<div id="mobileMenu" class="mobile-menu">
-<a href="#">Services</a>
-<a href="#demo">Demo</a>
-</div>
+  <div class="nav-links">
+    <a>Services</a>
+    <a>Demo</a>
+  </div>
+</nav>
 
 <!-- HERO -->
 <section class="hero">
-<h1>AI Analytics Platform</h1>
-<h1 class="gradient">Built for Modern Businesses</h1>
-<p>Turn business data into intelligent decisions.</p>
+  <h1>AI Analytics Platform</h1>
+  <h1 class="gradient">Built for Modern Businesses</h1>
+  <p>Turn business data into intelligent decisions.</p>
 
-<img src="/dashboard-image.png" alt="Dashboard"/>
+  <img src="/dashboard-image.png" />
 </section>
 
 <!-- INDUSTRIES -->
-<div class="grid">
-<div class="card">Healthcare Analytics</div>
-<div class="card">Pharmacy Intelligence</div>
-<div class="card">Retail Forecasting</div>
-<div class="card">Finance Insights</div>
-</div>
-
-<!-- DEMO FORM -->
-<section id="demo" class="form">
-<h2>Request Demo</h2>
-
-<input placeholder="Your Name"/>
-<input placeholder="Email"/>
-<input placeholder="Phone Number"/><br/>
-
-<button>Submit</button>
+<section class="grid">
+  {industries.map(i => (
+    <div class="card">
+      <h3>{i.title}</h3>
+      <p>{i.desc}</p>
+    </div>
+  ))}
 </section>
 
-<!-- CTA -->
-<div class="cta">🚀 Book Demo</div>
+<!-- DEMO FORM -->
+<form>
+  <h2>Request Demo</h2>
+  <input placeholder="Your Name" />
+  <input placeholder="Email" />
+  <br/>
+  <button>Submit</button>
+</form>
 
 <!-- AI CHAT -->
-<div class="chat-btn" onclick="openChat()">🤖</div>
+<div id="aiButton">🤖</div>
 
-<div id="chat" class="chat-box">
-<div id="messages"></div>
-<input id="msg" placeholder="Ask about Bobo Analytics..." />
-<button onclick="sendMsg()">Send</button>
+<div id="chatBox">
+  <div id="chatMessages">
+    <b>AI Assistant:</b><br/>
+    Hi 👋 I’m Bobo Analytics AI.<hr/>
+  </div>
+  <input id="chatInput" placeholder="Ask something..." onkeypress="sendMessage(event)" />
 </div>
 
-<!-- FOOTER -->
-<footer>
-<a href="/privacy">Privacy Policy</a> |
-<a href="/disclaimer">Disclaimer</a>
-<br/>
-© {year} Bobo Analytics
-</footer>
-
 <script>
+const btn=document.getElementById("aiButton");
+const box=document.getElementById("chatBox");
+const messages=document.getElementById("chatMessages");
 
-function toggleMenu(){
-const m=document.getElementById("mobileMenu");
-m.style.display=m.style.display==="flex"?"none":"flex";
+btn.onclick=()=>{
+  box.style.display=box.style.display==="flex"?"none":"flex";
+};
+
+async function sendMessage(e){
+  if(e.key!=="Enter") return;
+
+  const input=e.target;
+  const text=input.value.trim();
+  if(!text) return;
+
+  messages.innerHTML+=`<div><b>You:</b> ${text}</div>`;
+  input.value="";
+
+  const res=await fetch("/api/chat",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({message:text})
+  });
+
+  const data=await res.json();
+
+  messages.innerHTML+=`<div><b>AI:</b> ${data.reply}</div>`;
+  messages.scrollTop=messages.scrollHeight;
 }
-
-function openChat(){
-const c=document.getElementById("chat");
-c.style.display=c.style.display==="block"?"none":"block";
-}
-
-async function sendMsg(){
-
-const input=document.getElementById("msg");
-const text=input.value;
-
-const res=await fetch("/api/chat",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({message:text})
-});
-
-const data=await res.json();
-
-document.getElementById("messages").innerHTML+=
-`<p><b>You:</b> ${text}</p>
-<p><b>AI:</b> ${data.reply}</p>`;
-
-input.value="";
-}
-
 </script>
 
 </body>
