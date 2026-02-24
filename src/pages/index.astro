@@ -1,262 +1,212 @@
 ---
-const industries = [
-  { title: "Healthcare", desc: "Improve patient insights." },
-  { title: "Pharmacy", desc: "Inventory & expiry analytics." },
-  { title: "Retail", desc: "Customer demand forecasting." },
-  { title: "Finance", desc: "Risk & revenue analytics." },
-  { title: "Energy", desc: "Operational intelligence." },
-  { title: "Manufacturing", desc: "Production optimization." }
-];
 ---
 
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bobo Analytics</title>
 
-<title>Bobo Analytics — AI Analytics Platform</title>
+  <style>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:linear-gradient(135deg,#020024,#3a0ca3);
+      color:white;
+    }
 
-<style>
+    /* ================= NAVBAR ================= */
 
-/* ---------- GLOBAL ---------- */
+    nav{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:14px 28px;
+      background:#020617;
+      border-bottom:2px solid #06b6d4;
+      z-index:1000;
+    }
 
-*{margin:0;padding:0;box-sizing:border-box}
-body{
-font-family:Inter,sans-serif;
-background:linear-gradient(135deg,#020617,#2e1065,#4c1d95);
-color:white;
-overflow-x:hidden;
-scroll-behavior:smooth;
-}
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      font-size:22px;
+      font-weight:700;
+    }
 
-/* ---------- NAVBAR ---------- */
+    .logo img{
+      width:42px;
+      height:42px;
+      border-radius:8px;
+    }
 
-nav{
-position:fixed;
-top:0;
-width:100%;
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:15px 30px;
-background:rgba(2,6,23,.7);
-backdrop-filter:blur(12px);
-border-bottom:1px solid rgba(34,211,238,.3);
-z-index:1000;
-}
+    .menu{
+      display:flex;
+      gap:28px;
+    }
 
-.logo{
-display:flex;
-align-items:center;
-gap:12px;
-font-weight:600;
-font-size:20px;
-}
+    .menu a{
+      color:#cbd5f5;
+      text-decoration:none;
+      font-size:16px;
+      transition:.3s;
+    }
 
-.logo img{width:40px;border-radius:8px}
+    .menu a:hover{
+      color:#22d3ee;
+    }
 
-.menu{
-display:flex;
-gap:25px;
-}
+    /* Hamburger */
 
-.menu a{
-color:white;
-text-decoration:none;
-opacity:.8;
-transition:.3s;
-}
+    .hamburger{
+      display:none;
+      font-size:28px;
+      cursor:pointer;
+    }
 
-.menu a:hover{opacity:1;color:#22d3ee}
+    /* MOBILE */
+    @media(max-width:768px){
 
-/* ---------- HERO ---------- */
+      .menu{
+        position:absolute;
+        top:70px;
+        right:0;
+        background:#020617;
+        flex-direction:column;
+        width:220px;
+        padding:20px;
+        display:none;
+      }
 
-.hero{
-min-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
-flex-direction:column;
-text-align:center;
-padding-top:80px;
-}
+      .menu.show{
+        display:flex;
+      }
 
-.hero h1{
-font-size:64px;
-font-weight:700;
-background:linear-gradient(90deg,#fff,#22d3ee,#a78bfa);
--webkit-background-clip:text;
-color:transparent;
-animation:fadeUp 1s ease forwards;
-}
+      .hamburger{
+        display:block;
+      }
+    }
 
-.hero p{
-margin-top:20px;
-font-size:22px;
-opacity:.8;
-animation:fadeUp 1.5s ease forwards;
-}
+    /* ================= HERO ================= */
 
-/* glowing dashboard card */
+    .hero{
+      padding-top:120px;
+      text-align:center;
+      padding-bottom:80px;
+    }
 
-.dashboard{
-margin-top:60px;
-width:90%;
-max-width:850px;
-border-radius:18px;
-background:rgba(255,255,255,.05);
-backdrop-filter:blur(20px);
-padding:25px;
-box-shadow:
-0 0 60px rgba(168,85,247,.4),
-0 0 120px rgba(34,211,238,.2);
-animation:float 6s ease-in-out infinite;
-}
+    .hero h1{
+      font-size:56px;
+      margin-bottom:15px;
+    }
 
-.dashboard img{
-width:100%;
-border-radius:12px;
-}
+    .hero p{
+      font-size:22px;
+      opacity:0.8;
+    }
 
-/* ---------- INDUSTRIES ---------- */
+    /* ================= CARD ================= */
 
-.section{
-padding:100px 20px;
-text-align:center;
-}
+    .welcome{
+      max-width:800px;
+      margin:40px auto;
+      background:#020617;
+      padding:40px;
+      border-radius:18px;
+      text-align:center;
+    }
 
-.grid{
-margin-top:50px;
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-gap:25px;
-max-width:1000px;
-margin-left:auto;
-margin-right:auto;
-}
+    footer{
+      margin-top:80px;
+      background:#020617;
+      padding:40px;
+      text-align:center;
+    }
 
-.card{
-padding:30px;
-border-radius:14px;
-background:rgba(255,255,255,.05);
-backdrop-filter:blur(14px);
-transition:.4s;
-opacity:0;
-transform:translateY(40px);
-}
+    footer a{
+      color:#22d3ee;
+      margin:0 10px;
+      text-decoration:none;
+    }
 
-.card:hover{
-transform:translateY(-8px) scale(1.03);
-box-shadow:0 0 25px rgba(34,211,238,.4);
-}
-
-/* ---------- FOOTER ---------- */
-
-footer{
-text-align:center;
-padding:60px 20px;
-border-top:1px solid rgba(255,255,255,.1);
-opacity:.8;
-}
-
-/* ---------- ANIMATIONS ---------- */
-
-@keyframes fadeUp{
-from{opacity:0;transform:translateY(40px)}
-to{opacity:1;transform:translateY(0)}
-}
-
-@keyframes float{
-0%,100%{transform:translateY(0)}
-50%{transform:translateY(-12px)}
-}
-
-/* ---------- MOBILE ---------- */
-
-@media(max-width:768px){
-.hero h1{font-size:42px}
-.hero p{font-size:18px}
-}
-
-</style>
+  </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
-<nav>
-<div class="logo">
-<img src="/logo.png" />
-Bobo Analytics
-</div>
+<!-- ================= NAVBAR ================= -->
 
-<div class="menu">
-<a href="#">Home</a>
-<a href="#industries">Industries</a>
-<a href="/privacy">Privacy</a>
-</div>
+<nav>
+
+  <div class="logo">
+    <img src="/logo.png" alt="logo">
+    Bobo Analytics
+  </div>
+
+  <div class="menu" id="menu">
+    <a href="/">Home</a>
+    <a href="#industries">Industries</a>
+    <a href="#products">Products</a>
+    <a href="#contact">Contact</a>
+  </div>
+
+  <div class="hamburger" onclick="toggleMenu()">☰</div>
+
 </nav>
 
-<!-- HERO -->
+<!-- ================= HERO ================= -->
+
 <section class="hero">
-
-<h1>AI Analytics Platform</h1>
-<p>Turn business data into intelligent decisions.</p>
-
-<div class="dashboard">
-<img src="/dashboard-image.png" alt="Dashboard">
-</div>
-
+  <h1>AI Analytics Platform</h1>
+  <p>Turn business data into intelligent decisions.</p>
 </section>
 
-<!-- INDUSTRIES -->
-<section id="industries" class="section">
+<!-- ================= WELCOME ================= -->
 
-<h2>Industries We Serve</h2>
-
-<div class="grid">
-{industries.map(i => (
-<div class="card reveal">
-<h3>{i.title}</h3>
-<p>{i.desc}</p>
-</div>
-))}
-</div>
-
+<section class="welcome">
+  <h2>Welcome to Bobo Analytics</h2>
+  <p>
+    Smart analytics solutions designed for modern businesses.
+    Upload data, analyze insights, and grow your business using
+    AI-powered intelligence.
+  </p>
 </section>
 
-<!-- FOOTER -->
+<!-- ================= FOOTER ================= -->
+
 <footer>
-<h3>Bobo Analytics</h3>
-<p>Smart Analytics for Smarter Business</p>
 
-<p style="margin-top:15px">
-<a href="/privacy">Privacy Policy</a> |
-<a href="/terms">Terms</a> |
-<a href="/disclaimer">Disclaimer</a>
-</p>
+  <h3>Bobo Analytics</h3>
 
-<p style="margin-top:20px;font-size:13px">
-© 2026 Bobo Analytics
-</p>
+  <p style="max-width:700px;margin:auto;opacity:.8;">
+    Smart analytics solutions designed for modern businesses.
+    Transform data into intelligent decisions using AI-powered insights.
+  </p>
+
+  <div style="margin-top:20px;">
+    <a href="/privacy">Privacy Policy</a>
+    <a href="/terms">Terms & Conditions</a>
+    <a href="/disclaimer">Disclaimer</a>
+  </div>
+
+  <p style="margin-top:25px;font-size:13px;opacity:.6;">
+    © 2026 Bobo Analytics — Smart Analytics for Smarter Business
+  </p>
+
 </footer>
 
-<!-- SCROLL ANIMATION SCRIPT -->
-<script>
-const observer=new IntersectionObserver(entries=>{
-entries.forEach(e=>{
-if(e.isIntersecting){
-e.target.style.opacity=1;
-e.target.style.transform="translateY(0)";
-}
-});
-});
+<!-- ================= SCRIPT ================= -->
 
-document.querySelectorAll(".card").forEach(el=>{
-observer.observe(el);
-});
+<script>
+  function toggleMenu(){
+    document.getElementById("menu").classList.toggle("show");
+  }
 </script>
 
 </body>
