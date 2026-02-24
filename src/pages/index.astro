@@ -3,240 +3,237 @@
 
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bobo Analytics</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bobo Analytics</title>
 
-  <!-- Animation Library -->
-  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
 
-  <style>
-    body{
-      margin:0;
-      font-family:Arial, Helvetica, sans-serif;
-      color:white;
-      background:linear-gradient(135deg,#020617,#3b0764);
-      background-size:200% 200%;
-      animation:bgMove 12s ease infinite;
-    }
+<style>
 
-    @keyframes bgMove{
-      0%{background-position:0% 50%;}
-      50%{background-position:100% 50%;}
-      100%{background-position:0% 50%;}
-    }
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  color:white;
+  background:linear-gradient(135deg,#020617,#3b0764);
+  background-size:200% 200%;
+  animation:bgMove 12s ease infinite;
+}
 
-    /* NAVBAR */
-    .navbar{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:15px 30px;
-      background:#020617;
-      border-bottom:1px solid #22d3ee;
-      position:sticky;
-      top:0;
-      z-index:100;
-    }
+@keyframes bgMove{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
 
-    .logo{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-weight:bold;
-      font-size:18px;
-    }
+/* NAVBAR */
+.navbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px 30px;
+  background:#020617;
+  border-bottom:1px solid #22d3ee;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
 
-    .logo img{
-      height:35px;
-    }
+.logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:bold;
+}
 
-    nav a{
-      margin:0 15px;
-      color:white;
-      text-decoration:none;
-    }
+.logo img{
+  height:38px;
+}
 
-    .hamburger{
-      display:none;
-      font-size:26px;
-      cursor:pointer;
-    }
+nav{
+  display:flex;
+}
 
-    @media(max-width:768px){
-      nav{
-        display:none;
-        position:absolute;
-        top:60px;
-        right:20px;
-        background:#020617;
-        padding:20px;
-        border-radius:10px;
-      }
+nav a{
+  margin:0 15px;
+  color:white;
+  text-decoration:none;
+}
 
-      nav.show{
-        display:block;
-      }
+/* HAMBURGER ALWAYS VISIBLE */
+.hamburger{
+  display:block;
+  font-size:26px;
+  cursor:pointer;
+  color:white;
+}
 
-      .hamburger{
-        display:block;
-      }
-    }
+/* MOBILE MENU */
+@media(max-width:768px){
+  nav{
+    display:none;
+    position:absolute;
+    top:65px;
+    right:20px;
+    background:#020617;
+    padding:20px;
+    border-radius:10px;
+    flex-direction:column;
+  }
 
-    /* HERO */
-    .hero{
-      text-align:center;
-      padding:100px 20px;
-    }
+  nav.show{
+    display:flex;
+  }
+}
 
-    .hero h1{
-      font-size:48px;
-      margin-bottom:10px;
-    }
+/* HERO */
+.hero{
+  text-align:center;
+  padding:100px 20px;
+}
 
-    .hero h2{
-      background:linear-gradient(90deg,#22d3ee,#a855f7,#ec4899);
-      -webkit-background-clip:text;
-      color:transparent;
-    }
+.hero h1{
+  font-size:48px;
+}
 
-    .hero img{
-      width:90%;
-      max-width:500px;
-      border-radius:12px;
-      margin-top:30px;
-      box-shadow:
-        0 0 20px #a855f7,
-        0 0 60px rgba(168,85,247,.5),
-        0 0 120px rgba(168,85,247,.3);
-    }
+.gradient{
+  background:linear-gradient(90deg,#22d3ee,#a855f7,#ec4899);
+  -webkit-background-clip:text;
+  color:transparent;
+}
 
-    /* INDUSTRIES */
-    .industries{
-      padding:80px 20px;
-      text-align:center;
-      background:black;
-    }
+.hero img{
+  width:90%;
+  max-width:520px;
+  border-radius:14px;
+  margin-top:30px;
+  box-shadow:
+    0 0 20px #a855f7,
+    0 0 60px rgba(168,85,247,.5),
+    0 0 120px rgba(168,85,247,.3);
+}
 
-    .cards{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-      gap:20px;
-      max-width:900px;
-      margin:auto;
-    }
+/* INDUSTRIES */
+.industries{
+  padding:80px 20px;
+  background:black;
+  text-align:center;
+}
 
-    .card{
-      background:#020617;
-      padding:25px;
-      border-radius:12px;
-      transition:.4s;
-      border:1px solid rgba(255,255,255,.1);
-    }
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+  max-width:900px;
+  margin:auto;
+}
 
-    .card:hover{
-      transform:translateY(-10px);
-      box-shadow:0 0 25px rgba(168,85,247,.6);
-    }
+.card{
+  background:#020617;
+  padding:25px;
+  border-radius:12px;
+  transition:.4s;
+}
 
-    /* DASHBOARD PREVIEW */
-    .dashboard-preview{
-      padding:80px 20px;
-      text-align:center;
-    }
+.card:hover{
+  transform:translateY(-10px);
+  box-shadow:0 0 25px rgba(168,85,247,.6);
+}
 
-    .dashboard{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-      gap:20px;
-      max-width:900px;
-      margin:auto;
-    }
+/* DASHBOARD */
+.dashboard-preview{
+  padding:80px 20px;
+  text-align:center;
+}
 
-    .chart{
-      height:160px;
-      border-radius:12px;
-      background:linear-gradient(135deg,#0f172a,#1e1b4b);
-      box-shadow:0 0 30px rgba(34,211,238,.4);
-    }
+.dashboard{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:20px;
+  max-width:900px;
+  margin:auto;
+}
 
-    footer{
-      text-align:center;
-      padding:30px;
-      opacity:.7;
-    }
-  </style>
+.chart{
+  height:160px;
+  border-radius:12px;
+  background:linear-gradient(135deg,#0f172a,#1e1b4b);
+  box-shadow:0 0 30px rgba(34,211,238,.4);
+}
+
+footer{
+  text-align:center;
+  padding:30px;
+  opacity:.7;
+}
+
+</style>
 </head>
 
 <body>
 
-  <!-- NAVBAR -->
-  <header class="navbar">
-    <div class="logo">
-      <img src="/logo.png" />
-      <span>Bobo Analytics</span>
-    </div>
+<header class="navbar">
+  <div class="logo">
+    <img src="/logo.png"/>
+    <span>Bobo Analytics</span>
+  </div>
 
-    <nav id="menu">
-      <a href="#">Home</a>
-      <a href="#">Services</a>
-      <a href="#">Dashboard</a>
-      <a href="#">Contact</a>
-    </nav>
+  <nav id="menu">
+    <a href="#">Home</a>
+    <a href="#">Services</a>
+    <a href="#">Dashboard</a>
+    <a href="#">Contact</a>
+  </nav>
 
-    <div class="hamburger" onclick="toggleMenu()">☰</div>
-  </header>
+  <div class="hamburger" onclick="toggleMenu()">☰</div>
+</header>
 
-  <!-- HERO -->
-  <section class="hero" data-aos="fade-up">
-    <h1>AI Analytics Platform</h1>
-    <h2>Built for Modern Businesses</h2>
-    <p>Turn business data into intelligent decisions.</p>
+<section class="hero" data-aos="fade-up">
+  <h1>AI Analytics Platform</h1>
+  <h2 class="gradient">Built for Modern Businesses</h2>
+  <p>Turn business data into intelligent decisions.</p>
 
-    <img src="/dashboard-image.png" data-aos="fade-left"/>
-  </section>
+  <img src="/dashboard-image.png" data-aos="fade-left"/>
+</section>
 
-  <!-- INDUSTRIES -->
-  <section class="industries">
-    <h2 data-aos="fade-up">Industries We Serve</h2>
+<section class="industries">
+  <h2 data-aos="fade-up">Industries We Serve</h2>
 
-    <div class="cards">
-      <div class="card" data-aos="zoom-in">Healthcare Analytics</div>
-      <div class="card" data-aos="zoom-in">Pharmacy Intelligence</div>
-      <div class="card" data-aos="zoom-in">Retail Forecasting</div>
-      <div class="card" data-aos="zoom-in">Finance Insights</div>
-    </div>
-  </section>
+  <div class="cards">
+    <div class="card" data-aos="zoom-in">Healthcare Analytics</div>
+    <div class="card" data-aos="zoom-in">Pharmacy Intelligence</div>
+    <div class="card" data-aos="zoom-in">Retail Forecasting</div>
+    <div class="card" data-aos="zoom-in">Finance Insights</div>
+  </div>
+</section>
 
-  <!-- DASHBOARD -->
-  <section class="dashboard-preview" data-aos="fade-up">
-    <h2>Analytics Dashboard Preview</h2>
+<section class="dashboard-preview" data-aos="fade-up">
+  <h2>Analytics Dashboard Preview</h2>
 
-    <div class="dashboard">
-      <div class="chart"></div>
-      <div class="chart"></div>
-      <div class="chart"></div>
-    </div>
-  </section>
+  <div class="dashboard">
+    <div class="chart"></div>
+    <div class="chart"></div>
+    <div class="chart"></div>
+  </div>
+</section>
 
-  <footer>
-    © 2026 Bobo Analytics — Smart Analytics for Smarter Business
-  </footer>
+<footer>
+© 2026 Bobo Analytics — Smart Analytics for Smarter Business
+</footer>
 
-  <!-- Scripts -->
-  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 
-  <script>
-    AOS.init({
-      duration:900,
-      once:true,
-      easing:"ease-out-cubic"
-    });
+<script>
+AOS.init({
+  duration:900,
+  once:true,
+  easing:"ease-out-cubic"
+});
 
-    function toggleMenu(){
-      document.getElementById("menu").classList.toggle("show");
-    }
-  </script>
+function toggleMenu(){
+  document.getElementById("menu").classList.toggle("show");
+}
+</script>
 
 </body>
 </html>
