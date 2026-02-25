@@ -1,291 +1,62 @@
----
----
-
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bobo Analytics</title>
-
-<style>
-
-/* ================= GLOBAL ================= */
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:system-ui,-apple-system,Segoe UI;
-}
-
-body{
-color:white;
-background:
-radial-gradient(circle at 20% 20%, #5b21b6 0%, transparent 40%),
-radial-gradient(circle at 80% 70%, #06b6d4 0%, transparent 40%),
-linear-gradient(135deg,#020617,#1e0038);
-}
-
-/* ================= NAVBAR ================= */
-
-.navbar{
-position:fixed;
-top:0;
-width:100%;
-height:70px;
+<footer style="
 background:#020617;
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:0 20px;
-border-bottom:2px solid #06b6d4;
-z-index:999;
-}
+border-top:2px solid #06b6d4;
+margin-top:90px;
+padding:60px 20px 25px;
+color:white;
+font-family:system-ui,-apple-system,Segoe UI;
+">
 
-.logo{
-display:flex;
-align-items:center;
-gap:10px;
-font-size:20px;
-font-weight:600;
-}
-
-.logo img{
-width:45px;
-border-radius:10px;
-box-shadow:0 0 20px #06b6d4;
-}
-
-.page{
-padding-top:90px;
-}
-
-/* ================= HERO ================= */
-
-.hero{
-display:flex;
-align-items:center;
-justify-content:space-between;
-gap:40px;
+<div style="
 max-width:1100px;
 margin:auto;
-padding:80px 20px;
-flex-wrap:wrap;
-}
-
-.hero-text{
-flex:1;
-}
-
-.hero-text h1{
-font-size:40px;
-margin-bottom:10px;
-}
-
-.gradient{
-background:linear-gradient(90deg,#06b6d4,#a855f7,#ec4899);
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
-}
-
-.hero-text p{
-opacity:.8;
-margin-top:10px;
-}
-
-.hero-img{
-flex:1;
-text-align:center;
-}
-
-.hero-img img{
-width:100%;
-max-width:420px;
-border-radius:18px;
-box-shadow:0 0 40px rgba(168,85,247,.6);
-animation:float 5s ease-in-out infinite;
-}
-
-@keyframes float{
-0%,100%{transform:translateY(0)}
-50%{transform:translateY(-12px)}
-}
-
-/* ================= INDUSTRIES ================= */
-
-.industries{
-text-align:center;
-padding:60px 20px;
-}
-
-.grid{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-gap:25px;
-max-width:1000px;
-margin:auto;
-}
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:40px;
+">
 
-.card{
-background:#020617;
-padding:25px;
-border-radius:14px;
-border:1px solid rgba(0,255,255,.2);
-box-shadow:0 0 20px rgba(0,255,255,.2);
-transition:.4s;
-}
-
-.card:hover{
-transform:translateY(-8px);
-box-shadow:0 0 35px #00f0ff;
-}
-
-/* ================= FORM ================= */
-
-.form-section{
-padding:70px 20px;
-text-align:center;
-}
-
-.form-box{
-max-width:500px;
-margin:auto;
-background:#020617;
-padding:30px;
-border-radius:16px;
-box-shadow:0 0 30px rgba(168,85,247,.5);
-}
-
-input,textarea{
-width:100%;
-padding:12px;
-margin-top:12px;
-border-radius:8px;
-border:none;
-background:#0f172a;
-color:white;
-}
-
-button{
-margin-top:15px;
-padding:12px;
-width:100%;
-border:none;
-border-radius:8px;
-background:linear-gradient(90deg,#06b6d4,#a855f7);
-color:white;
-font-weight:600;
-cursor:pointer;
-}
-
-/* ================= FOOTER ================= */
-
-footer{
-margin-top:80px;
-background:#020617;
-text-align:center;
-padding:40px 20px;
-border-top:2px solid #06b6d4;
-}
-
-footer a{
-color:#06b6d4;
-margin:0 10px;
-text-decoration:none;
-}
-
-footer a:hover{
-text-decoration:underline;
-}
-
-/* MOBILE */
-
-@media(max-width:768px){
-.hero{
-flex-direction:column;
-text-align:center;
-}
-.hero-text h1{
-font-size:30px;
-}
-}
-
-</style>
-</head>
-
-<body>
-
-<!-- NAVBAR -->
-<div class="navbar">
-<div class="logo">
-<img src="/logo.png">
-<span>Bobo Analytics</span>
-</div>
-<div>☰</div>
-</div>
-
-<div class="page">
-
-<!-- HERO (PREVIOUS WEBSITE RESTORED) -->
-<section class="hero">
-
-<div class="hero-text">
-<h1>AI Analytics Platform</h1>
-<h2 class="gradient">Built for Modern Businesses</h2>
-<p>Turn business data into intelligent decisions.</p>
-</div>
-
-<div class="hero-img">
-<img src="/dashboard-image.png" alt="dashboard">
-</div>
-
-</section>
-
-<!-- INDUSTRIES -->
-<section class="industries">
-<h2>Industries We Serve</h2>
-
-<div class="grid">
-<div class="card">🏥 Healthcare<br><small>Improve patient insights.</small></div>
-<div class="card">💊 Pharmacy<br><small>Inventory & expiry analytics.</small></div>
-<div class="card">🛍 Retail<br><small>Customer demand forecasting.</small></div>
-<div class="card">💰 Finance<br><small>Financial intelligence tools.</small></div>
-</div>
-</section>
-
-<!-- REQUEST DEMO FORM -->
-<section class="form-section">
-<h2>Request Demo</h2>
-
-<div class="form-box">
-<form>
-<input type="text" placeholder="Your Name" required>
-<input type="email" placeholder="Email" required>
-<textarea placeholder="Your Requirement"></textarea>
-<button type="submit">Submit</button>
-</form>
-</div>
-
-</section>
-
-<!-- FOOTER -->
-<footer>
-<h3>Bobo Analytics</h3>
-<p>Smart Analytics for Smarter Business</p>
-
+<!-- COMPANY -->
 <div>
-<a href="/privacy">Privacy Policy</a>
-<a href="/terms">Terms & Conditions</a>
-<a href="/disclaimer">Disclaimer</a>
+<h3 style="margin-bottom:12px;">Bobo Analytics</h3>
+<p style="opacity:.7;font-size:14px;line-height:1.6;">
+Smart Analytics for Smarter Business. We help organizations transform raw data
+into intelligent decisions using AI-powered analytics solutions.
+</p>
 </div>
 
-<p style="margin-top:10px;opacity:.6;">
-© 2026 Bobo Analytics
-</p>
+<!-- COMPANY LINKS -->
+<div>
+<h4 style="margin-bottom:12px;color:#06b6d4;">Company</h4>
+<a href="#" style="display:block;color:white;text-decoration:none;margin:6px 0;opacity:.8;">Home</a>
+<a href="#industries" style="display:block;color:white;text-decoration:none;margin:6px 0;opacity:.8;">Industries</a>
+<a href="#demo" style="display:block;color:white;text-decoration:none;margin:6px 0;opacity:.8;">Request Demo</a>
+</div>
+
+<!-- CONTACT -->
+<div>
+<h4 style="margin-bottom:12px;color:#06b6d4;">Contact</h4>
+<p style="opacity:.7;font-size:14px;">Email: support@boboanalytics.com</p>
+<p style="opacity:.7;font-size:14px;">Phone: +91 9156484328</p>
+<p style="opacity:.7;font-size:14px;">India</p>
+</div>
+
+<!-- LEGAL -->
+<div>
+<h4 style="margin-bottom:12px;color:#06b6d4;">Legal</h4>
+<a href="/privacy" style="display:block;color:white;text-decoration:none;margin:6px 0;opacity:.8;">Privacy Policy</a>
+<a href="/terms" style="display:block;color:white;text-decoration:none;margin:6px 0;opacity:.8;">Terms & Conditions</a>
+<a href="/disclaimer" style="display:block;color:white;text-decoration:none;margin:6px 0;opacity:.8;">Disclaimer</a>
+</div>
+
+</div>
+
+<div style="
+text-align:center;
+margin-top:40px;
+opacity:.6;
+font-size:14px;
+">
+© 2026 Bobo Analytics — All Rights Reserved
+</div>
 
 </footer>
-
-</div>
-
-</body>
-</html>
