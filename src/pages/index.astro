@@ -2,36 +2,33 @@
 
 const industries = [
 {
-title:"Healthcare Analytics",
-desc:"AI dashboards analyzing patient trends, operational performance, and predictive healthcare intelligence."
+title: "Healthcare Analytics",
+desc: "AI dashboards analyzing patient trends, operational efficiency and predictive healthcare insights."
 },
 {
-title:"Pharmacy Intelligence",
-desc:"Inventory tracking, expiry prediction, and automated pharmacy analytics insights."
+title: "Pharmacy Intelligence",
+desc: "Inventory analytics, expiry prediction and automated pharmacy performance tracking."
 },
 {
-title:"Retail Forecasting",
-desc:"Customer behavior analytics and AI demand forecasting improving retail performance."
+title: "Retail Forecasting",
+desc: "Customer demand prediction and sales optimization powered by AI analytics."
 },
 {
-title:"Finance Insights",
-desc:"Financial dashboards transforming business data into strategic forecasting insights."
+title: "Finance Insights",
+desc: "Financial dashboards transforming raw data into smart business decisions."
 }
 ];
 --
 
 <style>
-
-/* ===== GLOBAL ===== */
 body{
 margin:0;
 font-family:system-ui;
-color:white;
 background:linear-gradient(135deg,#030617,#18003a,#020617);
 background-size:400% 400%;
 animation:bg 14s ease infinite;
+color:white;
 padding-top:70px;
-overflow-x:hidden;
 }
 
 @keyframes bg{
@@ -40,7 +37,6 @@ overflow-x:hidden;
 100%{background-position:0% 50%}
 }
 
-/* ===== NAVBAR ===== */
 .nav{
 position:fixed;
 top:0;
@@ -52,7 +48,7 @@ justify-content:space-between;
 align-items:center;
 padding:0 20px;
 border-bottom:2px solid #00eaff;
-z-index:999;
+z-index:1000;
 }
 
 .logo{
@@ -60,58 +56,36 @@ display:flex;
 align-items:center;
 gap:10px;
 font-weight:700;
-font-size:20px;
 }
 
 .logo img{
-width:45px;
+width:42px;
 border-radius:10px;
-box-shadow:0 0 18px #00eaff;
+box-shadow:0 0 15px #00eaff;
 }
 
-.menu{display:flex;gap:25px;}
-.menu a{
-color:white;
-text-decoration:none;
-position:relative;
-}
-
-.menu a::after{
-content:"";
-position:absolute;
-width:0;
-height:2px;
-background:#00eaff;
-bottom:-5px;
-left:0;
-transition:.3s;
-}
-.menu a:hover::after{width:100%}
+.menu{display:flex;gap:20px;}
+.menu a{color:white;text-decoration:none;}
 
 .ham{display:none;font-size:26px;cursor:pointer;}
 
 @media(max-width:768px){
 .menu{
 display:none;
-flex-direction:column;
 position:absolute;
 top:70px;
 left:0;
 width:100%;
 background:#020617;
-padding:20px 0;
+flex-direction:column;
 text-align:center;
+padding:20px 0;
 }
 .menu.show{display:flex;}
 .ham{display:block;}
 }
 
-/* ===== HERO ===== */
-.hero{text-align:center;padding:80px 20px;}
-.hero h1{font-size:48px;margin-bottom:10px;}
-.hero p{opacity:.8}
-
-/* ===== INDUSTRIES ===== */
+.hero{text-align:center;padding:90px 20px;}
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
@@ -121,37 +95,14 @@ margin:60px auto;
 padding:0 20px;
 }
 
-.card{perspective:1000px;cursor:pointer;}
-.inner{
-position:relative;
-height:160px;
-transition:.8s;
-transform-style:preserve-3d;
-}
-.card.flip .inner{transform:rotateY(180deg);}
-
-.face{
-position:absolute;
-width:100%;
-height:100%;
-display:flex;
-align-items:center;
-justify-content:center;
-text-align:center;
-padding:20px;
-border-radius:16px;
+.card{
 background:#020617;
-box-shadow:0 0 25px rgba(0,234,255,.4);
-backface-visibility:hidden;
+border-radius:16px;
+padding:30px;
+box-shadow:0 0 25px rgba(0,234,255,.3);
+text-align:center;
 }
 
-.back{
-transform:rotateY(180deg);
-font-size:14px;
-opacity:.85;
-}
-
-/* ===== VIDEO ===== */
 .videoWrap{
 max-width:1100px;
 margin:70px auto;
@@ -160,9 +111,8 @@ padding:0 20px;
 
 .videoBox{
 height:420px;
-border-radius:20px;
 overflow:hidden;
-box-shadow:0 0 35px rgba(0,234,255,.3);
+border-radius:20px;
 }
 
 .videoBox video{
@@ -171,47 +121,18 @@ height:100%;
 object-fit:cover;
 }
 
-/* ===== FORM ===== */
-.form{
-max-width:500px;
-margin:80px auto;
-text-align:center;
-}
-.form input,.form textarea{
-width:100%;
-padding:12px;
-margin:10px 0;
-border:none;
-border-radius:8px;
-}
-.form button{
-background:#00eaff;
-border:none;
-padding:12px 25px;
-border-radius:8px;
-cursor:pointer;
-}
-
-/* ===== FOOTER ===== */
 footer{
 background:#020617;
 padding:40px;
 text-align:center;
 border-top:1px solid #00eaff;
 }
-footer a{
-color:#00eaff;
-margin:0 10px;
-text-decoration:none;
-}
-
+footer a{color:#00eaff;margin:0 10px;}
 </style>
-
-<!-- NAVBAR -->
 
 <nav class="nav">
 <div class="logo">
-<img src="/logo.png">
+<img src="/logo.png" />
 Bobo Analytics
 </div>
 
@@ -224,31 +145,23 @@ Bobo Analytics
 </div>
 </nav>
 
-<!-- HERO -->
-
 <section class="hero">
 <h1>AI Analytics Platform</h1>
 <p>Turn business data into intelligent decisions.</p>
 </section>
 
-<!-- INDUSTRIES -->
-
 <section id="industries">
 <h2 style="text-align:center">Industries We Serve</h2>
 
 <div class="grid">
-{industries.map(item => (
-<div class="card" onclick="this.classList.toggle('flip')">
-<div class="inner">
-<div class="face">{item.title}</div>
-<div class="face back">{item.desc}</div>
-</div>
-</div>
+{industries.map((item) => (
+  <div class="card">
+    <h3>{item.title}</h3>
+    <p>{item.desc}</p>
+  </div>
 ))}
 </div>
 </section>
-
-<!-- VIDEO -->
 
 <section class="videoWrap">
 <h2 style="text-align:center">See Bobo Analytics In Action</h2>
@@ -259,35 +172,30 @@ Bobo Analytics
 </div>
 </section>
 
-<!-- FORM -->
-
-<section id="demo" class="form">
+<section id="demo" style="text-align:center;margin:80px 20px;">
 <h2>Request Demo</h2>
-<input placeholder="Your Name">
-<input placeholder="Email">
-<textarea placeholder="Message"></textarea>
+<input placeholder="Your Name"><br><br>
+<input placeholder="Email"><br><br>
+<textarea placeholder="Message"></textarea><br><br>
 <button>Submit</button>
 </section>
 
-<!-- FOOTER -->
-
 <footer>
 <h3>Bobo Analytics</h3>
-<p>Smart Analytics for Smarter Business</p>
 <a href="/privacy">Privacy</a>
 <a href="/terms">Terms</a>
 <a href="/disclaimer">Disclaimer</a>
-<p style="opacity:.6">© 2026 Bobo Analytics</p>
+<p>© 2026 Bobo Analytics</p>
 </footer>
 
 <script>
 const vids=["/video1.mp4","/video2.mp4","/video3.mp4"];
 let i=0;
-const p=document.getElementById("player");
+const player=document.getElementById("player");
 
 setInterval(()=>{
 i=(i+1)%vids.length;
-p.src=vids[i];
-p.play();
+player.src=vids[i];
+player.play();
 },5000);
 </script>
