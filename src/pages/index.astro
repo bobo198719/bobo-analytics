@@ -1,152 +1,12 @@
----
----
-
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bobo Analytics</title>
-
-  <style>
-
-    body{
-      margin:0;
-      font-family:Arial, Helvetica, sans-serif;
-      background:linear-gradient(135deg,#020024,#3a0ca3);
-      color:white;
-    }
-
-    /* ================= NAVBAR ================= */
-
-    nav{
-      position:fixed;
-      top:0;
-      left:0;
-      width:100%;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:14px 28px;
-      background:#020617;
-      border-bottom:2px solid #06b6d4;
-      z-index:1000;
-    }
-
-    .logo{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      font-size:22px;
-      font-weight:700;
-    }
-
-    .logo img{
-      width:42px;
-      height:42px;
-      border-radius:8px;
-    }
-
-    .menu{
-      display:flex;
-      gap:28px;
-    }
-
-    .menu a{
-      color:#cbd5f5;
-      text-decoration:none;
-      font-size:16px;
-      transition:.3s;
-    }
-
-    .menu a:hover{
-      color:#22d3ee;
-    }
-
-    /* Hamburger */
-
-    .hamburger{
-      display:none;
-      font-size:28px;
-      cursor:pointer;
-    }
-
-    /* MOBILE */
-    @media(max-width:768px){
-
-      .menu{
-        position:absolute;
-        top:70px;
-        right:0;
-        background:#020617;
-        flex-direction:column;
-        width:220px;
-        padding:20px;
-        display:none;
-      }
-
-      .menu.show{
-        display:flex;
-      }
-
-      .hamburger{
-        display:block;
-      }
-    }
-
-    /* ================= HERO ================= */
-
-    .hero{
-      padding-top:120px;
-      text-align:center;
-      padding-bottom:80px;
-    }
-
-    .hero h1{
-      font-size:56px;
-      margin-bottom:15px;
-    }
-
-    .hero p{
-      font-size:22px;
-      opacity:0.8;
-    }
-
-    /* ================= CARD ================= */
-
-    .welcome{
-      max-width:800px;
-      margin:40px auto;
-      background:#020617;
-      padding:40px;
-      border-radius:18px;
-      text-align:center;
-    }
-
-    footer{
-      margin-top:80px;
-      background:#020617;
-      padding:40px;
-      text-align:center;
-    }
-
-    footer a{
-      color:#22d3ee;
-      margin:0 10px;
-      text-decoration:none;
-    }
-
-  </style>
-</head>
-
-<body>
-
-<!-- ================= NAVBAR ================= -->
-
 <nav>
 
   <div class="logo">
-    <img src="/logo.png" alt="logo">
-    Bobo Analytics
+    <!-- Animated Logo -->
+    <video autoplay muted loop playsinline class="logo-video">
+      <source src="/logo-animation.mp4" type="video/mp4">
+    </video>
+
+    <span>Bobo Analytics</span>
   </div>
 
   <div class="menu" id="menu">
@@ -160,54 +20,86 @@
 
 </nav>
 
-<!-- ================= HERO ================= -->
+<style>
 
-<section class="hero">
-  <h1>AI Analytics Platform</h1>
-  <p>Turn business data into intelligent decisions.</p>
-</section>
+nav{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 28px;
+  background:#020617;
+  border-bottom:2px solid #06b6d4;
+  z-index:1000;
+}
 
-<!-- ================= WELCOME ================= -->
+.logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-size:22px;
+  font-weight:700;
+}
 
-<section class="welcome">
-  <h2>Welcome to Bobo Analytics</h2>
-  <p>
-    Smart analytics solutions designed for modern businesses.
-    Upload data, analyze insights, and grow your business using
-    AI-powered intelligence.
-  </p>
-</section>
+.logo-video{
+  width:44px;
+  height:44px;
+  object-fit:cover;
+  border-radius:10px;
+  box-shadow:0 0 15px rgba(0,255,255,0.6);
+}
 
-<!-- ================= FOOTER ================= -->
+.menu{
+  display:flex;
+  gap:28px;
+}
 
-<footer>
+.menu a{
+  color:#cbd5f5;
+  text-decoration:none;
+  font-size:16px;
+  transition:.3s;
+}
 
-  <h3>Bobo Analytics</h3>
+.menu a:hover{
+  color:#22d3ee;
+}
 
-  <p style="max-width:700px;margin:auto;opacity:.8;">
-    Smart analytics solutions designed for modern businesses.
-    Transform data into intelligent decisions using AI-powered insights.
-  </p>
+.hamburger{
+  display:none;
+  font-size:28px;
+  cursor:pointer;
+}
 
-  <div style="margin-top:20px;">
-    <a href="/privacy">Privacy Policy</a>
-    <a href="/terms">Terms & Conditions</a>
-    <a href="/disclaimer">Disclaimer</a>
-  </div>
+@media(max-width:768px){
 
-  <p style="margin-top:25px;font-size:13px;opacity:.6;">
-    © 2026 Bobo Analytics — Smart Analytics for Smarter Business
-  </p>
+  .menu{
+    position:absolute;
+    top:70px;
+    right:0;
+    background:#020617;
+    flex-direction:column;
+    width:220px;
+    padding:20px;
+    display:none;
+  }
 
-</footer>
+  .menu.show{
+    display:flex;
+  }
 
-<!-- ================= SCRIPT ================= -->
+  .hamburger{
+    display:block;
+  }
+}
+
+</style>
 
 <script>
-  function toggleMenu(){
-    document.getElementById("menu").classList.toggle("show");
-  }
+function toggleMenu(){
+  document.getElementById("menu").classList.toggle("show");
+}
 </script>
-
-</body>
-</html>
