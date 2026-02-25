@@ -1,51 +1,348 @@
-<!-- BOBO ANALYTICS PREMIUM VIDEO SHOWCASE -->
+---
 
-<section style="max-width:1100px;margin:70px auto;padding:0 20px;">
+const industries = [
+{
+title:"Healthcare Analytics",
+desc:"AI-powered patient analytics, operational dashboards, and predictive healthcare intelligence helping hospitals improve outcomes and efficiency."
+},
+{
+title:"Pharmacy Intelligence",
+desc:"Inventory analytics, expiry prediction, automated stock insights, and demand forecasting designed for modern pharmacies."
+},
+{
+title:"Retail Forecasting",
+desc:"Customer behavior analytics, sales forecasting, and AI-driven demand prediction to increase profitability."
+},
+{
+title:"Finance Insights",
+desc:"Financial analytics dashboards transforming raw business data into forecasting models and strategic decisions."
+}
+];
+--
 
-<h2 style="text-align:center;font-size:30px;margin-bottom:25px;">
-See Bobo Analytics In Action
-</h2>
+<html lang="en">
+<head>
 
-<div id="videoBox" style="
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Bobo Analytics</title>
+
+<style>
+
+/* ---------- GLOBAL ---------- */
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
+body{
+color:white;
+padding-top:80px;
+background:linear-gradient(135deg,#05071a,#1a0040,#000814);
+background-size:400% 400%;
+animation:bgMove 15s ease infinite;
+overflow-x:hidden;
+}
+
+@keyframes bgMove{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+/* ---------- NAVBAR ---------- */
+.navbar{
+position:fixed;
+top:0;
 width:100%;
+height:70px;
+background:#020617;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 20px;
+z-index:1000;
+border-bottom:2px solid #00eaff;
+}
+
+.logo{
+display:flex;
+align-items:center;
+gap:12px;
+font-weight:700;
+font-size:22px;
+}
+
+.logo img{
+width:50px;
+border-radius:12px;
+box-shadow:0 0 18px #00eaff;
+}
+
+.menu{
+display:flex;
+gap:28px;
+}
+
+.menu a{
+color:white;
+text-decoration:none;
+position:relative;
+}
+
+.menu a::after{
+content:"";
+position:absolute;
+width:0;
+height:2px;
+background:#00eaff;
+left:0;
+bottom:-5px;
+transition:.3s;
+}
+
+.menu a:hover::after{width:100%}
+
+/* hamburger */
+.hamburger{
+display:none;
+font-size:28px;
+cursor:pointer;
+}
+
+@media(max-width:768px){
+.menu{
+display:none;
+position:absolute;
+top:70px;
+left:0;
+width:100%;
+background:#020617;
+flex-direction:column;
+text-align:center;
+padding:20px 0;
+}
+.menu.show{display:flex}
+.hamburger{display:block}
+}
+
+/* ---------- HERO ---------- */
+.hero{
+text-align:center;
+padding:80px 20px;
+}
+
+.hero h1{
+font-size:52px;
+margin-bottom:15px;
+}
+
+.hero p{opacity:.8}
+
+/* ---------- INDUSTRIES ---------- */
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:25px;
+max-width:1100px;
+margin:60px auto;
+padding:0 20px;
+}
+
+.card{
+perspective:1000px;
+cursor:pointer;
+}
+
+.card-inner{
+position:relative;
+width:100%;
+height:160px;
+transition:transform .8s;
+transform-style:preserve-3d;
+}
+
+.card.flip .card-inner{
+transform:rotateY(180deg);
+}
+
+.card-face{
+position:absolute;
+width:100%;
+height:100%;
+border-radius:18px;
+background:#020617;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+padding:20px;
+backface-visibility:hidden;
+box-shadow:0 0 25px rgba(0,234,255,.4);
+}
+
+.card-back{
+transform:rotateY(180deg);
+font-size:14px;
+opacity:.85;
+}
+
+/* ---------- FORM ---------- */
+.form{
+max-width:500px;
+margin:80px auto;
+text-align:center;
+}
+
+.form input,.form textarea{
+width:100%;
+margin:10px 0;
+padding:12px;
+border-radius:8px;
+border:none;
+}
+
+.form button{
+padding:12px 25px;
+background:#00eaff;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+/* ---------- VIDEO SHOWCASE ---------- */
+.videoBox{
+max-width:1100px;
+margin:80px auto;
+padding:0 20px;
+}
+
+.videoContainer{
 height:420px;
 border-radius:20px;
 overflow:hidden;
-position:relative;
-background:#000;
 box-shadow:0 0 40px rgba(0,234,255,.35);
-">
+}
 
-<video id="showcaseVideo"
-autoplay
-muted
-playsinline
-style="
+.videoContainer video{
 width:100%;
 height:100%;
 object-fit:cover;
-position:absolute;
-top:0;
-left:0;
-"> <source src="/video1.mp4" type="video/mp4"> </video>
+}
 
+/* ---------- FOOTER ---------- */
+footer{
+margin-top:80px;
+background:#020617;
+text-align:center;
+padding:40px 20px;
+border-top:1px solid #00eaff;
+}
+
+footer a{
+color:#00eaff;
+margin:0 12px;
+text-decoration:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<nav class="navbar">
+<div class="logo">
+<img src="/logo.png" />
+Bobo Analytics
 </div>
 
+<div class="hamburger" onclick="toggleMenu()">☰</div>
+
+<div class="menu" id="menu">
+<a href="#">Home</a>
+<a href="#industries">Industries</a>
+<a href="#demo">Demo</a>
+</div>
+</nav>
+
+<!-- HERO -->
+
+<section class="hero">
+<h1>AI Analytics Platform</h1>
+<p>Turn business data into intelligent decisions.</p>
 </section>
 
+<!-- INDUSTRIES -->
+
+<section id="industries">
+<h2 style="text-align:center">Industries We Serve</h2>
+
+<div class="grid">
+{industries.map((item)=>(
+<div class="card" onclick="this.classList.toggle('flip')">
+<div class="card-inner">
+<div class="card-face">{item.title}</div>
+<div class="card-face card-back">{item.desc}</div>
+</div>
+</div>
+))}
+</div>
+</section>
+
+<!-- VIDEO -->
+
+<section class="videoBox">
+<h2 style="text-align:center;margin-bottom:20px;">
+See Bobo Analytics In Action
+</h2>
+
+<div class="videoContainer">
+<video id="videoPlayer" autoplay muted playsinline>
+<source src="/video1.mp4" type="video/mp4">
+</video>
+</div>
+</section>
+
+<!-- FORM -->
+
+<section id="demo" class="form">
+<h2>Request Demo</h2>
+<input placeholder="Your Name">
+<input placeholder="Email">
+<textarea placeholder="Message"></textarea>
+<button>Submit</button>
+</section>
+
+<!-- FOOTER -->
+
+<footer>
+<h3>Bobo Analytics</h3>
+<p>Smart Analytics for Smarter Business</p>
+<br>
+<a href="/privacy">Privacy Policy</a>
+<a href="/terms">Terms & Conditions</a>
+<a href="/disclaimer">Disclaimer</a>
+<p style="opacity:.6;margin-top:15px;">© 2026 Bobo Analytics</p>
+</footer>
+
 <script>
-const videos = [
-"/video1.mp4",
-"/video2.mp4",
-"/video3.mp4"
-];
 
-let index = 0;
-const player = document.getElementById("showcaseVideo");
+/* hamburger */
+function toggleMenu(){
+document.getElementById("menu").classList.toggle("show");
+}
 
-setInterval(() => {
-index = (index + 1) % videos.length;
-player.src = videos[index];
+/* video rotation */
+const vids=["/video1.mp4","/video2.mp4","/video3.mp4"];
+let i=0;
+const player=document.getElementById("videoPlayer");
+
+setInterval(()=>{
+i=(i+1)%vids.length;
+player.src=vids[i];
 player.play();
-}, 5000);
+},5000);
+
 </script>
+
+</body>
+</html>
