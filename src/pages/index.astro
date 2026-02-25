@@ -1,26 +1,34 @@
 ---
+
 ---
 
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bobo Analytics</title>
+<title>Bobo Analytics</title><style>
 
-<style>
+/* ================= GLOBAL ================= */
 
-/* GLOBAL */
-*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:system-ui,-apple-system,Segoe UI;
+scroll-behavior:smooth;
+}
 
 body{
 color:white;
+overflow-x:hidden;
 background:
 radial-gradient(circle at 20% 20%, #5b21b6 0%, transparent 40%),
 radial-gradient(circle at 80% 70%, #06b6d4 0%, transparent 40%),
 linear-gradient(135deg,#020617,#1e0038);
 }
 
-/* NAVBAR */
+/* ================= NAVBAR ================= */
+
 .navbar{
 position:fixed;
 top:0;
@@ -33,6 +41,7 @@ align-items:center;
 padding:0 20px;
 border-bottom:2px solid #06b6d4;
 z-index:999;
+backdrop-filter:blur(10px);
 }
 
 .logo{
@@ -49,9 +58,69 @@ border-radius:10px;
 box-shadow:0 0 20px #06b6d4;
 }
 
+/* HAMBURGER */
+
+.menu-btn{
+width:30px;
+height:22px;
+display:flex;
+flex-direction:column;
+justify-content:space-between;
+cursor:pointer;
+}
+
+.menu-btn span{
+height:3px;
+background:white;
+border-radius:3px;
+transition:.45s cubic-bezier(.4,0,.2,1);
+}
+
+.menu-btn.active span:nth-child(1){
+transform:rotate(45deg) translate(5px,5px);
+}
+
+.menu-btn.active span:nth-child(2){
+opacity:0;
+}
+
+.menu-btn.active span:nth-child(3){
+transform:rotate(-45deg) translate(6px,-6px);
+}
+
+/* MOBILE MENU */
+
+.mobile-menu{
+position:fixed;
+top:70px;
+right:-100%;
+width:240px;
+height:100vh;
+background:#020617;
+padding:30px;
+transition:.45s ease;
+}
+
+.mobile-menu.active{right:0;}
+
+.mobile-menu a{
+display:block;
+margin:20px 0;
+color:white;
+text-decoration:none;
+font-size:18px;
+transition:.3s;
+}
+
+.mobile-menu a:hover{
+color:#06b6d4;
+transform:translateX(6px);
+}
+
 .page{padding-top:90px}
 
-/* HERO */
+/* ================= HERO ================= */
+
 .hero{
 display:flex;
 align-items:center;
@@ -65,15 +134,13 @@ flex-wrap:wrap;
 
 .hero-text{flex:1}
 
-.hero-text h1{font-size:40px}
+.hero-text h1{font-size:42px}
 
 .gradient{
 background:linear-gradient(90deg,#06b6d4,#a855f7,#ec4899);
 -webkit-background-clip:text;
 -webkit-text-fill-color:transparent;
 }
-
-.hero-text p{opacity:.8;margin-top:10px}
 
 .hero-img{flex:1;text-align:center}
 
@@ -87,11 +154,12 @@ animation:float 5s ease-in-out infinite;
 
 @keyframes float{
 0%,100%{transform:translateY(0)}
-50%{transform:translateY(-12px)}
+50%{transform:translateY(-14px)}
 }
 
-/* INDUSTRIES */
-.industries{text-align:center;padding:60px 20px}
+/* ================= INDUSTRIES ================= */
+
+.industries{text-align:center;padding:70px 20px}
 
 .grid{
 display:grid;
@@ -111,12 +179,13 @@ transition:.4s;
 }
 
 .card:hover{
-transform:translateY(-8px);
-box-shadow:0 0 35px #00f0ff;
+transform:translateY(-10px) scale(1.02);
+box-shadow:0 0 40px #00f0ff;
 }
 
-/* FORM */
-.form-section{padding:70px 20px;text-align:center}
+/* ================= FORM ================= */
+
+.form-section{text-align:center;padding:70px 20px}
 
 .form-box{
 max-width:500px;
@@ -149,7 +218,8 @@ font-weight:600;
 cursor:pointer;
 }
 
-/* FOOTER */
+/* ================= FOOTER ================= */
+
 footer{
 background:#020617;
 border-top:2px solid #06b6d4;
@@ -175,58 +245,54 @@ margin:6px 0;
 
 footer a:hover{color:#06b6d4}
 
+/* ================= APPLE SCROLL ANIMATION ================= */
+
+.reveal{
+opacity:0;
+transform:translateY(60px);
+transition:all .9s cubic-bezier(.22,1,.36,1);
+}
+
+.reveal.show{
+opacity:1;
+transform:translateY(0);
+}
+
 /* MOBILE */
+
 @media(max-width:768px){
 .hero{flex-direction:column;text-align:center}
 .hero-text h1{font-size:30px}
 }
 
-</style>
-</head>
-
-<body>
-
-<!-- NAVBAR -->
-<div class="navbar">
+</style></head><body><!-- NAVBAR --><div class="navbar">
 <div class="logo">
 <img src="/logo.png">
 <span>Bobo Analytics</span>
+</div><div class="menu-btn" id="menuBtn">
+<span></span><span></span><span></span>
 </div>
-<div>☰</div>
-</div>
-
-<div class="page">
-
-<!-- HERO -->
-<section class="hero">
+</div><div class="mobile-menu" id="mobileMenu">
+<a href="#">Home</a>
+<a href="#industries">Industries</a>
+<a href="#demo">Request Demo</a>
+</div><div class="page"><section class="hero reveal">
 <div class="hero-text">
 <h1>AI Analytics Platform</h1>
 <h2 class="gradient">Built for Modern Businesses</h2>
 <p>Turn business data into intelligent decisions.</p>
-</div>
-
-<div class="hero-img">
+</div><div class="hero-img">
 <img src="/dashboard-image.png">
 </div>
-</section>
-
-<!-- INDUSTRIES -->
-<section class="industries">
-<h2>Industries We Serve</h2>
-
-<div class="grid">
+</section><section id="industries" class="industries reveal">
+<h2>Industries We Serve</h2><div class="grid">
 <div class="card">🏥 Healthcare<br><small>Improve patient insights.</small></div>
 <div class="card">💊 Pharmacy<br><small>Inventory & expiry analytics.</small></div>
 <div class="card">🛍 Retail<br><small>Customer demand forecasting.</small></div>
 <div class="card">💰 Finance<br><small>Financial intelligence tools.</small></div>
 </div>
-</section>
-
-<!-- FORM -->
-<section class="form-section">
-<h2>Request Demo</h2>
-
-<div class="form-box">
+</section><section id="demo" class="form-section reveal">
+<h2>Request Demo</h2><div class="form-box">
 <form>
 <input type="text" placeholder="Your Name" required>
 <input type="email" placeholder="Email" required>
@@ -234,50 +300,43 @@ footer a:hover{color:#06b6d4}
 <button type="submit">Submit</button>
 </form>
 </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-
-<div class="footer-grid">
-
-<div>
+</section><footer class="reveal"><div class="footer-grid"><div>
 <h3>Bobo Analytics</h3>
-<p style="opacity:.7;font-size:14px;">
-Smart Analytics for Smarter Business.
-We transform raw data into intelligent decisions using AI analytics.
-</p>
-</div>
-
-<div>
+<p style="opacity:.7;">Smart Analytics for Smarter Business.</p>
+</div><div>
 <h4 style="color:#06b6d4;">Company</h4>
 <a href="#">Home</a>
-<a href="#">Industries</a>
-<a href="#">Request Demo</a>
-</div>
-
-<div>
-<h4 style="color:#06b6d4;">Contact</h4>
-<p style="opacity:.7;font-size:14px;">support@boboanalytics.com</p>
-<p style="opacity:.7;font-size:14px;">+91 9156484328</p>
-</div>
-
-<div>
+<a href="#industries">Industries</a>
+<a href="#demo">Request Demo</a>
+</div><div>
 <h4 style="color:#06b6d4;">Legal</h4>
 <a href="/privacy">Privacy Policy</a>
-<a href="/terms">Terms & Conditions</a>
+<a href="/terms">Terms</a>
 <a href="/disclaimer">Disclaimer</a>
-</div>
-
-</div>
-
-<p style="text-align:center;margin-top:40px;opacity:.6;">
+</div></div><p style="text-align:center;margin-top:40px;opacity:.6;">
 © 2026 Bobo Analytics — All Rights Reserved
-</p>
+</p></footer></div><script>
 
-</footer>
+/* HAMBURGER */
+const btn=document.getElementById("menuBtn");
+const menu=document.getElementById("mobileMenu");
 
-</div>
+btn.onclick=()=>{
+btn.classList.toggle("active");
+menu.classList.toggle("active");
+};
 
-</body>
+/* APPLE SCROLL REVEAL */
+const observer=new IntersectionObserver(entries=>{
+entries.forEach(entry=>{
+if(entry.isIntersecting){
+entry.target.classList.add("show");
+}
+});
+},{threshold:0.15});
+
+document.querySelectorAll(".reveal")
+.forEach(el=>observer.observe(el));
+
+</script></body>
 </html>
