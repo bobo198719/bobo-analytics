@@ -1,40 +1,26 @@
 ---
 
 const industries = [
-{
-title:"Healthcare Analytics",
-desc:"AI dashboards analyzing patient trends, hospital efficiency and predictive healthcare insights."
-},
-{
-title:"Pharmacy Intelligence",
-desc:"Inventory automation, expiry prediction and real-time pharmacy analytics powered by AI."
-},
-{
-title:"Retail Forecasting",
-desc:"Demand forecasting and customer behavior intelligence to increase retail profitability."
-},
-{
-title:"Finance Insights",
-desc:"Financial analytics transforming raw data into strategic forecasting and growth decisions."
-}
+{ title: "Healthcare", desc: "Improve patient insights using AI-powered analytics dashboards." },
+{ title: "Pharmacy", desc: "Inventory tracking, expiry prediction and pharmacy intelligence." },
+{ title: "Retail", desc: "Customer behavior analytics and demand forecasting solutions." },
+{ title: "Finance", desc: "Financial forecasting and automated business intelligence insights." }
 ];
 
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" /><style>
 
-/* ===== APPLE LEVEL BACKGROUND ===== */
-
+/* ===== GLOBAL ===== */
 body{
 margin:0;
-font-family:-apple-system,BlinkMacSystemFont,Segoe UI;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 color:white;
 background:linear-gradient(135deg,#020617,#140033,#020617);
 background-size:400% 400%;
 animation:bgMove 14s ease infinite;
 padding-top:75px;
-overflow-x:hidden;
 }
 
 @keyframes bgMove{
@@ -44,18 +30,17 @@ overflow-x:hidden;
 }
 
 /* ===== NAVBAR ===== */
-
-.nav{
+.navbar{
 position:fixed;
 top:0;
 width:100%;
 height:75px;
-background:rgba(2,6,23,.85);
-backdrop-filter:blur(18px);
 display:flex;
-justify-content:space-between;
 align-items:center;
-padding:0 24px;
+justify-content:space-between;
+padding:0 20px;
+background:#020617ee;
+backdrop-filter:blur(10px);
 border-bottom:1px solid #00eaff;
 z-index:999;
 }
@@ -69,159 +54,141 @@ font-weight:600;
 }
 
 .logo img{
-width:44px;
-border-radius:12px;
+width:42px;
+border-radius:10px;
 box-shadow:0 0 18px #00eaff;
-animation:logoGlow 3s ease-in-out infinite alternate;
-}
-
-@keyframes logoGlow{
-from{box-shadow:0 0 12px #00eaff}
-to{box-shadow:0 0 30px #ff00ff}
 }
 
 /* ===== HERO ===== */
-
 .hero{
 display:flex;
 flex-wrap:wrap;
 align-items:center;
 justify-content:center;
-gap:50px;
-padding:80px 20px;
-}
-
-.heroText{
-max-width:500px;
-animation:fadeUp 1s ease;
+gap:40px;
+padding:90px 20px;
+text-align:center;
 }
 
 .hero h1{
-font-size:48px;
+font-size:42px;
 margin:0;
 }
 
 .hero p{
 opacity:.8;
-margin-top:10px;
 }
 
-/* floating dashboard */
-.dashboard{
-width:420px;
-border-radius:20px;
-overflow:hidden;
-box-shadow:0 0 40px rgba(0,234,255,.35);
-animation:float 6s ease-in-out infinite;
-}
-
-.dashboard img{
-width:100%;
-display:block;
-}
-
-@keyframes float{
-0%,100%{transform:translateY(0)}
-50%{transform:translateY(-18px)}
-}
-
-@keyframes fadeUp{
-from{opacity:0;transform:translateY(40px)}
-to{opacity:1;transform:translateY(0)}
-}
-
-/* ===== INDUSTRY FLIP CARDS ===== */
-
-.sectionTitle{
+/* ===== INDUSTRIES ===== */
+.section-title{
 text-align:center;
 font-size:28px;
-margin-top:60px;
+margin-top:40px;
 }
 
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-gap:30px;
+gap:25px;
 max-width:1100px;
 margin:50px auto;
 padding:0 20px;
-perspective:1000px;
 }
 
-.flip{
-height:200px;
-position:relative;
-transform-style:preserve-3d;
-transition:transform .7s;
+.card{
+background:#020617;
+padding:30px;
+border-radius:18px;
+text-align:center;
+transition:.4s;
+box-shadow:0 0 20px rgba(0,234,255,.25);
+}
+
+.card:hover{
+transform:translateY(-8px);
+box-shadow:0 0 30px #ff00ff;
+}
+
+/* ===== CONTACT FORM ===== */
+.form-section{
+text-align:center;
+padding:60px 20px;
+}
+
+form{
+max-width:500px;
+margin:auto;
+display:flex;
+flex-direction:column;
+gap:15px;
+}
+
+input,textarea{
+padding:14px;
+border-radius:10px;
+border:none;
+outline:none;
+}
+
+button{
+padding:14px;
+border:none;
+border-radius:10px;
+background:#00eaff;
+color:black;
+font-weight:600;
 cursor:pointer;
 }
 
-.flip:hover{
-transform:rotateY(180deg) scale(1.05);
-}
-
-.face{
-position:absolute;
-width:100%;
-height:100%;
-border-radius:18px;
-backface-visibility:hidden;
-display:flex;
-align-items:center;
-justify-content:center;
-padding:20px;
-text-align:center;
-background:#020617;
-box-shadow:0 0 25px rgba(0,234,255,.35);
-}
-
-.back{
-transform:rotateY(180deg);
-background:linear-gradient(135deg,#001a2b,#2b0050);
-box-shadow:0 0 35px rgba(255,0,255,.35);
-}
-
 /* ===== FOOTER ===== */
-
 footer{
-margin-top:80px;
 background:#020617;
 text-align:center;
 padding:40px 20px;
 border-top:1px solid #00eaff;
+margin-top:60px;
 }
 
 footer a{
 color:#00eaff;
-margin:0 12px;
+margin:0 10px;
 text-decoration:none;
+font-size:14px;
 }
 
-</style></head><body><!-- NAVBAR --><nav class="nav">
+footer a:hover{
+text-decoration:underline;
+}
+
+</style></head><body><!-- NAVBAR --><nav class="navbar">
 <div class="logo">
-<img src="/logo.png">
+<img src="/logo.png" alt="logo"/>
 Bobo Analytics
 </div>
-</nav><!-- HERO --><section class="hero"><div class="heroText">
+</nav><!-- HERO --><section class="hero">
+<div>
 <h1>AI Analytics Platform</h1>
-<p>Turn business data into intelligent decisions with next-generation analytics.</p>
-</div><div class="dashboard">
-<img src="/dashboard-image.png">
-</div></section><h2 class="sectionTitle">Industries We Serve</h2><div class="grid">{industries.map((i)=>(
-
-<div class="flip">
-<div class="face">
-<h3>{i.title}</h3>
+<p>Turn business data into intelligent decisions.</p>
 </div>
-<div class="face back">
-<p>{i.desc}</p>
+</section><!-- INDUSTRIES --><h2 class="section-title">Industries We Serve</h2><div class="grid">
+{industries.map((item)=>(
+<div class="card">
+<h3>{item.title}</h3>
+<p>{item.desc}</p>
 </div>
-</div>
-))}</div><footer>
-<h3>Bobo Analytics</h3>
+))}
+</div><!-- CONTACT FORM --><section class="form-section">
+<h2>Contact Us</h2><form>
+<input type="text" placeholder="Your Name" required />
+<input type="email" placeholder="Email Address" required />
+<textarea rows="4" placeholder="Message"></textarea>
+<button type="submit">Send Message</button>
+</form></section><!-- FOOTER --><footer><h3>Bobo Analytics</h3>
+<p>Smart Analytics for Smarter Business</p><div>
 <a href="/privacy">Privacy Policy</a>
 <a href="/terms">Terms & Conditions</a>
 <a href="/disclaimer">Disclaimer</a>
-<p>© 2026 Bobo Analytics — Smart Analytics for Smarter Business</p>
-</footer></body>
+</div><p style="opacity:.6;margin-top:15px;">
+© 2026 Bobo Analytics. All Rights Reserved.
+</p></footer></body>
 </html>
