@@ -1,148 +1,227 @@
 ---
 
 const industries = [
-["Healthcare Analytics","AI dashboards analyzing patient trends and healthcare performance."],
-["Pharmacy Intelligence","Inventory tracking, expiry prediction and pharmacy analytics."],
-["Retail Forecasting","Customer demand forecasting powered by AI models."],
-["Finance Insights","Financial analytics converting data into strategic insights."]
+{
+title:"Healthcare Analytics",
+desc:"AI dashboards analyzing patient trends, hospital efficiency and predictive healthcare insights."
+},
+{
+title:"Pharmacy Intelligence",
+desc:"Inventory automation, expiry prediction and real-time pharmacy analytics powered by AI."
+},
+{
+title:"Retail Forecasting",
+desc:"Demand forecasting and customer behavior intelligence to increase retail profitability."
+},
+{
+title:"Finance Insights",
+desc:"Financial analytics transforming raw data into strategic forecasting and growth decisions."
+}
 ];
 
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"><style>
+<meta name="viewport" content="width=device-width,initial-scale=1"><style>
+
+/* ===== APPLE LEVEL BACKGROUND ===== */
+
 body{
 margin:0;
-font-family:system-ui;
-background:linear-gradient(135deg,#020617,#1a0033,#020617);
-background-size:400% 400%;
-animation:bg 12s infinite;
+font-family:-apple-system,BlinkMacSystemFont,Segoe UI;
 color:white;
-padding-top:70px;
+background:linear-gradient(135deg,#020617,#140033,#020617);
+background-size:400% 400%;
+animation:bgMove 14s ease infinite;
+padding-top:75px;
+overflow-x:hidden;
 }
 
-@keyframes bg{
+@keyframes bgMove{
 0%{background-position:0% 50%}
 50%{background-position:100% 50%}
 100%{background-position:0% 50%}
 }
 
+/* ===== NAVBAR ===== */
+
 .nav{
 position:fixed;
 top:0;
 width:100%;
-height:70px;
-background:#020617;
+height:75px;
+background:rgba(2,6,23,.85);
+backdrop-filter:blur(18px);
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:0 20px;
-border-bottom:2px solid #00eaff;
+padding:0 24px;
+border-bottom:1px solid #00eaff;
+z-index:999;
 }
 
 .logo{
 display:flex;
 align-items:center;
-gap:10px;
-font-weight:bold;
+gap:12px;
+font-size:20px;
+font-weight:600;
 }
 
 .logo img{
-width:40px;
-border-radius:10px;
-box-shadow:0 0 15px #00eaff;
+width:44px;
+border-radius:12px;
+box-shadow:0 0 18px #00eaff;
+animation:logoGlow 3s ease-in-out infinite alternate;
 }
 
-.menu{display:flex;gap:20px;}
-.menu a{color:white;text-decoration:none;}
+@keyframes logoGlow{
+from{box-shadow:0 0 12px #00eaff}
+to{box-shadow:0 0 30px #ff00ff}
+}
 
-.hero{text-align:center;padding:90px 20px;}
+/* ===== HERO ===== */
+
+.hero{
+display:flex;
+flex-wrap:wrap;
+align-items:center;
+justify-content:center;
+gap:50px;
+padding:80px 20px;
+}
+
+.heroText{
+max-width:500px;
+animation:fadeUp 1s ease;
+}
+
+.hero h1{
+font-size:48px;
+margin:0;
+}
+
+.hero p{
+opacity:.8;
+margin-top:10px;
+}
+
+/* floating dashboard */
+.dashboard{
+width:420px;
+border-radius:20px;
+overflow:hidden;
+box-shadow:0 0 40px rgba(0,234,255,.35);
+animation:float 6s ease-in-out infinite;
+}
+
+.dashboard img{
+width:100%;
+display:block;
+}
+
+@keyframes float{
+0%,100%{transform:translateY(0)}
+50%{transform:translateY(-18px)}
+}
+
+@keyframes fadeUp{
+from{opacity:0;transform:translateY(40px)}
+to{opacity:1;transform:translateY(0)}
+}
+
+/* ===== INDUSTRY FLIP CARDS ===== */
+
+.sectionTitle{
+text-align:center;
+font-size:28px;
+margin-top:60px;
+}
 
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:25px;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:30px;
 max-width:1100px;
-margin:60px auto;
+margin:50px auto;
 padding:0 20px;
+perspective:1000px;
 }
 
-.card{
-background:#020617;
-padding:30px;
-border-radius:16px;
-box-shadow:0 0 25px rgba(0,234,255,.3);
-text-align:center;
+.flip{
+height:200px;
+position:relative;
+transform-style:preserve-3d;
+transition:transform .7s;
+cursor:pointer;
 }
 
-.videoBox{
-max-width:1100px;
-margin:70px auto;
-height:420px;
-overflow:hidden;
-border-radius:20px;
+.flip:hover{
+transform:rotateY(180deg) scale(1.05);
 }
 
-.videoBox video{
+.face{
+position:absolute;
 width:100%;
 height:100%;
-object-fit:cover;
+border-radius:18px;
+backface-visibility:hidden;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:20px;
+text-align:center;
+background:#020617;
+box-shadow:0 0 25px rgba(0,234,255,.35);
 }
 
+.back{
+transform:rotateY(180deg);
+background:linear-gradient(135deg,#001a2b,#2b0050);
+box-shadow:0 0 35px rgba(255,0,255,.35);
+}
+
+/* ===== FOOTER ===== */
+
 footer{
+margin-top:80px;
 background:#020617;
 text-align:center;
-padding:40px;
+padding:40px 20px;
 border-top:1px solid #00eaff;
 }
-footer a{color:#00eaff;margin:0 10px;}
-</style></head><body><nav class="nav">
+
+footer a{
+color:#00eaff;
+margin:0 12px;
+text-decoration:none;
+}
+
+</style></head><body><!-- NAVBAR --><nav class="nav">
 <div class="logo">
 <img src="/logo.png">
 Bobo Analytics
-</div><div class="menu">
-<a href="#">Home</a>
-<a href="#industries">Industries</a>
-<a href="#demo">Demo</a>
 </div>
-</nav><section class="hero">
+</nav><!-- HERO --><section class="hero"><div class="heroText">
 <h1>AI Analytics Platform</h1>
-<p>Turn business data into intelligent decisions.</p>
-</section><section id="industries">
-<h2 style="text-align:center;">Industries We Serve</h2><div class="grid">{industries.map((i) => (
+<p>Turn business data into intelligent decisions with next-generation analytics.</p>
+</div><div class="dashboard">
+<img src="/dashboard-image.png">
+</div></section><h2 class="sectionTitle">Industries We Serve</h2><div class="grid">{industries.map((i)=>(
 
-<div class="card">
-<h3>{i[0]}</h3>
-<p>{i[1]}</p>
+<div class="flip">
+<div class="face">
+<h3>{i.title}</h3>
 </div>
-))}</div>
-</section><section>
-<h2 style="text-align:center;">See Bobo Analytics In Action</h2><div class="videoBox">
-<video id="player" autoplay muted playsinline>
-<source src="/video1.mp4" type="video/mp4">
-</video>
+<div class="face back">
+<p>{i.desc}</p>
 </div>
-</section><section id="demo" style="text-align:center;margin:80px 20px;">
-<h2>Request Demo</h2>
-<input placeholder="Your Name"><br><br>
-<input placeholder="Email"><br><br>
-<textarea placeholder="Message"></textarea><br><br>
-<button>Submit</button>
-</section><footer>
+</div>
+))}</div><footer>
 <h3>Bobo Analytics</h3>
-<a href="/privacy">Privacy</a>
-<a href="/terms">Terms</a>
+<a href="/privacy">Privacy Policy</a>
+<a href="/terms">Terms & Conditions</a>
 <a href="/disclaimer">Disclaimer</a>
-<p>© 2026 Bobo Analytics</p>
-</footer><script>
-const vids=["/video1.mp4","/video2.mp4","/video3.mp4"];
-let n=0;
-const v=document.getElementById("player");
-
-setInterval(()=>{
-n=(n+1)%vids.length;
-v.src=vids[n];
-v.play();
-},5000);
-</script></body>
+<p>© 2026 Bobo Analytics — Smart Analytics for Smarter Business</p>
+</footer></body>
 </html>
