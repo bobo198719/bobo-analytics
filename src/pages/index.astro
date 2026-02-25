@@ -1,111 +1,110 @@
-<section class="bobo-industries">
+---
+---
 
-<h2>Industries We Serve</h2>
-
-<div class="bobo-grid">
-
-<div class="bobo-card" onclick="this.classList.toggle('flip')">
-<div class="inner">
-<div class="front">Healthcare Analytics</div>
-<div class="back">
-AI dashboards helping hospitals analyze patient trends,
-optimize operations, and enable predictive healthcare decisions.
-</div>
-</div>
-</div>
-
-<div class="bobo-card" onclick="this.classList.toggle('flip')">
-<div class="inner">
-<div class="front">Pharmacy Intelligence</div>
-<div class="back">
-Inventory analytics, expiry prediction, and demand forecasting
-designed for modern pharmacies using intelligent automation.
-</div>
-</div>
-</div>
-
-<div class="bobo-card" onclick="this.classList.toggle('flip')">
-<div class="inner">
-<div class="front">Retail Forecasting</div>
-<div class="back">
-Customer behavior analytics and AI forecasting tools
-that improve sales planning and reduce inventory loss.
-</div>
-</div>
-</div>
-
-<div class="bobo-card" onclick="this.classList.toggle('flip')">
-<div class="inner">
-<div class="front">Finance Insights</div>
-<div class="back">
-Financial analytics transforming raw data into revenue insights,
-forecast models, and smarter investment decisions.
-</div>
-</div>
-</div>
-
-</div>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bobo Analytics</title>
 
 <style>
 
-/* ===== SAFE RESET (FIXES YOUR SITE BREAK) ===== */
-.bobo-industries *{
-box-sizing:border-box;
+/* ===== GLOBAL RESET ===== */
+*{
 margin:0;
 padding:0;
+box-sizing:border-box;
+font-family:system-ui,-apple-system,Segoe UI,Roboto;
 }
 
-/* SECTION */
-.bobo-industries{
-padding:90px 20px;
-text-align:center;
+body{
+min-height:100vh;
+color:white;
 background:
 radial-gradient(circle at 20% 20%, #5b21b6 0%, transparent 40%),
 radial-gradient(circle at 80% 70%, #06b6d4 0%, transparent 40%),
 linear-gradient(135deg,#020617,#1e0038);
-color:white;
-overflow:hidden;
 }
 
-/* TITLE */
-.bobo-industries h2{
-font-size:34px;
-margin-bottom:45px;
+/* ===== NAVBAR ===== */
+.navbar{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:70px;
+background:#020617;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 18px;
+z-index:1000;
+border-bottom:2px solid #06b6d4;
 }
 
-/* GRID */
-.bobo-grid{
+.logo{
+display:flex;
+align-items:center;
+gap:10px;
+font-weight:600;
+font-size:20px;
+}
+
+.logo img{
+width:45px;
+border-radius:10px;
+box-shadow:0 0 20px #06b6d4;
+}
+
+.menu{
+font-size:28px;
+cursor:pointer;
+}
+
+/* PAGE SPACING */
+.page{
+padding-top:90px;
+}
+
+/* ===== INDUSTRIES ===== */
+
+.industries{
+padding:60px 20px;
+text-align:center;
+}
+
+.industries h2{
+font-size:32px;
+margin-bottom:40px;
+}
+
+.grid{
 max-width:1100px;
 margin:auto;
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
 gap:25px;
 }
 
-/* CARD */
-.bobo-card{
+.card{
 height:170px;
 perspective:1200px;
 cursor:pointer;
 }
 
-/* INNER */
 .inner{
 width:100%;
 height:100%;
 position:relative;
 transform-style:preserve-3d;
-transition:transform .7s ease;
+transition:transform .7s;
 }
 
-/* FLIP */
-.bobo-card.flip .inner{
+.card.flip .inner{
 transform:rotateY(180deg);
 }
 
-/* SIDES */
-.front,
-.back{
+.front,.back{
 position:absolute;
 width:100%;
 height:100%;
@@ -113,7 +112,7 @@ border-radius:18px;
 display:flex;
 align-items:center;
 justify-content:center;
-padding:22px;
+padding:20px;
 text-align:center;
 backface-visibility:hidden;
 background:#020617;
@@ -123,43 +122,140 @@ box-shadow:
 inset 0 0 18px rgba(168,85,247,.3);
 }
 
-/* FRONT */
 .front{
-font-size:20px;
 font-weight:600;
+font-size:18px;
 }
 
-/* BACK */
 .back{
 transform:rotateY(180deg);
 font-size:14px;
-line-height:1.6;
 color:#cbd5f5;
+line-height:1.6;
 }
 
-/* GLOW HOVER */
-.bobo-card:hover .front{
-box-shadow:
-0 0 35px #00f0ff,
-0 0 60px rgba(168,85,247,.7);
+.card:hover .front{
+box-shadow:0 0 40px #00f0ff;
 }
 
-/* FLOAT EFFECT */
-.bobo-card{
-animation:float 6s ease-in-out infinite;
+/* ===== FOOTER ===== */
+
+footer{
+margin-top:80px;
+background:#020617;
+padding:40px 20px;
+text-align:center;
+border-top:2px solid #06b6d4;
 }
 
-@keyframes float{
-0%,100%{transform:translateY(0)}
-50%{transform:translateY(-6px)}
+footer h3{
+margin-bottom:10px;
 }
 
-/* MOBILE FIX */
+footer a{
+color:#06b6d4;
+text-decoration:none;
+margin:0 10px;
+font-size:14px;
+}
+
+footer a:hover{
+text-decoration:underline;
+}
+
+.copy{
+margin-top:15px;
+font-size:13px;
+opacity:.6;
+}
+
+/* MOBILE */
 @media(max-width:768px){
-.bobo-industries h2{font-size:26px}
-.bobo-card{height:150px}
+.industries h2{font-size:26px}
 }
 
 </style>
+</head>
 
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+<div class="logo">
+<img src="/logo.png" />
+<span>Bobo Analytics</span>
+</div>
+<div class="menu">☰</div>
+</div>
+
+<div class="page">
+
+<!-- INDUSTRIES -->
+<section class="industries">
+<h2>Industries We Serve</h2>
+
+<div class="grid">
+
+<div class="card" onclick="this.classList.toggle('flip')">
+<div class="inner">
+<div class="front">Healthcare Analytics</div>
+<div class="back">
+AI dashboards analyzing patient trends, operational efficiency,
+and predictive healthcare insights for smarter decisions.
+</div>
+</div>
+</div>
+
+<div class="card" onclick="this.classList.toggle('flip')">
+<div class="inner">
+<div class="front">Pharmacy Intelligence</div>
+<div class="back">
+Inventory tracking, expiry prediction, and demand analytics
+built specifically for modern pharmacy operations.
+</div>
+</div>
+</div>
+
+<div class="card" onclick="this.classList.toggle('flip')">
+<div class="inner">
+<div class="front">Retail Forecasting</div>
+<div class="back">
+Customer behavior analytics and AI forecasting tools
+that improve product demand planning and profitability.
+</div>
+</div>
+</div>
+
+<div class="card" onclick="this.classList.toggle('flip')">
+<div class="inner">
+<div class="front">Finance Insights</div>
+<div class="back">
+Financial analytics converting raw data into revenue insights,
+forecasting models, and strategic business intelligence.
+</div>
+</div>
+</div>
+
+</div>
 </section>
+
+<!-- FOOTER -->
+<footer>
+<h3>Bobo Analytics</h3>
+<p>Smart Analytics for Smarter Business</p>
+
+<div>
+<a href="/privacy">Privacy Policy</a>
+<a href="/terms">Terms & Conditions</a>
+<a href="/disclaimer">Disclaimer</a>
+</div>
+
+<p class="copy">
+© 2026 Bobo Analytics — All Rights Reserved
+</p>
+</footer>
+
+</div>
+
+</body>
+</html>
