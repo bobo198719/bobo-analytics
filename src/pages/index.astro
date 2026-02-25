@@ -1,93 +1,104 @@
-<nav>
+---
+---
 
-  <div class="logo">
-    <!-- Animated Logo -->
-    <video autoplay muted loop playsinline class="logo-video">
-      <source src="/logo-animation.mp4" type="video/mp4">
-    </video>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bobo Analytics</title>
 
-    <span>Bobo Analytics</span>
-  </div>
+  <style>
 
-  <div class="menu" id="menu">
-    <a href="/">Home</a>
-    <a href="#industries">Industries</a>
-    <a href="#products">Products</a>
-    <a href="#contact">Contact</a>
-  </div>
+/* =========================
+   GLOBAL FIX (BLANK PAGE FIX)
+========================= */
 
-  <div class="hamburger" onclick="toggleMenu()">☰</div>
+body{
+  margin:0;
+  padding-top:70px; /* prevents navbar overlap */
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+  background:linear-gradient(135deg,#020617,#2e1065);
+  color:white;
+  overflow-x:hidden;
+}
 
-</nav>
+/* =========================
+   NAVBAR
+========================= */
 
-<style>
-
-nav{
+.navbar{
   position:fixed;
   top:0;
   left:0;
   width:100%;
+  height:70px;
+  background:#020617;
+  border-bottom:2px solid #06b6d4;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:14px 28px;
-  background:#020617;
-  border-bottom:2px solid #06b6d4;
-  z-index:1000;
+  padding:0 18px;
+  z-index:9999;
+  box-sizing:border-box;
+}
+
+.nav-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
 }
 
 .logo{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  font-size:22px;
+  width:42px;
+  height:42px;
+  border-radius:10px;
+  box-shadow:0 0 15px rgba(0,255,255,.6);
+}
+
+.brand{
+  font-size:20px;
   font-weight:700;
 }
 
-.logo-video{
-  width:44px;
-  height:44px;
-  object-fit:cover;
-  border-radius:10px;
-  box-shadow:0 0 15px rgba(0,255,255,0.6);
-}
-
-.menu{
+.nav-links{
   display:flex;
-  gap:28px;
+  gap:24px;
 }
 
-.menu a{
+.nav-links a{
   color:#cbd5f5;
   text-decoration:none;
-  font-size:16px;
-  transition:.3s;
+  font-size:15px;
 }
 
-.menu a:hover{
+.nav-links a:hover{
   color:#22d3ee;
 }
 
+/* HAMBURGER */
+
 .hamburger{
   display:none;
-  font-size:28px;
+  font-size:26px;
   cursor:pointer;
 }
 
+/* MOBILE */
+
 @media(max-width:768px){
 
-  .menu{
+  .nav-links{
     position:absolute;
     top:70px;
     right:0;
+    width:220px;
     background:#020617;
     flex-direction:column;
-    width:220px;
     padding:20px;
     display:none;
   }
 
-  .menu.show{
+  .nav-links.show{
     display:flex;
   }
 
@@ -96,10 +107,124 @@ nav{
   }
 }
 
-</style>
+/* =========================
+   HERO SECTION
+========================= */
+
+.hero{
+  text-align:center;
+  padding:90px 20px 60px;
+  animation:fadeUp 1s ease;
+}
+
+.hero h1{
+  font-size:48px;
+  margin-bottom:15px;
+}
+
+.hero p{
+  font-size:20px;
+  opacity:.8;
+}
+
+/* =========================
+   CARD SECTION
+========================= */
+
+.card{
+  max-width:900px;
+  margin:40px auto;
+  background:#020617;
+  padding:40px;
+  border-radius:18px;
+  text-align:center;
+  box-shadow:0 0 25px rgba(0,0,0,.5);
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+footer{
+  text-align:center;
+  padding:40px 20px;
+  opacity:.8;
+  font-size:14px;
+}
+
+/* =========================
+   ANIMATION
+========================= */
+
+@keyframes fadeUp{
+  from{
+    opacity:0;
+    transform:translateY(40px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+  </style>
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+
+<nav class="navbar">
+
+  <div class="nav-left">
+    <img src="/logo.png" class="logo" alt="Bobo Analytics"/>
+    <span class="brand">Bobo Analytics</span>
+  </div>
+
+  <div class="nav-links" id="navLinks">
+    <a href="/">Home</a>
+    <a href="#industries">Industries</a>
+    <a href="#contact">Contact</a>
+  </div>
+
+  <div class="hamburger" onclick="toggleMenu()">☰</div>
+
+</nav>
+
+
+<!-- ================= HERO ================= -->
+
+<section class="hero">
+  <h1>AI Analytics Platform</h1>
+  <p>Turn business data into intelligent decisions.</p>
+</section>
+
+
+<!-- ================= CONTENT ================= -->
+
+<div class="card">
+  <h2>Welcome to Bobo Analytics</h2>
+  <p>
+    Smart analytics solutions designed for modern businesses.
+    Upload data, analyze insights, and grow your business using
+    AI-powered intelligence.
+  </p>
+</div>
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+  © 2026 Bobo Analytics — Smart Analytics for Smarter Business
+</footer>
+
 
 <script>
 function toggleMenu(){
-  document.getElementById("menu").classList.toggle("show");
+  document.getElementById("navLinks")
+    .classList.toggle("show");
 }
 </script>
+
+</body>
+</html>
