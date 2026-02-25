@@ -1,32 +1,25 @@
 ---
 
 const industries = [
-{
-title: "Healthcare Analytics",
-desc: "AI dashboards analyzing patient trends, operational efficiency and predictive healthcare insights."
-},
-{
-title: "Pharmacy Intelligence",
-desc: "Inventory analytics, expiry prediction and automated pharmacy performance tracking."
-},
-{
-title: "Retail Forecasting",
-desc: "Customer demand prediction and sales optimization powered by AI analytics."
-},
-{
-title: "Finance Insights",
-desc: "Financial dashboards transforming raw data into smart business decisions."
-}
+["Healthcare Analytics","AI dashboards analyzing patient trends and healthcare performance."],
+["Pharmacy Intelligence","Inventory tracking, expiry prediction and pharmacy analytics."],
+["Retail Forecasting","Customer demand forecasting powered by AI models."],
+["Finance Insights","Financial analytics converting data into strategic insights."]
 ];
 --
+
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body{
 margin:0;
 font-family:system-ui;
-background:linear-gradient(135deg,#030617,#18003a,#020617);
+background:linear-gradient(135deg,#020617,#1a0033,#020617);
 background-size:400% 400%;
-animation:bg 14s ease infinite;
+animation:bg 12s infinite;
 color:white;
 padding-top:70px;
 }
@@ -48,18 +41,17 @@ justify-content:space-between;
 align-items:center;
 padding:0 20px;
 border-bottom:2px solid #00eaff;
-z-index:1000;
 }
 
 .logo{
 display:flex;
 align-items:center;
 gap:10px;
-font-weight:700;
+font-weight:bold;
 }
 
 .logo img{
-width:42px;
+width:40px;
 border-radius:10px;
 box-shadow:0 0 15px #00eaff;
 }
@@ -67,25 +59,8 @@ box-shadow:0 0 15px #00eaff;
 .menu{display:flex;gap:20px;}
 .menu a{color:white;text-decoration:none;}
 
-.ham{display:none;font-size:26px;cursor:pointer;}
-
-@media(max-width:768px){
-.menu{
-display:none;
-position:absolute;
-top:70px;
-left:0;
-width:100%;
-background:#020617;
-flex-direction:column;
-text-align:center;
-padding:20px 0;
-}
-.menu.show{display:flex;}
-.ham{display:block;}
-}
-
 .hero{text-align:center;padding:90px 20px;}
+
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
@@ -97,19 +72,15 @@ padding:0 20px;
 
 .card{
 background:#020617;
-border-radius:16px;
 padding:30px;
+border-radius:16px;
 box-shadow:0 0 25px rgba(0,234,255,.3);
 text-align:center;
 }
 
-.videoWrap{
+.videoBox{
 max-width:1100px;
 margin:70px auto;
-padding:0 20px;
-}
-
-.videoBox{
 height:420px;
 overflow:hidden;
 border-radius:20px;
@@ -123,20 +94,22 @@ object-fit:cover;
 
 footer{
 background:#020617;
-padding:40px;
 text-align:center;
+padding:40px;
 border-top:1px solid #00eaff;
 }
 footer a{color:#00eaff;margin:0 10px;}
 </style>
 
+</head>
+
+<body>
+
 <nav class="nav">
 <div class="logo">
-<img src="/logo.png" />
+<img src="/logo.png">
 Bobo Analytics
 </div>
-
-<div class="ham" onclick="document.querySelector('.menu').classList.toggle('show')">☰</div>
 
 <div class="menu">
 <a href="#">Home</a>
@@ -151,20 +124,24 @@ Bobo Analytics
 </section>
 
 <section id="industries">
-<h2 style="text-align:center">Industries We Serve</h2>
+<h2 style="text-align:center;">Industries We Serve</h2>
 
 <div class="grid">
-{industries.map((item) => (
-  <div class="card">
-    <h3>{item.title}</h3>
-    <p>{item.desc}</p>
-  </div>
+
+{industries.map((i) => (
+
+<div class="card">
+<h3>{i[0]}</h3>
+<p>{i[1]}</p>
+</div>
 ))}
+
 </div>
 </section>
 
-<section class="videoWrap">
-<h2 style="text-align:center">See Bobo Analytics In Action</h2>
+<section>
+<h2 style="text-align:center;">See Bobo Analytics In Action</h2>
+
 <div class="videoBox">
 <video id="player" autoplay muted playsinline>
 <source src="/video1.mp4" type="video/mp4">
@@ -190,12 +167,15 @@ Bobo Analytics
 
 <script>
 const vids=["/video1.mp4","/video2.mp4","/video3.mp4"];
-let i=0;
-const player=document.getElementById("player");
+let n=0;
+const v=document.getElementById("player");
 
 setInterval(()=>{
-i=(i+1)%vids.length;
-player.src=vids[i];
-player.play();
+n=(n+1)%vids.length;
+v.src=vids[n];
+v.play();
 },5000);
 </script>
+
+</body>
+</html>
