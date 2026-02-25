@@ -27,11 +27,12 @@ radial-gradient(circle at 80% 70%, #06b6d4 0%, transparent 40%),
 linear-gradient(135deg,#020617,#1e0038);
 }
 
-/* ================= NAVBAR ================= */
+/* ================= NAVBAR (ALWAYS ON TOP) ================= */
 
 .navbar{
 position:fixed;
 top:0;
+left:0;
 width:100%;
 height:70px;
 background:#020617;
@@ -40,8 +41,7 @@ justify-content:space-between;
 align-items:center;
 padding:0 20px;
 border-bottom:2px solid #06b6d4;
-z-index:999;
-backdrop-filter:blur(10px);
+z-index:99999; /* 🔥 FIX */
 }
 
 .logo{
@@ -58,7 +58,7 @@ border-radius:10px;
 box-shadow:0 0 20px #06b6d4;
 }
 
-/* HAMBURGER */
+/* ================= HAMBURGER ================= */
 
 .menu-btn{
 width:30px;
@@ -67,23 +67,20 @@ display:flex;
 flex-direction:column;
 justify-content:space-between;
 cursor:pointer;
+z-index:100000; /* 🔥 ALWAYS CLICKABLE */
 }
 
 .menu-btn span{
 height:3px;
 background:white;
 border-radius:3px;
-transition:.45s cubic-bezier(.4,0,.2,1);
+transition:.4s;
 }
 
 .menu-btn.active span:nth-child(1){
 transform:rotate(45deg) translate(5px,5px);
 }
-
-.menu-btn.active span:nth-child(2){
-opacity:0;
-}
-
+.menu-btn.active span:nth-child(2){opacity:0;}
 .menu-btn.active span:nth-child(3){
 transform:rotate(-45deg) translate(6px,-6px);
 }
@@ -98,7 +95,8 @@ width:240px;
 height:100vh;
 background:#020617;
 padding:30px;
-transition:.45s ease;
+transition:.4s ease;
+z-index:9999;
 }
 
 .mobile-menu.active{right:0;}
@@ -108,16 +106,14 @@ display:block;
 margin:20px 0;
 color:white;
 text-decoration:none;
-font-size:18px;
-transition:.3s;
 }
 
-.mobile-menu a:hover{
-color:#06b6d4;
-transform:translateX(6px);
+/* PAGE OFFSET */
+.page{
+padding-top:90px;
+position:relative;
+z-index:1;
 }
-
-.page{padding-top:90px}
 
 /* ================= HERO ================= */
 
@@ -130,11 +126,11 @@ max-width:1100px;
 margin:auto;
 padding:80px 20px;
 flex-wrap:wrap;
+position:relative;
+z-index:1;
 }
 
 .hero-text{flex:1}
-
-.hero-text h1{font-size:42px}
 
 .gradient{
 background:linear-gradient(90deg,#06b6d4,#a855f7,#ec4899);
@@ -142,7 +138,12 @@ background:linear-gradient(90deg,#06b6d4,#a855f7,#ec4899);
 -webkit-text-fill-color:transparent;
 }
 
-.hero-img{flex:1;text-align:center}
+.hero-img{
+flex:1;
+text-align:center;
+position:relative;
+z-index:0; /* 🔥 PREVENT OVERLAY */
+}
 
 .hero-img img{
 width:100%;
@@ -150,6 +151,7 @@ max-width:420px;
 border-radius:18px;
 box-shadow:0 0 40px rgba(168,85,247,.6);
 animation:float 5s ease-in-out infinite;
+pointer-events:none; /* 🔥 FIX CLICK BLOCK */
 }
 
 @keyframes float{
@@ -179,7 +181,7 @@ transition:.4s;
 }
 
 .card:hover{
-transform:translateY(-10px) scale(1.02);
+transform:translateY(-10px);
 box-shadow:0 0 40px #00f0ff;
 }
 
@@ -245,24 +247,10 @@ margin:6px 0;
 
 footer a:hover{color:#06b6d4}
 
-/* ================= APPLE SCROLL ANIMATION ================= */
-
-.reveal{
-opacity:0;
-transform:translateY(60px);
-transition:all .9s cubic-bezier(.22,1,.36,1);
-}
-
-.reveal.show{
-opacity:1;
-transform:translateY(0);
-}
-
 /* MOBILE */
 
 @media(max-width:768px){
 .hero{flex-direction:column;text-align:center}
-.hero-text h1{font-size:30px}
 }
 
 </style></head><body><!-- NAVBAR --><div class="navbar">
@@ -276,7 +264,7 @@ transform:translateY(0);
 <a href="#">Home</a>
 <a href="#industries">Industries</a>
 <a href="#demo">Request Demo</a>
-</div><div class="page"><section class="hero reveal">
+</div><div class="page"><section class="hero">
 <div class="hero-text">
 <h1>AI Analytics Platform</h1>
 <h2 class="gradient">Built for Modern Businesses</h2>
@@ -284,14 +272,15 @@ transform:translateY(0);
 </div><div class="hero-img">
 <img src="/dashboard-image.png">
 </div>
-</section><section id="industries" class="industries reveal">
-<h2>Industries We Serve</h2><div class="grid">
+</section><section id="industries" class="industries">
+<h2>Industries We Serve</h2>
+<div class="grid">
 <div class="card">🏥 Healthcare<br><small>Improve patient insights.</small></div>
-<div class="card">💊 Pharmacy<br><small>Inventory & expiry analytics.</small></div>
-<div class="card">🛍 Retail<br><small>Customer demand forecasting.</small></div>
-<div class="card">💰 Finance<br><small>Financial intelligence tools.</small></div>
+<div class="card">💊 Pharmacy<br><small>Inventory analytics.</small></div>
+<div class="card">🛍 Retail<br><small>Demand forecasting.</small></div>
+<div class="card">💰 Finance<br><small>Financial intelligence.</small></div>
 </div>
-</section><section id="demo" class="form-section reveal">
+</section><section id="demo" class="form-section">
 <h2>Request Demo</h2><div class="form-box">
 <form>
 <input type="text" placeholder="Your Name" required>
@@ -300,7 +289,7 @@ transform:translateY(0);
 <button type="submit">Submit</button>
 </form>
 </div>
-</section><footer class="reveal"><div class="footer-grid"><div>
+</section><footer><div class="footer-grid"><div>
 <h3>Bobo Analytics</h3>
 <p style="opacity:.7;">Smart Analytics for Smarter Business.</p>
 </div><div>
@@ -316,8 +305,6 @@ transform:translateY(0);
 </div></div><p style="text-align:center;margin-top:40px;opacity:.6;">
 © 2026 Bobo Analytics — All Rights Reserved
 </p></footer></div><script>
-
-/* HAMBURGER */
 const btn=document.getElementById("menuBtn");
 const menu=document.getElementById("mobileMenu");
 
@@ -325,18 +312,5 @@ btn.onclick=()=>{
 btn.classList.toggle("active");
 menu.classList.toggle("active");
 };
-
-/* APPLE SCROLL REVEAL */
-const observer=new IntersectionObserver(entries=>{
-entries.forEach(entry=>{
-if(entry.isIntersecting){
-entry.target.classList.add("show");
-}
-});
-},{threshold:0.15});
-
-document.querySelectorAll(".reveal")
-.forEach(el=>observer.observe(el));
-
 </script></body>
 </html>
