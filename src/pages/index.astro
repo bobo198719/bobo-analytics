@@ -6,14 +6,11 @@ const industries = [
 ["Retail Forecasting","Customer demand forecasting powered by AI models."],
 ["Finance Insights","Financial analytics converting data into strategic insights."]
 ];
---
 
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style>
 body{
 margin:0;
 font-family:system-ui;
@@ -99,73 +96,45 @@ padding:40px;
 border-top:1px solid #00eaff;
 }
 footer a{color:#00eaff;margin:0 10px;}
-</style>
-
-</head>
-
-<body>
-
-<nav class="nav">
+</style></head><body><nav class="nav">
 <div class="logo">
 <img src="/logo.png">
 Bobo Analytics
-</div>
-
-<div class="menu">
+</div><div class="menu">
 <a href="#">Home</a>
 <a href="#industries">Industries</a>
 <a href="#demo">Demo</a>
 </div>
-</nav>
-
-<section class="hero">
+</nav><section class="hero">
 <h1>AI Analytics Platform</h1>
 <p>Turn business data into intelligent decisions.</p>
-</section>
-
-<section id="industries">
-<h2 style="text-align:center;">Industries We Serve</h2>
-
-<div class="grid">
-
-{industries.map((i) => (
+</section><section id="industries">
+<h2 style="text-align:center;">Industries We Serve</h2><div class="grid">{industries.map((i) => (
 
 <div class="card">
 <h3>{i[0]}</h3>
 <p>{i[1]}</p>
 </div>
-))}
-
-</div>
-</section>
-
-<section>
-<h2 style="text-align:center;">See Bobo Analytics In Action</h2>
-
-<div class="videoBox">
+))}</div>
+</section><section>
+<h2 style="text-align:center;">See Bobo Analytics In Action</h2><div class="videoBox">
 <video id="player" autoplay muted playsinline>
 <source src="/video1.mp4" type="video/mp4">
 </video>
 </div>
-</section>
-
-<section id="demo" style="text-align:center;margin:80px 20px;">
+</section><section id="demo" style="text-align:center;margin:80px 20px;">
 <h2>Request Demo</h2>
 <input placeholder="Your Name"><br><br>
 <input placeholder="Email"><br><br>
 <textarea placeholder="Message"></textarea><br><br>
 <button>Submit</button>
-</section>
-
-<footer>
+</section><footer>
 <h3>Bobo Analytics</h3>
 <a href="/privacy">Privacy</a>
 <a href="/terms">Terms</a>
 <a href="/disclaimer">Disclaimer</a>
 <p>© 2026 Bobo Analytics</p>
-</footer>
-
-<script>
+</footer><script>
 const vids=["/video1.mp4","/video2.mp4","/video3.mp4"];
 let n=0;
 const v=document.getElementById("player");
@@ -175,7 +144,5 @@ n=(n+1)%vids.length;
 v.src=vids[n];
 v.play();
 },5000);
-</script>
-
-</body>
+</script></body>
 </html>
