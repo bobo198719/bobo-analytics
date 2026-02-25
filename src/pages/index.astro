@@ -1,334 +1,132 @@
----
----
-
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Bobo Analytics</title>
-
-<style>
-
-/* ================= GLOBAL ================= */
-
-html{
-  scroll-behavior:smooth;
-}
-
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,Segoe UI;
-  color:white;
-  padding-top:75px;
-  overflow-x:hidden;
-
-  /* PREMIUM MOVING GRADIENT */
-  background:linear-gradient(-45deg,#020617,#1e1b4b,#3b0764,#020617);
-  background-size:400% 400%;
-  animation:bgMove 14s ease infinite;
-}
-
-@keyframes bgMove{
-  0%{background-position:0% 50%}
-  50%{background-position:100% 50%}
-  100%{background-position:0% 50%}
-}
-
-/* ================= NAVBAR ================= */
-
-.navbar{
-  position:fixed;
-  top:0;
-  width:100%;
-  height:75px;
-  background:#020617;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:0 20px;
-  border-bottom:2px solid #06b6d4;
-  z-index:9999;
-  box-sizing:border-box;
-}
-
-.nav-left{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-
-.logo{
-  width:46px;
-  height:46px;
-  border-radius:12px;
-  animation:logoGlow 3s ease-in-out infinite alternate;
-}
-
-@keyframes logoGlow{
-  from{box-shadow:0 0 10px #06b6d4}
-  to{box-shadow:0 0 25px #22d3ee}
-}
-
-.brand{
-  font-size:22px;
-  font-weight:700;
-}
-
-.nav-links{
-  display:flex;
-  gap:28px;
-}
-
-.nav-links a{
-  color:#cbd5f5;
-  text-decoration:none;
-  position:relative;
-}
-
-/* animated underline */
-.nav-links a::after{
-  content:"";
-  position:absolute;
-  left:0;
-  bottom:-6px;
-  width:0;
-  height:2px;
-  background:#22d3ee;
-  transition:.3s;
-}
-
-.nav-links a:hover::after{
-  width:100%;
-}
-
-/* hamburger */
-
-.hamburger{
-  display:none;
-  font-size:28px;
-  cursor:pointer;
-}
-
-/* mobile */
-
-@media(max-width:768px){
-
-  .nav-links{
-    position:absolute;
-    top:75px;
-    right:0;
-    background:#020617;
-    flex-direction:column;
-    width:220px;
-    padding:20px;
-    display:none;
-  }
-
-  .nav-links.show{
-    display:flex;
-  }
-
-  .hamburger{
-    display:block;
-  }
-}
-
-/* ================= HERO ================= */
-
-.hero{
-  text-align:center;
-  padding:110px 20px 60px;
-  animation:fadeUp 1s ease;
-}
-
-.hero h1{
-  font-size:52px;
-  margin-bottom:10px;
-}
-
-.hero p{
-  font-size:20px;
-  opacity:.85;
-}
-
-/* ================= FLOATING DASHBOARD ================= */
-
-.dashboard{
-  max-width:950px;
-  margin:60px auto;
-  padding:40px;
-  background:#020617;
-  border-radius:18px;
-  text-align:center;
-  position:relative;
-  animation:float 6s ease-in-out infinite;
-  box-shadow:0 0 40px rgba(0,255,255,.2);
-}
-
-@keyframes float{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-12px)}
-}
-
-/* glow effect */
-.dashboard::before{
-  content:"";
-  position:absolute;
-  inset:-2px;
-  border-radius:18px;
-  background:linear-gradient(90deg,#06b6d4,#a855f7,#06b6d4);
-  filter:blur(25px);
-  opacity:.5;
-  z-index:-1;
-}
-
-/* ================= INDUSTRIES ================= */
-
-.section{
-  text-align:center;
-  padding:60px 20px;
-}
-
-.cards{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:20px;
-  max-width:1000px;
-  margin:auto;
-}
-
-.card{
-  background:#020617;
-  padding:25px;
-  border-radius:14px;
-  transition:.4s;
-}
-
-.card:hover{
-  transform:translateY(-8px);
-  box-shadow:0 0 20px #22d3ee55;
-}
-
-/* ================= FOOTER ================= */
-
-footer{
-  margin-top:70px;
-  padding:40px 20px;
-  text-align:center;
-  background:#020617;
-  border-top:1px solid #06b6d4;
-}
-
-footer a{
-  color:#22d3ee;
-  margin:0 12px;
-  text-decoration:none;
-}
-
-footer a:hover{
-  text-decoration:underline;
-}
-
-/* ================= ANIMATION ================= */
-
-@keyframes fadeUp{
-  from{opacity:0;transform:translateY(40px)}
-  to{opacity:1;transform:translateY(0)}
-}
-
-</style>
-</head>
-
-<body>
-
-<!-- ================= NAVBAR ================= -->
-
-<nav class="navbar">
-
-<div class="nav-left">
-  <img src="/logo.png" class="logo"/>
-  <div class="brand">Bobo Analytics</div>
-</div>
-
-<div class="nav-links" id="navLinks">
-  <a href="#">Home</a>
-  <a href="#industries">Industries</a>
-  <a href="/privacy">Privacy</a>
-  <a href="/terms">Terms</a>
-  <a href="/disclaimer">Disclaimer</a>
-</div>
-
-<div class="hamburger" onclick="toggleMenu()">☰</div>
-
-</nav>
-
-
-<!-- ================= HERO ================= -->
-
-<section class="hero">
-<h1>AI Analytics Platform</h1>
-<p>Turn business data into intelligent decisions.</p>
-</section>
-
-
-<!-- ================= DASHBOARD ================= -->
-
-<div class="dashboard">
-<h2>Welcome to Bobo Analytics</h2>
-<p>
-Smart analytics solutions designed for modern businesses.
-Upload data, analyze insights, and grow your business using AI-powered intelligence.
-</p>
-</div>
-
-
-<!-- ================= INDUSTRIES ================= -->
+<!-- ================= INDUSTRIES FLIP SECTION ================= -->
 
 <section id="industries" class="section">
 
 <h2>Industries We Serve</h2>
 
-<div class="cards">
+<style>
 
-<div class="card">Healthcare Analytics</div>
-<div class="card">Pharmacy Intelligence</div>
-<div class="card">Retail Forecasting</div>
-<div class="card">Finance Insights</div>
+/* FLIP GRID */
+.flip-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:25px;
+  max-width:1000px;
+  margin:auto;
+  padding-top:30px;
+}
+
+/* CARD CONTAINER */
+.flip-card{
+  perspective:1000px;
+  height:150px;
+  cursor:pointer;
+}
+
+/* INNER */
+.flip-inner{
+  position:relative;
+  width:100%;
+  height:100%;
+  transition:transform .7s;
+  transform-style:preserve-3d;
+}
+
+.flip-card.active .flip-inner{
+  transform:rotateY(180deg);
+}
+
+/* FRONT + BACK */
+.flip-front,
+.flip-back{
+  position:absolute;
+  width:100%;
+  height:100%;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:20px;
+  backface-visibility:hidden;
+  background:#020617;
+  box-shadow:0 0 18px rgba(0,255,255,.15);
+}
+
+/* FRONT */
+.flip-front{
+  font-size:20px;
+  font-weight:600;
+}
+
+/* BACK */
+.flip-back{
+  transform:rotateY(180deg);
+  font-size:14px;
+  line-height:1.6;
+  color:#cbd5f5;
+}
+
+.flip-card:hover{
+  transform:translateY(-5px);
+}
+
+</style>
+
+<div class="flip-grid">
+
+<!-- Healthcare -->
+<div class="flip-card" onclick="this.classList.toggle('active')">
+  <div class="flip-inner">
+    <div class="flip-front">Healthcare Analytics</div>
+    <div class="flip-back">
+      Bobo Analytics helps healthcare providers analyze patient trends,
+      treatment outcomes, and operational efficiency using AI-powered
+      dashboards. Our solutions improve decision-making, resource planning,
+      and predictive healthcare insights.
+    </div>
+  </div>
+</div>
+
+<!-- Pharmacy -->
+<div class="flip-card" onclick="this.classList.toggle('active')">
+  <div class="flip-inner">
+    <div class="flip-front">Pharmacy Intelligence</div>
+    <div class="flip-back">
+      Our pharmacy analytics platform tracks inventory movement,
+      expiry prediction, demand forecasting, and billing insights.
+      Pharmacies gain real-time visibility into stock performance
+      and automated data-driven recommendations.
+    </div>
+  </div>
+</div>
+
+<!-- Retail -->
+<div class="flip-card" onclick="this.classList.toggle('active')">
+  <div class="flip-inner">
+    <div class="flip-front">Retail Forecasting</div>
+    <div class="flip-back">
+      Bobo Analytics enables retailers to understand customer behavior,
+      forecast demand, and optimize product performance using AI models.
+      Businesses reduce losses and increase profitability through
+      intelligent analytics automation.
+    </div>
+  </div>
+</div>
+
+<!-- Finance -->
+<div class="flip-card" onclick="this.classList.toggle('active')">
+  <div class="flip-inner">
+    <div class="flip-front">Finance Insights</div>
+    <div class="flip-back">
+      Financial analytics tools transform raw financial data into
+      actionable intelligence. Monitor revenue patterns, expense trends,
+      and forecasting models to support strategic financial planning
+      and smarter investment decisions.
+    </div>
+  </div>
+</div>
 
 </div>
 
 </section>
-
-
-<!-- ================= FOOTER ================= -->
-
-<footer>
-
-<h3>Bobo Analytics</h3>
-
-<p>
-Smart Analytics for Smarter Business
-</p>
-
-<div>
-<a href="/privacy">Privacy Policy</a>
-<a href="/terms">Terms & Conditions</a>
-<a href="/disclaimer">Disclaimer</a>
-</div>
-
-<p style="opacity:.6;margin-top:15px;">
-© 2026 Bobo Analytics
-</p>
-
-</footer>
-
-
-<script>
-function toggleMenu(){
- document.getElementById("navLinks")
- .classList.toggle("show");
-}
-</script>
-
-</body>
-</html>
