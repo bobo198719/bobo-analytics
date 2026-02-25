@@ -3,83 +3,73 @@
 const industries = [
 {
 title:"Healthcare Analytics",
-desc:"AI-powered patient analytics, operational dashboards, and predictive healthcare intelligence helping hospitals improve outcomes and efficiency."
+desc:"AI dashboards analyzing patient trends, operational performance, and predictive healthcare intelligence."
 },
 {
 title:"Pharmacy Intelligence",
-desc:"Inventory analytics, expiry prediction, automated stock insights, and demand forecasting designed for modern pharmacies."
+desc:"Inventory tracking, expiry prediction, and automated pharmacy analytics insights."
 },
 {
 title:"Retail Forecasting",
-desc:"Customer behavior analytics, sales forecasting, and AI-driven demand prediction to increase profitability."
+desc:"Customer behavior analytics and AI demand forecasting improving retail performance."
 },
 {
 title:"Finance Insights",
-desc:"Financial analytics dashboards transforming raw business data into forecasting models and strategic decisions."
+desc:"Financial dashboards transforming business data into strategic forecasting insights."
 }
 ];
 --
 
-<html lang="en">
-<head>
-
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Bobo Analytics</title>
-
 <style>
 
-/* ---------- GLOBAL ---------- */
-*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
+/* ===== GLOBAL ===== */
 body{
+margin:0;
+font-family:system-ui;
 color:white;
-padding-top:80px;
-background:linear-gradient(135deg,#05071a,#1a0040,#000814);
+background:linear-gradient(135deg,#030617,#18003a,#020617);
 background-size:400% 400%;
-animation:bgMove 15s ease infinite;
+animation:bg 14s ease infinite;
+padding-top:70px;
 overflow-x:hidden;
 }
 
-@keyframes bgMove{
+@keyframes bg{
 0%{background-position:0% 50%}
 50%{background-position:100% 50%}
 100%{background-position:0% 50%}
 }
 
-/* ---------- NAVBAR ---------- */
-.navbar{
+/* ===== NAVBAR ===== */
+.nav{
 position:fixed;
 top:0;
 width:100%;
 height:70px;
 background:#020617;
 display:flex;
-align-items:center;
 justify-content:space-between;
+align-items:center;
 padding:0 20px;
-z-index:1000;
 border-bottom:2px solid #00eaff;
+z-index:999;
 }
 
 .logo{
 display:flex;
 align-items:center;
-gap:12px;
+gap:10px;
 font-weight:700;
-font-size:22px;
+font-size:20px;
 }
 
 .logo img{
-width:50px;
-border-radius:12px;
+width:45px;
+border-radius:10px;
 box-shadow:0 0 18px #00eaff;
 }
 
-.menu{
-display:flex;
-gap:28px;
-}
-
+.menu{display:flex;gap:25px;}
 .menu a{
 color:white;
 text-decoration:none;
@@ -92,50 +82,36 @@ position:absolute;
 width:0;
 height:2px;
 background:#00eaff;
-left:0;
 bottom:-5px;
+left:0;
 transition:.3s;
 }
-
 .menu a:hover::after{width:100%}
 
-/* hamburger */
-.hamburger{
-display:none;
-font-size:28px;
-cursor:pointer;
-}
+.ham{display:none;font-size:26px;cursor:pointer;}
 
 @media(max-width:768px){
 .menu{
 display:none;
+flex-direction:column;
 position:absolute;
 top:70px;
 left:0;
 width:100%;
 background:#020617;
-flex-direction:column;
-text-align:center;
 padding:20px 0;
-}
-.menu.show{display:flex}
-.hamburger{display:block}
-}
-
-/* ---------- HERO ---------- */
-.hero{
 text-align:center;
-padding:80px 20px;
+}
+.menu.show{display:flex;}
+.ham{display:block;}
 }
 
-.hero h1{
-font-size:52px;
-margin-bottom:15px;
-}
-
+/* ===== HERO ===== */
+.hero{text-align:center;padding:80px 20px;}
+.hero h1{font-size:48px;margin-bottom:10px;}
 .hero p{opacity:.8}
 
-/* ---------- INDUSTRIES ---------- */
+/* ===== INDUSTRIES ===== */
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
@@ -145,119 +121,103 @@ margin:60px auto;
 padding:0 20px;
 }
 
-.card{
-perspective:1000px;
-cursor:pointer;
-}
-
-.card-inner{
+.card{perspective:1000px;cursor:pointer;}
+.inner{
 position:relative;
-width:100%;
 height:160px;
-transition:transform .8s;
+transition:.8s;
 transform-style:preserve-3d;
 }
+.card.flip .inner{transform:rotateY(180deg);}
 
-.card.flip .card-inner{
-transform:rotateY(180deg);
-}
-
-.card-face{
+.face{
 position:absolute;
 width:100%;
 height:100%;
-border-radius:18px;
-background:#020617;
 display:flex;
 align-items:center;
 justify-content:center;
 text-align:center;
 padding:20px;
-backface-visibility:hidden;
+border-radius:16px;
+background:#020617;
 box-shadow:0 0 25px rgba(0,234,255,.4);
+backface-visibility:hidden;
 }
 
-.card-back{
+.back{
 transform:rotateY(180deg);
 font-size:14px;
 opacity:.85;
 }
 
-/* ---------- FORM ---------- */
-.form{
-max-width:500px;
-margin:80px auto;
-text-align:center;
-}
-
-.form input,.form textarea{
-width:100%;
-margin:10px 0;
-padding:12px;
-border-radius:8px;
-border:none;
-}
-
-.form button{
-padding:12px 25px;
-background:#00eaff;
-border:none;
-border-radius:8px;
-cursor:pointer;
-}
-
-/* ---------- VIDEO SHOWCASE ---------- */
-.videoBox{
+/* ===== VIDEO ===== */
+.videoWrap{
 max-width:1100px;
-margin:80px auto;
+margin:70px auto;
 padding:0 20px;
 }
 
-.videoContainer{
+.videoBox{
 height:420px;
 border-radius:20px;
 overflow:hidden;
-box-shadow:0 0 40px rgba(0,234,255,.35);
+box-shadow:0 0 35px rgba(0,234,255,.3);
 }
 
-.videoContainer video{
+.videoBox video{
 width:100%;
 height:100%;
 object-fit:cover;
 }
 
-/* ---------- FOOTER ---------- */
-footer{
-margin-top:80px;
-background:#020617;
+/* ===== FORM ===== */
+.form{
+max-width:500px;
+margin:80px auto;
 text-align:center;
-padding:40px 20px;
-border-top:1px solid #00eaff;
+}
+.form input,.form textarea{
+width:100%;
+padding:12px;
+margin:10px 0;
+border:none;
+border-radius:8px;
+}
+.form button{
+background:#00eaff;
+border:none;
+padding:12px 25px;
+border-radius:8px;
+cursor:pointer;
 }
 
+/* ===== FOOTER ===== */
+footer{
+background:#020617;
+padding:40px;
+text-align:center;
+border-top:1px solid #00eaff;
+}
 footer a{
 color:#00eaff;
-margin:0 12px;
+margin:0 10px;
 text-decoration:none;
 }
 
 </style>
 
-</head>
-
-<body>
-
 <!-- NAVBAR -->
 
-<nav class="navbar">
+<nav class="nav">
 <div class="logo">
-<img src="/logo.png" />
+<img src="/logo.png">
 Bobo Analytics
 </div>
 
-<div class="hamburger" onclick="toggleMenu()">☰</div>
+<div class="ham" onclick="document.querySelector('.menu').classList.toggle('show')">☰</div>
 
-<div class="menu" id="menu">
+<div class="menu">
 <a href="#">Home</a>
 <a href="#industries">Industries</a>
 <a href="#demo">Demo</a>
@@ -277,11 +237,11 @@ Bobo Analytics
 <h2 style="text-align:center">Industries We Serve</h2>
 
 <div class="grid">
-{industries.map((item)=>(
+{industries.map(item => (
 <div class="card" onclick="this.classList.toggle('flip')">
-<div class="card-inner">
-<div class="card-face">{item.title}</div>
-<div class="card-face card-back">{item.desc}</div>
+<div class="inner">
+<div class="face">{item.title}</div>
+<div class="face back">{item.desc}</div>
 </div>
 </div>
 ))}
@@ -290,13 +250,10 @@ Bobo Analytics
 
 <!-- VIDEO -->
 
-<section class="videoBox">
-<h2 style="text-align:center;margin-bottom:20px;">
-See Bobo Analytics In Action
-</h2>
-
-<div class="videoContainer">
-<video id="videoPlayer" autoplay muted playsinline>
+<section class="videoWrap">
+<h2 style="text-align:center">See Bobo Analytics In Action</h2>
+<div class="videoBox">
+<video id="player" autoplay muted playsinline>
 <source src="/video1.mp4" type="video/mp4">
 </video>
 </div>
@@ -317,32 +274,20 @@ See Bobo Analytics In Action
 <footer>
 <h3>Bobo Analytics</h3>
 <p>Smart Analytics for Smarter Business</p>
-<br>
-<a href="/privacy">Privacy Policy</a>
-<a href="/terms">Terms & Conditions</a>
+<a href="/privacy">Privacy</a>
+<a href="/terms">Terms</a>
 <a href="/disclaimer">Disclaimer</a>
-<p style="opacity:.6;margin-top:15px;">© 2026 Bobo Analytics</p>
+<p style="opacity:.6">© 2026 Bobo Analytics</p>
 </footer>
 
 <script>
-
-/* hamburger */
-function toggleMenu(){
-document.getElementById("menu").classList.toggle("show");
-}
-
-/* video rotation */
 const vids=["/video1.mp4","/video2.mp4","/video3.mp4"];
 let i=0;
-const player=document.getElementById("videoPlayer");
+const p=document.getElementById("player");
 
 setInterval(()=>{
 i=(i+1)%vids.length;
-player.src=vids[i];
-player.play();
+p.src=vids[i];
+p.play();
 },5000);
-
 </script>
-
-</body>
-</html>
