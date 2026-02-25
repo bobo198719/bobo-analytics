@@ -1,132 +1,169 @@
-<!-- ================= INDUSTRIES FLIP SECTION ================= -->
+<!-- ================= BOBO ANALYTICS PREMIUM INDUSTRIES ================= -->
 
-<section id="industries" class="section">
+<section id="industries" class="industries-section">
 
-<h2>Industries We Serve</h2>
+<h2 class="industry-title">Industries We Serve</h2>
+
+<div class="industry-grid">
+
+<!-- Healthcare -->
+<div class="flip-card" onclick="this.classList.toggle('active')">
+<div class="flip-inner">
+<div class="flip-front">Healthcare Analytics</div>
+<div class="flip-back">
+Bobo Analytics empowers hospitals and healthcare providers with AI-driven
+patient analytics, operational dashboards, predictive insights, and
+performance monitoring to improve outcomes and efficiency.
+</div>
+</div>
+</div>
+
+<!-- Pharmacy -->
+<div class="flip-card" onclick="this.classList.toggle('active')">
+<div class="flip-inner">
+<div class="flip-front">Pharmacy Intelligence</div>
+<div class="flip-back">
+Our pharmacy analytics system delivers smart inventory tracking,
+expiry prediction, billing intelligence, and demand forecasting
+helping pharmacies automate decisions using real-time analytics.
+</div>
+</div>
+</div>
+
+<!-- Retail -->
+<div class="flip-card" onclick="this.classList.toggle('active')">
+<div class="flip-inner">
+<div class="flip-front">Retail Forecasting</div>
+<div class="flip-back">
+Retail businesses use Bobo Analytics to understand customer trends,
+predict product demand, optimize stock planning, and increase sales
+through AI-powered forecasting dashboards.
+</div>
+</div>
+</div>
+
+<!-- Finance -->
+<div class="flip-card" onclick="this.classList.toggle('active')">
+<div class="flip-inner">
+<div class="flip-front">Finance Insights</div>
+<div class="flip-back">
+Transform financial data into strategic intelligence with revenue
+analysis, forecasting models, expense tracking, and automated
+decision insights built for modern finance teams.
+</div>
+</div>
+</div>
+
+</div>
 
 <style>
 
-/* FLIP GRID */
-.flip-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:25px;
-  max-width:1000px;
-  margin:auto;
-  padding-top:30px;
+/* ===== SECTION BACKGROUND (MATCHES YOUR SITE) ===== */
+.industries-section{
+padding:90px 20px;
+text-align:center;
+background:
+radial-gradient(circle at 20% 30%, #4c1d95 0%, transparent 40%),
+radial-gradient(circle at 80% 70%, #0ea5e9 0%, transparent 40%),
+linear-gradient(135deg,#020617,#1e0038);
+color:white;
 }
 
-/* CARD CONTAINER */
+/* TITLE */
+.industry-title{
+font-size:34px;
+margin-bottom:40px;
+font-weight:700;
+}
+
+/* GRID */
+.industry-grid{
+max-width:1100px;
+margin:auto;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:28px;
+}
+
+/* CARD */
 .flip-card{
-  perspective:1000px;
-  height:150px;
-  cursor:pointer;
+perspective:1200px;
+height:170px;
+cursor:pointer;
 }
 
 /* INNER */
 .flip-inner{
-  position:relative;
-  width:100%;
-  height:100%;
-  transition:transform .7s;
-  transform-style:preserve-3d;
+position:relative;
+width:100%;
+height:100%;
+transition:transform .8s cubic-bezier(.2,.8,.2,1);
+transform-style:preserve-3d;
 }
 
+/* FLIP */
 .flip-card.active .flip-inner{
-  transform:rotateY(180deg);
+transform:rotateY(180deg);
 }
 
 /* FRONT + BACK */
 .flip-front,
 .flip-back{
-  position:absolute;
-  width:100%;
-  height:100%;
-  border-radius:16px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:20px;
-  backface-visibility:hidden;
-  background:#020617;
-  box-shadow:0 0 18px rgba(0,255,255,.15);
+position:absolute;
+width:100%;
+height:100%;
+border-radius:18px;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:22px;
+backface-visibility:hidden;
+background:#020617;
+border:1px solid rgba(0,255,255,.2);
+box-shadow:
+0 0 25px rgba(0,255,255,.25),
+inset 0 0 20px rgba(139,92,246,.25);
 }
 
-/* FRONT */
+/* FRONT STYLE */
 .flip-front{
-  font-size:20px;
-  font-weight:600;
+font-size:20px;
+font-weight:600;
 }
 
-/* BACK */
+/* BACK STYLE */
 .flip-back{
-  transform:rotateY(180deg);
-  font-size:14px;
-  line-height:1.6;
-  color:#cbd5f5;
+transform:rotateY(180deg);
+font-size:14px;
+line-height:1.6;
+color:#cbd5f5;
 }
 
-.flip-card:hover{
-  transform:translateY(-5px);
+/* GLOW WHILE HOVER / ACTIVE */
+.flip-card:hover .flip-front,
+.flip-card.active .flip-front{
+box-shadow:
+0 0 35px #00f0ff,
+0 0 60px rgba(168,85,247,.6);
+transform:translateY(-6px);
+}
+
+/* FLOATING EFFECT */
+.flip-card{
+animation:floatCard 6s ease-in-out infinite;
+}
+
+@keyframes floatCard{
+0%,100%{transform:translateY(0)}
+50%{transform:translateY(-6px)}
+}
+
+/* MOBILE */
+@media(max-width:768px){
+.industry-title{font-size:26px}
+.flip-card{height:150px}
 }
 
 </style>
-
-<div class="flip-grid">
-
-<!-- Healthcare -->
-<div class="flip-card" onclick="this.classList.toggle('active')">
-  <div class="flip-inner">
-    <div class="flip-front">Healthcare Analytics</div>
-    <div class="flip-back">
-      Bobo Analytics helps healthcare providers analyze patient trends,
-      treatment outcomes, and operational efficiency using AI-powered
-      dashboards. Our solutions improve decision-making, resource planning,
-      and predictive healthcare insights.
-    </div>
-  </div>
-</div>
-
-<!-- Pharmacy -->
-<div class="flip-card" onclick="this.classList.toggle('active')">
-  <div class="flip-inner">
-    <div class="flip-front">Pharmacy Intelligence</div>
-    <div class="flip-back">
-      Our pharmacy analytics platform tracks inventory movement,
-      expiry prediction, demand forecasting, and billing insights.
-      Pharmacies gain real-time visibility into stock performance
-      and automated data-driven recommendations.
-    </div>
-  </div>
-</div>
-
-<!-- Retail -->
-<div class="flip-card" onclick="this.classList.toggle('active')">
-  <div class="flip-inner">
-    <div class="flip-front">Retail Forecasting</div>
-    <div class="flip-back">
-      Bobo Analytics enables retailers to understand customer behavior,
-      forecast demand, and optimize product performance using AI models.
-      Businesses reduce losses and increase profitability through
-      intelligent analytics automation.
-    </div>
-  </div>
-</div>
-
-<!-- Finance -->
-<div class="flip-card" onclick="this.classList.toggle('active')">
-  <div class="flip-inner">
-    <div class="flip-front">Finance Insights</div>
-    <div class="flip-back">
-      Financial analytics tools transform raw financial data into
-      actionable intelligence. Monitor revenue patterns, expense trends,
-      and forecasting models to support strategic financial planning
-      and smarter investment decisions.
-    </div>
-  </div>
-</div>
-
-</div>
 
 </section>
