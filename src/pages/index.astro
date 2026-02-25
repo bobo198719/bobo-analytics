@@ -1,30 +1,25 @@
-<!-- PREMIUM VIDEO SHOWCASE (ALIGNED FIXED) -->
+<!-- BOBO ANALYTICS PREMIUM VIDEO SHOWCASE -->
 
-<section style="
-max-width:1000px;
-margin:60px auto;
-padding:0 20px;
-">
+<section style="max-width:1100px;margin:70px auto;padding:0 20px;">
 
-<h2 style="
-text-align:center;
-margin-bottom:25px;
-font-size:28px;
-">
+<h2 style="text-align:center;font-size:30px;margin-bottom:25px;">
 See Bobo Analytics In Action
 </h2>
 
-<div style="
+<div id="videoBox" style="
 width:100%;
 height:420px;
-border-radius:18px;
+border-radius:20px;
 overflow:hidden;
 position:relative;
-box-shadow:0 0 35px rgba(0,234,255,.35);
 background:#000;
+box-shadow:0 0 40px rgba(0,234,255,.35);
 ">
 
-<video autoplay muted loop playsinline
+<video id="showcaseVideo"
+autoplay
+muted
+playsinline
 style="
 width:100%;
 height:100%;
@@ -37,3 +32,20 @@ left:0;
 </div>
 
 </section>
+
+<script>
+const videos = [
+"/video1.mp4",
+"/video2.mp4",
+"/video3.mp4"
+];
+
+let index = 0;
+const player = document.getElementById("showcaseVideo");
+
+setInterval(() => {
+index = (index + 1) % videos.length;
+player.src = videos[index];
+player.play();
+}, 5000);
+</script>
