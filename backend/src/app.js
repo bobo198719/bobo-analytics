@@ -1,24 +1,21 @@
 import express from "express";
-import cors from "cors";
 
 const app = express();
 
-app.use(cors());
+// middleware
 app.use(express.json());
 
-/* ================= ROOT TEST ================= */
-
+// ROOT TEST
 app.get("/", (req, res) => {
   res.send("🚀 Bobo Analytics Backend Running Successfully");
 });
 
-/* ================= API TEST ================= */
-
+// HEALTH CHECK API
 app.get("/api/health", (req, res) => {
   res.json({
     status: "OK",
     app: "Bobo Analytics SaaS",
-    server: "Running",
+    server: "Running"
   });
 });
 
