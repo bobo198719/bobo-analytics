@@ -1,9 +1,132 @@
 ---
+const crmLogin = "https://your-pharmacy-crm-login.com";
 ---
 
-<h1>Pharmacy Software - Bobo Analytics</h1>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pharmacy Analytics | Bobo Analytics</title>
 
-<p>
-Welcome Pharmacy Owners 👋
-This is your Pharmacy Industry Page.
-</p>
+  <style>
+    body {
+      margin:0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg,#0a0f2c,#3b0f70,#0088a9);
+      color:white;
+      text-align:center;
+    }
+
+    .container{
+      max-width:1000px;
+      margin:auto;
+      padding:60px 20px;
+    }
+
+    h1{
+      font-size:36px;
+      margin-bottom:15px;
+    }
+
+    p{
+      opacity:0.9;
+      line-height:1.6;
+    }
+
+    .benefits{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:20px;
+      margin-top:40px;
+    }
+
+    .card{
+      background:#0b0f2a;
+      padding:20px;
+      border-radius:12px;
+      box-shadow:0 0 15px rgba(0,255,255,0.2);
+    }
+
+    .login-btn{
+      display:inline-block;
+      margin-top:40px;
+      padding:14px 28px;
+      border-radius:10px;
+      text-decoration:none;
+      color:white;
+      font-weight:bold;
+      background:linear-gradient(90deg,#00c6ff,#7f00ff);
+      transition:0.3s;
+    }
+
+    .login-btn:hover{
+      transform:scale(1.05);
+    }
+
+    footer{
+      margin-top:60px;
+      padding:20px;
+      background:#05081a;
+      font-size:14px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>AI Software for Modern Pharmacies</h1>
+
+    <p>
+      Manage billing, inventory, prescriptions, CRM and financial analytics
+      from one intelligent platform powered by Bobo Analytics.
+    </p>
+
+    <div class="benefits">
+
+      <div class="card">
+        <h3>💊 Billing POS</h3>
+        <p>Fast billing with prescription tracking.</p>
+      </div>
+
+      <div class="card">
+        <h3>📦 Inventory Automation</h3>
+        <p>Expiry alerts and smart stock management.</p>
+      </div>
+
+      <div class="card">
+        <h3>👥 CRM & Prescriptions</h3>
+        <p>Patient history and repeat purchase tracking.</p>
+      </div>
+
+      <div class="card">
+        <h3>🤖 AI Insights</h3>
+        <p>Predict demand and optimize pharmacy operations.</p>
+      </div>
+
+      <div class="card">
+        <h3>📊 Financial Analytics</h3>
+        <p>Understand revenue, profit and performance instantly.</p>
+      </div>
+
+      <div class="card">
+        <h3>🏪 Multi-Shop Management</h3>
+        <p>Control multiple pharmacy branches from one dashboard.</p>
+      </div>
+
+    </div>
+
+    <!-- LOGIN BUTTON -->
+    <a href={crmLogin} target="_blank" class="login-btn">
+      Login to Pharmacy CRM
+    </a>
+
+  </div>
+
+  <footer>
+    © 2026 Bobo Analytics — Pharmacy Intelligence Platform
+  </footer>
+
+</body>
+</html>
