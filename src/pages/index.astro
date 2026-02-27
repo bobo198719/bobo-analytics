@@ -2,48 +2,50 @@
 import Navbar from "../components/Navbar.astro";
 ---
 
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bobo Analytics</title>
+<Navbar />
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg,#0a0f2c,#3b0f70,#0088a9);
-      color: white;
-    }
+<section style="
+  min-height:100vh;
+  background:linear-gradient(135deg,#0a0f2c,#3b0f70,#0088a9);
+  color:white;
+  font-family:Arial, sans-serif;
+">
 
-    .container {
-      max-width: 1100px;
-      margin: auto;
-      padding: 60px 20px;
-      text-align: center;
-    }
+  <!-- HERO -->
+  <div style="text-align:center; padding:60px 20px;">
+    <h1 style="font-size:38px; margin-bottom:10px;">
+      AI Analytics Platform
+    </h1>
 
-    h1 {
-      font-size: 38px;
-      margin-bottom: 10px;
-    }
+    <p>
+      Built for Modern Businesses. Choose your industry to continue.
+    </p>
+  </div>
 
-    p {
-      opacity: 0.9;
-    }
+  <!-- INDUSTRIES -->
+  <div style="
+    max-width:1100px;
+    margin:auto;
+    padding:40px 20px;
+    text-align:center;
+  ">
 
-    .industries {
-      display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
-      gap: 20px;
-      margin-top: 40px;
-    }
+    <h2>Choose Your Industry</h2>
 
-    .card {
-      background: #0b0f2a;
-      padding: 25px;
-      border-radius: 14px;
-      text-decoration: none;
-      color: white;
-      box-shadow: 0 0 15px rgba(0,255,255,0.2);
-      transition:
+    <div style="
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:20px;
+      margin-top:40px;
+    ">
+
+      <a href="/solutions/pharmacy" style="
+        background:#0b0f2a;
+        padding:25px;
+        border-radius:14px;
+        text-decoration:none;
+        color:white;
+        box-shadow:0 0 15px rgba(0,255,255,0.2);
+      ">
+        <h3>💊 Pharmacy</h3>
+        <p>Billing POS, Inventory Automation & CRM.</p>
