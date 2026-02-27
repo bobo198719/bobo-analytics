@@ -1,0 +1,81 @@
+---
+---
+
+<style>
+.navbar {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:18px 25px;
+  background:#05081a;
+  color:white;
+}
+
+.logo {
+  font-size:20px;
+  font-weight:bold;
+}
+
+.dropdown {
+  position:relative;
+}
+
+.dropbtn {
+  background:linear-gradient(90deg,#00c6ff,#7f00ff);
+  border:none;
+  padding:10px 16px;
+  border-radius:8px;
+  color:white;
+  font-weight:bold;
+}
+
+.dropdown-content {
+  display:none;
+  position:absolute;
+  right:0;
+  background:#0b0f2a;
+  min-width:200px;
+  border-radius:10px;
+}
+
+.dropdown-content a {
+  display:block;
+  padding:12px;
+  color:white;
+  text-decoration:none;
+}
+
+.dropdown-content a:hover {
+  background:#1a1f4d;
+}
+
+.dropdown:hover .dropdown-content {
+  display:block;
+}
+</style>
+
+<nav class="navbar">
+
+  <div class="logo">
+    Bobo Analytics
+  </div>
+
+  <div class="dropdown">
+    <button class="dropbtn">Login ▾</button>
+
+    <div class="dropdown-content">
+      <a href="https://crm-pharmacy.yourcrm.com" target="_blank">
+        💊 Pharmacy CRM
+      </a>
+
+      <a href="https://crm-healthcare.yourcrm.com" target="_blank">
+        🏥 Healthcare CRM
+      </a>
+
+      <a href="https://crm-retail.yourcrm.com" target="_blank">
+        🛒 Retail CRM
+      </a>
+    </div>
+  </div>
+
+</nav>
