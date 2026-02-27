@@ -1,316 +1,84 @@
 ---
-
 ---
 
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bobo Analytics</title><style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bobo Analytics</title>
 
-/* ================= GLOBAL ================= */
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg,#0a0f2c,#3b0f70,#0088a9);
+      color: white;
+    }
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:system-ui,-apple-system,Segoe UI;
-scroll-behavior:smooth;
-}
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 40px 20px;
+      text-align: center;
+    }
 
-body{
-color:white;
-overflow-x:hidden;
-background:
-radial-gradient(circle at 20% 20%, #5b21b6 0%, transparent 40%),
-radial-gradient(circle at 80% 70%, #06b6d4 0%, transparent 40%),
-linear-gradient(135deg,#020617,#1e0038);
-}
+    h1 {
+      font-size: 38px;
+      margin-bottom: 10px;
+    }
 
-/* ================= NAVBAR (ALWAYS ON TOP) ================= */
+    p {
+      opacity: 0.9;
+    }
 
-.navbar{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:70px;
-background:#020617;
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:0 20px;
-border-bottom:2px solid #06b6d4;
-z-index:99999; /* 🔥 FIX */
-}
+    .industries {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+      gap: 20px;
+      margin-top: 40px;
+    }
 
-.logo{
-display:flex;
-align-items:center;
-gap:10px;
-font-size:20px;
-font-weight:600;
-}
+    .card {
+      background: #0b0f2a;
+      padding: 25px;
+      border-radius: 14px;
+      text-decoration: none;
+      color: white;
+      box-shadow: 0 0 15px rgba(0,255,255,0.2);
+      transition: 0.3s;
+    }
 
-.logo img{
-width:45px;
-border-radius:10px;
-box-shadow:0 0 20px #06b6d4;
-}
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 0 25px rgba(0,255,255,0.4);
+    }
 
-/* ================= HAMBURGER ================= */
+    footer {
+      margin-top: 60px;
+      padding: 20px;
+      background: #05081a;
+      font-size: 14px;
+    }
+  </style>
+</head>
 
-.menu-btn{
-width:30px;
-height:22px;
-display:flex;
-flex-direction:column;
-justify-content:space-between;
-cursor:pointer;
-z-index:100000; /* 🔥 ALWAYS CLICKABLE */
-}
+<body>
 
-.menu-btn span{
-height:3px;
-background:white;
-border-radius:3px;
-transition:.4s;
-}
+  <!-- HERO SECTION -->
+  <div class="container">
+    <h1>AI Analytics Platform</h1>
+    <p>Built for Modern Businesses — Choose your industry to continue.</p>
+  </div>
 
-.menu-btn.active span:nth-child(1){
-transform:rotate(45deg) translate(5px,5px);
-}
-.menu-btn.active span:nth-child(2){opacity:0;}
-.menu-btn.active span:nth-child(3){
-transform:rotate(-45deg) translate(6px,-6px);
-}
+  <!-- INDUSTRY SELECTOR -->
+  <div class="container">
+    <h2>Choose Your Industry</h2>
 
-/* MOBILE MENU */
+    <div class="industries">
 
-.mobile-menu{
-position:fixed;
-top:70px;
-right:-100%;
-width:240px;
-height:100vh;
-background:#020617;
-padding:30px;
-transition:.4s ease;
-z-index:9999;
-}
+      <a href="/solutions/pharmacy" class="card">
+        <h3>💊 Pharmacy</h3>
+        <p>Billing POS, Inventory Automation & CRM.</p>
+      </a>
 
-.mobile-menu.active{right:0;}
-
-.mobile-menu a{
-display:block;
-margin:20px 0;
-color:white;
-text-decoration:none;
-}
-
-/* PAGE OFFSET */
-.page{
-padding-top:90px;
-position:relative;
-z-index:1;
-}
-
-/* ================= HERO ================= */
-
-.hero{
-display:flex;
-align-items:center;
-justify-content:space-between;
-gap:40px;
-max-width:1100px;
-margin:auto;
-padding:80px 20px;
-flex-wrap:wrap;
-position:relative;
-z-index:1;
-}
-
-.hero-text{flex:1}
-
-.gradient{
-background:linear-gradient(90deg,#06b6d4,#a855f7,#ec4899);
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
-}
-
-.hero-img{
-flex:1;
-text-align:center;
-position:relative;
-z-index:0; /* 🔥 PREVENT OVERLAY */
-}
-
-.hero-img img{
-width:100%;
-max-width:420px;
-border-radius:18px;
-box-shadow:0 0 40px rgba(168,85,247,.6);
-animation:float 5s ease-in-out infinite;
-pointer-events:none; /* 🔥 FIX CLICK BLOCK */
-}
-
-@keyframes float{
-0%,100%{transform:translateY(0)}
-50%{transform:translateY(-14px)}
-}
-
-/* ================= INDUSTRIES ================= */
-
-.industries{text-align:center;padding:70px 20px}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-gap:25px;
-max-width:1000px;
-margin:auto;
-}
-
-.card{
-background:#020617;
-padding:25px;
-border-radius:14px;
-border:1px solid rgba(0,255,255,.2);
-box-shadow:0 0 20px rgba(0,255,255,.2);
-transition:.4s;
-}
-
-.card:hover{
-transform:translateY(-10px);
-box-shadow:0 0 40px #00f0ff;
-}
-
-/* ================= FORM ================= */
-
-.form-section{text-align:center;padding:70px 20px}
-
-.form-box{
-max-width:500px;
-margin:auto;
-background:#020617;
-padding:30px;
-border-radius:16px;
-box-shadow:0 0 30px rgba(168,85,247,.5);
-}
-
-input,textarea{
-width:100%;
-padding:12px;
-margin-top:12px;
-border-radius:8px;
-border:none;
-background:#0f172a;
-color:white;
-}
-
-button{
-margin-top:15px;
-padding:12px;
-width:100%;
-border:none;
-border-radius:8px;
-background:linear-gradient(90deg,#06b6d4,#a855f7);
-color:white;
-font-weight:600;
-cursor:pointer;
-}
-
-/* ================= FOOTER ================= */
-
-footer{
-background:#020617;
-border-top:2px solid #06b6d4;
-margin-top:90px;
-padding:60px 20px 25px;
-}
-
-.footer-grid{
-max-width:1100px;
-margin:auto;
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:40px;
-}
-
-footer a{
-display:block;
-color:white;
-opacity:.8;
-text-decoration:none;
-margin:6px 0;
-}
-
-footer a:hover{color:#06b6d4}
-
-/* MOBILE */
-
-@media(max-width:768px){
-.hero{flex-direction:column;text-align:center}
-}
-
-</style></head><body><!-- NAVBAR --><div class="navbar">
-<div class="logo">
-<img src="/logo.png">
-<span>Bobo Analytics</span>
-</div><div class="menu-btn" id="menuBtn">
-<span></span><span></span><span></span>
-</div>
-</div><div class="mobile-menu" id="mobileMenu">
-<a href="#">Home</a>
-<a href="#industries">Industries</a>
-<a href="#demo">Request Demo</a>
-</div><div class="page"><section class="hero">
-<div class="hero-text">
-<h1>AI Analytics Platform</h1>
-<h2 class="gradient">Built for Modern Businesses</h2>
-<p>Turn business data into intelligent decisions.</p>
-</div><div class="hero-img">
-<img src="/dashboard-image.png">
-</div>
-</section><section id="industries" class="industries">
-<h2>Industries We Serve</h2>
-<div class="grid">
-<div class="card">🏥 Healthcare<br><small>Improve patient insights.</small></div>
-<div class="card">💊 Pharmacy<br><small>Inventory analytics.</small></div>
-<div class="card">🛍 Retail<br><small>Demand forecasting.</small></div>
-<div class="card">💰 Finance<br><small>Financial intelligence.</small></div>
-</div>
-</section><section id="demo" class="form-section">
-<h2>Request Demo</h2><div class="form-box">
-<form>
-<input type="text" placeholder="Your Name" required>
-<input type="email" placeholder="Email" required>
-<textarea placeholder="Your Requirement"></textarea>
-<button type="submit">Submit</button>
-</form>
-</div>
-</section><footer><div class="footer-grid"><div>
-<h3>Bobo Analytics</h3>
-<p style="opacity:.7;">Smart Analytics for Smarter Business.</p>
-</div><div>
-<h4 style="color:#06b6d4;">Company</h4>
-<a href="#">Home</a>
-<a href="#industries">Industries</a>
-<a href="#demo">Request Demo</a>
-</div><div>
-<h4 style="color:#06b6d4;">Legal</h4>
-<a href="/privacy">Privacy Policy</a>
-<a href="/terms">Terms</a>
-<a href="/disclaimer">Disclaimer</a>
-</div></div><p style="text-align:center;margin-top:40px;opacity:.6;">
-© 2026 Bobo Analytics — All Rights Reserved
-</p></footer></div><script>
-const btn=document.getElementById("menuBtn");
-const menu=document.getElementById("mobileMenu");
-
-btn.onclick=()=>{
-btn.classList.toggle("active");
-menu.classList.toggle("active");
-};
-</script></body>
-</html>
+      <a href="/solutions
