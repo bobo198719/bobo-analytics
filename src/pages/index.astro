@@ -1,4 +1,5 @@
 ---
+import Navbar from "../components/Navbar.astro";
 ---
 
 <html lang="en">
@@ -18,7 +19,7 @@
     .container {
       max-width: 1100px;
       margin: auto;
-      padding: 40px 20px;
+      padding: 60px 20px;
       text-align: center;
     }
 
@@ -45,40 +46,4 @@
       text-decoration: none;
       color: white;
       box-shadow: 0 0 15px rgba(0,255,255,0.2);
-      transition: 0.3s;
-    }
-
-    .card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 0 25px rgba(0,255,255,0.4);
-    }
-
-    footer {
-      margin-top: 60px;
-      padding: 20px;
-      background: #05081a;
-      font-size: 14px;
-    }
-  </style>
-</head>
-
-<body>
-
-  <!-- HERO SECTION -->
-  <div class="container">
-    <h1>AI Analytics Platform</h1>
-    <p>Built for Modern Businesses — Choose your industry to continue.</p>
-  </div>
-
-  <!-- INDUSTRY SELECTOR -->
-  <div class="container">
-    <h2>Choose Your Industry</h2>
-
-    <div class="industries">
-
-      <a href="/solutions/pharmacy" class="card">
-        <h3>💊 Pharmacy</h3>
-        <p>Billing POS, Inventory Automation & CRM.</p>
-      </a>
-
-      <a href="/solutions
+      transition:
