@@ -1,0 +1,131 @@
+---
+const { title = "Bobo Analytics" } = Astro.props;
+---
+
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{title}</title>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-left">
+    <img src="/logo.png" class="logo"/>
+    <span class="brand">Bobo Analytics</span>
+  </div>
+
+  <div>
+    <a href="/solutions/pharmacy" class="nav-btn">Login</a>
+  </div>
+</nav>
+
+<!-- PAGE CONTENT -->
+<slot />
+
+<!-- FOOTER -->
+<footer class="footer">
+
+<div class="footer-container">
+
+<div>
+<h3>Bobo Analytics</h3>
+<p>Smart Analytics for Smarter Business</p>
+
+<p>
+📧 support@boboanalytics.com<br/>
+📞 +91 9156484328
+</p>
+</div>
+
+<div>
+<h4>Company</h4>
+<a href="/">Home</a>
+</div>
+
+<div>
+<h4>Legal</h4>
+<a href="/privacy">Privacy Policy</a>
+<a href="/terms">Terms & Conditions</a>
+<a href="/disclaimer">Disclaimer</a>
+</div>
+
+</div>
+
+<div class="copyright">
+© 2026 Bobo Analytics — All Rights Reserved
+</div>
+
+</footer>
+
+</body>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+}
+
+/* NAVBAR */
+.navbar{
+position:sticky;
+top:0;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:14px 25px;
+background:black;
+color:white;
+z-index:1000;
+}
+
+.logo{ height:40px; }
+
+.nav-left{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.nav-btn{
+background:#0047ff;
+padding:10px 16px;
+border-radius:8px;
+color:white;
+text-decoration:none;
+}
+
+/* FOOTER */
+.footer{
+background:black;
+color:white;
+padding:50px 20px;
+}
+
+.footer-container{
+max-width:1100px;
+margin:auto;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:30px;
+}
+
+.footer a{
+color:#ccc;
+text-decoration:none;
+display:block;
+margin-top:8px;
+}
+
+.footer a:hover{color:white;}
+
+.copyright{
+text-align:center;
+margin-top:30px;
+opacity:.7;
+}
+</style>
+</html>
