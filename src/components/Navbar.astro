@@ -3,54 +3,65 @@
 
 <style>
 .navbar {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:18px 25px;
-  background:#05081a;
-  color:white;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 16px 22px;
+  background: rgba(5,8,26,0.9);
+  backdrop-filter: blur(10px);
+
+  color: white;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
 .logo {
-  font-size:20px;
-  font-weight:bold;
+  font-size: 20px;
+  font-weight: bold;
 }
 
 .dropdown {
-  position:relative;
+  position: relative;
 }
 
 .dropbtn {
-  background:linear-gradient(90deg,#00c6ff,#7f00ff);
-  border:none;
-  padding:10px 16px;
-  border-radius:8px;
-  color:white;
-  font-weight:bold;
+  background: linear-gradient(90deg,#00c6ff,#7f00ff);
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .dropdown-content {
-  display:none;
-  position:absolute;
-  right:0;
-  background:#0b0f2a;
-  min-width:200px;
-  border-radius:10px;
+  display: none;
+  position: absolute;
+  right: 0;
+  background: #0b0f2a;
+  min-width: 210px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
 }
 
 .dropdown-content a {
-  display:block;
-  padding:12px;
-  color:white;
-  text-decoration:none;
+  display: block;
+  padding: 12px;
+  color: white;
+  text-decoration: none;
 }
 
 .dropdown-content a:hover {
-  background:#1a1f4d;
+  background: #1a1f4d;
 }
 
 .dropdown:hover .dropdown-content {
-  display:block;
+  display: block;
 }
 </style>
 
