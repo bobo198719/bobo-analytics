@@ -4,93 +4,229 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
 <MainLayout title="Pharmacy CRM | Bobo Analytics">
 
-<section class="pharmacy">
+<!-- HERO -->
+<section class="hero">
 
 <h1>AI Software for Modern Pharmacies</h1>
 
-<p class="subtitle">
+<p>
 Manage billing, inventory, prescriptions, CRM and financial analytics
 from one intelligent platform powered by Bobo Analytics.
 </p>
 
-<div class="features">
+<a class="cta" href="#">Login to Pharmacy CRM</a>
 
-<div class="box">
-<h3>💊 Billing POS</h3>
-<p>Fast billing with prescription tracking.</p>
-</div>
+</section>
 
-<div class="box">
-<h3>📦 Inventory Automation</h3>
-<p>Expiry alerts and smart stock management.</p>
-</div>
 
-<div class="box">
-<h3>👥 CRM & Prescriptions</h3>
-<p>Patient history and repeat purchase tracking.</p>
-</div>
+<!-- FEATURES -->
+<section class="features">
 
-<div class="box">
-<h3>🤖 AI Insights</h3>
-<p>Predict demand and optimize pharmacy operations.</p>
-</div>
+<h2>Everything Your Pharmacy Needs</h2>
 
-<div class="box">
-<h3>📊 Financial Analytics</h3>
-<p>Understand revenue and profit instantly.</p>
-</div>
+<div class="grid">
 
-<div class="box">
-<h3>🏪 Multi-Shop Management</h3>
-<p>Control multiple branches from one dashboard.</p>
-</div>
+<div class="card">💊 Billing POS<br/><span>Fast billing & GST ready invoices</span></div>
+<div class="card">📦 Inventory Automation<br/><span>Expiry alerts & stock control</span></div>
+<div class="card">👥 CRM & Prescriptions<br/><span>Patient history tracking</span></div>
+<div class="card">🤖 AI Insights<br/><span>Demand prediction</span></div>
+<div class="card">📊 Financial Analytics<br/><span>Profit & revenue clarity</span></div>
+<div class="card">🏪 Multi-Shop Control<br/><span>Manage branches centrally</span></div>
 
 </div>
 
-<a class="login-btn" href="#">
-Login to Pharmacy CRM
-</a>
+</section>
+
+
+<!-- HOW IT WORKS -->
+<section class="workflow">
+
+<h2>How Bobo Analytics Works</h2>
+
+<div class="steps">
+
+<div class="step">
+<h3>1️⃣ Sell Medicines</h3>
+<p>Generate bills instantly with smart POS system.</p>
+</div>
+
+<div class="step">
+<h3>2️⃣ System Tracks Data</h3>
+<p>Inventory, prescriptions and customer data auto-sync.</p>
+</div>
+
+<div class="step">
+<h3>3️⃣ AI Generates Insights</h3>
+<p>Know what to stock and when to reorder.</p>
+</div>
+
+<div class="step">
+<h3>4️⃣ Grow Profit</h3>
+<p>Improve margins using financial analytics.</p>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- DASHBOARD PREVIEW -->
+<section class="preview">
+
+<h2>Your Pharmacy Dashboard</h2>
+
+<img src="/dashboard-image.png" alt="Dashboard Preview"/>
+
+</section>
+
+
+<!-- BENEFITS -->
+<section class="benefits">
+
+<h2>Why Pharmacy Owners Choose Us</h2>
+
+<div class="benefit-grid">
+
+<div>✅ Reduce medicine expiry loss</div>
+<div>✅ Faster billing experience</div>
+<div>✅ Patient retention automation</div>
+<div>✅ Multi-store visibility</div>
+<div>✅ AI driven decisions</div>
+<div>✅ Business growth insights</div>
+
+</div>
+
+</section>
+
+
+<!-- CTA -->
+<section class="cta-section">
+
+<h2>Ready to Transform Your Pharmacy?</h2>
+
+<a class="cta big" href="#">Login to Pharmacy CRM</a>
 
 </section>
 
 </MainLayout>
 
+
 <style>
-.pharmacy{
+
+/* HERO */
+.hero{
 text-align:center;
-padding:80px 20px;
-color:white;
+padding:90px 20px;
 background:linear-gradient(135deg,#2b1055,#7597de);
-min-height:80vh;
+color:white;
 }
 
-.subtitle{
-max-width:700px;
-margin:auto;
-opacity:.9;
+.hero h1{
+font-size:34px;
+margin-bottom:15px;
 }
 
+.cta{
+display:inline-block;
+margin-top:20px;
+padding:14px 24px;
+background:linear-gradient(90deg,#00c6ff,#a100ff);
+color:white;
+border-radius:8px;
+text-decoration:none;
+}
+
+/* FEATURES */
 .features{
+padding:70px 20px;
+background:#f7f9fc;
+text-align:center;
+}
+
+.grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
 gap:20px;
 margin-top:40px;
 }
 
-.box{
-background:#0b0f2a;
-padding:20px;
+.card{
+background:white;
+padding:25px;
 border-radius:12px;
-box-shadow:0 10px 25px rgba(0,0,0,0.3);
+box-shadow:0 10px 25px rgba(0,0,0,0.1);
+font-weight:600;
 }
 
-.login-btn{
-display:inline-block;
-margin-top:40px;
-padding:14px 22px;
-background:linear-gradient(90deg,#00c6ff,#a100ff);
-color:white;
-border-radius:8px;
-text-decoration:none;
+.card span{
+display:block;
+margin-top:8px;
+font-weight:normal;
+color:#555;
 }
+
+/* WORKFLOW */
+.workflow{
+padding:70px 20px;
+background:white;
+text-align:center;
+}
+
+.steps{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:25px;
+margin-top:40px;
+}
+
+.step{
+background:#f4f6f9;
+padding:20px;
+border-radius:12px;
+}
+
+/* DASHBOARD */
+.preview{
+padding:70px 20px;
+text-align:center;
+background:linear-gradient(135deg,#1b1f3b,#2c3e90);
+color:white;
+}
+
+.preview img{
+margin-top:30px;
+max-width:800px;
+width:100%;
+border-radius:14px;
+box-shadow:0 20px 40px rgba(0,0,0,0.4);
+}
+
+/* BENEFITS */
+.benefits{
+padding:70px 20px;
+background:#f7f9fc;
+text-align:center;
+}
+
+.benefit-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:20px;
+margin-top:30px;
+font-weight:600;
+}
+
+/* CTA */
+.cta-section{
+text-align:center;
+padding:80px 20px;
+background:linear-gradient(135deg,#000000,#0047ff);
+color:white;
+}
+
+.big{
+font-size:18px;
+padding:16px 28px;
+}
+
 </style>
