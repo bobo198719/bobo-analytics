@@ -5,13 +5,12 @@ import Navbar from "../components/Navbar.astro";
 <Navbar />
 
 <section style="
-  min-height:100vh;
   background:linear-gradient(135deg,#0a0f2c,#3b0f70,#0088a9);
   color:white;
   font-family:Arial, sans-serif;
 ">
 
-  <!-- HERO SECTION -->
+  <!-- HERO -->
   <div style="
     max-width:1200px;
     margin:auto;
@@ -22,15 +21,14 @@ import Navbar from "../components/Navbar.astro";
     gap:40px;
   ">
 
-    <!-- LEFT TEXT -->
     <div>
-      <h1 style="font-size:42px; margin-bottom:15px;">
+      <h1 style="font-size:42px;">
         AI Software for Modern Businesses
       </h1>
 
-      <p style="opacity:0.9; line-height:1.6;">
-        Manage operations, analytics, CRM and automation
-        from one intelligent platform powered by Bobo Analytics.
+      <p style="opacity:.9;">
+        CRM, Analytics, Automation and Financial Intelligence —
+        built for every industry.
       </p>
 
       <a href="/solutions/pharmacy" style="
@@ -47,11 +45,9 @@ import Navbar from "../components/Navbar.astro";
       </a>
     </div>
 
-    <!-- RIGHT DASHBOARD PREVIEW -->
     <div style="text-align:center;">
       <img
-        <img src="/dashboard-image.png"
-        alt="Bobo Analytics Dashboard"
+        src="/dashboard-image.png"
         style="
           width:100%;
           max-width:520px;
@@ -63,7 +59,59 @@ import Navbar from "../components/Navbar.astro";
 
   </div>
 
-  <!-- INDUSTRY SECTION -->
+  <!-- FEATURES SECTION -->
+  <div style="
+    max-width:1100px;
+    margin:auto;
+    padding:60px 20px;
+    text-align:center;
+  ">
+
+    <h2 style="margin-bottom:40px;">
+      Powerful Features Built for Growth
+    </h2>
+
+    <div style="
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+      gap:25px;
+    ">
+
+      <div class="feature">
+        <h3>💊 Smart Pharmacy CRM</h3>
+        <p>Prescription tracking, patient history and automation.</p>
+      </div>
+
+      <div class="feature">
+        <h3>📊 AI Analytics</h3>
+        <p>Turn raw business data into intelligent decisions.</p>
+      </div>
+
+      <div class="feature">
+        <h3>⚙ Inventory Automation</h3>
+        <p>Auto stock alerts, expiry prediction and smart ordering.</p>
+      </div>
+
+      <div class="feature">
+        <h3>💬 WhatsApp Automation</h3>
+        <p>Automatic reminders and customer engagement.</p>
+      </div>
+
+      <div class="feature">
+        <h3>💰 Financial Insights</h3>
+        <p>Profit tracking and real-time business performance.</p>
+      </div>
+
+      <div class="feature">
+        <h3>🏪 Multi-Shop Management</h3>
+        <p>Manage multiple branches from one dashboard.</p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- INDUSTRIES -->
   <div style="
     max-width:1100px;
     margin:auto;
@@ -80,52 +128,20 @@ import Navbar from "../components/Navbar.astro";
       margin-top:40px;
     ">
 
-      <a href="/solutions/pharmacy" style="
-        background:#0b0f2a;
-        padding:25px;
-        border-radius:14px;
-        text-decoration:none;
-        color:white;
-        box-shadow:0 0 15px rgba(0,255,255,0.2);
-      ">
-        <h3>💊 Pharmacy</h3>
-        <p>Billing POS, Inventory & CRM automation.</p>
+      <a href="/solutions/pharmacy" class="industry">
+        💊 Pharmacy
       </a>
 
-      <a href="/solutions/healthcare" style="
-        background:#0b0f2a;
-        padding:25px;
-        border-radius:14px;
-        text-decoration:none;
-        color:white;
-        box-shadow:0 0 15px rgba(0,255,255,0.2);
-      ">
-        <h3>🏥 Healthcare</h3>
-        <p>Patient analytics and insights.</p>
+      <a href="/solutions/healthcare" class="industry">
+        🏥 Healthcare
       </a>
 
-      <a href="/solutions/retail" style="
-        background:#0b0f2a;
-        padding:25px;
-        border-radius:14px;
-        text-decoration:none;
-        color:white;
-        box-shadow:0 0 15px rgba(0,255,255,0.2);
-      ">
-        <h3>🛒 Retail</h3>
-        <p>Demand forecasting & smart analytics.</p>
+      <a href="/solutions/retail" class="industry">
+        🛒 Retail
       </a>
 
-      <a href="/solutions/finance" style="
-        background:#0b0f2a;
-        padding:25px;
-        border-radius:14px;
-        text-decoration:none;
-        color:white;
-        box-shadow:0 0 15px rgba(0,255,255,0.2);
-      ">
-        <h3>💰 Finance</h3>
-        <p>Financial intelligence dashboards.</p>
+      <a href="/solutions/finance" class="industry">
+        💰 Finance
       </a>
 
     </div>
@@ -143,3 +159,34 @@ import Navbar from "../components/Navbar.astro";
   </div>
 
 </section>
+
+<style>
+.feature{
+  background:#0b0f2a;
+  padding:25px;
+  border-radius:14px;
+  box-shadow:0 0 15px rgba(0,255,255,0.15);
+  transition:.3s;
+}
+
+.feature:hover{
+  transform:translateY(-8px);
+  box-shadow:0 10px 30px rgba(0,255,255,0.4);
+}
+
+.industry{
+  background:#0b0f2a;
+  padding:22px;
+  border-radius:12px;
+  text-decoration:none;
+  color:white;
+  font-weight:bold;
+  display:block;
+  transition:.3s;
+}
+
+.industry:hover{
+  background:#1a1f4d;
+  transform:scale(1.05);
+}
+</style>
