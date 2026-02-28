@@ -4,107 +4,132 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
 <MainLayout title="Pharmacy Software | Bobo Analytics">
 
-<!-- HERO -->
+<!-- PREMIUM HERO -->
 <section class="hero">
 
-  <div class="hero-content">
-    <h1>Smart Pharmacy Management Software</h1>
+  <div class="hero-box">
+    <h1>AI-Powered Pharmacy Management</h1>
 
     <p>
-      Built specially for pharmacies to manage billing,
-      prescriptions, inventory and customer relationships
-      using AI-powered analytics.
+      Built exclusively for pharmacies to manage billing,
+      prescriptions, inventory automation and financial analytics
+      using intelligent software.
     </p>
 
-    <a href="#" class="cta">Login to Pharmacy CRM</a>
+    <div class="hero-buttons">
+      <a href="#" class="primary">Login to CRM</a>
+      <a href="#demo" class="secondary">Book Demo</a>
+    </div>
   </div>
 
 </section>
 
 
-<!-- TRUST STRIP -->
-<section class="trust">
-  <div>✔ GST Ready Billing</div>
-  <div>✔ Expiry Tracking</div>
-  <div>✔ Prescription CRM</div>
-  <div>✔ Multi-Store Support</div>
+<!-- TRUST METRICS -->
+<section class="metrics">
+
+<div class="metric">
+<h2>500+</h2>
+<p>Pharmacies Ready</p>
+</div>
+
+<div class="metric">
+<h2>99%</h2>
+<p>Billing Accuracy</p>
+</div>
+
+<div class="metric">
+<h2>24/7</h2>
+<p>AI Monitoring</p>
+</div>
+
+<div class="metric">
+<h2>0%</h2>
+<p>Expiry Loss Target</p>
+</div>
+
 </section>
 
 
 <!-- FEATURES -->
 <section class="features">
 
-<h2>Designed for Pharmacy Operations</h2>
+<h2>Everything a Modern Pharmacy Needs</h2>
 
 <div class="grid">
 
 <div class="card">
 <h3>💊 Smart Billing POS</h3>
-<p>Generate invoices instantly with medicine tracking.</p>
+<p>Instant invoices with medicine tracking.</p>
 </div>
 
 <div class="card">
 <h3>📦 Inventory Automation</h3>
-<p>Expiry alerts and automated stock monitoring.</p>
+<p>Expiry alerts & stock intelligence.</p>
 </div>
 
 <div class="card">
-<h3>👨‍⚕️ Customer & Prescription CRM</h3>
-<p>Maintain patient purchase history securely.</p>
+<h3>👨‍⚕️ Prescription CRM</h3>
+<p>Track patients and repeat purchases.</p>
 </div>
 
 <div class="card">
-<h3>🤖 AI Demand Prediction</h3>
-<p>Know which medicines to stock before shortage.</p>
+<h3>🤖 AI Insights</h3>
+<p>Predict demand before shortages.</p>
 </div>
 
 <div class="card">
 <h3>📊 Financial Analytics</h3>
-<p>Understand profit margins and business growth.</p>
+<p>Real-time profit visibility.</p>
 </div>
 
 <div class="card">
-<h3>🏪 Multi-Shop Dashboard</h3>
-<p>Control all pharmacy branches from one system.</p>
+<h3>🏪 Multi-Store Control</h3>
+<p>Manage all branches centrally.</p>
 </div>
 
 </div>
+
 </section>
 
 
-<!-- DASHBOARD PREVIEW -->
+<!-- DASHBOARD SHOWCASE -->
 <section class="dashboard">
 
 <h2>Your Pharmacy Dashboard</h2>
 
-<img
-  src="/dashboard-image.png"
-  alt="Pharmacy Dashboard"
-/>
+<p>One screen to control your entire pharmacy business.</p>
+
+<img src="/dashboard-image.png" alt="Pharmacy Dashboard" />
 
 </section>
 
 
-<!-- WORKFLOW -->
+<!-- WORKFLOW TIMELINE -->
 <section class="workflow">
 
-<h2>How It Works</h2>
+<h2>How Bobo Analytics Works</h2>
 
-<div class="steps">
-<div>1️⃣ Sell Medicines</div>
-<div>2️⃣ System Tracks Inventory</div>
-<div>3️⃣ AI Generates Insights</div>
-<div>4️⃣ Grow Your Pharmacy</div>
+<div class="timeline">
+
+<div class="step">1️⃣ Sell Medicines</div>
+<div class="step">2️⃣ Data Auto Syncs</div>
+<div class="step">3️⃣ AI Analyses Sales</div>
+<div class="step">4️⃣ Grow Profit</div>
+
 </div>
 
 </section>
 
 
-<!-- CTA -->
-<section class="cta-section">
+<!-- PREMIUM CTA -->
+<section id="demo" class="cta">
 
 <h2>Transform Your Pharmacy Today</h2>
-<a href="#" class="cta">Request Live Demo</a>
+
+<p>Join the next generation of intelligent pharmacies.</p>
+
+<a href="#" class="primary big">Request Live Demo</a>
 
 </section>
 
@@ -115,45 +140,73 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
 /* HERO */
 .hero{
-  background:linear-gradient(135deg,#0f766e,#22c55e);
-  color:white;
+  background:
+  linear-gradient(135deg,#065f46,#22c55e);
+  padding:120px 20px;
+  display:flex;
+  justify-content:center;
+}
+
+.hero-box{
+  max-width:700px;
   text-align:center;
-  padding:100px 20px;
+  backdrop-filter:blur(12px);
+  background:rgba(255,255,255,0.1);
+  padding:50px;
+  border-radius:18px;
+  color:white;
+  box-shadow:0 20px 50px rgba(0,0,0,.25);
 }
 
 .hero h1{
-  font-size:36px;
+  font-size:38px;
   margin-bottom:15px;
 }
 
-.cta{
-  display:inline-block;
+.hero-buttons{
   margin-top:25px;
-  padding:14px 28px;
+  display:flex;
+  justify-content:center;
+  gap:15px;
+  flex-wrap:wrap;
+}
+
+.primary{
   background:white;
   color:#065f46;
+  padding:14px 26px;
   border-radius:8px;
   text-decoration:none;
   font-weight:bold;
 }
 
-/* TRUST STRIP */
-.trust{
-  display:flex;
-  justify-content:center;
-  gap:30px;
-  flex-wrap:wrap;
+.secondary{
+  border:2px solid white;
+  color:white;
+  padding:12px 24px;
+  border-radius:8px;
+  text-decoration:none;
+}
+
+/* METRICS */
+.metrics{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  text-align:center;
+  padding:50px 20px;
   background:#ecfdf5;
-  padding:20px;
-  font-weight:600;
-  color:#065f46;
+}
+
+.metric h2{
+  color:#16a34a;
+  font-size:34px;
 }
 
 /* FEATURES */
 .features{
   padding:80px 20px;
-  text-align:center;
   background:#f9fafb;
+  text-align:center;
 }
 
 .grid{
@@ -165,49 +218,65 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
 .card{
   background:white;
-  padding:25px;
-  border-radius:12px;
-  box-shadow:0 10px 20px rgba(0,0,0,.08);
-  border-left:6px solid #22c55e;
+  padding:28px;
+  border-radius:14px;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
+  transition:.3s;
+  border-top:4px solid #22c55e;
+}
+
+.card:hover{
+  transform:translateY(-8px);
 }
 
 /* DASHBOARD */
 .dashboard{
   text-align:center;
-  padding:80px 20px;
+  padding:90px 20px;
   background:#065f46;
   color:white;
 }
 
 .dashboard img{
   margin-top:30px;
-  max-width:900px;
+  max-width:950px;
   width:100%;
-  border-radius:14px;
-  box-shadow:0 20px 40px rgba(0,0,0,.4);
+  border-radius:16px;
+  box-shadow:0 25px 60px rgba(0,0,0,.45);
 }
 
 /* WORKFLOW */
 .workflow{
+  padding:80px 20px;
   text-align:center;
-  padding:70px 20px;
 }
 
-.steps{
+.timeline{
   display:flex;
   justify-content:center;
   gap:25px;
   flex-wrap:wrap;
   margin-top:30px;
+}
+
+.step{
+  background:#dcfce7;
+  padding:15px 20px;
+  border-radius:8px;
   font-weight:600;
 }
 
 /* CTA */
-.cta-section{
-  background:linear-gradient(135deg,#065f46,#16a34a);
-  color:white;
+.cta{
   text-align:center;
-  padding:80px 20px;
+  padding:100px 20px;
+  background:linear-gradient(135deg,#064e3b,#16a34a);
+  color:white;
+}
+
+.big{
+  margin-top:20px;
+  display:inline-block;
 }
 
 </style>
