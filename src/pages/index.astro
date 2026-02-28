@@ -1,6 +1,7 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
 import IndustryCard from "../components/IndustryCard.astro";
+import DemoForm from "../components/DemoForm.astro";
 ---
 
 <MainLayout title="Bobo Analytics">
@@ -12,41 +13,40 @@ import IndustryCard from "../components/IndustryCard.astro";
 
 <section class="industries">
 
-  <h2>Industries We Serve</h2>
+<h2>Industries We Serve</h2>
 
-  <div class="grid">
+<div class="grid">
 
-    <IndustryCard
-      title="Pharmacy"
-      description="Billing, inventory, CRM & AI insights for pharmacies."
-      link="/solutions/pharmacy"
-      status="live"
-    />
+<IndustryCard
+title="Pharmacy"
+description="Billing, inventory, CRM & AI insights."
+link="/solutions/pharmacy"
+status="live"
+/>
 
-    <IndustryCard
-      title="Healthcare"
-      description="Patient analytics & hospital intelligence platform."
-      link="#"
-      status="dev"
-    />
+<IndustryCard
+title="Healthcare"
+description="Hospital intelligence platform."
+status="dev"
+/>
 
-    <IndustryCard
-      title="Retail"
-      description="Sales forecasting and smart inventory automation."
-      link="#"
-      status="dev"
-    />
+<IndustryCard
+title="Retail"
+description="Sales forecasting automation."
+status="dev"
+/>
 
-    <IndustryCard
-      title="Finance"
-      description="Financial dashboards and predictive analytics."
-      link="#"
-      status="dev"
-    />
+<IndustryCard
+title="Finance"
+description="Predictive financial analytics."
+status="dev"
+/>
 
-  </div>
+</div>
 
 </section>
+
+<DemoForm />
 
 <style>
 
@@ -68,8 +68,7 @@ import IndustryCard from "../components/IndustryCard.astro";
   grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
   gap:25px;
   max-width:1000px;
-  margin-left:auto;
-  margin-right:auto;
+  margin:auto;
 }
 
 </style>
