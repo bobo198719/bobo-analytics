@@ -1,0 +1,73 @@
+<section class="stats">
+  <div class="container">
+
+    <div class="stat">
+      <h2 class="counter" data-target="500">0</h2>
+      <p>Pharmacies Onboarded</p>
+    </div>
+
+    <div class="stat">
+      <h2 class="counter" data-target="120000">0</h2>
+      <p>Invoices Processed</p>
+    </div>
+
+    <div class="stat">
+      <h2 class="counter" data-target="98">0</h2>
+      <p>% Customer Satisfaction</p>
+    </div>
+
+    <div class="stat">
+      <h2 class="counter" data-target="24">0</h2>
+      <p>AI Monitoring Hours</p>
+    </div>
+
+  </div>
+</section>
+
+<script>
+const counters = document.querySelectorAll('.counter');
+
+counters.forEach(counter => {
+  const update = () => {
+    const target = +counter.getAttribute('data-target');
+    const count = +counter.innerText;
+    const speed = target / 100;
+
+    if (count < target) {
+      counter.innerText = Math.ceil(count + speed);
+      setTimeout(update, 20);
+    } else {
+      counter.innerText = target;
+    }
+  };
+
+  update();
+});
+</script>
+
+<style>
+.stats{
+  background:#0b0b0b;
+  color:white;
+  padding:80px 20px;
+}
+
+.container{
+  max-width:1100px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:40px;
+  text-align:center;
+}
+
+.stat h2{
+  font-size:42px;
+  color:#4ade80;
+  margin-bottom:10px;
+}
+
+.stat p{
+  color:#ccc;
+}
+</style>
