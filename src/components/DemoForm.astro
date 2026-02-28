@@ -1,42 +1,39 @@
 ---
-
 const phone = "919156484328"; // your WhatsApp number
 const email = "support@boboanalytics.com";
-
 ---
 
-<section class="demo-section">
+<section class="demo-wrapper">
 
-<h2>Request a Demo</h2>
-<p>See how Bobo Analytics transforms your business.</p>
+  <h2>Book a Free Demo</h2>
+  <p>See how Bobo Analytics helps businesses grow using AI.</p>
 
-<form
-  action={`https://formsubmit.co/${email}`}
-  method="POST"
-  class="demo-form"
->
+  <form
+    action={`https://formsubmit.co/${email}`}
+    method="POST"
+    class="demo-form"
+  >
 
-  <input type="text" name="name" placeholder="Your Name" required />
-  <input type="email" name="email" placeholder="Email Address" required />
-  <textarea name="message" placeholder="Your Requirement"></textarea>
+    <input type="text" name="name" placeholder="Your Name" required />
+    <input type="email" name="email" placeholder="Email Address" required />
+    <textarea name="message" placeholder="Tell us about your business"></textarea>
 
-  <button type="submit">Request Demo</button>
+    <button type="submit">Request Demo</button>
 
-</form>
+  </form>
 
-<a
-  class="whatsapp"
-  href={`https://wa.me/${phone}?text=Hi%20I%20want%20a%20demo%20for%20Bobo%20Analytics`}
-  target="_blank"
->
-💬 Chat on WhatsApp
-</a>
+  <a
+    href={`https://wa.me/${phone}?text=Hi%20I%20want%20a%20demo%20of%20Bobo%20Analytics`}
+    target="_blank"
+    class="whatsapp-btn"
+  >
+    💬 Chat on WhatsApp
+  </a>
 
 </section>
 
 <style>
-
-.demo-section{
+.demo-wrapper{
   text-align:center;
   padding:80px 20px;
   background:#0f172a;
@@ -60,23 +57,22 @@ const email = "support@boboanalytics.com";
 
 .demo-form button{
   padding:14px;
-  background:linear-gradient(90deg,#22c55e,#a855f7);
   border:none;
-  color:white;
-  font-weight:bold;
   border-radius:8px;
+  font-weight:bold;
+  background:linear-gradient(90deg,#22c55e,#a855f7);
+  color:white;
   cursor:pointer;
 }
 
-.whatsapp{
+.whatsapp-btn{
   display:inline-block;
   margin-top:20px;
   background:#25D366;
-  padding:12px 20px;
+  padding:12px 22px;
   border-radius:8px;
   color:white;
   text-decoration:none;
   font-weight:bold;
 }
-
 </style>
