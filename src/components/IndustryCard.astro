@@ -1,0 +1,51 @@
+---
+const { title, description, link, status } = Astro.props;
+---
+
+<a href={link} class="card">
+  <div class="card-inner">
+    <h3>{title}</h3>
+    <p>{description}</p>
+
+    {status === "live" ? (
+      <span class="badge live">CRM Available</span>
+    ) : (
+      <span class="badge dev">CRM Under Development</span>
+    )}
+  </div>
+</a>
+
+<style>
+.card{
+  text-decoration:none;
+  color:white;
+}
+
+.card-inner{
+  background:linear-gradient(135deg,#0f172a,#1e293b);
+  padding:28px;
+  border-radius:14px;
+  transition:0.4s;
+  box-shadow:0 10px 25px rgba(0,0,0,.25);
+}
+
+.card-inner:hover{
+  transform:translateY(-8px) scale(1.03);
+}
+
+.badge{
+  display:inline-block;
+  margin-top:15px;
+  padding:6px 12px;
+  border-radius:6px;
+  font-size:12px;
+}
+
+.live{
+  background:#22c55e;
+}
+
+.dev{
+  background:#f59e0b;
+}
+</style>
