@@ -1,131 +1,156 @@
 ---
-const { title = "Bobo Analytics" } = Astro.props;
+const { title } = Astro.props;
 ---
 
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>{title}</title>
+
+<style>
+
+/* RESET */
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:system-ui, Arial, sans-serif;
+}
+
+/* PAGE STRUCTURE */
+html,body{
+height:100%;
+}
+
+body{
+display:flex;
+flex-direction:column;
+min-height:100vh;
+background:white;
+}
+
+/* MAIN CONTENT */
+main{
+flex:1;
+width:100%;
+}
+
+/* NAVBAR */
+.navbar{
+background:black;
+color:white;
+padding:14px 20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.navbar img{
+height:32px;
+}
+
+.login-btn{
+background:#0047ff;
+color:white;
+padding:8px 14px;
+border-radius:6px;
+text-decoration:none;
+}
+
+/* FOOTER */
+footer{
+background:#000;
+color:#aaa;
+padding:40px 20px;
+margin-top:auto;
+}
+
+.footer-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:20px;
+}
+
+footer h3{
+color:white;
+margin-bottom:10px;
+}
+
+footer a{
+color:#aaa;
+text-decoration:none;
+display:block;
+margin:6px 0;
+}
+
+footer a:hover{
+color:white;
+}
+
+.copy{
+text-align:center;
+margin-top:20px;
+font-size:14px;
+}
+
+</style>
 </head>
 
 <body>
 
 <!-- NAVBAR -->
-<nav class="navbar">
-  <div class="nav-left">
-    <img src="/logo.png" class="logo"/>
-    <span class="brand">Bobo Analytics</span>
-  </div>
+<div class="navbar">
+<div style="display:flex;align-items:center;gap:10px;">
+<img src="/logo.png" alt="logo"/>
+<span>Bobo Analytics</span>
+</div>
 
-  <div>
-    <a href="/solutions/pharmacy" class="nav-btn">Login</a>
-  </div>
-</nav>
+<a class="login-btn" href="#">Login</a>
+</div>
 
 <!-- PAGE CONTENT -->
+<main>
 <slot />
+</main>
 
 <!-- FOOTER -->
-<footer class="footer">
+<footer>
 
-<div class="footer-container">
+<div class="footer-grid">
 
 <div>
 <h3>Bobo Analytics</h3>
 <p>Smart Analytics for Smarter Business</p>
-
-<p>
-📧 support@boboanalytics.com<br/>
-📞 +91 9156484328
-</p>
 </div>
 
 <div>
-<h4>Company</h4>
+<h3>Company</h3>
 <a href="/">Home</a>
+<a href="/solutions/pharmacy">Pharmacy</a>
 </div>
 
 <div>
-<h4>Legal</h4>
+<h3>Legal</h3>
 <a href="/privacy">Privacy Policy</a>
-<a href="/terms">Terms & Conditions</a>
+<a href="/terms">Terms</a>
 <a href="/disclaimer">Disclaimer</a>
 </div>
 
+<div>
+<h3>Contact</h3>
+<p>Email: support@boboanalytics.com</p>
+<p>Phone: +91 9156484328</p>
 </div>
 
-<div class="copyright">
+</div>
+
+<div class="copy">
 © 2026 Bobo Analytics — All Rights Reserved
 </div>
 
 </footer>
 
 </body>
-
-<style>
-body{
-margin:0;
-font-family:Arial;
-}
-
-/* NAVBAR */
-.navbar{
-position:sticky;
-top:0;
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:14px 25px;
-background:black;
-color:white;
-z-index:1000;
-}
-
-.logo{ height:40px; }
-
-.nav-left{
-display:flex;
-align-items:center;
-gap:10px;
-}
-
-.nav-btn{
-background:#0047ff;
-padding:10px 16px;
-border-radius:8px;
-color:white;
-text-decoration:none;
-}
-
-/* FOOTER */
-.footer{
-background:black;
-color:white;
-padding:50px 20px;
-}
-
-.footer-container{
-max-width:1100px;
-margin:auto;
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-gap:30px;
-}
-
-.footer a{
-color:#ccc;
-text-decoration:none;
-display:block;
-margin-top:8px;
-}
-
-.footer a:hover{color:white;}
-
-.copyright{
-text-align:center;
-margin-top:30px;
-opacity:.7;
-}
-</style>
 </html>
