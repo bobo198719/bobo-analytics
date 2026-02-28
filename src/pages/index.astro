@@ -4,19 +4,109 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 <MainLayout title="Bobo Analytics">
 
-<section class="page">
+<section class="hero">
 
-<h1 style="text-align:center;padding:80px 20px;">
-Welcome to Bobo Analytics 🚀
-</h1>
+<div class="hero-left">
+  <h1>AI Analytics Software<br/>Built For Every Industry</h1>
 
+  <p>
+    One platform. Multiple industries.
+    Smart CRM + Automation + Analytics powered by AI.
+  </p>
+
+  <a href="/solutions/pharmacy" class="cta">
+    Explore Solutions →
+  </a>
+</div>
+
+<div class="hero-right">
+  <img src="/dashboard-image.png" alt="Dashboard"/>
+</div>
+
+</section>
+
+
+<!-- INDUSTRIES -->
+<section class="industries">
+
+<h2>Industries We Serve</h2>
+
+<div class="cards">
+
+<div class="card">
+<div class="card-inner">
+<div class="front">
+<h3>Pharmacy</h3>
+<p>Complete CRM Ready</p>
+</div>
+
+<div class="back">
+<p>
+Multi-shop billing, inventory automation,
+AI analytics & WhatsApp integration.
+</p>
+<a href="/solutions/pharmacy">Open CRM →</a>
+</div>
+</div>
+</div>
+
+
+<div class="card">
+<div class="card-inner">
+<div class="front">
+<h3>Retail</h3>
+<p>Coming Soon</p>
+</div>
+
+<div class="back">
+<p>Retail CRM is under development.</p>
+</div>
+</div>
+</div>
+
+
+<div class="card">
+<div class="card-inner">
+<div class="front">
+<h3>Healthcare</h3>
+<p>Coming Soon</p>
+</div>
+
+<div class="back">
+<p>Healthcare CRM under development.</p>
+</div>
+</div>
+</div>
+
+
+<div class="card">
+<div class="card-inner">
+<div class="front">
+<h3>Finance</h3>
+<p>Coming Soon</p>
+</div>
+
+<div class="back">
+<p>Finance analytics system coming soon.</p>
+</div>
+</div>
+</div>
+
+</div>
 </section>
 
 </MainLayout>
 
 <style>
-.page{
-min-height:80vh;
+
+/* HERO */
+.hero{
+display:flex;
+flex-wrap:wrap;
+align-items:center;
+justify-content:center;
+gap:40px;
+padding:80px 20px;
 background:
 linear-gradient(
 180deg,
@@ -26,6 +116,40 @@ linear-gradient(
 #ffffff,
 #0047ff
 );
-color:black;
 }
-</style>
+
+.hero-left{
+max-width:500px;
+}
+
+.hero-left h1{
+font-size:34px;
+}
+
+.cta{
+display:inline-block;
+margin-top:20px;
+background:#0047ff;
+color:white;
+padding:12px 18px;
+border-radius:8px;
+text-decoration:none;
+}
+
+.hero-right img{
+width:100%;
+max-width:520px;
+border-radius:14px;
+box-shadow:0 20px 40px rgba(0,0,0,0.4);
+}
+
+/* INDUSTRY SECTION */
+.industries{
+padding:70px 20px;
+text-align:center;
+background:white;
+}
+
+.cards{
+display:grid;
+grid-template-columns:repeat(auto
