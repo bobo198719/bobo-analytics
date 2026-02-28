@@ -34,14 +34,12 @@ import Navbar from "../components/Navbar.astro";
     <h2>Powerful Features Built for Growth</h2>
 
     <div class="grid">
-
       <div class="card">💊 Smart Pharmacy CRM</div>
       <div class="card">📊 AI Analytics</div>
       <div class="card">⚙ Inventory Automation</div>
       <div class="card">💬 WhatsApp Automation</div>
       <div class="card">💰 Financial Insights</div>
       <div class="card">🏪 Multi-Shop Management</div>
-
     </div>
 
   </div>
@@ -52,19 +50,43 @@ import Navbar from "../components/Navbar.astro";
     <h2>Choose Your Industry</h2>
 
     <div class="grid">
-
       <a href="/solutions/pharmacy" class="industry">💊 Pharmacy</a>
       <a href="/solutions/healthcare" class="industry">🏥 Healthcare</a>
       <a href="/solutions/retail" class="industry">🛒 Retail</a>
       <a href="/solutions/finance" class="industry">💰 Finance</a>
-
     </div>
 
   </div>
 
-  <!-- FOOTER -->
-  <footer>
-    © 2026 Bobo Analytics — Smart Analytics for Smarter Business
+  <!-- PROFESSIONAL FOOTER -->
+  <footer class="footer">
+
+    <div class="footer-container">
+
+      <div>
+        <h3>Bobo Analytics</h3>
+        <p>Smart Analytics for Smarter Business.</p>
+      </div>
+
+      <div>
+        <h4>Company</h4>
+        <a href="/">Home</a>
+        <a href="/#">Industries</a>
+      </div>
+
+      <div>
+        <h4>Legal</h4>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms & Conditions</a>
+        <a href="/disclaimer">Disclaimer</a>
+      </div>
+
+    </div>
+
+    <div class="copyright">
+      © 2026 Bobo Analytics — All Rights Reserved
+    </div>
+
   </footer>
 
 </section>
@@ -87,9 +109,7 @@ import Navbar from "../components/Navbar.astro";
   gap:40px;
 }
 
-.hero h1{
-  font-size:42px;
-}
+.hero h1{ font-size:42px; }
 
 .cta{
   display:inline-block;
@@ -131,9 +151,7 @@ import Navbar from "../components/Navbar.astro";
   transition:.3s;
 }
 
-.card:hover{
-  transform:translateY(-8px);
-}
+.card:hover{ transform:translateY(-8px); }
 
 .industry{
   background:#0b0f2a;
@@ -150,10 +168,34 @@ import Navbar from "../components/Navbar.astro";
   background:#1a1f4d;
 }
 
-footer{
+/* FOOTER */
+.footer{
   background:#05081a;
+  padding:50px 20px 20px;
+  margin-top:60px;
+}
+
+.footer-container{
+  max-width:1100px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:30px;
+}
+
+.footer a{
+  display:block;
+  color:#ccc;
+  text-decoration:none;
+  margin-top:8px;
+}
+
+.footer a:hover{ color:white; }
+
+.copyright{
   text-align:center;
-  padding:20px;
+  margin-top:30px;
+  opacity:.7;
 }
 
 /* SCROLL ANIMATION */
@@ -170,20 +212,19 @@ footer{
 </style>
 
 <script>
-const reveals = document.querySelectorAll(".reveal");
+const reveals=document.querySelectorAll(".reveal");
 
 function revealOnScroll(){
-  const windowHeight = window.innerHeight;
+  const windowHeight=window.innerHeight;
 
   reveals.forEach(el=>{
-    const top = el.getBoundingClientRect().top;
-
-    if(top < windowHeight - 100){
+    const top=el.getBoundingClientRect().top;
+    if(top<windowHeight-100){
       el.classList.add("active");
     }
   });
 }
 
-window.addEventListener("scroll", revealOnScroll);
+window.addEventListener("scroll",revealOnScroll);
 revealOnScroll();
 </script>
