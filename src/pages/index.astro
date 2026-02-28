@@ -4,174 +4,135 @@ import Navbar from "../components/Navbar.astro";
 
 <Navbar />
 
-<section style="
-  background:linear-gradient(135deg,#0a0f2c,#3b0f70,#0088a9);
-  color:white;
-  font-family:Arial, sans-serif;
-">
+<section class="page">
 
   <!-- HERO -->
-  <div style="
-    max-width:1200px;
-    margin:auto;
-    padding:70px 20px;
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-    align-items:center;
-    gap:40px;
-  ">
+  <div class="hero reveal">
 
     <div>
-      <h1 style="font-size:42px;">
-        AI Software for Modern Businesses
-      </h1>
+      <h1>AI Software for Modern Businesses</h1>
 
-      <p style="opacity:.9;">
+      <p>
         CRM, Analytics, Automation and Financial Intelligence —
         built for every industry.
       </p>
 
-      <a href="/solutions/pharmacy" style="
-        display:inline-block;
-        margin-top:25px;
-        padding:14px 26px;
-        border-radius:10px;
-        text-decoration:none;
-        color:white;
-        font-weight:bold;
-        background:linear-gradient(90deg,#00c6ff,#7f00ff);
-      ">
+      <a href="/solutions/pharmacy" class="cta">
         Explore Solutions →
       </a>
     </div>
 
-    <div style="text-align:center;">
-      <img
-        src="/dashboard-image.png"
-        style="
-          width:100%;
-          max-width:520px;
-          border-radius:14px;
-          box-shadow:0 20px 40px rgba(0,0,0,0.5);
-        "
-      />
+    <div class="hero-img">
+      <img src="/dashboard-image.png" />
     </div>
 
   </div>
 
-  <!-- FEATURES SECTION -->
-  <div style="
-    max-width:1100px;
-    margin:auto;
-    padding:60px 20px;
-    text-align:center;
-  ">
+  <!-- FEATURES -->
+  <div class="section reveal">
 
-    <h2 style="margin-bottom:40px;">
-      Powerful Features Built for Growth
-    </h2>
+    <h2>Powerful Features Built for Growth</h2>
 
-    <div style="
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-      gap:25px;
-    ">
+    <div class="grid">
 
-      <div class="feature">
-        <h3>💊 Smart Pharmacy CRM</h3>
-        <p>Prescription tracking, patient history and automation.</p>
-      </div>
-
-      <div class="feature">
-        <h3>📊 AI Analytics</h3>
-        <p>Turn raw business data into intelligent decisions.</p>
-      </div>
-
-      <div class="feature">
-        <h3>⚙ Inventory Automation</h3>
-        <p>Auto stock alerts, expiry prediction and smart ordering.</p>
-      </div>
-
-      <div class="feature">
-        <h3>💬 WhatsApp Automation</h3>
-        <p>Automatic reminders and customer engagement.</p>
-      </div>
-
-      <div class="feature">
-        <h3>💰 Financial Insights</h3>
-        <p>Profit tracking and real-time business performance.</p>
-      </div>
-
-      <div class="feature">
-        <h3>🏪 Multi-Shop Management</h3>
-        <p>Manage multiple branches from one dashboard.</p>
-      </div>
+      <div class="card">💊 Smart Pharmacy CRM</div>
+      <div class="card">📊 AI Analytics</div>
+      <div class="card">⚙ Inventory Automation</div>
+      <div class="card">💬 WhatsApp Automation</div>
+      <div class="card">💰 Financial Insights</div>
+      <div class="card">🏪 Multi-Shop Management</div>
 
     </div>
 
   </div>
 
   <!-- INDUSTRIES -->
-  <div style="
-    max-width:1100px;
-    margin:auto;
-    padding:40px 20px;
-    text-align:center;
-  ">
+  <div class="section reveal">
 
     <h2>Choose Your Industry</h2>
 
-    <div style="
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-      gap:20px;
-      margin-top:40px;
-    ">
+    <div class="grid">
 
-      <a href="/solutions/pharmacy" class="industry">
-        💊 Pharmacy
-      </a>
-
-      <a href="/solutions/healthcare" class="industry">
-        🏥 Healthcare
-      </a>
-
-      <a href="/solutions/retail" class="industry">
-        🛒 Retail
-      </a>
-
-      <a href="/solutions/finance" class="industry">
-        💰 Finance
-      </a>
+      <a href="/solutions/pharmacy" class="industry">💊 Pharmacy</a>
+      <a href="/solutions/healthcare" class="industry">🏥 Healthcare</a>
+      <a href="/solutions/retail" class="industry">🛒 Retail</a>
+      <a href="/solutions/finance" class="industry">💰 Finance</a>
 
     </div>
 
   </div>
 
   <!-- FOOTER -->
-  <div style="
-    background:#05081a;
-    text-align:center;
-    padding:20px;
-    margin-top:60px;
-  ">
+  <footer>
     © 2026 Bobo Analytics — Smart Analytics for Smarter Business
-  </div>
+  </footer>
 
 </section>
 
 <style>
-.feature{
+.page{
+  background:linear-gradient(135deg,#0a0f2c,#3b0f70,#0088a9);
+  color:white;
+  font-family:Arial;
+}
+
+/* HERO */
+.hero{
+  max-width:1200px;
+  margin:auto;
+  padding:80px 20px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  align-items:center;
+  gap:40px;
+}
+
+.hero h1{
+  font-size:42px;
+}
+
+.cta{
+  display:inline-block;
+  margin-top:20px;
+  padding:14px 26px;
+  border-radius:10px;
+  text-decoration:none;
+  color:white;
+  font-weight:bold;
+  background:linear-gradient(90deg,#00c6ff,#7f00ff);
+}
+
+.hero-img img{
+  width:100%;
+  max-width:520px;
+  border-radius:14px;
+  box-shadow:0 20px 40px rgba(0,0,0,.5);
+}
+
+/* SECTIONS */
+.section{
+  max-width:1100px;
+  margin:auto;
+  padding:70px 20px;
+  text-align:center;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:25px;
+  margin-top:40px;
+}
+
+.card{
   background:#0b0f2a;
   padding:25px;
   border-radius:14px;
-  box-shadow:0 0 15px rgba(0,255,255,0.15);
   transition:.3s;
 }
 
-.feature:hover{
+.card:hover{
   transform:translateY(-8px);
-  box-shadow:0 10px 30px rgba(0,255,255,0.4);
 }
 
 .industry{
@@ -181,12 +142,48 @@ import Navbar from "../components/Navbar.astro";
   text-decoration:none;
   color:white;
   font-weight:bold;
-  display:block;
   transition:.3s;
 }
 
 .industry:hover{
-  background:#1a1f4d;
   transform:scale(1.05);
+  background:#1a1f4d;
+}
+
+footer{
+  background:#05081a;
+  text-align:center;
+  padding:20px;
+}
+
+/* SCROLL ANIMATION */
+.reveal{
+  opacity:0;
+  transform:translateY(60px);
+  transition:all .8s ease;
+}
+
+.reveal.active{
+  opacity:1;
+  transform:translateY(0);
 }
 </style>
+
+<script>
+const reveals = document.querySelectorAll(".reveal");
+
+function revealOnScroll(){
+  const windowHeight = window.innerHeight;
+
+  reveals.forEach(el=>{
+    const top = el.getBoundingClientRect().top;
+
+    if(top < windowHeight - 100){
+      el.classList.add("active");
+    }
+  });
+}
+
+window.addEventListener("scroll", revealOnScroll);
+revealOnScroll();
+</script>
