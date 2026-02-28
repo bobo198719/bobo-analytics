@@ -1,0 +1,82 @@
+---
+
+const phone = "919156484328"; // your WhatsApp number
+const email = "support@boboanalytics.com";
+
+---
+
+<section class="demo-section">
+
+<h2>Request a Demo</h2>
+<p>See how Bobo Analytics transforms your business.</p>
+
+<form
+  action={`https://formsubmit.co/${email}`}
+  method="POST"
+  class="demo-form"
+>
+
+  <input type="text" name="name" placeholder="Your Name" required />
+  <input type="email" name="email" placeholder="Email Address" required />
+  <textarea name="message" placeholder="Your Requirement"></textarea>
+
+  <button type="submit">Request Demo</button>
+
+</form>
+
+<a
+  class="whatsapp"
+  href={`https://wa.me/${phone}?text=Hi%20I%20want%20a%20demo%20for%20Bobo%20Analytics`}
+  target="_blank"
+>
+💬 Chat on WhatsApp
+</a>
+
+</section>
+
+<style>
+
+.demo-section{
+  text-align:center;
+  padding:80px 20px;
+  background:#0f172a;
+  color:white;
+}
+
+.demo-form{
+  max-width:500px;
+  margin:30px auto;
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+}
+
+.demo-form input,
+.demo-form textarea{
+  padding:14px;
+  border-radius:8px;
+  border:none;
+}
+
+.demo-form button{
+  padding:14px;
+  background:linear-gradient(90deg,#22c55e,#a855f7);
+  border:none;
+  color:white;
+  font-weight:bold;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.whatsapp{
+  display:inline-block;
+  margin-top:20px;
+  background:#25D366;
+  padding:12px 20px;
+  border-radius:8px;
+  color:white;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+</style>
