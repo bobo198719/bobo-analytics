@@ -1,77 +1,243 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
-import IndustryCard from "../components/IndustryCard.astro";
-import DemoForm from "../components/DemoForm.astro";
+import Stats from "../components/Stats.astro";
 ---
 
-<MainLayout title="Bobo Analytics">
+<MainLayout>
 
-<section class="hero">
-  <h1>AI Analytics Platform for Every Industry</h1>
-  <p>Select your industry and experience software built specially for you.</p>
-</section>
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>AI Analytics Platform for Every Industry</h1>
+      <p>
+        Select your industry and experience software built specially for you.
+      </p>
+    </div>
+  </section>
 
-<section class="industries">
 
-<h2>Industries We Serve</h2>
+  <!-- STATS SECTION -->
+  <Stats />
 
-<div class="grid">
 
-<IndustryCard
-title="Pharmacy"
-description="Billing, inventory, CRM & AI insights."
-link="/solutions/pharmacy"
-status="live"
-/>
+  <!-- INDUSTRIES SECTION -->
+  <section class="industries">
+    <h2>Industries We Serve</h2>
 
-<IndustryCard
-title="Healthcare"
-description="Hospital intelligence platform."
-status="dev"
-/>
+    <div class="cards">
 
-<IndustryCard
-title="Retail"
-description="Sales forecasting automation."
-status="dev"
-/>
+      <!-- Pharmacy -->
+      <a href="/solutions/pharmacy" class="card">
+        <div class="card-inner">
+          <div class="card-front">
+            <h3>Pharmacy</h3>
+            <p>Billing, inventory, CRM & AI insights for pharmacies.</p>
+            <span class="tag available">CRM Available</span>
+          </div>
 
-<IndustryCard
-title="Finance"
-description="Predictive financial analytics."
-status="dev"
-/>
+          <div class="card-back">
+            <h3>How We Help</h3>
+            <ul>
+              <li>✔ Smart Billing POS</li>
+              <li>✔ Inventory Automation</li>
+              <li>✔ AI Stock Prediction</li>
+              <li>✔ Customer CRM</li>
+            </ul>
+          </div>
+        </div>
+      </a>
 
-</div>
 
-</section>
+      <!-- Healthcare -->
+      <div class="card">
+        <div class="card-inner">
+          <div class="card-front">
+            <h3>Healthcare</h3>
+            <p>Patient analytics & hospital intelligence platform.</p>
+            <span class="tag dev">CRM Under Development</span>
+          </div>
 
-<!-- DEMO + WHATSAPP ON FRONT PAGE -->
-<DemoForm />
+          <div class="card-back">
+            <h3>Coming Soon</h3>
+            <p>Healthcare CRM is currently under development.</p>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Retail -->
+      <div class="card">
+        <div class="card-inner">
+          <div class="card-front">
+            <h3>Retail</h3>
+            <p>Sales forecasting and smart inventory automation.</p>
+            <span class="tag dev">CRM Under Development</span>
+          </div>
+
+          <div class="card-back">
+            <h3>Coming Soon</h3>
+            <p>Retail CRM launching soon.</p>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Finance -->
+      <div class="card">
+        <div class="card-inner">
+          <div class="card-front">
+            <h3>Finance</h3>
+            <p>Financial dashboards and predictive analytics.</p>
+            <span class="tag dev">CRM Under Development</span>
+          </div>
+
+          <div class="card-back">
+            <h3>Coming Soon</h3>
+            <p>Finance analytics CRM under development.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- DEMO CTA -->
+  <section class="demo">
+    <h2>Ready to Transform Your Business?</h2>
+    <p>Book a free demo and see Bobo Analytics in action.</p>
+
+    <div class="buttons">
+      <a href="mailto:support@boboanalytics.com" class="btn demo-btn">
+        Request Demo
+      </a>
+
+      <a
+        href="https://wa.me/919156484328?text=Hi%20I%20want%20a%20demo%20of%20Bobo%20Analytics"
+        target="_blank"
+        class="btn whatsapp"
+      >
+        WhatsApp Us
+      </a>
+    </div>
+  </section>
+
+</MainLayout>
+
 
 <style>
-
+/* HERO */
 .hero{
+  background:linear-gradient(135deg,#ff7a18,#000,#2563eb);
+  color:white;
   text-align:center;
   padding:100px 20px;
-  background:linear-gradient(135deg,#ea580c,#000,#2563eb);
-  color:white;
 }
 
+.hero h1{
+  font-size:34px;
+  margin-bottom:10px;
+}
+
+.hero p{
+  opacity:.9;
+}
+
+/* INDUSTRIES */
 .industries{
   padding:80px 20px;
+  background:#f5f5f5;
   text-align:center;
 }
 
-.grid{
+.cards{
   margin-top:40px;
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:25px;
-  max-width:1100px;
-  margin:auto;
+  gap:30px;
 }
 
-</style>
+/* FLIP CARD */
+.card{
+  perspective:1000px;
+  text-decoration:none;
+}
 
-</MainLayout>
+.card-inner{
+  position:relative;
+  width:100%;
+  height:200px;
+  transition:transform .7s;
+  transform-style:preserve-3d;
+}
+
+.card:hover .card-inner{
+  transform:rotateY(180deg);
+}
+
+.card-front,
+.card-back{
+  position:absolute;
+  width:100%;
+  height:100%;
+  backface-visibility:hidden;
+  border-radius:12px;
+  padding:25px;
+  background:#0f172a;
+  color:white;
+  box-shadow:0 10px 25px rgba(0,0,0,.2);
+}
+
+.card-back{
+  transform:rotateY(180deg);
+  background:#1e293b;
+}
+
+.tag{
+  display:inline-block;
+  margin-top:15px;
+  padding:6px 12px;
+  border-radius:6px;
+  font-size:12px;
+}
+
+.available{
+  background:#22c55e;
+}
+
+.dev{
+  background:#f59e0b;
+}
+
+/* DEMO SECTION */
+.demo{
+  background:#111;
+  color:white;
+  text-align:center;
+  padding:80px 20px;
+}
+
+.buttons{
+  margin-top:20px;
+  display:flex;
+  justify-content:center;
+  gap:15px;
+  flex-wrap:wrap;
+}
+
+.btn{
+  padding:12px 22px;
+  border-radius:8px;
+  text-decoration:none;
+  color:white;
+  font-weight:600;
+}
+
+.demo-btn{
+  background:linear-gradient(135deg,#2563eb,#a855f7);
+}
+
+.whatsapp{
+  background:#25D366;
+}
+</style>
