@@ -11,18 +11,59 @@ import Navbar from "../components/Navbar.astro";
   font-family:Arial, sans-serif;
 ">
 
-  <!-- HERO -->
-  <div style="text-align:center; padding:60px 20px;">
-    <h1 style="font-size:38px; margin-bottom:10px;">
-      AI Analytics Platform
-    </h1>
+  <!-- HERO SECTION -->
+  <div style="
+    max-width:1200px;
+    margin:auto;
+    padding:70px 20px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+    align-items:center;
+    gap:40px;
+  ">
 
-    <p>
-      Built for Modern Businesses. Choose your industry to continue.
-    </p>
+    <!-- LEFT TEXT -->
+    <div>
+      <h1 style="font-size:42px; margin-bottom:15px;">
+        AI Software for Modern Businesses
+      </h1>
+
+      <p style="opacity:0.9; line-height:1.6;">
+        Manage operations, analytics, CRM and automation
+        from one intelligent platform powered by Bobo Analytics.
+      </p>
+
+      <a href="/solutions/pharmacy" style="
+        display:inline-block;
+        margin-top:25px;
+        padding:14px 26px;
+        border-radius:10px;
+        text-decoration:none;
+        color:white;
+        font-weight:bold;
+        background:linear-gradient(90deg,#00c6ff,#7f00ff);
+      ">
+        Explore Solutions →
+      </a>
+    </div>
+
+    <!-- RIGHT DASHBOARD PREVIEW -->
+    <div style="text-align:center;">
+      <img
+        src="/dashboard-preview.png"
+        alt="Bobo Analytics Dashboard"
+        style="
+          width:100%;
+          max-width:520px;
+          border-radius:14px;
+          box-shadow:0 20px 40px rgba(0,0,0,0.5);
+        "
+      />
+    </div>
+
   </div>
 
-  <!-- INDUSTRIES -->
+  <!-- INDUSTRY SECTION -->
   <div style="
     max-width:1100px;
     margin:auto;
@@ -48,4 +89,57 @@ import Navbar from "../components/Navbar.astro";
         box-shadow:0 0 15px rgba(0,255,255,0.2);
       ">
         <h3>💊 Pharmacy</h3>
-        <p>Billing POS, Inventory Automation & CRM.</p>
+        <p>Billing POS, Inventory & CRM automation.</p>
+      </a>
+
+      <a href="/solutions/healthcare" style="
+        background:#0b0f2a;
+        padding:25px;
+        border-radius:14px;
+        text-decoration:none;
+        color:white;
+        box-shadow:0 0 15px rgba(0,255,255,0.2);
+      ">
+        <h3>🏥 Healthcare</h3>
+        <p>Patient analytics and insights.</p>
+      </a>
+
+      <a href="/solutions/retail" style="
+        background:#0b0f2a;
+        padding:25px;
+        border-radius:14px;
+        text-decoration:none;
+        color:white;
+        box-shadow:0 0 15px rgba(0,255,255,0.2);
+      ">
+        <h3>🛒 Retail</h3>
+        <p>Demand forecasting & smart analytics.</p>
+      </a>
+
+      <a href="/solutions/finance" style="
+        background:#0b0f2a;
+        padding:25px;
+        border-radius:14px;
+        text-decoration:none;
+        color:white;
+        box-shadow:0 0 15px rgba(0,255,255,0.2);
+      ">
+        <h3>💰 Finance</h3>
+        <p>Financial intelligence dashboards.</p>
+      </a>
+
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div style="
+    background:#05081a;
+    text-align:center;
+    padding:20px;
+    margin-top:60px;
+  ">
+    © 2026 Bobo Analytics — Smart Analytics for Smarter Business
+  </div>
+
+</section>
