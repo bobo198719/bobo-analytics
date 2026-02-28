@@ -17,12 +17,12 @@ const { title, description, link, status } = Astro.props;
 
     <!-- BACK -->
     <div class="back">
-      <h4>{title} Solution</h4>
+      <h4>{title}</h4>
 
       {status === "live" ? (
-        <a href={link} class="btn">Open CRM</a>
+        <a href={link} class="open-btn">Open CRM</a>
       ) : (
-        <p>CRM is currently under development.</p>
+        <p>CRM launching soon 🚀</p>
       )}
 
     </div>
@@ -31,14 +31,12 @@ const { title, description, link, status } = Astro.props;
 </div>
 
 <style>
-
 .flip-card{
   perspective:1000px;
 }
 
 .flip-inner{
   position:relative;
-  width:100%;
   height:220px;
   transition:transform .7s;
   transform-style:preserve-3d;
@@ -52,9 +50,9 @@ const { title, description, link, status } = Astro.props;
   position:absolute;
   width:100%;
   height:100%;
-  backface-visibility:hidden;
-  border-radius:14px;
   padding:25px;
+  border-radius:14px;
+  backface-visibility:hidden;
   background:linear-gradient(135deg,#0f172a,#1e293b);
   color:white;
   box-shadow:0 10px 25px rgba(0,0,0,.3);
@@ -78,13 +76,11 @@ const { title, description, link, status } = Astro.props;
 .live{ background:#22c55e; }
 .dev{ background:#f59e0b; }
 
-.btn{
-  margin-top:10px;
+.open-btn{
   background:#2563eb;
   padding:10px 18px;
   border-radius:8px;
   color:white;
   text-decoration:none;
 }
-
 </style>
