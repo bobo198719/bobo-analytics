@@ -2,229 +2,391 @@
 import Navbar from "../components/Navbar.astro";
 ---
 
-<Navbar />
+<!-- NAVBAR WITH LOGO -->
+<nav class="navbar">
+  <div class="nav-left">
+    <img src="/logo.png" class="logo"/>
+    <span class="brand">Bobo Analytics</span>
+  </div>
+
+  <div class="nav-right">
+    <a href="/solutions/pharmacy" class="nav-btn">Login</a>
+  </div>
+</nav>
+
 
 <section class="page">
 
-  <!-- HERO -->
-  <div class="hero reveal">
+<!-- HERO -->
+<div class="hero">
+  <div>
+    <h1>AI Software for Modern Businesses</h1>
 
-    <div>
-      <h1>AI Software for Modern Businesses</h1>
+    <p>
+      CRM, Analytics, Automation and Financial Intelligence
+      designed for multiple industries.
+    </p>
 
-      <p>
-        CRM, Analytics, Automation and Financial Intelligence —
-        built for every industry.
-      </p>
-
-      <a href="/solutions/pharmacy" class="cta">
-        Explore Solutions →
-      </a>
-    </div>
-
-    <div class="hero-img">
-      <img src="/dashboard-image.png" />
-    </div>
-
+    <a href="/solutions/pharmacy" class="cta">
+      Explore Pharmacy Solution →
+    </a>
   </div>
 
-  <!-- FEATURES -->
-  <div class="section reveal">
-
-    <h2>Powerful Features Built for Growth</h2>
-
-    <div class="grid">
-      <div class="card">💊 Smart Pharmacy CRM</div>
-      <div class="card">📊 AI Analytics</div>
-      <div class="card">⚙ Inventory Automation</div>
-      <div class="card">💬 WhatsApp Automation</div>
-      <div class="card">💰 Financial Insights</div>
-      <div class="card">🏪 Multi-Shop Management</div>
-    </div>
-
+  <div>
+    <img src="/dashboard-image.png" class="hero-img"/>
   </div>
+</div>
 
-  <!-- INDUSTRIES -->
-  <div class="section reveal">
 
-    <h2>Choose Your Industry</h2>
+<!-- INDUSTRY FLIP CARDS -->
+<div class="section">
 
-    <div class="grid">
-      <a href="/solutions/pharmacy" class="industry">💊 Pharmacy</a>
-      <a href="/solutions/healthcare" class="industry">🏥 Healthcare</a>
-      <a href="/solutions/retail" class="industry">🛒 Retail</a>
-      <a href="/solutions/finance" class="industry">💰 Finance</a>
-    </div>
+<h2>Choose Your Industry</h2>
 
-  </div>
+<div class="card-grid">
 
-  <!-- PROFESSIONAL FOOTER -->
-  <footer class="footer">
+<!-- PHARMACY -->
+<div class="flip-card">
+<div class="flip-inner">
 
-    <div class="footer-container">
+<div class="flip-front">💊 Pharmacy</div>
 
-      <div>
-        <h3>Bobo Analytics</h3>
-        <p>Smart Analytics for Smarter Business.</p>
-      </div>
+<div class="flip-back">
+<p>
+Billing POS, Inventory Automation,
+Prescription CRM & AI Analytics.
+</p>
 
-      <div>
-        <h4>Company</h4>
-        <a href="/">Home</a>
-        <a href="/#">Industries</a>
-      </div>
+<a href="/solutions/pharmacy" class="enter-btn">
+Enter CRM →
+</a>
+</div>
 
-      <div>
-        <h4>Legal</h4>
-        <a href="/privacy">Privacy Policy</a>
-        <a href="/terms">Terms & Conditions</a>
-        <a href="/disclaimer">Disclaimer</a>
-      </div>
+</div>
+</div>
 
-    </div>
 
-    <div class="copyright">
-      © 2026 Bobo Analytics — All Rights Reserved
-    </div>
+<!-- HEALTHCARE -->
+<div class="flip-card">
+<div class="flip-inner">
+<div class="flip-front">🏥 Healthcare</div>
+<div class="flip-back">
+<p>Patient analytics & workflow automation.</p>
+<strong>CRM Under Development</strong>
+</div>
+</div>
+</div>
 
-  </footer>
+
+<!-- RETAIL -->
+<div class="flip-card">
+<div class="flip-inner">
+<div class="flip-front">🛒 Retail</div>
+<div class="flip-back">
+<p>Sales intelligence & forecasting.</p>
+<strong>CRM Under Development</strong>
+</div>
+</div>
+</div>
+
+
+<!-- FINANCE -->
+<div class="flip-card">
+<div class="flip-inner">
+<div class="flip-front">💰 Finance</div>
+<div class="flip-back">
+<p>Financial dashboards & automation.</p>
+<strong>CRM Under Development</strong>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+
+<!-- DEMO FORM -->
+<div class="section">
+
+<h2>Request a Demo</h2>
+
+<form action="https://formsubmit.co/support@boboanalytics.com"
+method="POST" class="demo-form">
+
+<input type="text" name="name" placeholder="Your Name" required />
+<input type="email" name="email" placeholder="Email" required />
+<input type="text" name="industry" placeholder="Industry" required />
+<textarea name="message" placeholder="Your Requirement"></textarea>
+
+<input type="hidden" name="_captcha" value="false">
+
+<button type="submit">Request Demo</button>
+
+</form>
+
+</div>
+
+
+<!-- FOOTER -->
+<footer class="footer">
+
+<div class="footer-container">
+
+<div>
+<h3>Bobo Analytics</h3>
+<p>Smart Analytics for Smarter Business</p>
+
+<p>
+📧 support@boboanalytics.com<br/>
+📞 +91 9156484328
+</p>
+</div>
+
+<div>
+<h4>Company</h4>
+<a href="/">Home</a>
+<a href="/solutions/pharmacy">Pharmacy</a>
+</div>
+
+<div>
+<h4>Legal</h4>
+<a href="/privacy">Privacy Policy</a>
+<a href="/terms">Terms & Conditions</a>
+<a href="/disclaimer">Disclaimer</a>
+</div>
+
+</div>
+
+<div class="copyright">
+© 2026 Bobo Analytics — All Rights Reserved
+</div>
+
+</footer>
 
 </section>
 
+
+<!-- WHATSAPP BUTTON -->
+<a
+href="https://wa.me/919156484328?text=Hi%20I%20want%20a%20demo%20of%20Bobo%20Analytics"
+class="whatsapp"
+target="_blank">💬</a>
+
+
+
 <style>
+
+/* BACKGROUND */
 .page{
-  background:linear-gradient(135deg,#0a0f2c,#3b0f70,#0088a9);
-  color:white;
-  font-family:Arial;
+background:
+linear-gradient(
+180deg,
+#ff7a00,
+#ffffff,
+#000000,
+#ffffff,
+#0047ff
+);
+font-family:Arial;
+}
+
+/* NAVBAR */
+.navbar{
+position:sticky;
+top:0;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:14px 25px;
+background:black;
+color:white;
+z-index:1000;
+}
+
+.nav-left{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.logo{
+height:40px;
+}
+
+.brand{
+font-weight:bold;
+font-size:18px;
+}
+
+.nav-btn{
+background:#0047ff;
+padding:10px 16px;
+border-radius:8px;
+color:white;
+text-decoration:none;
 }
 
 /* HERO */
 .hero{
-  max-width:1200px;
-  margin:auto;
-  padding:80px 20px;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-  align-items:center;
-  gap:40px;
+max-width:1200px;
+margin:auto;
+padding:80px 20px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+align-items:center;
+gap:40px;
 }
 
-.hero h1{ font-size:42px; }
+.hero-img{
+width:100%;
+max-width:520px;
+border-radius:14px;
+box-shadow:0 20px 40px rgba(0,0,0,.5);
+}
 
 .cta{
-  display:inline-block;
-  margin-top:20px;
-  padding:14px 26px;
-  border-radius:10px;
-  text-decoration:none;
-  color:white;
-  font-weight:bold;
-  background:linear-gradient(90deg,#00c6ff,#7f00ff);
+display:inline-block;
+margin-top:20px;
+padding:14px 26px;
+border-radius:10px;
+background:black;
+color:white;
+text-decoration:none;
 }
 
-.hero-img img{
-  width:100%;
-  max-width:520px;
-  border-radius:14px;
-  box-shadow:0 20px 40px rgba(0,0,0,.5);
-}
-
-/* SECTIONS */
+/* SECTION */
 .section{
-  max-width:1100px;
-  margin:auto;
-  padding:70px 20px;
-  text-align:center;
+max-width:1100px;
+margin:auto;
+padding:70px 20px;
+text-align:center;
 }
 
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:25px;
-  margin-top:40px;
+/* FLIP CARDS */
+.card-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+gap:25px;
+margin-top:40px;
 }
 
-.card{
-  background:#0b0f2a;
-  padding:25px;
-  border-radius:14px;
-  transition:.3s;
+.flip-card{perspective:1000px;}
+
+.flip-inner{
+position:relative;
+width:100%;
+height:200px;
+transition:transform .6s;
+transform-style:preserve-3d;
 }
 
-.card:hover{ transform:translateY(-8px); }
-
-.industry{
-  background:#0b0f2a;
-  padding:22px;
-  border-radius:12px;
-  text-decoration:none;
-  color:white;
-  font-weight:bold;
-  transition:.3s;
+.flip-card:hover .flip-inner{
+transform:rotateY(180deg);
 }
 
-.industry:hover{
-  transform:scale(1.05);
-  background:#1a1f4d;
+.flip-front,
+.flip-back{
+position:absolute;
+width:100%;
+height:100%;
+backface-visibility:hidden;
+border-radius:14px;
+display:flex;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+padding:20px;
+box-shadow:0 5px 20px rgba(0,0,0,.3);
+}
+
+.flip-front{
+background:black;
+color:white;
+font-size:20px;
+}
+
+.flip-back{
+background:#0047ff;
+color:white;
+transform:rotateY(180deg);
+}
+
+.enter-btn{
+margin-top:10px;
+background:white;
+color:black;
+padding:8px 12px;
+border-radius:6px;
+text-decoration:none;
+}
+
+/* DEMO FORM */
+.demo-form{
+max-width:500px;
+margin:auto;
+display:flex;
+flex-direction:column;
+gap:15px;
+}
+
+.demo-form input,
+.demo-form textarea{
+padding:14px;
+border-radius:8px;
+border:none;
+}
+
+.demo-form button{
+padding:14px;
+border:none;
+border-radius:10px;
+background:black;
+color:white;
+font-weight:bold;
+cursor:pointer;
 }
 
 /* FOOTER */
 .footer{
-  background:#05081a;
-  padding:50px 20px 20px;
-  margin-top:60px;
+background:black;
+color:white;
+padding:50px 20px;
 }
 
 .footer-container{
-  max-width:1100px;
-  margin:auto;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:30px;
+max-width:1100px;
+margin:auto;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:30px;
 }
 
 .footer a{
-  display:block;
-  color:#ccc;
-  text-decoration:none;
-  margin-top:8px;
+color:#ccc;
+text-decoration:none;
+display:block;
+margin-top:8px;
 }
 
-.footer a:hover{ color:white; }
+.footer a:hover{color:white;}
 
 .copyright{
-  text-align:center;
-  margin-top:30px;
-  opacity:.7;
+text-align:center;
+margin-top:30px;
+opacity:.7;
 }
 
-/* SCROLL ANIMATION */
-.reveal{
-  opacity:0;
-  transform:translateY(60px);
-  transition:all .8s ease;
+/* WHATSAPP */
+.whatsapp{
+position:fixed;
+bottom:20px;
+right:20px;
+background:#25D366;
+color:white;
+padding:15px;
+border-radius:50%;
+text-decoration:none;
+font-size:22px;
 }
 
-.reveal.active{
-  opacity:1;
-  transform:translateY(0);
-}
 </style>
-
-<script>
-const reveals=document.querySelectorAll(".reveal");
-
-function revealOnScroll(){
-  const windowHeight=window.innerHeight;
-
-  reveals.forEach(el=>{
-    const top=el.getBoundingClientRect().top;
-    if(top<windowHeight-100){
-      el.classList.add("active");
-    }
-  });
-}
-
-window.addEventListener("scroll",revealOnScroll);
-revealOnScroll();
-</script>
