@@ -1,44 +1,57 @@
 import express from "express";
 import cors from "cors";
-import { connectDB } from "./config/db.js";
+import { MongoClient } from "mongodb";
 
 const app = express();
 
-/* ======================
+/* =====================
    MIDDLEWARE
-====================== */
+===================== */
 app.use(cors());
 app.use(express.json());
 
-/* ======================
-   HEALTH CHECK ROUTE
-====================== */
-app.get("/api/health", (req, res) => {
-  res.json({
-    status: "OK",
-    message: "Bobo Analytics API Working 🚀",
-  });
-});
+/* =====================
+   MONGODB CONNECTION
+===================== */
 
-/* ======================
-   START SERVER FUNCTION
-====================== */
-const startServer = async () => {
+// IMPORTANT: @ must be encoded as %40
+const MONGO_URI =
+"mongodb+srv://clintbobo54_db_user:Bobo%4012345@cluster0.jegbytg.mongodb.net/?retryWrites=true&w=majority";
+
+async function startServer() {
   try {
-    // CONNECT DATABASE FIRST
-    await connectDB();
+    console.log("⏳ Connecting to MongoDB...");
 
-    // START SERVER ONLY AFTER DB CONNECTS
+    const client = new MongoClient(MONGO_URI);
+
+    await client.connect();
+
+    console.log("✅ MongoDB Connected Successfully");
+
+    /* =====================
+       ROUTES
+    ===================== */
+    app.get("/", (req, res) => {
+      res.send("Bobo Analytics Backend Running 🚀");
+    });
+
+    app.get("/api/health", (req, res) => {
+      res.json({ status: "OK" });
+    });
+
+    /* =====================
+       START SERVER
+    ===================== */
     const PORT = 5000;
 
     app.listen(PORT, () => {
-      console.log("🚀 Server running on port 5000");
+      console.log(`🚀 Server running on port ${PORT}`);
     });
-  } catch (error) {
-    console.error("❌ Server failed to start:", error);
-    process.exit(1);
-  }
-};
 
-// RUN SERVER
+  } catch (error) {
+    console.error("❌ MongoDB Connection Error:");
+    console.error(error);
+  }
+}
+
 startServer();
