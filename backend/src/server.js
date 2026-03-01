@@ -4,44 +4,35 @@ import { MongoClient } from "mongodb";
 
 const app = express();
 
-/* =====================
-   MIDDLEWARE
-===================== */
 app.use(cors());
 app.use(express.json());
 
-/* =====================
-   MONGODB CONNECTION
-===================== */
-
-// IMPORTANT: @ must be encoded as %40
-const MONGO_URI =
-"mongodb+srv://clintbobo54_db_user:Bobo%4012345@cluster0.jegbytg.mongodb.net/?retryWrites=true&w=majority";
+// LOCAL MongoDB (NO PASSWORD NEEDED)
+const MONGO_URI = "mongodb://127.0.0.1:27017";
 
 async function startServer() {
   try {
-    console.log("⏳ Connecting to MongoDB...");
+    console.log("⏳ Connecting to Local MongoDB...");
 
     const client = new MongoClient(MONGO_URI);
 
     await client.connect();
 
-    console.log("✅ MongoDB Connected Successfully");
+    console.log("✅ Local MongoDB Connected Successfully");
 
-    /* =====================
-       ROUTES
-    ===================== */
+    const db = client.db("boboAnalytics");
+
     app.get("/", (req, res) => {
       res.send("Bobo Analytics Backend Running 🚀");
     });
 
     app.get("/api/health", (req, res) => {
-      res.json({ status: "OK" });
+      res.json({
+        status: "OK",
+        database: "Connected"
+      });
     });
 
-    /* =====================
-       START SERVER
-    ===================== */
     const PORT = 5000;
 
     app.listen(PORT, () => {
@@ -49,8 +40,7 @@ async function startServer() {
     });
 
   } catch (error) {
-    console.error("❌ MongoDB Connection Error:");
-    console.error(error);
+    console.error("❌ Database Error:", error);
   }
 }
 
