@@ -4,18 +4,15 @@ import { connectDB } from "./config/db.js";
 
 const app = express();
 
-// Middleware
+/* ======================
+   MIDDLEWARE
+====================== */
 app.use(cors());
 app.use(express.json());
 
-/* =============================
-   DATABASE CONNECTION
-============================= */
-connectDB();
-
-/* =============================
+/* ======================
    HEALTH CHECK API
-============================= */
+====================== */
 app.get("/api/health", (req, res) => {
   res.json({
     status: "OK",
@@ -23,11 +20,16 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-/* =============================
-   SERVER START
-============================= */
+/* ======================
+   CONNECT DATABASE
+====================== */
+await connectDB();
+
+/* ======================
+   START SERVER
+====================== */
 const PORT = 5000;
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log("🚀 Server running on port 5000");
 });
