@@ -8,7 +8,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Health Check API
+/* =============================
+   DATABASE CONNECTION
+============================= */
+connectDB();
+
+/* =============================
+   HEALTH CHECK API
+============================= */
 app.get("/api/health", (req, res) => {
   res.json({
     status: "OK",
@@ -16,13 +23,11 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// Connect MongoDB
-connectDB();
-
-// Server Port
+/* =============================
+   SERVER START
+============================= */
 const PORT = 5000;
 
-// Start Server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
