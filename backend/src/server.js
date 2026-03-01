@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 /* ======================
-   HEALTH CHECK API
+   HEALTH CHECK ROUTE
 ====================== */
 app.get("/api/health", (req, res) => {
   res.json({
@@ -21,15 +21,24 @@ app.get("/api/health", (req, res) => {
 });
 
 /* ======================
-   CONNECT DATABASE
+   START SERVER FUNCTION
 ====================== */
-await connectDB();
+const startServer = async () => {
+  try {
+    // CONNECT DATABASE FIRST
+    await connectDB();
 
-/* ======================
-   START SERVER
-====================== */
-const PORT = 5000;
+    // START SERVER ONLY AFTER DB CONNECTS
+    const PORT = 5000;
 
-app.listen(PORT, () => {
-  console.log("🚀 Server running on port 5000");
-});
+    app.listen(PORT, () => {
+      console.log("🚀 Server running on port 5000");
+    });
+  } catch (error) {
+    console.error("❌ Server failed to start:", error);
+    process.exit(1);
+  }
+};
+
+// RUN SERVER
+startServer();
