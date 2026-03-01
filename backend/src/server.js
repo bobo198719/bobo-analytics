@@ -3,40 +3,34 @@ import cors from "cors";
 import { MongoClient } from "mongodb";
 
 const app = express();
-
 app.use(cors());
 app.use(express.json());
 
-// ✅ LOCAL MongoDB Connection
+const PORT = 5000;
+
 const MONGO_URI = "mongodb://127.0.0.1:27017";
 
 async function startServer() {
   try {
-    console.log("⏳ Connecting to Local MongoDB...");
+    console.log("⏳ Connecting MongoDB...");
 
     const client = new MongoClient(MONGO_URI);
-
     await client.connect();
 
     console.log("✅ MongoDB Connected Successfully");
 
-    // Create / Use database
     const db = client.db("boboAnalytics");
 
-    // Test route
     app.get("/", (req, res) => {
-      res.send("Bobo Analytics Backend Running 🚀");
+      res.send("Bobo Analytics API Running 🚀");
     });
 
-    // Health API
     app.get("/api/health", (req, res) => {
       res.json({
         status: "OK",
-        database: "Connected",
+        database: "Connected"
       });
     });
-
-    const PORT = 5000;
 
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
