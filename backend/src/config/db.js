@@ -1,14 +1,15 @@
-import pkg from "pg";
-import dotenv from "dotenv";
+import { MongoClient } from "mongodb";
 
-dotenv.config();
+const uri =
+"mongodb+srv://clintbobo54_db_user:Bobo@12345@cluster0.jegbytg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
-const { Pool } = pkg;
+const client = new MongoClient(uri);
 
-export const db = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
-
-db.connect()
-  .then(() => console.log("✅ Database Connected"))
-  .catch(err => console.error("Database Error:", err));
+export const connectDB = async () => {
+  try {
+    await client.connect();
+    console.log("✅ MongoDB Connected Successfully");
+  } catch (error) {
+    console.error("❌ MongoDB Connection Failed:", error);
+  }
+};
