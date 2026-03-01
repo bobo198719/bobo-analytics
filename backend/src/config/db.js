@@ -1,7 +1,7 @@
 import { MongoClient } from "mongodb";
 
 const MONGO_URI =
-  "PASTE_YOUR_MONGODB_CONNECTION_STRING_HERE";
+"mongodb+srv://clintbobo54_db_user:Bobo@12345@cluster0.jegbytg.mongodb.net/?retryWrites=true&w=majority";
 
 let client;
 
@@ -13,7 +13,8 @@ export const connectDB = async () => {
 
     console.log("✅ MongoDB Connected Successfully");
   } catch (error) {
-    console.error("❌ MongoDB Connection Failed:", error.message);
+    console.error("❌ MongoDB Connection Failed");
+    console.error(error);
     process.exit(1);
   }
 };
