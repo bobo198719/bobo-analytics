@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// LOCAL MongoDB (NO PASSWORD NEEDED)
+// ✅ LOCAL MongoDB Connection
 const MONGO_URI = "mongodb://127.0.0.1:27017";
 
 async function startServer() {
@@ -18,18 +18,21 @@ async function startServer() {
 
     await client.connect();
 
-    console.log("✅ Local MongoDB Connected Successfully");
+    console.log("✅ MongoDB Connected Successfully");
 
+    // Create / Use database
     const db = client.db("boboAnalytics");
 
+    // Test route
     app.get("/", (req, res) => {
       res.send("Bobo Analytics Backend Running 🚀");
     });
 
+    // Health API
     app.get("/api/health", (req, res) => {
       res.json({
         status: "OK",
-        database: "Connected"
+        database: "Connected",
       });
     });
 
@@ -40,7 +43,7 @@ async function startServer() {
     });
 
   } catch (error) {
-    console.error("❌ Database Error:", error);
+    console.error("❌ MongoDB Connection Error:", error);
   }
 }
 
