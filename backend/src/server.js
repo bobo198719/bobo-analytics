@@ -1,44 +1,27 @@
 import express from "express";
 import cors from "cors";
-import { MongoClient } from "mongodb";
+import { connectDB } from "./config/db.js";
 
 const app = express();
+
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-const PORT = 5000;
+// Test Route
+app.get("/", (req, res) => {
+  res.send("Bobo Analytics API Running 🚀");
+});
 
-const MONGO_URI = "mongodb://127.0.0.1:27017";
+// Start Server ONLY after DB connects
+const startServer = async () => {
+  await connectDB();
 
-async function startServer() {
-  try {
-    console.log("⏳ Connecting MongoDB...");
+  const PORT = 5000;
 
-    const client = new MongoClient(MONGO_URI);
-    await client.connect();
-
-    console.log("✅ MongoDB Connected Successfully");
-
-    const db = client.db("boboAnalytics");
-
-    app.get("/", (req, res) => {
-      res.send("Bobo Analytics API Running 🚀");
-    });
-
-    app.get("/api/health", (req, res) => {
-      res.json({
-        status: "OK",
-        database: "Connected"
-      });
-    });
-
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-    });
-
-  } catch (error) {
-    console.error("❌ MongoDB Connection Error:", error);
-  }
-}
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+  });
+};
 
 startServer();
