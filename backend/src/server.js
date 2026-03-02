@@ -1,24 +1,22 @@
-// ✅ TEST LINE (VERY IMPORTANT — proves correct file is running)
-console.log("🔥 NEW SERVER FILE LOADED");
+// ===============================
+// BOBO ANALYTICS API SERVER
+// Production Ready Server
+// ===============================
 
-import express from "express";
-import cors from "cors";
-import { connectDB } from "./config/db.js";
+const express = require("express");
+const cors = require("cors");
 
 const app = express();
-const PORT = 5000;
 
-/* =========================
-   MIDDLEWARE
-========================= */
-
+// -------------------------------
+// MIDDLEWARE
+// -------------------------------
 app.use(cors());
 app.use(express.json());
 
-/* =========================
-   HEALTH CHECK API
-========================= */
-
+// -------------------------------
+// TEST ROUTE (Health Check)
+// -------------------------------
 app.get("/api/health", (req, res) => {
   res.json({
     status: "OK",
@@ -26,22 +24,19 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-/* =========================
-   START SERVER
-========================= */
+// -------------------------------
+// ROOT ROUTE (Optional)
+// -------------------------------
+app.get("/", (req, res) => {
+  res.send("Bobo Analytics Backend Running 🚀");
+});
 
-const startServer = async () => {
-  try {
-    // Connect Database (JSON DB)
-    await connectDB();
+// -------------------------------
+// PORT CONFIG
+// -------------------------------
+const PORT = 5000;
 
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-    });
-
-  } catch (error) {
-    console.error("❌ Server failed to start:", error);
-  }
-};
-
-startServer();
+// ⭐ IMPORTANT FIX — LISTEN ON ALL NETWORKS
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
