@@ -1,21 +1,19 @@
-import { MongoClient } from "mongodb";
+import { Low } from "lowdb";
+import { JSONFile } from "lowdb/node";
 
-const MONGO_URI = "mongodb://127.0.0.1:27017";
-
-let client;
+const adapter = new JSONFile("src/database/db.json");
+const db = new Low(adapter, { analytics: [] });
 
 export const connectDB = async () => {
-  try {
-    console.log("⏳ Connecting to Local MongoDB...");
+  console.log("⏳ Connecting to Local JSON Database...");
 
-    client = new MongoClient(MONGO_URI);
+  await db.read();
 
-    await client.connect();
+  db.data ||= { analytics: [] };
 
-    console.log("✅ Local MongoDB Connected Successfully");
+  await db.write();
 
-  } catch (error) {
-    console.error("❌ DB Connection Failed:", error.message);
-    process.exit(1);
-  }
+  console.log("✅ JSON Database Connected Successfully");
 };
+
+export { db };
