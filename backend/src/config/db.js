@@ -1,22 +1,21 @@
 import { MongoClient } from "mongodb";
 
-const MONGO_URI =
-"mongodb+srv://clintbobo54_db_user:Bobo%4012345@cluster0.jegbytg.mongodb.net/?retryWrites=true&w=majority";
+const MONGO_URI = "mongodb://127.0.0.1:27017";
 
 let client;
 
 export const connectDB = async () => {
   try {
-    console.log("⏳ Connecting to MongoDB...");
+    console.log("⏳ Connecting to Local MongoDB...");
 
     client = new MongoClient(MONGO_URI);
 
     await client.connect();
 
-    console.log("✅ MongoDB Connected Successfully");
+    console.log("✅ Local MongoDB Connected Successfully");
 
   } catch (error) {
-    console.error("❌ MongoDB Connection Failed:", error.message);
+    console.error("❌ DB Connection Failed:", error.message);
     process.exit(1);
   }
 };
