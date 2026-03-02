@@ -22,17 +22,20 @@ app.get("/api/health", (req, res) => {
 });
 
 /* ======================
-   START SERVER
+   START SERVER PROPERLY
 ====================== */
 
 const startServer = async () => {
-  // CONNECT DATABASE FIRST
-  await connectDB();
+  try {
+    // 👇 THIS LINE WAS MISSING
+    await connectDB();
 
-  // THEN START SERVER
-  app.listen(PORT, () => {
-    console.log("🚀 Server running on port 5000");
-  });
+    app.listen(PORT, () => {
+      console.log("🚀 Server running on port 5000");
+    });
+  } catch (error) {
+    console.error("❌ Server failed to start:", error);
+  }
 };
 
 startServer();
