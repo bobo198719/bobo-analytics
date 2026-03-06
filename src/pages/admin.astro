@@ -1,0 +1,78 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+---
+
+<MainLayout title="Admin Panel">
+
+<section class="admin">
+
+<h1>Bobo Analytics Admin Panel</h1>
+
+<p>Create pharmacy accounts</p>
+
+<form class="admin-form">
+
+<input
+type="text"
+placeholder="Pharmacy Name"
+required
+/>
+
+<input
+type="text"
+placeholder="Pharmacy ID"
+required
+/>
+
+<input
+type="password"
+placeholder="Password"
+required
+/>
+
+<button type="submit">
+Create Pharmacy Account
+</button>
+
+</form>
+
+</section>
+
+</MainLayout>
+
+<style>
+
+.admin{
+padding:100px 20px;
+background:#0b0b0b;
+color:white;
+text-align:center;
+min-height:80vh;
+}
+
+.admin-form{
+max-width:400px;
+margin:auto;
+display:flex;
+flex-direction:column;
+gap:15px;
+margin-top:30px;
+}
+
+.admin-form input{
+padding:12px;
+border:none;
+border-radius:6px;
+}
+
+.admin-form button{
+padding:12px;
+border:none;
+border-radius:6px;
+background:#ff8a00;
+color:white;
+font-weight:600;
+cursor:pointer;
+}
+
+</style>
