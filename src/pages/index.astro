@@ -1,6 +1,5 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
-import Hero from "../components/Hero.astro";
 import IndustryCard from "../components/IndustryCard.astro";
 import Stats from "../components/Stats.astro";
 import DemoForm from "../components/DemoForm.astro";
@@ -8,79 +7,150 @@ import DemoForm from "../components/DemoForm.astro";
 
 <MainLayout title="Bobo Analytics">
 
-<!-- HERO SECTION -->
-<Hero />
+<section class="hero">
 
-<!-- STATS SECTION -->
+  <h1>AI Analytics Platform for Every Industry</h1>
+  <p>Select your industry and experience software built specially for you.</p>
+
+  <a href="/pharmacy-login">
+    <button class="login-btn">Login to CRM</button>
+  </a>
+
+</section>
+
 <Stats />
 
-<!-- INDUSTRIES SECTION -->
 <section class="industries">
-  <h2>Industries We Serve</h2>
 
-  <div class="industry-grid">
+<h2>Industries We Serve</h2>
 
-    <a href="/solutions/healthcare">
-      <IndustryCard title="Healthcare" />
-    </a>
+<div class="grid">
 
-    <a href="/solutions/pharmacy">
-      <IndustryCard title="Pharmacy" />
-    </a>
+<IndustryCard
+title="Healthcare"
+description="Patient analytics, hospital insights and reporting"
+link="/solutions/healthcare"
+/>
 
-    <a href="/solutions/retail">
-      <IndustryCard title="Retail" />
-    </a>
+<IndustryCard
+title="Pharmacy"
+description="Inventory analytics, expiry prediction and smart billing"
+link="/solutions/pharmacy"
+/>
 
-    <a href="/solutions/finance">
-      <IndustryCard title="Finance" />
-    </a>
+<IndustryCard
+title="Retail"
+description="Demand forecasting and sales intelligence"
+link="/solutions/retail"
+/>
 
-  </div>
+<IndustryCard
+title="Finance"
+description="Financial analytics and business insights"
+link="/solutions/finance"
+/>
+
+</div>
+
 </section>
 
-<!-- DASHBOARD PREVIEW -->
-<section class="dashboard">
-  <h2>Your Pharmacy Dashboard</h2>
+<section class="dashboard-preview">
 
-  <img src="/dashboard.png" alt="Pharmacy Dashboard" />
+<h2>Your Pharmacy Dashboard</h2>
+
+<img src="/dashboard.png" alt="Pharmacy Dashboard">
+
 </section>
 
-<!-- DEMO FORM -->
 <DemoForm />
+
+<footer>
+
+<p>Bobo Analytics</p>
+
+<div class="footer-links">
+
+<a href="/privacy">Privacy Policy</a>
+<a href="/terms">Terms & Conditions</a>
+<a href="/disclaimer">Disclaimer</a>
+
+</div>
+
+</footer>
+
+</MainLayout>
 
 <style>
 
+.hero{
+text-align:center;
+padding:80px 20px;
+background:linear-gradient(90deg,#ff8a00,#3aa0ff);
+color:white;
+}
+
+.hero h1{
+font-size:36px;
+margin-bottom:10px;
+}
+
+.hero p{
+margin-bottom:20px;
+}
+
+.login-btn{
+padding:10px 20px;
+border:none;
+background:white;
+color:black;
+border-radius:6px;
+cursor:pointer;
+}
+
 .industries{
-  padding:80px 20px;
-  text-align:center;
+padding:60px 20px;
+text-align:center;
+background:#0b0b0b;
+color:white;
 }
 
-.industries h2{
-  font-size:28px;
-  margin-bottom:40px;
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:20px;
+margin-top:30px;
 }
 
-.industry-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:20px;
-  max-width:1000px;
-  margin:auto;
+.dashboard-preview{
+padding:80px 20px;
+text-align:center;
+background:#111;
+color:white;
 }
 
-.dashboard{
-  padding:80px 20px;
-  text-align:center;
+.dashboard-preview img{
+max-width:900px;
+width:100%;
+border-radius:12px;
 }
 
-.dashboard img{
-  width:80%;
-  max-width:900px;
-  margin-top:30px;
-  border-radius:10px;
+footer{
+text-align:center;
+padding:40px;
+background:black;
+color:white;
+}
+
+.footer-links{
+margin-top:10px;
+display:flex;
+justify-content:center;
+gap:20px;
+}
+
+.footer-links a{
+color:white;
+text-decoration:none;
 }
 
 </style>
-
-</MainLayout>
