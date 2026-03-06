@@ -1,0 +1,79 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+---
+
+<MainLayout title="Pharmacy Login">
+
+<section class="login-container">
+
+<h1>Pharmacy CRM Login</h1>
+
+<form class="login-form">
+
+<input
+type="text"
+placeholder="Pharmacy Name"
+required
+/>
+
+<input
+type="text"
+placeholder="Pharmacy ID"
+required
+/>
+
+<input
+type="password"
+placeholder="Password"
+required
+/>
+
+<button type="submit">
+Login
+</button>
+
+</form>
+
+</section>
+
+</MainLayout>
+
+<style>
+
+.login-container{
+padding:120px 20px;
+text-align:center;
+background:#0b0b0b;
+color:white;
+min-height:80vh;
+}
+
+.login-container h1{
+margin-bottom:30px;
+}
+
+.login-form{
+max-width:400px;
+margin:auto;
+display:flex;
+flex-direction:column;
+gap:15px;
+}
+
+.login-form input{
+padding:12px;
+border:none;
+border-radius:6px;
+}
+
+.login-form button{
+padding:12px;
+border:none;
+border-radius:6px;
+background:#3aa0ff;
+color:white;
+font-weight:600;
+cursor:pointer;
+}
+
+</style>
