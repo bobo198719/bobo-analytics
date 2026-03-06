@@ -1,86 +1,63 @@
 ---
-const { title, description, link, status } = Astro.props;
+const { title } = Astro.props;
 ---
 
-<div class="flip-card">
-  <div class="flip-inner">
+<div class="card">
+  <div class="card-inner">
 
-    <!-- FRONT -->
-    <div class="front">
+    <div class="card-front">
       <h3>{title}</h3>
-      <p>{description}</p>
-
-      {status === "live"
-        ? <span class="badge live">CRM Available</span>
-        : <span class="badge dev">CRM Under Development</span>}
     </div>
 
-    <!-- BACK -->
-    <div class="back">
-      <h4>{title}</h4>
-
-      {status === "live" ? (
-        <a href={link} class="open-btn">Open CRM</a>
-      ) : (
-        <p>CRM launching soon 🚀</p>
-      )}
-
+    <div class="card-back">
+      <p>
+        Smart analytics and AI-powered insights designed for {title} businesses.
+      </p>
     </div>
 
   </div>
 </div>
 
 <style>
-.flip-card{
-  perspective:1000px;
+.card {
+  width: 220px;
+  height: 120px;
+  perspective: 1000px;
 }
 
-.flip-inner{
-  position:relative;
-  height:220px;
-  transition:transform .7s;
-  transform-style:preserve-3d;
+.card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
 }
 
-.flip-card:hover .flip-inner{
-  transform:rotateY(180deg);
+.card:hover .card-inner {
+  transform: rotateY(180deg);
 }
 
-.front, .back{
-  position:absolute;
-  width:100%;
-  height:100%;
-  padding:25px;
-  border-radius:14px;
-  backface-visibility:hidden;
-  background:linear-gradient(135deg,#0f172a,#1e293b);
-  color:white;
-  box-shadow:0 10px 25px rgba(0,0,0,.3);
-}
-
-.back{
-  transform:rotateY(180deg);
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
   display:flex;
-  flex-direction:column;
-  justify-content:center;
   align-items:center;
-}
-
-.badge{
-  margin-top:15px;
-  padding:6px 12px;
-  border-radius:6px;
-  font-size:12px;
-}
-
-.live{ background:#22c55e; }
-.dev{ background:#f59e0b; }
-
-.open-btn{
-  background:#2563eb;
-  padding:10px 18px;
-  border-radius:8px;
+  justify-content:center;
+  backface-visibility:hidden;
+  background:#1e293b;
   color:white;
-  text-decoration:none;
+}
+
+.card-front{
+  font-weight:600;
+}
+
+.card-back{
+  transform:rotateY(180deg);
+  font-size:14px;
+  padding:10px;
 }
 </style>
