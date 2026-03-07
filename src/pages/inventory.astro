@@ -4,21 +4,23 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 <MainLayout title="Pharmacy Inventory">
 
-<section class="container">
+<section class="inventory-container">
 
-<h1>Pharmacy Inventory</h1>
+<h1>Pharmacy Inventory Management</h1>
 
 <div class="inventory-form">
 
 <input id="medicine" placeholder="Medicine Name" />
-<input id="stock" placeholder="Stock Quantity" />
+
+<input id="stock" type="number" placeholder="Stock Quantity" />
+
 <input id="expiry" type="date" />
 
 <button onclick="addMedicine()">Add Medicine</button>
 
 </div>
 
-<table id="inventoryTable">
+<table class="inventory-table">
 
 <thead>
 <tr>
@@ -28,7 +30,7 @@ import MainLayout from "../layouts/MainLayout.astro";
 </tr>
 </thead>
 
-<tbody></tbody>
+<tbody id="inventoryTable"></tbody>
 
 </table>
 
@@ -36,8 +38,10 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 <style>
 
-.container{
+.inventory-container{
 padding:40px;
+max-width:1000px;
+margin:auto;
 color:white;
 }
 
@@ -45,77 +49,120 @@ color:white;
 display:flex;
 gap:10px;
 margin-bottom:30px;
+flex-wrap:wrap;
 }
 
-input{
+.inventory-form input{
 padding:10px;
 border-radius:6px;
 border:none;
+min-width:180px;
 }
 
-button{
+.inventory-form button{
 background:#00ff88;
-padding:10px 20px;
 border:none;
+padding:10px 20px;
 border-radius:6px;
 cursor:pointer;
+font-weight:bold;
 }
 
-table{
+.inventory-table{
 width:100%;
 border-collapse:collapse;
+background:#111;
 }
 
-th,td{
-border-bottom:1px solid #333;
+.inventory-table th,
+.inventory-table td{
 padding:12px;
+border-bottom:1px solid #333;
+text-align:left;
+}
+
+.inventory-table th{
+color:#00ff88;
 }
 
 </style>
 
 <script>
 
+const API_URL="http://localhost:5000/api/inventory";
+
 async function loadInventory(){
 
-const res = await fetch("http://localhost:5000/api/inventory?pharmacyId=abc001");
+try{
 
-const data = await res.json();
+const res=await fetch(API_URL+"?pharmacyId=abc001");
 
-const table = document.querySelector("#inventoryTable tbody");
+const data=await res.json();
+
+const table=document.getElementById("inventoryTable");
 
 table.innerHTML="";
 
 data.forEach(item=>{
+
 table.innerHTML+=`
+
 <tr>
+
 <td>${item.medicine}</td>
+
 <td>${item.stock}</td>
+
 <td>${item.expiry}</td>
+
 </tr>
+
 `;
+
 });
+
+}catch(err){
+
+console.error("Inventory error",err);
+
+}
 
 }
 
 async function addMedicine(){
 
 const medicine=document.getElementById("medicine").value;
+
 const stock=document.getElementById("stock").value;
+
 const expiry=document.getElementById("expiry").value;
 
-await fetch("http://localhost:5000/api/inventory",{
+if(!medicine || !stock || !expiry){
+
+alert("Please fill all fields");
+
+return;
+
+}
+
+await fetch(API_URL,{
 
 method:"POST",
 
 headers:{
+
 "Content-Type":"application/json"
+
 },
 
 body:JSON.stringify({
 
 pharmacyId:"abc001",
+
 medicine,
+
 stock,
+
 expiry
 
 })
@@ -123,6 +170,10 @@ expiry
 });
 
 loadInventory();
+
+document.getElementById("medicine").value="";
+document.getElementById("stock").value="";
+document.getElementById("expiry").value="";
 
 }
 
