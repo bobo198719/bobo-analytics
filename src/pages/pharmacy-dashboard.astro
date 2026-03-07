@@ -6,29 +6,19 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 <div class="dashboard">
 
-<!-- Sidebar -->
-
 <div class="sidebar">
 
 <h2>Bobo Analytics</h2>
 
 <a href="/pharmacy-dashboard">Dashboard</a>
-
 <a href="/inventory">Inventory</a>
-
 <a href="#">Orders</a>
-
 <a href="#">Sales Analytics</a>
-
 <a href="#">Customers</a>
-
 <a href="#">Reports</a>
-
 <a href="#">Settings</a>
 
 </div>
-
-<!-- Main Content -->
 
 <div class="content">
 
@@ -37,44 +27,95 @@ import MainLayout from "../layouts/MainLayout.astro";
 <div class="stats">
 
 <div class="card">
-
 <h3>Total Medicines</h3>
-
 <p>128</p>
-
 </div>
 
 <div class="card">
-
-<h3>Low Stock</h3>
-
-<p>8</p>
-
+<h3>Total Orders</h3>
+<p>2458</p>
 </div>
 
 <div class="card">
-
-<h3>Expiring Soon</h3>
-
-<p>5</p>
-
+<h3>Customers</h3>
+<p>2102</p>
 </div>
 
 <div class="card">
+<h3>Revenue</h3>
+<p>$12,400</p>
+</div>
 
-<h3>Today's Sales</h3>
+</div>
 
-<p>₹12,450</p>
+<div class="analytics">
+
+<div class="chart">
+
+<h2>Sales Analytics</h2>
+
+<canvas id="salesChart"></canvas>
+
+</div>
+
+<div class="top-selling">
+
+<h2>Top Selling Medicines</h2>
+
+<ul>
+
+<li>Paracetamol</li>
+<li>Omeprazole</li>
+<li>Metformin</li>
+<li>Atorvastatin</li>
+
+</ul>
 
 </div>
 
 </div>
 
-<div class="dashboard-section">
+<div class="orders">
 
-<h2>Quick Actions</h2>
+<h2>Latest Orders</h2>
 
-<a class="btn" href="/inventory">Manage Inventory</a>
+<table>
+
+<thead>
+<tr>
+<th>Order ID</th>
+<th>Medicine</th>
+<th>Price</th>
+<th>Status</th>
+</tr>
+</thead>
+
+<tbody>
+
+<tr>
+<td>#ORD121</td>
+<td>Metformin</td>
+<td>$10.50</td>
+<td>Delivered</td>
+</tr>
+
+<tr>
+<td>#ORD122</td>
+<td>Omeprazole</td>
+<td>$15.05</td>
+<td>Delivered</td>
+</tr>
+
+<tr>
+<td>#ORD123</td>
+<td>Atorvastatin</td>
+<td>$13.01</td>
+<td>Pending</td>
+</tr>
+
+</tbody>
+
+</table>
 
 </div>
 
@@ -102,7 +143,6 @@ gap:15px;
 
 .sidebar h2{
 color:#00ff88;
-margin-bottom:20px;
 }
 
 .sidebar a{
@@ -135,19 +175,55 @@ border-radius:8px;
 border:1px solid #222;
 }
 
-.card h3{
-margin-bottom:10px;
+.analytics{
+display:grid;
+grid-template-columns:2fr 1fr;
+gap:20px;
+margin-bottom:40px;
 }
 
-.btn{
-background:#00ff88;
-padding:10px 20px;
-border-radius:6px;
-text-decoration:none;
-color:black;
-font-weight:bold;
+.chart{
+background:#111;
+padding:20px;
+border-radius:8px;
+}
+
+.top-selling{
+background:#111;
+padding:20px;
+border-radius:8px;
+}
+
+.orders table{
+width:100%;
+border-collapse:collapse;
+background:#111;
+}
+
+.orders th,.orders td{
+padding:12px;
+border-bottom:1px solid #333;
 }
 
 </style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+const ctx=document.getElementById("salesChart");
+
+new Chart(ctx,{
+type:"bar",
+data:{
+labels:["Jan","Feb","Mar","Apr","May","Jun"],
+datasets:[{
+label:"Sales",
+data:[120,190,300,250,220,400]
+}]
+}
+});
+
+</script>
 
 </MainLayout>
