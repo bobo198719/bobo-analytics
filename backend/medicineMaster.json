@@ -1,0 +1,40 @@
+{
+"medicines":[
+{
+"barcode":"8901234567890",
+"name":"Paracetamol 500mg",
+"mrp":15,
+"purchasePrice":10,
+"gst":5,
+"category":"Pain Relief",
+"manufacturer":"Cipla"
+},
+{
+"barcode":"8901234567891",
+"name":"Omeprazole 20mg",
+"mrp":25,
+"purchasePrice":18,
+"gst":5,
+"category":"Acidity",
+"manufacturer":"Sun Pharma"
+},
+{
+"barcode":"8901234567892",
+"name":"Metformin 500mg",
+"mrp":35,
+"purchasePrice":25,
+"gst":12,
+"category":"Diabetes",
+"manufacturer":"Dr Reddy"
+},
+{
+"barcode":"8901234567893",
+"name":"Atorvastatin 10mg",
+"mrp":60,
+"purchasePrice":45,
+"gst":12,
+"category":"Cholesterol",
+"manufacturer":"Lupin"
+}
+]
+}
