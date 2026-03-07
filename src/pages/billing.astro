@@ -1,216 +1,228 @@
 ---
+
 import MainLayout from "../layouts/MainLayout.astro";
----
 
-<MainLayout title="Billing POS">
+<MainLayout title="Billing POS"><div class="billing"><div class="sidebar"><h2>Bobo Analytics</h2><a href="/pharmacy-dashboard">Dashboard</a>
+<a href="/billing">Billing POS</a>
+<a href="/inventory">Inventory</a>
+<a href="/customers">Customers</a>
 
-<div class="billing">
+</div><div class="content"><h1>Billing POS</h1><div class="search-box"><input 
+type="text" 
+id="medicineSearch" 
+placeholder="Search medicine..."
+/>
 
-<h1>Pharmacy Billing</h1>
+<button onclick="addMedicine()">Add</button>
 
-<div class="scanner">
-
-<input id="barcode" placeholder="Scan barcode">
-<button onclick="addItem()">Add Item</button>
-
-</div>
-
-<table id="billTable">
-
-<thead>
-<tr>
+</div><table class="bill-table"><thead><tr>
 <th>Medicine</th>
 <th>Price</th>
 <th>Qty</th>
 <th>Total</th>
-</tr>
-</thead>
+<th>Remove</th>
+</tr></thead><tbody id="billItems"></tbody></table><div class="totals"><h3>Total: ₹ <span id="totalAmount">0</span></h3></div><div class="customer"><input 
+type="text" 
+id="customerPhone" 
+placeholder="Customer Phone"
+/>
 
-<tbody></tbody>
+<button onclick="sendWhatsApp()">Send WhatsApp Bill</button>
 
-</table>
-
-<div class="gst">
-
-<p>Subtotal: ₹<span id="subtotal">0</span></p>
-<p>CGST (6%): ₹<span id="cgst">0</span></p>
-<p>SGST (6%): ₹<span id="sgst">0</span></p>
-
-<h2>Total: ₹<span id="grandTotal">0</span></h2>
-
-</div>
-
-<div class="actions">
-
-<button onclick="printBill()">Print Invoice</button>
-<button onclick="sendBill()">Send WhatsApp Bill</button>
-
-</div>
-
-</div>
-
-<style>
+</div></div></div><style>
 
 .billing{
-max-width:900px;
-margin:auto;
+display:flex;
+min-height:100vh;
+background:#0a0a0a;
+color:white;
+}
+
+.sidebar{
+width:220px;
+background:#111;
+padding:25px;
+display:flex;
+flex-direction:column;
+gap:15px;
+}
+
+.sidebar a{
+color:white;
+text-decoration:none;
+padding:10px;
+border-radius:6px;
+}
+
+.sidebar a:hover{
+background:#1a1a1a;
+}
+
+.content{
+flex:1;
 padding:40px;
 }
 
-.scanner{
+.search-box{
+display:flex;
+gap:10px;
 margin-bottom:20px;
 }
 
-input{
+.search-box input{
+flex:1;
 padding:10px;
-width:250px;
+border:none;
+border-radius:6px;
 }
 
-button{
+.search-box button{
 padding:10px 20px;
-margin:10px;
 background:#00ff88;
 border:none;
 border-radius:6px;
 cursor:pointer;
 }
 
-table{
+.bill-table{
 width:100%;
 border-collapse:collapse;
-margin-top:20px;
+background:#111;
 }
 
-th,td{
-border-bottom:1px solid #ddd;
+.bill-table th,
+.bill-table td{
+padding:12px;
+border-bottom:1px solid #333;
+text-align:center;
+}
+
+.totals{
+margin-top:20px;
+font-size:22px;
+}
+
+.customer{
+margin-top:20px;
+display:flex;
+gap:10px;
+}
+
+.customer input{
 padding:10px;
+flex:1;
+border:none;
+border-radius:6px;
 }
 
-.gst{
-margin-top:30px;
+.customer button{
+padding:10px 20px;
+background:#00ff88;
+border:none;
+border-radius:6px;
+cursor:pointer;
 }
 
-.actions{
-margin-top:20px;
-}
+</style><script>
 
-</style>
+let bill=[]
 
-<script>
+function addMedicine(){
 
-let bill=[];
+const name=document.getElementById("medicineSearch").value
 
-function addItem(){
+if(!name)return
 
-const barcode=document.getElementById("barcode").value;
-
-const medicineDB={
-"123":"Paracetamol",
-"456":"Metformin",
-"789":"Aspirin"
-};
-
-const priceDB={
-"123":20,
-"456":40,
-"789":50
-};
-
-const medicine=medicineDB[barcode];
-
-if(!medicine){
-alert("Medicine not found");
-return;
-}
-
-const price=priceDB[barcode];
-
-bill.push({
-name:medicine,
-price:price,
+const item={
+name:name,
+price:50,
 qty:1
-});
+}
 
-renderBill();
+bill.push(item)
 
-document.getElementById("barcode").value="";
+renderBill()
 
 }
 
 function renderBill(){
 
-const tbody=document.querySelector("#billTable tbody");
+const table=document.getElementById("billItems")
 
-tbody.innerHTML="";
+table.innerHTML=""
 
-let subtotal=0;
+let total=0
 
-bill.forEach(item=>{
+bill.forEach((item,index)=>{
 
-const total=item.price*item.qty;
+const row=document.createElement("tr")
 
-subtotal+=total;
+const itemTotal=item.price*item.qty
 
-const row=document.createElement("tr");
+total+=itemTotal
 
 row.innerHTML=`
+
 <td>${item.name}</td>
 <td>₹${item.price}</td>
-<td>${item.qty}</td>
-<td>₹${total}</td>
-`;
+<td>
+<input type="number" value="${item.qty}" 
+onchange="updateQty(${index},this.value)">
+</td>
+<td>₹${itemTotal}</td>
+<td>
+<button onclick="removeItem(${index})">X</button>
+</td>
 
-tbody.appendChild(row);
+`
 
-});
+table.appendChild(row)
 
-document.getElementById("subtotal").innerText=subtotal;
-
-const cgst=subtotal*0.06;
-const sgst=subtotal*0.06;
-
-document.getElementById("cgst").innerText=cgst.toFixed(2);
-document.getElementById("sgst").innerText=sgst.toFixed(2);
-
-const grandTotal=subtotal+cgst+sgst;
-
-document.getElementById("grandTotal").innerText=grandTotal.toFixed(2);
-
-}
-
-function printBill(){
-
-window.print();
-
-}
-
-async function sendBill(){
-
-const phone=prompt("Enter customer WhatsApp number");
-
-const total=document.getElementById("grandTotal").innerText;
-
-await fetch("/api/whatsapp/send-bill",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-pharmacyId:"abc001",
-customerPhone:phone,
-items:bill,
-total:total
 })
 
-});
-
-alert("Bill sent on WhatsApp");
+document.getElementById("totalAmount").innerText=total
 
 }
 
-</script>
+function updateQty(index,qty){
 
-</MainLayout>
+bill[index].qty=parseInt(qty)
+
+renderBill()
+
+}
+
+function removeItem(index){
+
+bill.splice(index,1)
+
+renderBill()
+
+}
+
+function sendWhatsApp(){
+
+const phone=document.getElementById("customerPhone").value
+
+if(!phone){
+alert("Enter customer phone")
+return
+}
+
+let message="Your Pharmacy Bill:%0A"
+
+bill.forEach(item=>{
+message+=item.name+" x"+item.qty+" = ₹"+(item.price*item.qty)+"%0A"
+})
+
+const total=document.getElementById("totalAmount").innerText
+
+message+="Total: ₹"+total
+
+window.open(
+"https://wa.me/91"+phone+"?text="+message
+)
+
+}
+
+</script></MainLayout>
