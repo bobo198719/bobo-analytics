@@ -1,74 +1,59 @@
 ---
+
 import MainLayout from "../layouts/MainLayout.astro";
----
 
-<MainLayout title="Pharmacy Inventory">
+<MainLayout title="Inventory Management"><div class="inventory-page"><h1>Medicine Inventory</h1><div class="add-form"><h2>Add Medicine</h2><input id="name" placeholder="Medicine Name">
+<input id="batch" placeholder="Batch Number">
+<input id="expiry" type="date">
+<input id="stock" placeholder="Stock Quantity">
+<input id="mrp" placeholder="MRP"><button onclick="addMedicine()">Add Medicine</button>
 
-<section class="inventory-container">
-
-<h1>Pharmacy Inventory Management</h1>
-
-<div class="inventory-form">
-
-<input id="medicine" placeholder="Medicine Name" />
-
-<input id="stock" type="number" placeholder="Stock Quantity" />
-
-<input id="expiry" type="date" />
-
-<button onclick="addMedicine()">Add Medicine</button>
-
-</div>
-
-<table class="inventory-table">
-
-<thead>
+</div><div class="inventory-table"><h2>Inventory List</h2><table><thead>
 <tr>
 <th>Medicine</th>
-<th>Stock</th>
+<th>Batch</th>
 <th>Expiry</th>
+<th>Stock</th>
+<th>MRP</th>
 </tr>
-</thead>
+</thead><tbody id="inventoryTable"></tbody></table></div></div><style>
 
-<tbody id="inventoryTable"></tbody>
-
-</table>
-
-</section>
-
-<style>
-
-.inventory-container{
+.inventory-page{
 padding:40px;
-max-width:1000px;
-margin:auto;
+background:#0a0a0a;
+min-height:100vh;
 color:white;
 }
 
-.inventory-form{
-display:flex;
-gap:10px;
+.add-form{
+background:#111;
+padding:20px;
 margin-bottom:30px;
-flex-wrap:wrap;
+border-radius:8px;
+display:flex;
+flex-direction:column;
+gap:10px;
+max-width:400px;
 }
 
-.inventory-form input{
+.add-form input{
 padding:10px;
-border-radius:6px;
 border:none;
-min-width:180px;
+border-radius:6px;
+background:#222;
+color:white;
 }
 
-.inventory-form button{
+.add-form button{
+padding:10px;
 background:#00ff88;
 border:none;
-padding:10px 20px;
 border-radius:6px;
 cursor:pointer;
 font-weight:bold;
 }
 
-.inventory-table{
+.inventory-table table{
 width:100%;
 border-collapse:collapse;
 background:#111;
@@ -78,24 +63,13 @@ background:#111;
 .inventory-table td{
 padding:12px;
 border-bottom:1px solid #333;
-text-align:left;
 }
 
-.inventory-table th{
-color:#00ff88;
-}
-
-</style>
-
-<script>
-
-const API_URL="http://localhost:5000/api/inventory";
+</style><script>
 
 async function loadInventory(){
 
-try{
-
-const res=await fetch(API_URL+"?pharmacyId=abc001");
+const res=await fetch("/api/inventory");
 
 const data=await res.json();
 
@@ -103,82 +77,50 @@ const table=document.getElementById("inventoryTable");
 
 table.innerHTML="";
 
-data.forEach(item=>{
+data.forEach(med=>{
 
-table.innerHTML+=`
+const row=document.createElement("tr");
 
-<tr>
-
-<td>${item.medicine}</td>
-
-<td>${item.stock}</td>
-
-<td>${item.expiry}</td>
-
-</tr>
-
+row.innerHTML=`
+<td>${med.name}</td>
+<td>${med.batch}</td>
+<td>${med.expiry}</td>
+<td>${med.stock}</td>
+<td>${med.mrp}</td>
 `;
 
+table.appendChild(row);
+
 });
-
-}catch(err){
-
-console.error("Inventory error",err);
-
-}
 
 }
 
 async function addMedicine(){
 
-const medicine=document.getElementById("medicine").value;
-
-const stock=document.getElementById("stock").value;
-
+const name=document.getElementById("name").value;
+const batch=document.getElementById("batch").value;
 const expiry=document.getElementById("expiry").value;
+const stock=document.getElementById("stock").value;
+const mrp=document.getElementById("mrp").value;
 
-if(!medicine || !stock || !expiry){
-
-alert("Please fill all fields");
-
-return;
-
-}
-
-await fetch(API_URL,{
-
+await fetch("/api/inventory/add",{
 method:"POST",
-
 headers:{
-
 "Content-Type":"application/json"
-
 },
-
 body:JSON.stringify({
-
-pharmacyId:"abc001",
-
-medicine,
-
+name,
+batch,
+expiry,
 stock,
-
-expiry
-
+mrp
 })
-
 });
 
 loadInventory();
 
-document.getElementById("medicine").value="";
-document.getElementById("stock").value="";
-document.getElementById("expiry").value="";
-
 }
 
 loadInventory();
 
-</script>
-
-</MainLayout>
+</script></MainLayout>
