@@ -1,8 +1,14 @@
-const express = require("express");
-const router = express.Router();
+const express=require("express");
 
-const { loginUser } = require("../controllers/authController");
+const router=express.Router();
 
-router.post("/login", loginUser);
+const {
+loginUser,
+createPharmacy
+}=require("../controllers/authController");
 
-module.exports = router;
+router.post("/login",loginUser);
+
+router.post("/create-pharmacy",createPharmacy);
+
+module.exports=router;
