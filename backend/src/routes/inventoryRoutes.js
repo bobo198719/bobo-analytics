@@ -1,13 +1,14 @@
-const express = require("express");
-const router = express.Router();
+const express=require("express");
 
-const { 
+const router=express.Router();
+
+const {
 getInventory,
 addMedicine
-} = require("../controllers/inventoryController");
+}=require("../controllers/inventoryController");
 
-router.get("/", getInventory);
+router.get("/:pharmacyId",getInventory);
 
-router.post("/", addMedicine);
+router.post("/add",addMedicine);
 
-module.exports = router;
+module.exports=router;
