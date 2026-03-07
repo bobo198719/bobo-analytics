@@ -1,12 +1,12 @@
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
 
 const authRoutes = require("./routes/authRoutes");
+const inventoryRoutes = require("./routes/inventoryRoutes");
 
 const app = express();
 
-/* Middleware */
+/* Middlewares */
 
 app.use(cors());
 app.use(express.json());
@@ -15,6 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 /* API Routes */
 
 app.use("/api/users", authRoutes);
+app.use("/api/inventory", inventoryRoutes);
 
 /* Health Check */
 
