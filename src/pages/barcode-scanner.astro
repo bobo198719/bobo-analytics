@@ -1,0 +1,56 @@
+---
+
+import MainLayout from "../layouts/MainLayout.astro";
+
+<MainLayout title="Barcode Scanner"><div class="scanner-page"><h1>Scan Medicine Barcode</h1><div id="scanner"></div><p id="result">Waiting for scan...</p><a href="/billing">
+<button>Back to Billing</button>
+</a></div><style>
+
+.scanner-page{
+text-align:center;
+padding:40px;
+color:white;
+background:#0a0a0a;
+min-height:100vh;
+}
+
+#scanner{
+width:300px;
+margin:auto;
+margin-top:20px;
+}
+
+button{
+margin-top:20px;
+padding:12px 25px;
+background:#00ff88;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+</style><script src="https://unpkg.com/html5-qrcode"></script><script>
+
+function startScanner(){
+
+const scanner=new Html5QrcodeScanner(
+"scanner",
+{fps:10,qrbox:250}
+);
+
+scanner.render(success);
+
+}
+
+function success(decodedText){
+
+document.getElementById("result").innerText=
+"Scanned Barcode: "+decodedText;
+
+localStorage.setItem("scannedMedicine",decodedText);
+
+}
+
+startScanner();
+
+</script></MainLayout>
