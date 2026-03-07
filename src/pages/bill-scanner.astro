@@ -1,0 +1,83 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+---
+
+<MainLayout title="Retailer Bill Scanner">
+
+<div class="scanner">
+
+<h1>Retailer Bill Scanner</h1>
+
+<p>Upload retailer bill to automatically add medicines into inventory.</p>
+
+<div class="upload-box">
+
+<input type="file" id="billFile" accept="image/*,.pdf">
+
+<button onclick="uploadBill()">Scan Bill</button>
+
+</div>
+
+<div id="result"></div>
+
+</div>
+
+<style>
+
+.scanner{
+max-width:700px;
+margin:auto;
+padding:40px;
+text-align:center;
+}
+
+.upload-box{
+margin-top:30px;
+padding:30px;
+border:2px dashed #ccc;
+border-radius:10px;
+}
+
+button{
+margin-top:15px;
+padding:10px 20px;
+background:#6c63ff;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+</style>
+
+<script>
+
+async function uploadBill(){
+
+const file=document.getElementById("billFile").files[0];
+
+if(!file){
+alert("Please upload a bill");
+return;
+}
+
+const formData=new FormData();
+formData.append("bill",file);
+
+const res=await fetch("/api/bill-scan",{
+method:"POST",
+body:formData
+});
+
+const data=await res.json();
+
+document.getElementById("result").innerHTML=
+
+"<h3>Detected Medicines</h3>"+
+JSON.stringify(data,null,2);
+
+}
+
+</script>
+
+</MainLayout>
