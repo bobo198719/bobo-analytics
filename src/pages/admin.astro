@@ -2,77 +2,241 @@
 import MainLayout from "../layouts/MainLayout.astro";
 ---
 
-<MainLayout title="Admin Panel">
+<MainLayout title="Bobo Analytics Admin">
 
-<section class="admin">
+<div class="admin-container">
 
-<h1>Bobo Analytics Admin Panel</h1>
+<!-- Sidebar -->
 
-<p>Create pharmacy accounts</p>
+<div class="sidebar">
 
-<form class="admin-form">
+<h2 class="logo">Bobo Admin</h2>
 
-<input
-type="text"
-placeholder="Pharmacy Name"
-required
-/>
+<ul>
 
-<input
-type="text"
-placeholder="Pharmacy ID"
-required
-/>
+<li class="active">Dashboard</li>
+<li>Pharmacies</li>
+<li>Inventory</li>
+<li>Orders</li>
+<li>Analytics</li>
+<li>Settings</li>
 
-<input
-type="password"
-placeholder="Password"
-required
-/>
+</ul>
 
-<button type="submit">
-Create Pharmacy Account
-</button>
+</div>
 
-</form>
 
-</section>
+<!-- Main Content -->
+
+<div class="main">
+
+<h1>Admin Dashboard</h1>
+
+<div class="cards">
+
+<div class="card blue">
+<h3>Total Revenue</h3>
+<p>₹1,20,000</p>
+</div>
+
+<div class="card">
+<h3>Total Pharmacies</h3>
+<p>215</p>
+</div>
+
+<div class="card">
+<h3>Total Orders</h3>
+<p>2,458</p>
+</div>
+
+</div>
+
+
+<!-- Chart Section -->
+
+<div class="chart">
+
+<h2>Sales Analytics</h2>
+
+<div class="bars">
+
+<div style="height:120px"></div>
+<div style="height:150px"></div>
+<div style="height:100px"></div>
+<div style="height:80px"></div>
+<div style="height:140px"></div>
+<div style="height:60px"></div>
+
+</div>
+
+</div>
+
+
+<!-- Orders Table -->
+
+<div class="orders">
+
+<h2>Latest Orders</h2>
+
+<table>
+
+<tr>
+<th>Order ID</th>
+<th>Medicine</th>
+<th>Price</th>
+<th>Status</th>
+</tr>
+
+<tr>
+<td>#ORD121</td>
+<td>Metformin</td>
+<td>$10.50</td>
+<td class="delivered">Delivered</td>
+</tr>
+
+<tr>
+<td>#ORD122</td>
+<td>Omeprazole</td>
+<td>$15.05</td>
+<td class="delivered">Delivered</td>
+</tr>
+
+<tr>
+<td>#ORD123</td>
+<td>Atorvastatin</td>
+<td>$13.01</td>
+<td class="pending">Pending</td>
+</tr>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
 
 </MainLayout>
 
+
 <style>
 
-.admin{
-padding:100px 20px;
-background:#0b0b0b;
-color:white;
-text-align:center;
-min-height:80vh;
-}
-
-.admin-form{
-max-width:400px;
-margin:auto;
+.admin-container{
 display:flex;
-flex-direction:column;
-gap:15px;
-margin-top:30px;
+min-height:100vh;
+background:#f5f7fb;
+font-family:Arial;
 }
 
-.admin-form input{
-padding:12px;
-border:none;
-border-radius:6px;
-}
 
-.admin-form button{
-padding:12px;
-border:none;
-border-radius:6px;
-background:#ff8a00;
+/* Sidebar */
+
+.sidebar{
+width:220px;
+background:#1c2b36;
 color:white;
-font-weight:600;
+padding:20px;
+}
+
+.logo{
+margin-bottom:40px;
+}
+
+.sidebar ul{
+list-style:none;
+padding:0;
+}
+
+.sidebar li{
+padding:12px;
 cursor:pointer;
+border-radius:6px;
+}
+
+.sidebar li:hover{
+background:#324654;
+}
+
+.sidebar .active{
+background:#3b82f6;
+}
+
+
+/* Main */
+
+.main{
+flex:1;
+padding:40px;
+}
+
+.cards{
+display:flex;
+gap:20px;
+margin-bottom:40px;
+}
+
+.card{
+background:white;
+padding:25px;
+border-radius:10px;
+flex:1;
+box-shadow:0 2px 8px rgba(0,0,0,0.05);
+}
+
+.card.blue{
+background:linear-gradient(135deg,#4f8cff,#2c6fff);
+color:white;
+}
+
+
+/* Chart */
+
+.chart{
+background:white;
+padding:25px;
+border-radius:10px;
+margin-bottom:40px;
+}
+
+.bars{
+display:flex;
+gap:10px;
+align-items:flex-end;
+height:160px;
+}
+
+.bars div{
+width:40px;
+background:linear-gradient(180deg,#6a5cff,#4f8cff);
+border-radius:4px;
+}
+
+
+/* Orders */
+
+.orders{
+background:white;
+padding:25px;
+border-radius:10px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+padding:12px;
+text-align:left;
+border-bottom:1px solid #eee;
+}
+
+.delivered{
+color:green;
+}
+
+.pending{
+color:orange;
 }
 
 </style>
