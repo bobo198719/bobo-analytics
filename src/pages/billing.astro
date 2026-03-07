@@ -7,7 +7,9 @@ import MainLayout from "../layouts/MainLayout.astro";
 <a href="/inventory">Inventory</a>
 <a href="/customers">Customers</a>
 
-</div><div class="content"><h1>Billing POS</h1><div class="search-box"><input 
+</div><div class="content"><h1>Billing POS</h1><div class="top-actions"><a href="/barcode-scanner">
+<button class="scan">Scan Barcode</button>
+</a></div><div class="search-box"><input 
 type="text" 
 id="medicineSearch" 
 placeholder="Search medicine..."
@@ -61,6 +63,19 @@ background:#1a1a1a;
 .content{
 flex:1;
 padding:40px;
+}
+
+.top-actions{
+margin-bottom:20px;
+}
+
+.scan{
+padding:12px 20px;
+background:#00ff88;
+border:none;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
 }
 
 .search-box{
