@@ -4,26 +4,22 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 <MainLayout title="Pharmacy Login">
 
-<section class="login-container">
+<section class="login-page">
 
-<h1>Pharmacy CRM Login</h1>
+<h1>Pharmacy Login</h1>
 
-<form class="login-form">
+<form id="loginForm" class="login-form">
 
-<input
-type="text"
-placeholder="Pharmacy Name"
-required
-/>
-
-<input
-type="text"
+<input 
+type="text" 
+id="pharmacyId" 
 placeholder="Pharmacy ID"
 required
 />
 
-<input
-type="password"
+<input 
+type="password" 
+id="password" 
 placeholder="Password"
 required
 />
@@ -32,24 +28,74 @@ required
 Login
 </button>
 
+<p id="error" class="error"></p>
+
 </form>
 
 </section>
+
+<script>
+
+const form = document.getElementById("loginForm");
+
+form.addEventListener("submit", async (e) => {
+
+e.preventDefault();
+
+const pharmacyId = document.getElementById("pharmacyId").value;
+const password = document.getElementById("password").value;
+
+try{
+
+const res = await fetch("http://localhost:5000/api/users/login",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+pharmacyId,
+password
+})
+
+});
+
+const data = await res.json();
+
+if(res.ok){
+
+localStorage.setItem("pharmacy",data.pharmacy);
+
+window.location.href="/pharmacy-dashboard";
+
+}else{
+
+document.getElementById("error").innerText=data.error;
+
+}
+
+}catch(err){
+
+document.getElementById("error").innerText="Server error";
+
+}
+
+});
+
+</script>
 
 </MainLayout>
 
 <style>
 
-.login-container{
+.login-page{
 padding:120px 20px;
-text-align:center;
 background:#0b0b0b;
-color:white;
 min-height:80vh;
-}
-
-.login-container h1{
-margin-bottom:30px;
+text-align:center;
+color:white;
 }
 
 .login-form{
@@ -58,6 +104,7 @@ margin:auto;
 display:flex;
 flex-direction:column;
 gap:15px;
+margin-top:30px;
 }
 
 .login-form input{
@@ -68,12 +115,16 @@ border-radius:6px;
 
 .login-form button{
 padding:12px;
+background:#4f46e5;
 border:none;
 border-radius:6px;
-background:#3aa0ff;
 color:white;
 font-weight:600;
 cursor:pointer;
+}
+
+.error{
+color:red;
 }
 
 </style>
