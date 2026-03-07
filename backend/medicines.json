@@ -1,0 +1,32 @@
+const express = require("express")
+const cors = require("cors")
+const fs = require("fs")
+
+const app = express()
+
+app.use(cors())
+app.use(express.json())
+
+const medicines = JSON.parse(
+fs.readFileSync("./medicines.json")
+)
+
+app.get("/api/medicine/:barcode",(req,res)=>{
+
+const barcode=req.params.barcode
+
+const medicine=medicines.find(
+m=>m.barcode===barcode
+)
+
+if(!medicine){
+return res.json({error:"Medicine not found"})
+}
+
+res.json(medicine)
+
+})
+
+app.listen(5001,"0.0.0.0",()=>{
+console.log("Bobo Analytics API running")
+})
