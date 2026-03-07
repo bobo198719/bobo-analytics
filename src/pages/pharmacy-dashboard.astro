@@ -24,6 +24,8 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 <h1>Pharmacy Dashboard</h1>
 
+<!-- Stats -->
+
 <div class="stats">
 
 <div class="card">
@@ -32,13 +34,13 @@ import MainLayout from "../layouts/MainLayout.astro";
 </div>
 
 <div class="card">
-<h3>Total Orders</h3>
-<p>2458</p>
+<h3>Low Stock</h3>
+<p class="warning">8</p>
 </div>
 
 <div class="card">
-<h3>Customers</h3>
-<p>2102</p>
+<h3>Expiring Soon</h3>
+<p class="danger">5</p>
 </div>
 
 <div class="card">
@@ -47,6 +49,26 @@ import MainLayout from "../layouts/MainLayout.astro";
 </div>
 
 </div>
+
+<!-- Alerts -->
+
+<div class="alerts">
+
+<h2>⚠ Alerts</h2>
+
+<ul>
+
+<li>⚠ Paracetamol stock below 10 units</li>
+
+<li>⚠ Amoxicillin expires in 15 days</li>
+
+<li>⚠ Metformin stock running low</li>
+
+</ul>
+
+</div>
+
+<!-- Analytics -->
 
 <div class="analytics">
 
@@ -75,6 +97,8 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 </div>
 
+<!-- Latest Orders -->
+
 <div class="orders">
 
 <h2>Latest Orders</h2>
@@ -96,21 +120,21 @@ import MainLayout from "../layouts/MainLayout.astro";
 <td>#ORD121</td>
 <td>Metformin</td>
 <td>$10.50</td>
-<td>Delivered</td>
+<td class="success">Delivered</td>
 </tr>
 
 <tr>
 <td>#ORD122</td>
 <td>Omeprazole</td>
 <td>$15.05</td>
-<td>Delivered</td>
+<td class="success">Delivered</td>
 </tr>
 
 <tr>
 <td>#ORD123</td>
 <td>Atorvastatin</td>
 <td>$13.01</td>
-<td>Pending</td>
+<td class="pending">Pending</td>
 </tr>
 
 </tbody>
@@ -165,7 +189,7 @@ padding:40px;
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
 gap:20px;
-margin-bottom:40px;
+margin-bottom:30px;
 }
 
 .card{
@@ -175,11 +199,26 @@ border-radius:8px;
 border:1px solid #222;
 }
 
+.warning{
+color:#ffcc00;
+}
+
+.danger{
+color:#ff4c4c;
+}
+
+.alerts{
+background:#111;
+padding:20px;
+border-radius:8px;
+margin-bottom:30px;
+}
+
 .analytics{
 display:grid;
 grid-template-columns:2fr 1fr;
 gap:20px;
-margin-bottom:40px;
+margin-bottom:30px;
 }
 
 .chart{
@@ -205,6 +244,14 @@ padding:12px;
 border-bottom:1px solid #333;
 }
 
+.success{
+color:#00ff88;
+}
+
+.pending{
+color:#ffcc00;
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -216,10 +263,10 @@ const ctx=document.getElementById("salesChart");
 new Chart(ctx,{
 type:"bar",
 data:{
-labels:["Jan","Feb","Mar","Apr","May","Jun"],
+labels:["Jan","Feb","Mar","Apr","May","Jun","Jul"],
 datasets:[{
 label:"Sales",
-data:[120,190,300,250,220,400]
+data:[120,190,300,250,220,400,380]
 }]
 }
 });
