@@ -1,83 +1,80 @@
 ---
+
 import MainLayout from "../layouts/MainLayout.astro";
----
 
-<MainLayout title="Retailer Bill Scanner">
+<MainLayout title="Retailer Bill Scanner"><div class="scanner"><h1>Retailer Bill Scanner</h1><p>Upload retailer bill photo or PDF</p><input type="file" id="billUpload" accept="image/*,.pdf"><button onclick="scanBill()">Scan Bill</button>
 
-<div class="scanner">
-
-<h1>Retailer Bill Scanner</h1>
-
-<p>Upload retailer bill to automatically add medicines into inventory.</p>
-
-<div class="upload-box">
-
-<input type="file" id="billFile" accept="image/*,.pdf">
-
-<button onclick="uploadBill()">Scan Bill</button>
-
-</div>
-
-<div id="result"></div>
-
-</div>
-
-<style>
+<div id="result"></div><a href="/pharmacy-dashboard">
+<button>Back to Dashboard</button>
+</a></div><style>
 
 .scanner{
-max-width:700px;
-margin:auto;
-padding:40px;
 text-align:center;
+padding:40px;
+background:#0a0a0a;
+min-height:100vh;
+color:white;
 }
 
-.upload-box{
-margin-top:30px;
-padding:30px;
-border:2px dashed #ccc;
-border-radius:10px;
+input{
+margin-top:20px;
 }
 
 button{
-margin-top:15px;
-padding:10px 20px;
-background:#6c63ff;
-color:white;
+margin-top:20px;
+padding:12px 20px;
+background:#00ff88;
 border:none;
 border-radius:6px;
 cursor:pointer;
 }
 
-</style>
+#result{
+margin-top:30px;
+background:#111;
+padding:20px;
+border-radius:8px;
+}
 
-<script>
+</style><script>
 
-async function uploadBill(){
+function scanBill(){
 
-const file=document.getElementById("billFile").files[0];
+const file=document.getElementById("billUpload").files[0]
 
 if(!file){
-alert("Please upload a bill");
-return;
+alert("Upload a bill first")
+return
 }
 
-const formData=new FormData();
-formData.append("bill",file);
+const reader=new FileReader()
 
-const res=await fetch("/api/bill-scan",{
-method:"POST",
-body:formData
-});
+reader.onload=function(){
 
-const data=await res.json();
+const text="Paracetamol 50\nOmeprazole 30\nMetformin 40"
 
-document.getElementById("result").innerHTML=
-
-"<h3>Detected Medicines</h3>"+
-JSON.stringify(data,null,2);
+showResult(text)
 
 }
 
-</script>
+reader.readAsDataURL(file)
 
-</MainLayout>
+}
+
+function showResult(text){
+
+const lines=text.split("\n")
+
+let html="<h2>Detected Medicines</h2><ul>"
+
+lines.forEach(l=>{
+html+="<li>"+l+"</li>"
+})
+
+html+="</ul>"
+
+document.getElementById("result").innerHTML=html
+
+}
+
+</script></MainLayout>
