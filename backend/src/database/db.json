@@ -2,9 +2,11 @@
  "pharmacies":[
   {
    "id":1,
-   "pharmacy":"ABC Medical",
+   "pharmacy":"ABC Medical Store",
    "pharmacyId":"abc001",
    "password":"123456",
+   "phone":"9876543210",
+   "address":"Main Road, Mumbai",
    "plan":"999",
    "status":"active"
   }
@@ -16,22 +18,8 @@
    "medicine":"Paracetamol",
    "stock":200,
    "expiry":"2026-08-10"
-  },
-  {
-   "pharmacyId":"abc001",
-   "medicine":"Metformin",
-   "stock":150,
-   "expiry":"2026-09-12"
   }
  ],
 
- "orders":[
-  {
-   "orderId":"ORD121",
-   "pharmacyId":"abc001",
-   "medicine":"Paracetamol",
-   "price":10.5,
-   "status":"Delivered"
-  }
- ]
+ "orders":[]
 }
