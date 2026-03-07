@@ -1,0 +1,133 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+---
+
+<MainLayout title="Pharmacy Inventory">
+
+<section class="container">
+
+<h1>Pharmacy Inventory</h1>
+
+<div class="inventory-form">
+
+<input id="medicine" placeholder="Medicine Name" />
+<input id="stock" placeholder="Stock Quantity" />
+<input id="expiry" type="date" />
+
+<button onclick="addMedicine()">Add Medicine</button>
+
+</div>
+
+<table id="inventoryTable">
+
+<thead>
+<tr>
+<th>Medicine</th>
+<th>Stock</th>
+<th>Expiry</th>
+</tr>
+</thead>
+
+<tbody></tbody>
+
+</table>
+
+</section>
+
+<style>
+
+.container{
+padding:40px;
+color:white;
+}
+
+.inventory-form{
+display:flex;
+gap:10px;
+margin-bottom:30px;
+}
+
+input{
+padding:10px;
+border-radius:6px;
+border:none;
+}
+
+button{
+background:#00ff88;
+padding:10px 20px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+border-bottom:1px solid #333;
+padding:12px;
+}
+
+</style>
+
+<script>
+
+async function loadInventory(){
+
+const res = await fetch("http://localhost:5000/api/inventory?pharmacyId=abc001");
+
+const data = await res.json();
+
+const table = document.querySelector("#inventoryTable tbody");
+
+table.innerHTML="";
+
+data.forEach(item=>{
+table.innerHTML+=`
+<tr>
+<td>${item.medicine}</td>
+<td>${item.stock}</td>
+<td>${item.expiry}</td>
+</tr>
+`;
+});
+
+}
+
+async function addMedicine(){
+
+const medicine=document.getElementById("medicine").value;
+const stock=document.getElementById("stock").value;
+const expiry=document.getElementById("expiry").value;
+
+await fetch("http://localhost:5000/api/inventory",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+pharmacyId:"abc001",
+medicine,
+stock,
+expiry
+
+})
+
+});
+
+loadInventory();
+
+}
+
+loadInventory();
+
+</script>
+
+</MainLayout>
