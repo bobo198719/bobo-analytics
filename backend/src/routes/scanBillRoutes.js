@@ -1,19 +1,35 @@
-const express = require("express")
-const multer = require("multer")
-const scanBill = require("../ocrEngine")
+const express=require("express");
+const multer=require("multer");
+const scanBill=require("../ocrEngine");
 
-const router = express.Router()
+const router=express.Router();
 
-const upload = multer({ dest: "uploads/" })
+const upload=multer({
+dest:"uploads/"
+});
 
-router.post("/scan-bill", upload.single("bill"), async (req,res)=>{
+router.post("/scan-bill",upload.single("bill"),async(req,res)=>{
 
-const medicines = await scanBill(req.file.path)
+try{
+
+const medicines=await scanBill(req.file.path);
 
 res.json({
-detected: medicines
-})
+status:"success",
+detected:medicines
+});
 
-})
+}catch(error){
 
-module.exports = router
+console.error(error);
+
+res.status(500).json({
+status:"error",
+message:"Bill scanning failed"
+});
+
+}
+
+});
+
+module.exports=router;
