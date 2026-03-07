@@ -1,21 +1,35 @@
-import express from "express";
-import cors from "cors";
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
+
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
+/* Middleware */
+
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+/* API Routes */
+
+app.use("/api/users", authRoutes);
+
+/* Health Check */
 
 app.get("/", (req, res) => {
-  res.send("🚀 Bobo Analytics Backend Running Successfully");
-});
-
-app.get("/api/health", (req, res) => {
   res.json({
-    status: "OK",
-    app: "Bobo Analytics SaaS",
-    server: "Running"
+    message: "Bobo Analytics Backend Running"
   });
 });
 
-export default app;
+/* 404 Handler */
+
+app.use((req, res) => {
+  res.status(404).json({
+    error: "Route not found"
+  });
+});
+
+module.exports = app;
