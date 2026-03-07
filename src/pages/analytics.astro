@@ -1,0 +1,63 @@
+---
+
+import MainLayout from "../layouts/MainLayout.astro";
+
+<MainLayout title="AI Analytics"><div class="analytics-page"><h1>AI Business Insights</h1><div class="cards"><div class="card">
+<h3>Top Selling Medicine</h3>
+<p>Paracetamol</p>
+</div><div class="card">
+<h3>Most Profitable Medicine</h3>
+<p>Atorvastatin</p>
+</div><div class="card">
+<h3>Stock Running Out Soon</h3>
+<p>Metformin</p>
+</div><div class="card">
+<h3>Customers Likely to Refill</h3>
+<p>12 Customers</p>
+</div></div><div class="chart"><h2>Monthly Sales Growth</h2><canvas id="growthChart"></canvas>
+
+</div></div><style>
+
+.analytics-page{
+padding:40px;
+background:#0a0a0a;
+color:white;
+min-height:100vh;
+}
+
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:20px;
+margin-bottom:40px;
+}
+
+.card{
+background:#111;
+padding:20px;
+border-radius:8px;
+border:1px solid #222;
+}
+
+.chart{
+background:#111;
+padding:25px;
+border-radius:8px;
+}
+
+</style><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script>
+
+const ctx=document.getElementById("growthChart");
+
+new Chart(ctx,{
+type:"line",
+data:{
+labels:["Jan","Feb","Mar","Apr","May","Jun"],
+datasets:[{
+label:"Sales Growth",
+data:[1200,1500,1800,2200,2600,3100]
+}]
+}
+});
+
+</script></MainLayout>
