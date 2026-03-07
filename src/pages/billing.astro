@@ -1,0 +1,189 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+---
+
+<MainLayout title="Billing POS">
+
+<div class="billing">
+
+<h1>Pharmacy Billing</h1>
+
+<div class="scanner">
+
+<input id="barcode" placeholder="Scan or enter barcode">
+<button onclick="addItem()">Add Item</button>
+
+</div>
+
+<table id="billTable">
+
+<thead>
+<tr>
+<th>Medicine</th>
+<th>Price</th>
+<th>Qty</th>
+<th>Total</th>
+</tr>
+</thead>
+
+<tbody></tbody>
+
+</table>
+
+<div class="total">
+
+<h2>Total: ₹<span id="grandTotal">0</span></h2>
+
+<button onclick="sendBill()">Send WhatsApp Bill</button>
+
+</div>
+
+</div>
+
+<style>
+
+.billing{
+max-width:900px;
+margin:auto;
+padding:40px;
+}
+
+.scanner{
+margin-bottom:20px;
+}
+
+input{
+padding:10px;
+width:250px;
+}
+
+button{
+padding:10px 20px;
+margin-left:10px;
+background:#00ff88;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+}
+
+th,td{
+border-bottom:1px solid #ddd;
+padding:10px;
+}
+
+.total{
+margin-top:30px;
+}
+
+</style>
+
+<script>
+
+let bill=[];
+
+function addItem(){
+
+const barcode=document.getElementById("barcode").value;
+
+const medicineDB={
+"123":"Paracetamol",
+"456":"Metformin",
+"789":"Aspirin"
+};
+
+const priceDB={
+"123":20,
+"456":40,
+"789":50
+};
+
+const medicine=medicineDB[barcode];
+
+if(!medicine){
+alert("Medicine not found");
+return;
+}
+
+const price=priceDB[barcode];
+
+const item={
+name:medicine,
+price:price,
+qty:1
+};
+
+bill.push(item);
+
+renderBill();
+
+document.getElementById("barcode").value="";
+
+}
+
+function renderBill(){
+
+const tbody=document.querySelector("#billTable tbody");
+
+tbody.innerHTML="";
+
+let total=0;
+
+bill.forEach(item=>{
+
+const row=document.createElement("tr");
+
+const itemTotal=item.price*item.qty;
+
+total+=itemTotal;
+
+row.innerHTML=`
+<td>${item.name}</td>
+<td>₹${item.price}</td>
+<td>${item.qty}</td>
+<td>₹${itemTotal}</td>
+`;
+
+tbody.appendChild(row);
+
+});
+
+document.getElementById("grandTotal").innerText=total;
+
+}
+
+async function sendBill(){
+
+const phone=prompt("Enter customer WhatsApp number");
+
+const total=document.getElementById("grandTotal").innerText;
+
+await fetch("/api/whatsapp/send-bill",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+pharmacyId:"abc001",
+customerPhone:phone,
+items:bill,
+total:total
+})
+
+});
+
+alert("Bill sent to WhatsApp");
+
+}
+
+</script>
+
+</MainLayout>
