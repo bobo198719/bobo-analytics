@@ -6,6 +6,8 @@ const inventoryRoutes=require("./routes/inventoryRoutes");
 const billRoutes=require("./routes/billRoutes");
 const whatsappRoutes=require("./routes/whatsappRoutes");
 const aiRoutes=require("./routes/aiRoutes");
+const customerRoutes=require("./routes/customerRoutes");
+const refillRoutes=require("./routes/refillRoutes");
 
 const app=express();
 
@@ -17,5 +19,7 @@ app.use("/api/inventory",inventoryRoutes);
 app.use("/api",billRoutes);
 app.use("/api/whatsapp",whatsappRoutes);
 app.use("/api/ai",aiRoutes);
+app.use("/api/customers",customerRoutes);
+app.use("/api/refill",refillRoutes);
 
 module.exports=app;
