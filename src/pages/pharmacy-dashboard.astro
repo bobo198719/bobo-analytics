@@ -29,14 +29,10 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 <h1>Pharmacy Dashboard</h1>
 
-<!-- BILL SCANNER BUTTON -->
-
 <div class="scanner-btn">
-
 <a href="/bill-scanner">
 <button>Scan Retailer Bill</button>
 </a>
-
 </div>
 
 <!-- STATS -->
@@ -69,12 +65,10 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 <div class="alerts">
 
-<h2>⚠ Alerts</h2>
+<h2>⚠ AI Alerts</h2>
 
-<ul>
-<li>Paracetamol stock below 10 units</li>
-<li>Amoxicillin expires in 15 days</li>
-<li>Metformin stock running low</li>
+<ul id="alerts">
+<li>Loading alerts...</li>
 </ul>
 
 </div>
@@ -165,8 +159,6 @@ background:#0a0a0a;
 color:white;
 }
 
-/* SIDEBAR */
-
 .sidebar{
 width:230px;
 background:#111;
@@ -192,14 +184,10 @@ border-radius:6px;
 background:#1a1a1a;
 }
 
-/* CONTENT */
-
 .content{
 flex:1;
 padding:40px;
 }
-
-/* BILL SCANNER BUTTON */
 
 .scanner-btn{
 margin-bottom:25px;
@@ -213,8 +201,6 @@ border-radius:6px;
 cursor:pointer;
 font-weight:bold;
 }
-
-/* STATS */
 
 .stats{
 display:grid;
@@ -230,8 +216,6 @@ border-radius:8px;
 border:1px solid #222;
 }
 
-/* COLORS */
-
 .warning{
 color:#ffcc00;
 }
@@ -240,16 +224,12 @@ color:#ffcc00;
 color:#ff4c4c;
 }
 
-/* ALERTS */
-
 .alerts{
 background:#111;
 padding:20px;
 border-radius:8px;
 margin-bottom:30px;
 }
-
-/* ANALYTICS */
 
 .analytics{
 display:grid;
@@ -269,8 +249,6 @@ background:#111;
 padding:20px;
 border-radius:8px;
 }
-
-/* ORDERS */
 
 .orders table{
 width:100%;
@@ -310,6 +288,30 @@ data:[120,190,300,250,220,400,380]
 }]
 }
 });
+
+async function loadAlerts(){
+
+const res=await fetch("/api/ai/expiry-alerts");
+
+const alerts=await res.json();
+
+const list=document.getElementById("alerts");
+
+list.innerHTML="";
+
+alerts.forEach(a=>{
+
+const li=document.createElement("li");
+
+li.innerText=a.medicine+" - "+a.message;
+
+list.appendChild(li);
+
+});
+
+}
+
+loadAlerts();
 
 </script>
 
