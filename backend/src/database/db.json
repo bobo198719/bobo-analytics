@@ -1,29 +1,31 @@
 {
-  "pharmacies": [
-    {
-      "id": 1,
-      "pharmacy": "ABC Medical",
-      "pharmacyId": "abc001",
-      "password": "123456"
-    }
-  ],
+ "pharmacies":[
+  {
+   "id":1,
+   "pharmacy":"ABC Medical",
+   "pharmacyId":"abc001",
+   "password":"123456",
+   "plan":"999",
+   "status":"active"
+  }
+ ],
 
-  "inventory": [
-    {
-      "pharmacyId": "abc001",
-      "medicine": "Paracetamol",
-      "stock": 200,
-      "expiry": "2026-08-10"
-    }
-  ],
+ "inventory":[
+  {
+   "pharmacyId":"abc001",
+   "medicine":"Paracetamol",
+   "stock":200,
+   "expiry":"2026-08-10"
+  }
+ ],
 
-  "orders": [
-    {
-      "orderId": "ORD121",
-      "pharmacyId": "abc001",
-      "medicine": "Paracetamol",
-      "price": 10.5,
-      "status": "Delivered"
-    }
-  ]
+ "orders":[
+  {
+   "orderId":"ORD121",
+   "pharmacyId":"abc001",
+   "medicine":"Paracetamol",
+   "price":10.5,
+   "status":"Delivered"
+  }
+ ]
 }
