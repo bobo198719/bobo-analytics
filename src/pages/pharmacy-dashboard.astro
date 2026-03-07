@@ -1,157 +1,65 @@
 ---
+
 import MainLayout from "../layouts/MainLayout.astro";
----
 
-<MainLayout title="Pharmacy Dashboard">
-
-<div class="dashboard">
-
-<!-- SIDEBAR -->
-
-<div class="sidebar">
-
-<h2>Bobo Analytics</h2>
-
-<a href="/pharmacy-dashboard">Dashboard</a>
+<MainLayout title="Pharmacy Dashboard"><div class="dashboard"><div class="sidebar"><h2>Bobo Analytics</h2><a href="/pharmacy-dashboard">Dashboard</a>
 <a href="/billing">Billing POS</a>
 <a href="/inventory">Inventory</a>
 <a href="/bill-scanner">Scan Retailer Bill</a>
 <a href="#">Orders</a>
 <a href="#">Sales Analytics</a>
-<a href="#">Customers</a>
+<a href="/customers">Customers</a>
 <a href="#">Reports</a>
 <a href="#">Settings</a>
 
-</div>
-
-<!-- MAIN CONTENT -->
-
-<div class="content">
-
-<h1>Pharmacy Dashboard</h1>
-
-<div class="scanner-btn">
+</div><div class="content"><h1>Pharmacy Dashboard</h1><div class="scanner-btn">
 <a href="/bill-scanner">
 <button>Scan Retailer Bill</button>
 </a>
-</div>
-
-<!-- STATS -->
-
-<div class="stats">
-
-<div class="card">
+</div><div class="stats"><div class="card">
 <h3>Total Medicines</h3>
 <p>128</p>
-</div>
-
-<div class="card">
+</div><div class="card">
 <h3>Low Stock</h3>
 <p class="warning">8</p>
-</div>
-
-<div class="card">
+</div><div class="card">
 <h3>Expiring Soon</h3>
 <p class="danger">5</p>
-</div>
-
-<div class="card">
+</div><div class="card">
 <h3>Revenue</h3>
 <p>₹12,400</p>
-</div>
-
-</div>
-
-<!-- ALERTS -->
-
-<div class="alerts">
-
-<h2>⚠ AI Alerts</h2>
-
-<ul id="alerts">
+</div></div><div class="alerts"><h2>⚠ AI Alerts</h2><ul id="alerts">
 <li>Loading alerts...</li>
-</ul>
+</ul></div><div class="analytics"><div class="chart"><h2>Sales Analytics</h2><canvas id="salesChart"></canvas>
 
-</div>
-
-<!-- ANALYTICS -->
-
-<div class="analytics">
-
-<div class="chart">
-
-<h2>Sales Analytics</h2>
-
-<canvas id="salesChart"></canvas>
-
-</div>
-
-<div class="top">
-
-<h2>Top Selling Medicines</h2>
-
-<ul>
+</div><div class="top"><h2>Top Selling Medicines</h2><ul>
 <li>Paracetamol</li>
 <li>Omeprazole</li>
 <li>Metformin</li>
 <li>Atorvastatin</li>
-</ul>
-
-</div>
-
-</div>
-
-<!-- ORDERS -->
-
-<div class="orders">
-
-<h2>Latest Orders</h2>
-
-<table>
-
-<thead>
+</ul></div></div><div class="orders"><h2>Latest Orders</h2><table><thead>
 <tr>
 <th>Order ID</th>
 <th>Medicine</th>
 <th>Price</th>
 <th>Status</th>
 </tr>
-</thead>
-
-<tbody>
-
-<tr>
+</thead><tbody><tr>
 <td>#ORD121</td>
 <td>Metformin</td>
 <td>₹10.50</td>
 <td class="success">Delivered</td>
-</tr>
-
-<tr>
+</tr><tr>
 <td>#ORD122</td>
 <td>Omeprazole</td>
 <td>₹15.05</td>
 <td class="success">Delivered</td>
-</tr>
-
-<tr>
+</tr><tr>
 <td>#ORD123</td>
 <td>Atorvastatin</td>
 <td>₹13.01</td>
 <td class="pending">Pending</td>
-</tr>
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-</div>
-
-<style>
+</tr></tbody></table></div></div></div><style>
 
 .dashboard{
 display:flex;
@@ -271,11 +179,7 @@ color:#00ff88;
 color:#ffcc00;
 }
 
-</style>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
+</style><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script>
 
 const ctx=document.getElementById("salesChart");
 
@@ -314,6 +218,25 @@ list.appendChild(li);
 
 loadAlerts();
 
-</script>
 
-</MainLayout>
+
+async function loadRefillAlerts(){
+
+const res=await fetch("/api/refill/refill-alerts");
+
+const alerts=await res.json();
+
+alerts.forEach(a=>{
+
+alert(
+"Refill Alert\n\n"+
+a.name+" needs refill for "+a.medicine
+);
+
+});
+
+}
+
+loadRefillAlerts();
+
+</script></MainLayout>
