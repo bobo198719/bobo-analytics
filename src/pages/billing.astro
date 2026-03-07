@@ -10,7 +10,7 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 <div class="scanner">
 
-<input id="barcode" placeholder="Scan or enter barcode">
+<input id="barcode" placeholder="Scan barcode">
 <button onclick="addItem()">Add Item</button>
 
 </div>
@@ -30,10 +30,19 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 </table>
 
-<div class="total">
+<div class="gst">
+
+<p>Subtotal: ₹<span id="subtotal">0</span></p>
+<p>CGST (6%): ₹<span id="cgst">0</span></p>
+<p>SGST (6%): ₹<span id="sgst">0</span></p>
 
 <h2>Total: ₹<span id="grandTotal">0</span></h2>
 
+</div>
+
+<div class="actions">
+
+<button onclick="printBill()">Print Invoice</button>
 <button onclick="sendBill()">Send WhatsApp Bill</button>
 
 </div>
@@ -59,7 +68,7 @@ width:250px;
 
 button{
 padding:10px 20px;
-margin-left:10px;
+margin:10px;
 background:#00ff88;
 border:none;
 border-radius:6px;
@@ -77,8 +86,12 @@ border-bottom:1px solid #ddd;
 padding:10px;
 }
 
-.total{
+.gst{
 margin-top:30px;
+}
+
+.actions{
+margin-top:20px;
 }
 
 </style>
@@ -112,13 +125,11 @@ return;
 
 const price=priceDB[barcode];
 
-const item={
+bill.push({
 name:medicine,
 price:price,
 qty:1
-};
-
-bill.push(item);
+});
 
 renderBill();
 
@@ -132,28 +143,44 @@ const tbody=document.querySelector("#billTable tbody");
 
 tbody.innerHTML="";
 
-let total=0;
+let subtotal=0;
 
 bill.forEach(item=>{
 
+const total=item.price*item.qty;
+
+subtotal+=total;
+
 const row=document.createElement("tr");
-
-const itemTotal=item.price*item.qty;
-
-total+=itemTotal;
 
 row.innerHTML=`
 <td>${item.name}</td>
 <td>₹${item.price}</td>
 <td>${item.qty}</td>
-<td>₹${itemTotal}</td>
+<td>₹${total}</td>
 `;
 
 tbody.appendChild(row);
 
 });
 
-document.getElementById("grandTotal").innerText=total;
+document.getElementById("subtotal").innerText=subtotal;
+
+const cgst=subtotal*0.06;
+const sgst=subtotal*0.06;
+
+document.getElementById("cgst").innerText=cgst.toFixed(2);
+document.getElementById("sgst").innerText=sgst.toFixed(2);
+
+const grandTotal=subtotal+cgst+sgst;
+
+document.getElementById("grandTotal").innerText=grandTotal.toFixed(2);
+
+}
+
+function printBill(){
+
+window.print();
 
 }
 
@@ -180,7 +207,7 @@ total:total
 
 });
 
-alert("Bill sent to WhatsApp");
+alert("Bill sent on WhatsApp");
 
 }
 
