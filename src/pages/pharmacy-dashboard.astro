@@ -6,12 +6,15 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 <div class="dashboard">
 
+<!-- SIDEBAR -->
+
 <div class="sidebar">
 
 <h2>Bobo Analytics</h2>
 
 <a href="/pharmacy-dashboard">Dashboard</a>
 <a href="/inventory">Inventory</a>
+<a href="/bill-scanner">Scan Retailer Bill</a>
 <a href="#">Orders</a>
 <a href="#">Sales Analytics</a>
 <a href="#">Customers</a>
@@ -20,11 +23,23 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 </div>
 
+<!-- MAIN CONTENT -->
+
 <div class="content">
 
 <h1>Pharmacy Dashboard</h1>
 
-<!-- Stats -->
+<!-- BILL SCANNER BUTTON -->
+
+<div class="scanner-btn">
+
+<a href="/bill-scanner">
+<button>Scan Retailer Bill</button>
+</a>
+
+</div>
+
+<!-- STATS -->
 
 <div class="stats">
 
@@ -50,25 +65,21 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 </div>
 
-<!-- Alerts -->
+<!-- ALERTS -->
 
 <div class="alerts">
 
 <h2>⚠ Alerts</h2>
 
 <ul>
-
-<li>⚠ Paracetamol stock below 10 units</li>
-
-<li>⚠ Amoxicillin expires in 15 days</li>
-
-<li>⚠ Metformin stock running low</li>
-
+<li>Paracetamol stock below 10 units</li>
+<li>Amoxicillin expires in 15 days</li>
+<li>Metformin stock running low</li>
 </ul>
 
 </div>
 
-<!-- Analytics -->
+<!-- ANALYTICS -->
 
 <div class="analytics">
 
@@ -80,24 +91,22 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 </div>
 
-<div class="top-selling">
+<div class="top">
 
 <h2>Top Selling Medicines</h2>
 
 <ul>
-
 <li>Paracetamol</li>
 <li>Omeprazole</li>
 <li>Metformin</li>
 <li>Atorvastatin</li>
-
 </ul>
 
 </div>
 
 </div>
 
-<!-- Latest Orders -->
+<!-- ORDERS -->
 
 <div class="orders">
 
@@ -156,10 +165,12 @@ background:#0a0a0a;
 color:white;
 }
 
+/* SIDEBAR */
+
 .sidebar{
-width:220px;
+width:230px;
 background:#111;
-padding:20px;
+padding:25px;
 display:flex;
 flex-direction:column;
 gap:15px;
@@ -167,11 +178,12 @@ gap:15px;
 
 .sidebar h2{
 color:#00ff88;
+margin-bottom:20px;
 }
 
 .sidebar a{
-color:white;
 text-decoration:none;
+color:white;
 padding:10px;
 border-radius:6px;
 }
@@ -180,10 +192,29 @@ border-radius:6px;
 background:#1a1a1a;
 }
 
+/* CONTENT */
+
 .content{
 flex:1;
 padding:40px;
 }
+
+/* BILL SCANNER BUTTON */
+
+.scanner-btn{
+margin-bottom:25px;
+}
+
+.scanner-btn button{
+padding:12px 20px;
+background:#00ff88;
+border:none;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
+}
+
+/* STATS */
 
 .stats{
 display:grid;
@@ -199,6 +230,8 @@ border-radius:8px;
 border:1px solid #222;
 }
 
+/* COLORS */
+
 .warning{
 color:#ffcc00;
 }
@@ -207,12 +240,16 @@ color:#ffcc00;
 color:#ff4c4c;
 }
 
+/* ALERTS */
+
 .alerts{
 background:#111;
 padding:20px;
 border-radius:8px;
 margin-bottom:30px;
 }
+
+/* ANALYTICS */
 
 .analytics{
 display:grid;
@@ -227,11 +264,13 @@ padding:20px;
 border-radius:8px;
 }
 
-.top-selling{
+.top{
 background:#111;
 padding:20px;
 border-radius:8px;
 }
+
+/* ORDERS */
 
 .orders table{
 width:100%;
@@ -239,7 +278,8 @@ border-collapse:collapse;
 background:#111;
 }
 
-.orders th,.orders td{
+.orders th,
+.orders td{
 padding:12px;
 border-bottom:1px solid #333;
 }
