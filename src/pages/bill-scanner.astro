@@ -2,71 +2,14 @@
 import MainLayout from "../layouts/MainLayout.astro";
 ---
 
-<MainLayout title="Bill Scanner">
-
-<div class="scanner-page">
+<MainLayout title="Retailer Bill Scanner">
 
 <h1>Retailer Bill Scanner</h1>
 
-<p>Upload a retailer bill to automatically extract medicines.</p>
+<p>Upload retailer invoice and extract medicines automatically.</p>
 
-<input type="file" id="billImage" />
+<input type="file" />
 
-<button onclick="uploadBill()">Scan Bill</button>
-
-<div id="result"></div>
-
-</div>
-
-<style>
-
-.scanner-page{
-padding:40px;
-color:white;
-background:#0a0a0a;
-min-height:100vh;
-}
-
-button{
-padding:12px 20px;
-background:#00ff88;
-border:none;
-border-radius:6px;
-cursor:pointer;
-margin-top:15px;
-}
-
-</style>
-
-<script>
-
-async function uploadBill(){
-
-const fileInput=document.getElementById("billImage");
-
-const file=fileInput.files[0];
-
-if(!file){
-alert("Please select a bill image");
-return;
-}
-
-const formData=new FormData();
-
-formData.append("bill",file);
-
-const res=await fetch("/api/upload-bill",{
-method:"POST",
-body:formData
-});
-
-const data=await res.json();
-
-document.getElementById("result").innerHTML=
-"<pre>"+JSON.stringify(data,null,2)+"</pre>";
-
-}
-
-</script>
+<button>Scan Bill</button>
 
 </MainLayout>
