@@ -1,243 +1,27 @@
 ---
-
 import MainLayout from "../layouts/MainLayout.astro";
+---
 
-<MainLayout title="Billing POS"><div class="billing"><div class="sidebar"><h2>Bobo Analytics</h2><a href="/pharmacy-dashboard">Dashboard</a>
-<a href="/billing">Billing POS</a>
-<a href="/inventory">Inventory</a>
-<a href="/customers">Customers</a>
+<MainLayout title="Billing POS | Bobo Analytics">
 
-</div><div class="content"><h1>Billing POS</h1><div class="top-actions"><a href="/barcode-scanner">
-<button class="scan">Scan Barcode</button>
-</a></div><div class="search-box"><input 
-type="text" 
-id="medicineSearch" 
-placeholder="Search medicine..."
-/>
+<h1>Pharmacy Billing POS</h1>
 
-<button onclick="addMedicine()">Add</button>
+<input type="text" placeholder="Search medicine" />
 
-</div><table class="bill-table"><thead><tr>
+<button>Add to Bill</button>
+
+<table class="bill">
+
+<thead>
+<tr>
 <th>Medicine</th>
-<th>Price</th>
 <th>Qty</th>
-<th>Total</th>
-<th>Remove</th>
-</tr></thead><tbody id="billItems"></tbody></table><div class="totals"><h3>Total: ₹ <span id="totalAmount">0</span></h3></div><div class="customer"><input 
-type="text" 
-id="customerPhone" 
-placeholder="Customer Phone"
-/>
+<th>Price</th>
+</tr>
+</thead>
 
-<button onclick="sendWhatsApp()">Send WhatsApp Bill</button>
+<tbody id="billItems"></tbody>
 
-</div></div></div><style>
+</table>
 
-.billing{
-display:flex;
-min-height:100vh;
-background:#0a0a0a;
-color:white;
-}
-
-.sidebar{
-width:220px;
-background:#111;
-padding:25px;
-display:flex;
-flex-direction:column;
-gap:15px;
-}
-
-.sidebar a{
-color:white;
-text-decoration:none;
-padding:10px;
-border-radius:6px;
-}
-
-.sidebar a:hover{
-background:#1a1a1a;
-}
-
-.content{
-flex:1;
-padding:40px;
-}
-
-.top-actions{
-margin-bottom:20px;
-}
-
-.scan{
-padding:12px 20px;
-background:#00ff88;
-border:none;
-border-radius:6px;
-cursor:pointer;
-font-weight:bold;
-}
-
-.search-box{
-display:flex;
-gap:10px;
-margin-bottom:20px;
-}
-
-.search-box input{
-flex:1;
-padding:10px;
-border:none;
-border-radius:6px;
-}
-
-.search-box button{
-padding:10px 20px;
-background:#00ff88;
-border:none;
-border-radius:6px;
-cursor:pointer;
-}
-
-.bill-table{
-width:100%;
-border-collapse:collapse;
-background:#111;
-}
-
-.bill-table th,
-.bill-table td{
-padding:12px;
-border-bottom:1px solid #333;
-text-align:center;
-}
-
-.totals{
-margin-top:20px;
-font-size:22px;
-}
-
-.customer{
-margin-top:20px;
-display:flex;
-gap:10px;
-}
-
-.customer input{
-padding:10px;
-flex:1;
-border:none;
-border-radius:6px;
-}
-
-.customer button{
-padding:10px 20px;
-background:#00ff88;
-border:none;
-border-radius:6px;
-cursor:pointer;
-}
-
-</style><script>
-
-let bill=[]
-
-function addMedicine(){
-
-const name=document.getElementById("medicineSearch").value
-
-if(!name)return
-
-const item={
-name:name,
-price:50,
-qty:1
-}
-
-bill.push(item)
-
-renderBill()
-
-}
-
-function renderBill(){
-
-const table=document.getElementById("billItems")
-
-table.innerHTML=""
-
-let total=0
-
-bill.forEach((item,index)=>{
-
-const row=document.createElement("tr")
-
-const itemTotal=item.price*item.qty
-
-total+=itemTotal
-
-row.innerHTML=`
-
-<td>${item.name}</td>
-<td>₹${item.price}</td>
-<td>
-<input type="number" value="${item.qty}" 
-onchange="updateQty(${index},this.value)">
-</td>
-<td>₹${itemTotal}</td>
-<td>
-<button onclick="removeItem(${index})">X</button>
-</td>
-
-`
-
-table.appendChild(row)
-
-})
-
-document.getElementById("totalAmount").innerText=total
-
-}
-
-function updateQty(index,qty){
-
-bill[index].qty=parseInt(qty)
-
-renderBill()
-
-}
-
-function removeItem(index){
-
-bill.splice(index,1)
-
-renderBill()
-
-}
-
-function sendWhatsApp(){
-
-const phone=document.getElementById("customerPhone").value
-
-if(!phone){
-alert("Enter customer phone")
-return
-}
-
-let message="Your Pharmacy Bill:%0A"
-
-bill.forEach(item=>{
-message+=item.name+" x"+item.qty+" = ₹"+(item.price*item.qty)+"%0A"
-})
-
-const total=document.getElementById("totalAmount").innerText
-
-message+="Total: ₹"+total
-
-window.open(
-"https://wa.me/91"+phone+"?text="+message
-)
-
-}
-
-</script></MainLayout>
+</MainLayout>
