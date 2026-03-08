@@ -1,126 +1,76 @@
 ---
-
 import MainLayout from "../layouts/MainLayout.astro";
+---
 
-<MainLayout title="Inventory Management"><div class="inventory-page"><h1>Medicine Inventory</h1><div class="add-form"><h2>Add Medicine</h2><input id="name" placeholder="Medicine Name">
-<input id="batch" placeholder="Batch Number">
-<input id="expiry" type="date">
-<input id="stock" placeholder="Stock Quantity">
-<input id="mrp" placeholder="MRP"><button onclick="addMedicine()">Add Medicine</button>
+<MainLayout title="Inventory">
 
-</div><div class="inventory-table"><h2>Inventory List</h2><table><thead>
+<div class="inventory-page">
+
+<h1>Pharmacy Inventory</h1>
+
+<p>Manage medicines, stock levels and expiry dates.</p>
+
+<table>
+
+<thead>
 <tr>
 <th>Medicine</th>
-<th>Batch</th>
-<th>Expiry</th>
 <th>Stock</th>
-<th>MRP</th>
+<th>Expiry</th>
 </tr>
-</thead><tbody id="inventoryTable"></tbody></table></div></div><style>
+</thead>
+
+<tbody id="inventoryTable">
+
+<tr>
+<td>Paracetamol</td>
+<td>200</td>
+<td>2026-08-10</td>
+</tr>
+
+<tr>
+<td>Omeprazole</td>
+<td>120</td>
+<td>2026-05-02</td>
+</tr>
+
+<tr>
+<td>Metformin</td>
+<td>90</td>
+<td>2026-04-18</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+<style>
 
 .inventory-page{
 padding:40px;
 background:#0a0a0a;
+color:white;
 min-height:100vh;
-color:white;
 }
 
-.add-form{
-background:#111;
-padding:20px;
-margin-bottom:30px;
-border-radius:8px;
-display:flex;
-flex-direction:column;
-gap:10px;
-max-width:400px;
-}
-
-.add-form input{
-padding:10px;
-border:none;
-border-radius:6px;
-background:#222;
-color:white;
-}
-
-.add-form button{
-padding:10px;
-background:#00ff88;
-border:none;
-border-radius:6px;
-cursor:pointer;
-font-weight:bold;
-}
-
-.inventory-table table{
+table{
 width:100%;
 border-collapse:collapse;
+margin-top:20px;
 background:#111;
 }
 
-.inventory-table th,
-.inventory-table td{
+th,td{
 padding:12px;
 border-bottom:1px solid #333;
 }
 
-</style><script>
-
-async function loadInventory(){
-
-const res=await fetch("/api/inventory");
-
-const data=await res.json();
-
-const table=document.getElementById("inventoryTable");
-
-table.innerHTML="";
-
-data.forEach(med=>{
-
-const row=document.createElement("tr");
-
-row.innerHTML=`
-<td>${med.name}</td>
-<td>${med.batch}</td>
-<td>${med.expiry}</td>
-<td>${med.stock}</td>
-<td>${med.mrp}</td>
-`;
-
-table.appendChild(row);
-
-});
-
+th{
+background:#1a1a1a;
 }
 
-async function addMedicine(){
+</style>
 
-const name=document.getElementById("name").value;
-const batch=document.getElementById("batch").value;
-const expiry=document.getElementById("expiry").value;
-const stock=document.getElementById("stock").value;
-const mrp=document.getElementById("mrp").value;
-
-await fetch("/api/inventory/add",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-name,
-batch,
-expiry,
-stock,
-mrp
-})
-});
-
-loadInventory();
-
-}
-
-loadInventory();
-
-</script></MainLayout>
+</MainLayout>
