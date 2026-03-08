@@ -4,52 +4,105 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 <MainLayout title="Barcode Scanner">
 
-<div class="page">
+<div class="scanner-page">
 
 <h1>Barcode Scanner</h1>
 
-<p>Scan or enter a medicine barcode to fetch product information.</p>
+<p class="subtitle">
+Scan or enter a medicine barcode to fetch product details.
+</p>
 
-<input type="text" placeholder="Enter barcode">
+<div class="scanner-box">
 
-<button>Search</button>
+<input 
+type="text" 
+id="barcodeInput" 
+placeholder="Enter barcode number"
+/>
 
-<div class="result">
+<button onclick="searchBarcode()">
+Search
+</button>
+
+</div>
+
+<div id="result" class="result-box">
+
 <p>No barcode scanned yet.</p>
+
 </div>
 
 </div>
 
 <style>
 
-.page{
+.scanner-page{
 padding:40px;
+min-height:100vh;
 background:#0a0a0a;
 color:white;
-min-height:100vh;
+font-family:Arial, sans-serif;
 }
 
-input{
-padding:10px;
-margin-right:10px;
-margin-top:10px;
+.subtitle{
+color:#bbb;
+margin-bottom:25px;
 }
 
-button{
-padding:10px 16px;
+.scanner-box{
+display:flex;
+gap:10px;
+margin-bottom:25px;
+}
+
+.scanner-box input{
+padding:12px;
+width:250px;
+border-radius:6px;
+border:1px solid #333;
+background:#111;
+color:white;
+}
+
+.scanner-box button{
+padding:12px 18px;
 background:#00ff88;
 border:none;
 border-radius:6px;
 cursor:pointer;
+font-weight:bold;
 }
 
-.result{
-margin-top:20px;
+.result-box{
 background:#111;
 padding:20px;
 border-radius:8px;
+border:1px solid #222;
 }
 
 </style>
+
+<script>
+
+function searchBarcode(){
+
+const barcode=document.getElementById("barcodeInput").value;
+
+const result=document.getElementById("result");
+
+if(!barcode){
+
+result.innerHTML="<p>Please enter a barcode.</p>";
+
+return;
+
+}
+
+result.innerHTML=
+"<p>Searching product for barcode: <b>"+barcode+"</b></p>";
+
+}
+
+</script>
 
 </MainLayout>
