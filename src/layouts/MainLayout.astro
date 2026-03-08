@@ -1,5 +1,5 @@
 ---
-const { title } = Astro.props;
+const { title = "Bobo Analytics" } = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -8,149 +8,24 @@ const { title } = Astro.props;
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>{title}</title>
-
 <style>
-
-/* RESET */
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:system-ui, Arial, sans-serif;
-}
-
-/* PAGE STRUCTURE */
-html,body{
-height:100%;
-}
-
 body{
-display:flex;
-flex-direction:column;
-min-height:100vh;
-background:white;
-}
-
-/* MAIN CONTENT */
-main{
-flex:1;
-width:100%;
-}
-
-/* NAVBAR */
-.navbar{
-background:black;
-color:white;
-padding:14px 20px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-
-.navbar img{
-height:32px;
-}
-
-.login-btn{
-background:#0047ff;
-color:white;
-padding:8px 14px;
-border-radius:6px;
-text-decoration:none;
-}
-
-/* FOOTER */
-footer{
-background:#000;
-color:#aaa;
-padding:40px 20px;
-margin-top:auto;
-}
-
-.footer-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:20px;
-}
-
-footer h3{
-color:white;
-margin-bottom:10px;
-}
-
-footer a{
-color:#aaa;
-text-decoration:none;
-display:block;
-margin:6px 0;
-}
-
-footer a:hover{
+margin:0;
+font-family:Arial, sans-serif;
+background:#0a0a0a;
 color:white;
 }
-
-.copy{
-text-align:center;
-margin-top:20px;
-font-size:14px;
+.container{
+padding:40px;
 }
-
 </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
-<div class="navbar">
-<div style="display:flex;align-items:center;gap:10px;">
-<img src="/logo.png" alt="logo"/>
-<span>Bobo Analytics</span>
-</div>
-
-<a class="login-btn" href="#">Login</a>
-</div>
-
-<!-- PAGE CONTENT -->
-<main>
+<div class="container">
 <slot />
-</main>
-
-<!-- FOOTER -->
-<footer>
-
-<div class="footer-grid">
-
-<div>
-<h3>Bobo Analytics</h3>
-<p>Smart Analytics for Smarter Business</p>
 </div>
-
-<div>
-<h3>Company</h3>
-<a href="/">Home</a>
-<a href="/solutions/pharmacy">Pharmacy</a>
-</div>
-
-<div>
-<h3>Legal</h3>
-<a href="/privacy">Privacy Policy</a>
-<a href="/terms">Terms</a>
-<a href="/disclaimer">Disclaimer</a>
-</div>
-
-<div>
-<h3>Contact</h3>
-<p>Email: support@boboanalytics.com</p>
-<p>Phone: +91 9156484328</p>
-</div>
-
-</div>
-
-<div class="copy">
-© 2026 Bobo Analytics — All Rights Reserved
-</div>
-
-</footer>
 
 </body>
 </html>
