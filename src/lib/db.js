@@ -1,0 +1,68 @@
+import { MongoClient } from 'mongodb';
+import fs from 'fs';
+import path from 'path';
+
+const MONGODB_URI = process.env.MONGODB_URI;
+const DB_NAME = 'bobo_analytics';
+
+let client;
+let db;
+
+// Fallback to local JSON for development/debug if MONGODB_URI is not set
+const localDbPath = path.resolve('src/data/db.json');
+
+export async function getDb() {
+  if (MONGODB_URI) {
+    if (!client) {
+      client = new MongoClient(MONGODB_URI);
+      await client.connect();
+    }
+    return client.db(DB_NAME);
+  } else {
+    // Return a mocked-up DB object that interacts with the local file
+    return {
+      collection: (name) => ({
+        find: (query) => ({
+          toArray: async () => {
+            const data = JSON.parse(fs.readFileSync(localDbPath, 'utf8'));
+            return (data[name] || []).filter(item => {
+              return Object.entries(query).every(([k, v]) => item[k] === v);
+            });
+          },
+          findOne: async (q) => {
+             const data = JSON.parse(fs.readFileSync(localDbPath, 'utf8'));
+             return (data[name] || []).find(item => {
+               return Object.entries(q).every(([k, v]) => item[k] === v);
+             });
+          }
+        }),
+        findOne: async (query) => {
+            const data = JSON.parse(fs.readFileSync(localDbPath, 'utf8'));
+            return (data[name] || []).find(item => {
+              return Object.entries(query).every(([k, v]) => item[k] === v);
+            });
+        },
+        insertOne: async (doc) => {
+          const data = JSON.parse(fs.readFileSync(localDbPath, 'utf8'));
+          if (!data[name]) data[name] = [];
+          data[name].push(doc);
+          fs.writeFileSync(localDbPath, JSON.stringify(data, null, 2));
+          return { insertedId: doc._id || doc.id };
+        },
+        updateOne: async (query, update) => {
+           // Basic update logic for local mock
+           const data = JSON.parse(fs.readFileSync(localDbPath, 'utf8'));
+           const index = (data[name] || []).findIndex(item => {
+             return Object.entries(query).every(([k, v]) => item[k] === v);
+           });
+           if (index !== -1) {
+             const set = update.$set || update;
+             data[name][index] = { ...data[name][index], ...set };
+             fs.writeFileSync(localDbPath, JSON.stringify(data, null, 2));
+           }
+           return { modifiedCount: index !== -1 ? 1 : 0 };
+        }
+      })
+    };
+  }
+}

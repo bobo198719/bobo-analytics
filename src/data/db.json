@@ -1,0 +1,48 @@
+{
+  "users": [
+    {
+      "id": "admin-1",
+      "username": "admin",
+      "password": "password123",
+      "role": "admin",
+      "industry": "all"
+    },
+    {
+      "id": "healthcare-1",
+      "username": "health_abc",
+      "password": "password123",
+      "role": "user",
+      "industry": "healthcare"
+    }
+  ],
+  "pharmacies": [
+    {
+      "id": 1,
+      "pharmacy": "ABC Medical Store",
+      "pharmacyId": "abc001",
+      "password": "123456",
+      "phone": "9876543210",
+      "address": "Main Road",
+      "plan": "999",
+      "status": "active"
+    }
+  ],
+  "inventory": [
+    {
+      "pharmacyId": "abc001",
+      "medicine": "Paracetamol",
+      "stock": 200,
+      "expiry": "2026-08-10"
+    }
+  ],
+  "customers": [
+    {
+      "id": 1,
+      "name": "Rahul Sharma",
+      "phone": "9876500000",
+      "totalPurchases": 2,
+      "lastVisit": "2026-03-01"
+    }
+  ],
+  "orders": []
+}

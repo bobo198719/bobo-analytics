@@ -3,72 +3,64 @@ import MainLayout from "../layouts/MainLayout.astro";
 ---
 
 <MainLayout title="Barcode Scanner">
+    <section class="page">
+        <h1>Barcode Scanner</h1>
+        <p>Scan or type a medicine barcode.</p>
 
-<section class="page">
+        <div class="scanner">
+            <input type="text" id="barcode" placeholder="Enter barcode" />
+            <button id="scanBtn">Search</button>
+        </div>
 
-<h1>Barcode Scanner</h1>
+        <div id="result">
+            <p>No barcode scanned yet.</p>
+        </div>
+    </section>
 
-<p>Scan or type a medicine barcode.</p>
+    <style>
+        .page {
+            padding: 40px;
+        }
+        .scanner {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .scanner input {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            background: #111;
+            color: white;
+        }
+        .scanner button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            background: #00ff88;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        #result {
+            margin-top: 25px;
+            background: #111;
+            padding: 20px;
+            border-radius: 8px;
+        }
+    </style>
 
-<div class="scanner">
-<input type="text" id="barcode" placeholder="Enter barcode" />
-<button id="scanBtn">Search</button>
-</div>
+    <script>
+        document.getElementById("scanBtn")?.addEventListener("click", () => {
+            const input = document.getElementById("barcode") as HTMLInputElement;
+            const result = document.getElementById("result");
+            const code = input?.value;
 
-<div id="result">
-<p>No barcode scanned yet.</p>
-</div>
+            if (!code) {
+                if (result) result.innerHTML = "<p>Please enter a barcode.</p>";
+                return;
+            }
 
-</section>
-
-<style>
-.page{
-padding:40px;
-}
-
-.scanner{
-display:flex;
-gap:10px;
-margin-top:20px;
-}
-
-.scanner input{
-padding:10px;
-border-radius:6px;
-border:1px solid #333;
-background:#111;
-color:white;
-}
-
-.scanner button{
-padding:10px 16px;
-border:none;
-border-radius:6px;
-background:#00ff88;
-cursor:pointer;
-font-weight:bold;
-}
-
-#result{
-margin-top:25px;
-background:#111;
-padding:20px;
-border-radius:8px;
-}
-</style>
-
-<script>
-document.getElementById("scanBtn")?.addEventListener("click", () => {
-const code=document.getElementById("barcode").value;
-const result=document.getElementById("result");
-
-if(!code){
-result.innerHTML="<p>Please enter a barcode.</p>";
-return;
-}
-
-result.innerHTML="<p>Searching medicine for barcode: <b>"+code+"</b></p>";
-});
-</script>
-
-</MainLayout>
+            if (result) result.innerHTML = "<p>Searching medicine for barcode: <b>"+code+"</b></p>";
+        });
+    </script>
+</MainLayout>
