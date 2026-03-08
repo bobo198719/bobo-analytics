@@ -1,56 +1,55 @@
 ---
-
 import MainLayout from "../layouts/MainLayout.astro";
+---
 
-<MainLayout title="Barcode Scanner"><div class="scanner-page"><h1>Scan Medicine Barcode</h1><div id="scanner"></div><p id="result">Waiting for scan...</p><a href="/billing">
-<button>Back to Billing</button>
-</a></div><style>
+<MainLayout title="Barcode Scanner">
 
-.scanner-page{
-text-align:center;
+<div class="scanner">
+
+<h1>Medicine Barcode Scanner</h1>
+
+<p>Scan medicine barcodes to fetch product details.</p>
+
+<input type="text" placeholder="Enter barcode manually">
+
+<button>Search Medicine</button>
+
+<div class="result">
+<p>No barcode scanned yet.</p>
+</div>
+
+</div>
+
+<style>
+
+.scanner{
 padding:40px;
-color:white;
 background:#0a0a0a;
+color:white;
 min-height:100vh;
 }
 
-#scanner{
-width:300px;
-margin:auto;
-margin-top:20px;
+input{
+padding:10px;
+margin-top:10px;
+margin-right:10px;
 }
 
 button{
-margin-top:20px;
-padding:12px 25px;
+padding:10px 16px;
 background:#00ff88;
 border:none;
 border-radius:6px;
 cursor:pointer;
 }
 
-</style><script src="https://unpkg.com/html5-qrcode"></script><script>
-
-function startScanner(){
-
-const scanner=new Html5QrcodeScanner(
-"scanner",
-{fps:10,qrbox:250}
-);
-
-scanner.render(success);
-
+.result{
+margin-top:20px;
+background:#111;
+padding:20px;
+border-radius:8px;
 }
 
-function success(decodedText){
+</style>
 
-document.getElementById("result").innerText=
-"Scanned Barcode: "+decodedText;
-
-localStorage.setItem("scannedMedicine",decodedText);
-
-}
-
-startScanner();
-
-</script></MainLayout>
+</MainLayout>
