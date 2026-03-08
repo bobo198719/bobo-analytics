@@ -4,80 +4,12 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 <MainLayout title="Barcode Scanner">
 
-<section class="scanner">
-
 <h1>Barcode Scanner</h1>
 
-<p>Scan or enter a medicine barcode to fetch product information.</p>
+<p>Scan or enter a medicine barcode.</p>
 
-<div class="scanner-box">
-<input type="text" id="barcode" placeholder="Enter barcode number" />
-<button onclick="scanBarcode()">Search</button>
-</div>
+<input type="text" placeholder="Enter barcode">
 
-<div id="result" class="result">
-<p>No barcode scanned yet.</p>
-</div>
-
-</section>
-
-<style>
-
-.scanner{
-padding:40px;
-min-height:100vh;
-background:#0a0a0a;
-color:white;
-font-family:Arial, sans-serif;
-}
-
-.scanner-box{
-display:flex;
-gap:10px;
-margin-top:20px;
-}
-
-.scanner-box input{
-padding:10px;
-border-radius:6px;
-border:1px solid #333;
-background:#111;
-color:white;
-}
-
-.scanner-box button{
-padding:10px 16px;
-border:none;
-border-radius:6px;
-background:#00ff88;
-font-weight:bold;
-cursor:pointer;
-}
-
-.result{
-margin-top:25px;
-background:#111;
-padding:20px;
-border-radius:8px;
-border:1px solid #222;
-}
-
-</style>
-
-<script>
-
-function scanBarcode(){
-const code=document.getElementById("barcode").value;
-const result=document.getElementById("result");
-
-if(!code){
-result.innerHTML="<p>Please enter a barcode.</p>";
-return;
-}
-
-result.innerHTML="<p>Searching product for barcode: <b>"+code+"</b></p>";
-}
-
-</script>
+<button>Search</button>
 
 </MainLayout>
