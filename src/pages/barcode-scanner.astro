@@ -4,15 +4,15 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 <MainLayout title="Barcode Scanner">
 
-<div class="scanner">
+<div class="page">
 
-<h1>Medicine Barcode Scanner</h1>
+<h1>Barcode Scanner</h1>
 
-<p>Scan medicine barcodes to fetch product details.</p>
+<p>Scan or enter a medicine barcode to fetch product information.</p>
 
-<input type="text" placeholder="Enter barcode manually">
+<input type="text" placeholder="Enter barcode">
 
-<button>Search Medicine</button>
+<button>Search</button>
 
 <div class="result">
 <p>No barcode scanned yet.</p>
@@ -22,7 +22,7 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 <style>
 
-.scanner{
+.page{
 padding:40px;
 background:#0a0a0a;
 color:white;
@@ -31,8 +31,8 @@ min-height:100vh;
 
 input{
 padding:10px;
-margin-top:10px;
 margin-right:10px;
+margin-top:10px;
 }
 
 button{
