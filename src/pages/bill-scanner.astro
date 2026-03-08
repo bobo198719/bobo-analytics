@@ -1,80 +1,72 @@
 ---
-
 import MainLayout from "../layouts/MainLayout.astro";
+---
 
-<MainLayout title="Retailer Bill Scanner"><div class="scanner"><h1>Retailer Bill Scanner</h1><p>Upload retailer bill photo or PDF</p><input type="file" id="billUpload" accept="image/*,.pdf"><button onclick="scanBill()">Scan Bill</button>
+<MainLayout title="Bill Scanner">
 
-<div id="result"></div><a href="/pharmacy-dashboard">
-<button>Back to Dashboard</button>
-</a></div><style>
+<div class="scanner-page">
 
-.scanner{
-text-align:center;
+<h1>Retailer Bill Scanner</h1>
+
+<p>Upload a retailer bill to automatically extract medicines.</p>
+
+<input type="file" id="billImage" />
+
+<button onclick="uploadBill()">Scan Bill</button>
+
+<div id="result"></div>
+
+</div>
+
+<style>
+
+.scanner-page{
 padding:40px;
+color:white;
 background:#0a0a0a;
 min-height:100vh;
-color:white;
-}
-
-input{
-margin-top:20px;
 }
 
 button{
-margin-top:20px;
 padding:12px 20px;
 background:#00ff88;
 border:none;
 border-radius:6px;
 cursor:pointer;
+margin-top:15px;
 }
 
-#result{
-margin-top:30px;
-background:#111;
-padding:20px;
-border-radius:8px;
-}
+</style>
 
-</style><script>
+<script>
 
-function scanBill(){
+async function uploadBill(){
 
-const file=document.getElementById("billUpload").files[0]
+const fileInput=document.getElementById("billImage");
+
+const file=fileInput.files[0];
 
 if(!file){
-alert("Upload a bill first")
-return
+alert("Please select a bill image");
+return;
 }
 
-const reader=new FileReader()
+const formData=new FormData();
 
-reader.onload=function(){
+formData.append("bill",file);
 
-const text="Paracetamol 50\nOmeprazole 30\nMetformin 40"
+const res=await fetch("/api/upload-bill",{
+method:"POST",
+body:formData
+});
 
-showResult(text)
+const data=await res.json();
 
-}
-
-reader.readAsDataURL(file)
-
-}
-
-function showResult(text){
-
-const lines=text.split("\n")
-
-let html="<h2>Detected Medicines</h2><ul>"
-
-lines.forEach(l=>{
-html+="<li>"+l+"</li>"
-})
-
-html+="</ul>"
-
-document.getElementById("result").innerHTML=html
+document.getElementById("result").innerHTML=
+"<pre>"+JSON.stringify(data,null,2)+"</pre>";
 
 }
 
-</script></MainLayout>
+</script>
+
+</MainLayout>
