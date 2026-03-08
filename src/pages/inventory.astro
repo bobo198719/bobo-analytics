@@ -2,15 +2,11 @@
 import MainLayout from "../layouts/MainLayout.astro";
 ---
 
-<MainLayout title="Inventory">
+<MainLayout title="Inventory | Bobo Analytics">
 
-<div class="inventory-page">
+<h1>Medicine Inventory</h1>
 
-<h1>Pharmacy Inventory</h1>
-
-<p>Manage medicines, stock levels and expiry dates.</p>
-
-<table>
+<table class="inventory">
 
 <thead>
 <tr>
@@ -20,55 +16,40 @@ import MainLayout from "../layouts/MainLayout.astro";
 </tr>
 </thead>
 
-<tbody id="inventoryTable">
-
+<tbody>
 <tr>
 <td>Paracetamol</td>
-<td>200</td>
-<td>2026-08-10</td>
-</tr>
-
-<tr>
-<td>Omeprazole</td>
 <td>120</td>
-<td>2026-05-02</td>
+<td>2027</td>
 </tr>
 
 <tr>
-<td>Metformin</td>
-<td>90</td>
-<td>2026-04-18</td>
+<td>Amoxicillin</td>
+<td>80</td>
+<td>2026</td>
 </tr>
 
+<tr>
+<td>Ibuprofen</td>
+<td>65</td>
+<td>2025</td>
+</tr>
 </tbody>
 
 </table>
 
-</div>
-
 <style>
 
-.inventory-page{
-padding:40px;
-background:#0a0a0a;
-color:white;
-min-height:100vh;
-}
-
-table{
+.inventory{
 width:100%;
+margin-top:25px;
 border-collapse:collapse;
-margin-top:20px;
-background:#111;
 }
 
-th,td{
+.inventory th,
+.inventory td{
 padding:12px;
 border-bottom:1px solid #333;
-}
-
-th{
-background:#1a1a1a;
 }
 
 </style>
