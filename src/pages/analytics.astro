@@ -8,7 +8,7 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 <h1>Pharmacy Analytics Dashboard</h1>
 
-<p>Track sales, medicines and pharmacy performance.</p>
+<p>Track sales and pharmacy performance.</p>
 
 <div class="cards">
 
@@ -63,12 +63,13 @@ border-radius:8px;
 
 </style>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script is:inline src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script>
+<script is:inline>
 
 const ctx=document.getElementById("salesChart");
 
+if(ctx){
 new Chart(ctx,{
 type:"bar",
 data:{
@@ -79,6 +80,7 @@ data:[120,210,300,250,320,410]
 }]
 }
 });
+}
 
 </script>
 
