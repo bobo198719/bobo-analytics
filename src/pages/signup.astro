@@ -4,58 +4,83 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 <MainLayout title="Signup">
 
-<div class="signup">
+<div class="signup-page">
 
-<h1>Create Pharmacy Account</h1>
+<h1>Create Your Account</h1>
 
-<p>Register your pharmacy to start using Bobo Analytics.</p>
+<p class="subtitle">
+Start using Bobo Analytics for your pharmacy business.
+</p>
 
-<form>
+<div class="signup-box">
 
-<input type="text" placeholder="Pharmacy Name" required>
+<input type="text" placeholder="Full Name" />
 
-<input type="text" placeholder="Owner Name" required>
+<input type="email" placeholder="Email Address" />
 
-<input type="email" placeholder="Email" required>
+<input type="password" placeholder="Password" />
 
-<input type="password" placeholder="Password" required>
+<button>Create Account</button>
 
-<button type="submit">Create Account</button>
+<p class="login-link">
+Already have an account? <a href="/pharmacy-login">Login</a>
+</p>
 
-</form>
+</div>
 
 </div>
 
 <style>
 
-.signup{
+.signup-page{
 padding:40px;
+min-height:100vh;
 background:#0a0a0a;
 color:white;
-min-height:100vh;
+font-family:Arial, sans-serif;
 }
 
-form{
+.subtitle{
+color:#bbb;
+margin-bottom:25px;
+}
+
+.signup-box{
 display:flex;
 flex-direction:column;
-max-width:400px;
-gap:15px;
-margin-top:20px;
+gap:12px;
+max-width:350px;
+background:#111;
+padding:25px;
+border-radius:8px;
+border:1px solid #222;
 }
 
-input{
+.signup-box input{
 padding:12px;
 border-radius:6px;
-border:none;
+border:1px solid #333;
+background:#0a0a0a;
+color:white;
 }
 
-button{
+.signup-box button{
 padding:12px;
 background:#00ff88;
 border:none;
 border-radius:6px;
-cursor:pointer;
 font-weight:bold;
+cursor:pointer;
+}
+
+.login-link{
+margin-top:10px;
+font-size:14px;
+}
+
+.login-link a{
+color:#00ff88;
+text-decoration:none;
 }
 
 </style>
