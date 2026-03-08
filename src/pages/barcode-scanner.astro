@@ -4,39 +4,26 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 <MainLayout title="Barcode Scanner">
 
-<div class="scanner-page">
+<section class="scanner">
 
 <h1>Barcode Scanner</h1>
 
-<p class="subtitle">
-Scan or enter a medicine barcode to fetch product details.
-</p>
+<p>Scan or enter a medicine barcode to fetch product information.</p>
 
 <div class="scanner-box">
-
-<input 
-type="text" 
-id="barcodeInput" 
-placeholder="Enter barcode number"
-/>
-
-<button onclick="searchBarcode()">
-Search
-</button>
-
+<input type="text" id="barcode" placeholder="Enter barcode number" />
+<button onclick="scanBarcode()">Search</button>
 </div>
 
-<div id="result" class="result-box">
-
+<div id="result" class="result">
 <p>No barcode scanned yet.</p>
-
 </div>
 
-</div>
+</section>
 
 <style>
 
-.scanner-page{
+.scanner{
 padding:40px;
 min-height:100vh;
 background:#0a0a0a;
@@ -44,20 +31,14 @@ color:white;
 font-family:Arial, sans-serif;
 }
 
-.subtitle{
-color:#bbb;
-margin-bottom:25px;
-}
-
 .scanner-box{
 display:flex;
 gap:10px;
-margin-bottom:25px;
+margin-top:20px;
 }
 
 .scanner-box input{
-padding:12px;
-width:250px;
+padding:10px;
 border-radius:6px;
 border:1px solid #333;
 background:#111;
@@ -65,15 +46,16 @@ color:white;
 }
 
 .scanner-box button{
-padding:12px 18px;
-background:#00ff88;
+padding:10px 16px;
 border:none;
 border-radius:6px;
-cursor:pointer;
+background:#00ff88;
 font-weight:bold;
+cursor:pointer;
 }
 
-.result-box{
+.result{
+margin-top:25px;
 background:#111;
 padding:20px;
 border-radius:8px;
@@ -84,23 +66,16 @@ border:1px solid #222;
 
 <script>
 
-function searchBarcode(){
-
-const barcode=document.getElementById("barcodeInput").value;
-
+function scanBarcode(){
+const code=document.getElementById("barcode").value;
 const result=document.getElementById("result");
 
-if(!barcode){
-
+if(!code){
 result.innerHTML="<p>Please enter a barcode.</p>";
-
 return;
-
 }
 
-result.innerHTML=
-"<p>Searching product for barcode: <b>"+barcode+"</b></p>";
-
+result.innerHTML="<p>Searching product for barcode: <b>"+code+"</b></p>";
 }
 
 </script>
