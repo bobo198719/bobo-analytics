@@ -2,192 +2,718 @@
 import MainLayout from "../layouts/MainLayout.astro";
 ---
 
-<MainLayout title="Pharmacy Dashboard">
-    <div class="dashboard">
-        <div class="sidebar">
-            <h2>Bobo Analytics</h2>
-            <a href="/pharmacy-dashboard">Dashboard</a>
-            <a href="/billing">Billing POS</a>
-            <a href="/barcode-scanner">Barcode Scanner</a>
-            <a href="/inventory">Inventory</a>
-            <a href="/bill-scanner">Retailer Bill Scanner</a>
-            <a href="/customers">Customers</a>
-            <a href="/analytics">Analytics</a>
-            <a href="/reports">Reports</a>
-            <a href="/settings">Settings</a>
-        </div>
-        <div class="content">
-            <h1>Pharmacy Dashboard</h1>
-            <div class="quick-actions">
-                <a href="/billing"><button>New Bill</button></a>
-                <a href="/barcode-scanner"><button>Scan Barcode</button></a>
-                <a href="/inventory"><button>Add Medicine</button></a>
-                <a href="/bill-scanner"><button>Scan Retailer Bill</button></a>
+<MainLayout title="Live Dashboard | Bobo Pharmacy">
+    <div class="live-dashboard">
+        <!-- Sidebar Navigation -->
+        <aside class="dashboard-sidebar">
+            <div class="brand">
+                <span class="icon">💊</span>
+                <h2 id="pharmacyNameHeader">Pharmacy</h2>
             </div>
-            <div class="stats">
-                <div class="card">
-                    <h3>Total Medicines</h3>
-                    <p>128</p>
-                </div>
-                <div class="card">
-                    <h3>Low Stock</h3>
-                    <p class="warning">8</p>
-                </div>
-                <div class="card">
-                    <h3>Expiring Soon</h3>
-                    <p class="danger">5</p>
-                </div>
-                <div class="card">
-                    <h3>Revenue Today</h3>
-                    <p>₹12,400</p>
-                </div>
+            <div class="live-badge">LIVE INSTANCE</div>
+            <nav class="sidebar-nav">
+                <a href="#overview" class="nav-btn active" data-target="sec-overview">📊 Overview</a>
+                <a href="#inventory" class="nav-btn" data-target="sec-inventory">📦 Inventory</a>
+                <a href="#billing" class="nav-btn" data-target="sec-billing">🧾 Retail Billing POS</a>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="logout-btn">Log Out</button>
             </div>
-            <div class="alerts">
-                <h2>⚠ AI Alerts</h2>
-                <ul id="alerts">
-                    <li>Loading alerts...</li>
-                </ul>
-            </div>
-            <div class="analytics">
-                <div class="chart">
-                    <h2>Sales Analytics</h2>
-                    <canvas id="salesChart"></canvas>
+        </aside>
+
+        <!-- Main Workspace (White Background as requested) -->
+        <main class="dashboard-workspace">
+            <!-- OVERVIEW SECTION -->
+            <section id="sec-overview" class="workspace-section active">
+                <header class="workspace-header">
+                    <h1>Dashboard Overview</h1>
+                    <p class="subtitle">Real-time metrics for your pharmacy.</p>
+                </header>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Today's Revenue</h3>
+                        <p class="stat-value" id="statRevenue">₹0.00</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Bills Generated</h3>
+                        <p class="stat-value" id="statBills">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Items in Inventory</h3>
+                        <p class="stat-value" id="statInventory">0</p>
+                    </div>
                 </div>
-                <div class="top">
-                    <h2>Top Selling Medicines</h2>
-                    <ul>
-                        <li>Paracetamol</li>
-                        <li>Omeprazole</li>
-                        <li>Metformin</li>
-                        <li>Atorvastatin</li>
-                    </ul>
+
+                <div class="empty-state" id="overviewEmptyState">
+                    <div class="empty-icon">📊</div>
+                    <h2>Your Pharmacy is Live!</h2>
+                    <p>Start by adding some medicines to your inventory, then proceed to the Retail Billing POS to generate your first bill.</p>
                 </div>
-            </div>
-        </div>
+
+                <div class="recent-bills" id="recentBillsContainer" style="display: none;">
+                    <h2>Recent Retail Bills</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Bill No.</th>
+                                <th>Time</th>
+                                <th>Items</th>
+                                <th>Total (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentBillsTable">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- INVENTORY SECTION -->
+            <section id="sec-inventory" class="workspace-section">
+                <header class="workspace-header">
+                    <h1>Manage Inventory</h1>
+                    <p class="subtitle">Add new stocks so you can scan and bill them.</p>
+                </header>
+
+                <div class="action-panel">
+                    <h3>Add New Medicine</h3>
+                    <form id="addInventoryForm" class="inline-form">
+                        <div class="input-group">
+                            <label>Barcode / ID</label>
+                            <input type="text" id="invBarcode" required placeholder="Scan or type (e.g., 1001)" />
+                        </div>
+                        <div class="input-group">
+                            <label>Medicine Name</label>
+                            <input type="text" id="invName" required placeholder="e.g., Paracetamol 500mg" />
+                        </div>
+                        <div class="input-group">
+                            <label>Stock Qty</label>
+                            <input type="number" id="invQty" required min="1" value="10" />
+                        </div>
+                        <div class="input-group">
+                            <label>Price (₹)</label>
+                            <input type="number" id="invPrice" required min="0.1" step="0.1" value="50.00" />
+                        </div>
+                        <button type="submit" class="btn-primary" style="margin-top: 24px;">Add to Stock</button>
+                    </form>
+                </div>
+
+                <div class="inventory-list">
+                    <h2>Current Stock</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Barcode</th>
+                                <th>Name</th>
+                                <th>Available Stock</th>
+                                <th>Unit Price (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTable">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- RETAIL BILLING POS SECTION -->
+            <section id="sec-billing" class="workspace-section">
+                <header class="workspace-header">
+                    <h1>Retail Billing & Live Scanner</h1>
+                    <p class="subtitle">Scan a barcode to instantly add it to the retail bill.</p>
+                </header>
+
+                <div class="billing-container">
+                    <div class="scanner-panel">
+                        <div class="live-scanner-box">
+                            <div class="scanner-line"></div>
+                            <h3>Live Barcode Scanner</h3>
+                            <p>Scanner Active. Point scanner or type exactly and press Enter.</p>
+                            <form id="scannerForm" class="scanner-input-container">
+                                <input type="text" id="liveScannerInput" autocomplete="off" placeholder="Scan barcode here..." />
+                                <button type="submit" class="btn-secondary">Add</button>
+                            </form>
+                            <p id="scannerMsg" class="scanner-feedback"></p>
+                        </div>
+                    </div>
+
+                    <div class="bill-panel">
+                        <h2>New Retail Bill</h2>
+                        <div class="bill-items" id="billItemsList">
+                            <p class="empty-bill-msg">Bill is empty. Scan an item to begin.</p>
+                            <!-- Bill items populated here -->
+                        </div>
+                        
+                        <div class="bill-summary">
+                            <div class="summary-row">
+                                <span>Subtotal</span>
+                                <span id="billSubtotal">₹0.00</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Tax (0%)</span>
+                                <span>₹0.00</span>
+                            </div>
+                            <div class="summary-row total">
+                                <span>Total Amount</span>
+                                <span id="billTotal">₹0.00</span>
+                            </div>
+                            <button id="generateBillBtn" class="btn-success" disabled>Complete & Generate Bill</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
 
     <style>
-        .dashboard {
+        /* Global & Layout */
+        .live-dashboard {
             display: flex;
             min-height: 100vh;
-            background: #0a0a0a;
-            color: white;
+            background: #ffffff; /* White background as requested */
+            font-family: 'Inter', sans-serif;
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            z-index: 9999;
+            color: #1f2937;
         }
-        .sidebar {
-            width: 230px;
-            background: #111;
-            padding: 25px;
+
+        /* Sidebar - Keeping Brand Dark Theme for Contrast */
+        .dashboard-sidebar {
+            width: 260px;
+            background: #0b112d;
+            color: white;
+            padding: 24px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
         }
-        .sidebar h2 {
-            color: #00ff88;
-            margin-bottom: 20px;
-        }
-        .sidebar a {
-            text-decoration: none;
-            color: white;
-            padding: 10px;
-            border-radius: 6px;
-        }
-        .sidebar a:hover {
-            background: #1a1a1a;
-        }
-        .content {
-            flex: 1;
-            padding: 40px;
-        }
-        .quick-actions {
+
+        .brand {
             display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .brand h2 { margin: 0; font-size: 1.2rem; font-weight: 700; }
+        
+        .live-badge {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-align: center;
+            letter-spacing: 1px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .nav-btn {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 14px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+        }
+
+        .logout-btn {
+            width: 100%;
+            background: transparent;
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .logout-btn:hover { background: rgba(239, 68, 68, 0.1); }
+
+        /* Workspace Area - White Theme */
+        .dashboard-workspace {
+            flex: 1;
+            background: #f9fafb; /* Very light gray to distinguish from pure white panels */
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .workspace-section { display: none; animation: fadeIn 0.3s ease; }
+        .workspace-section.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .workspace-header { margin-bottom: 32px; border-bottom: 1px solid #e5e7eb; padding-bottom: 16px; }
+        .workspace-header h1 { margin: 0 0 8px; font-size: 2rem; color: #111827; }
+        .subtitle { margin: 0; color: #6b7280; font-size: 1.1rem; }
+
+        /* Overview Components */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .stat-card h3 { margin: 0 0 8px; color: #6b7280; font-size: 1rem; font-weight: 500; }
+        .stat-value { margin: 0; font-size: 2.5rem; font-weight: 800; color: #111827; }
+
+        .empty-state {
+            text-align: center;
+            background: white;
+            padding: 60px 24px;
+            border-radius: 16px;
+            border: 1px dashed #ced4da;
+            margin-top: 24px;
+        }
+        .empty-icon { font-size: 4rem; margin-bottom: 16px; }
+        .empty-state h2 { color: #374151; margin-bottom: 8px; }
+        .empty-state p { color: #6b7280; max-width: 500px; margin: 0 auto; line-height: 1.6; }
+
+        /* Forms & Inputs */
+        .action-panel {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            margin-bottom: 32px;
+        }
+
+        .action-panel h3 { margin: 0 0 20px; color: #111827; }
+
+        .inline-form {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
             flex-wrap: wrap;
         }
-        .quick-actions button {
-            padding: 12px 18px;
-            background: #00ff88;
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .input-group label { font-size: 0.85rem; font-weight: 600; color: #374151; }
+        
+        input[type="text"], input[type="number"] {
+            padding: 10px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
+
+        .btn-primary {
+            background: #6366f1;
+            color: white;
+            padding: 10px 20px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
             cursor: pointer;
-            font-weight: bold;
+            transition: background 0.2s;
+            height: 42px;
         }
-        .stats {
+        .btn-primary:hover { background: #4f46e5; }
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+        }
+
+        .data-table th {
+            background: #f3f4f6;
+            text-align: left;
+            padding: 16px;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .data-table td {
+            padding: 16px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #4b5563;
+        }
+
+        /* Billing POS layout */
+        .billing-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            align-items: start;
         }
-        .card {
-            background: #111;
-            padding: 25px;
-            border-radius: 8px;
-            border: 1px solid #222;
+
+        .scanner-panel, .bill-panel {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
         }
-        .warning {
-            color: #ffcc00;
+
+        .live-scanner-box {
+            text-align: center;
+            border: 2px dashed #6366f1;
+            padding: 40px 20px;
+            border-radius: 12px;
+            position: relative;
+            background: rgba(99, 102, 241, 0.02);
+            overflow: hidden;
         }
-        .danger {
-            color: #ff4c4c;
+
+        .scanner-line {
+            position: absolute;
+            top: 20%; left: 0; right: 0;
+            height: 2px;
+            background: #ef4444;
+            box-shadow: 0 0 10px #ef4444;
+            animation: scanLine 2s infinite linear alternate;
         }
-        .alerts {
-            background: #111;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
+
+        @keyframes scanLine {
+            from { top: 20%; }
+            to { top: 70%; }
         }
-        .analytics {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
+
+        .live-scanner-box h3 { color: #111827; margin: 0 0 8px; }
+        .live-scanner-box p { color: #6b7280; margin: 0 0 24px; font-size: 0.9rem; }
+
+        .scanner-input-container {
+            display: flex;
+            gap: 8px;
+            max-width: 300px;
+            margin: 0 auto;
         }
-        .chart {
-            background: #111;
-            padding: 20px;
-            border-radius: 8px;
+
+        .scanner-input-container input { width: 100%; text-align: center; }
+        .scanner-feedback { margin-top: 16px !important; font-weight: 600; min-height: 20px; }
+        .scanner-feedback.error { color: #ef4444; }
+        .scanner-feedback.success { color: #10b981; }
+
+        .bill-panel h2 { margin: 0 0 24px; color: #111827; border-bottom: 1px solid #e5e7eb; padding-bottom: 16px; }
+
+        .bill-items { min-height: 200px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 12px; }
+        .empty-bill-msg { text-align: center; color: #9ca3af; margin-top: 40px; }
+
+        .bill-item-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px; background: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb;
         }
-        .top {
-            background: #111;
-            padding: 20px;
-            border-radius: 8px;
+        .bill-item-name { font-weight: 600; color: #374151; }
+        .bill-item-price { color: #6b7280; }
+        .bill-item-total { font-weight: bold; color: #111827; }
+
+        .bill-summary { border-top: 2px dashed #e5e7eb; padding-top: 24px; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 12px; color: #6b7280; font-size: 1.1rem; }
+        .summary-row.total { font-size: 1.4rem; font-weight: 800; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 16px; margin-bottom: 24px; }
+
+        .btn-success {
+            width: 100%; padding: 16px; background: #10b981; color: white;
+            border: none; border-radius: 10px; font-weight: 700; font-size: 1.1rem;
+            cursor: pointer; transition: background 0.2s;
         }
+        .btn-success:hover:not(:disabled) { background: #059669; }
+        .btn-success:disabled { background: #9ca3af; cursor: not-allowed; }
     </style>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const ctx = document.getElementById("salesChart") as HTMLCanvasElement;
-        if (ctx) {
-            // @ts-ignore
-            new Chart(ctx, {
-                type: "bar",
-                data: {
-                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
-                    datasets: [{
-                        label: "Sales",
-                        data: [120, 190, 300, 250, 220, 400, 380]
-                    }]
-                }
-            });
-        }
-
-        async function loadAlerts() {
-            try {
-                const res = await fetch("/api/ai/expiry-alerts");
-                const alerts = await res.json();
-                const list = document.getElementById("alerts");
-                if (list) {
-                    list.innerHTML = "";
-                    alerts.forEach(a => {
-                        const li = document.createElement("li");
-                        li.innerText = `${a.medicine} - ${a.message}`;
-                        list.appendChild(li);
-                    });
-                }
-            } catch (e) {
-                console.error("Failed to load alerts", e);
+        document.addEventListener("DOMContentLoaded", () => {
+            // Validate login context
+            const pharmacyName = localStorage.getItem("pharmacy");
+            const pharmacyId = localStorage.getItem("pharmacyId");
+            
+            if (!pharmacyName || !pharmacyId) {
+                window.location.href = "/pharmacy-login";
+                return;
             }
-        }
 
-        loadAlerts();
+            document.getElementById("pharmacyNameHeader").innerText = pharmacyName;
+
+            // Database Sandbox (LocalStorage)
+            const dbKey = `bobo_pharmacy_db_${pharmacyId}`;
+            let dbData = JSON.parse(localStorage.getItem(dbKey) || '{"inventory":[],"bills":[]}');
+            
+            function saveData() { localStorage.setItem(dbKey, JSON.stringify(dbData)); }
+
+            // Tab Navigation Logic
+            const navBtns = document.querySelectorAll('.nav-btn');
+            const sections = document.querySelectorAll('.workspace-section');
+            const liveScannerInput = document.getElementById("liveScannerInput");
+
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    navBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    const targetId = btn.getAttribute('data-target');
+                    sections.forEach(sec => {
+                        sec.classList.remove('active');
+                        if (sec.id === targetId) sec.classList.add('active');
+                    });
+                    
+                    if (targetId === "sec-billing") {
+                        liveScannerInput.focus(); // Auto focus scanner when POS opens
+                    }
+                });
+            });
+
+            // Refresh UI logic
+            function updateDashboardUI() {
+                // Update Overview Stats
+                let totalRev = 0;
+                dbData.bills.forEach(b => totalRev += b.total);
+                document.getElementById("statRevenue").innerText = `₹${totalRev.toFixed(2)}`;
+                document.getElementById("statBills").innerText = dbData.bills.length;
+                document.getElementById("statInventory").innerText = dbData.inventory.length;
+
+                const emptyState = document.getElementById("overviewEmptyState");
+                const billsContainer = document.getElementById("recentBillsContainer");
+                
+                if (dbData.inventory.length > 0 || dbData.bills.length > 0) {
+                    emptyState.style.display = "none";
+                    if (dbData.bills.length > 0) {
+                        billsContainer.style.display = "block";
+                        const tableBody = document.getElementById("recentBillsTable");
+                        let rowsHtml = "";
+                        // Latest 5 bills
+                        const recent = [...dbData.bills].reverse().slice(0, 5);
+                        recent.forEach(b => {
+                            rowsHtml += `<tr>
+                                <td>#${b.id.substring(0,8)}</td>
+                                <td>${new Date(b.date).toLocaleTimeString()}</td>
+                                <td>${b.itemsCount} items</td>
+                                <td>₹${b.total.toFixed(2)}</td>
+                            </tr>`;
+                        });
+                        tableBody.innerHTML = rowsHtml;
+                    }
+                } else {
+                    emptyState.style.display = "block";
+                    billsContainer.style.display = "none";
+                }
+
+                // Update Inventory Table
+                const invTable = document.getElementById("inventoryTable");
+                if (dbData.inventory.length === 0) {
+                    invTable.innerHTML = `<tr><td colspan="4" style="text-align:center;">No stock added yet.</td></tr>`;
+                } else {
+                    let invHtml = "";
+                    dbData.inventory.forEach(item => {
+                        invHtml += `<tr>
+                            <td><strong>${item.barcode}</strong></td>
+                            <td>${item.name}</td>
+                            <td>${item.qty} units</td>
+                            <td>₹${parseFloat(item.price).toFixed(2)}</td>
+                        </tr>`;
+                    });
+                    invTable.innerHTML = invHtml;
+                }
+            }
+
+            // ADD INVENTORY LOGIC
+            const addInvForm = document.getElementById("addInventoryForm");
+            addInvForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const barcode = document.getElementById("invBarcode").value.trim();
+                const name = document.getElementById("invName").value.trim();
+                const qty = parseInt(document.getElementById("invQty").value);
+                const price = document.getElementById("invPrice").value;
+
+                // Check if already exists
+                const existing = dbData.inventory.find(i => i.barcode === barcode);
+                if (existing) {
+                    existing.qty += qty;
+                    existing.price = price; // update price
+                } else {
+                    dbData.inventory.push({ barcode, name, qty, price });
+                }
+
+                saveData();
+                addInvForm.reset();
+                updateDashboardUI();
+                alert(`Added ${name} directly to the live pharmacy inventory.`);
+            });
+
+            // RETAIL BILLING LOGIC
+            let currentBillItems = [];
+            const billItemsList = document.getElementById("billItemsList");
+            const scannerForm = document.getElementById("scannerForm");
+            const scannerMsg = document.getElementById("scannerMsg");
+            const generateBillBtn = document.getElementById("generateBillBtn");
+
+            function renderBill() {
+                if (currentBillItems.length === 0) {
+                    billItemsList.innerHTML = `<p class="empty-bill-msg">Bill is empty. Scan an item to begin.</p>`;
+                    document.getElementById("billSubtotal").innerText = "₹0.00";
+                    document.getElementById("billTotal").innerText = "₹0.00";
+                    generateBillBtn.disabled = true;
+                    return;
+                }
+
+                let html = "";
+                let subtotal = 0;
+                
+                currentBillItems.forEach(item => {
+                    const rowTotal = item.qty * parseFloat(item.price);
+                    subtotal += rowTotal;
+                    html += `
+                    <div class="bill-item-row">
+                        <div>
+                            <div class="bill-item-name">${item.name} (x${item.qty})</div>
+                            <div class="bill-item-price">@ ₹${parseFloat(item.price).toFixed(2)} / unit</div>
+                        </div>
+                        <div class="bill-item-total">₹${rowTotal.toFixed(2)}</div>
+                    </div>`;
+                });
+
+                billItemsList.innerHTML = html;
+                document.getElementById("billSubtotal").innerText = `₹${subtotal.toFixed(2)}`;
+                document.getElementById("billTotal").innerText = `₹${subtotal.toFixed(2)}`;
+                generateBillBtn.disabled = false;
+            }
+
+            scannerForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const barcode = liveScannerInput.value.trim();
+                liveScannerInput.value = ""; // clear instantly for next scan
+                liveScannerInput.focus();
+
+                if (!barcode) return;
+
+                const foundItem = dbData.inventory.find(i => i.barcode === barcode);
+                
+                if (foundItem) {
+                    if (foundItem.qty > 0) {
+                        // Check if already in bill, then increment
+                        const inBill = currentBillItems.find(b => b.barcode === barcode);
+                        if (inBill) {
+                            if (foundItem.qty > inBill.qty) {
+                                inBill.qty++;
+                            } else {
+                                scannerMsg.className = "scanner-feedback error";
+                                scannerMsg.innerText = "❌ Stock insufficient!";
+                                return;
+                            }
+                        } else {
+                            currentBillItems.push({
+                                barcode: foundItem.barcode,
+                                name: foundItem.name,
+                                price: foundItem.price,
+                                qty: 1
+                            });
+                        }
+                        
+                        scannerMsg.className = "scanner-feedback success";
+                        scannerMsg.innerText = `✅ Snapped! Added ${foundItem.name}.`;
+                        renderBill();
+                    } else {
+                        scannerMsg.className = "scanner-feedback error";
+                        scannerMsg.innerText = "❌ Item is out of stock!";
+                    }
+                } else {
+                    scannerMsg.className = "scanner-feedback error";
+                    scannerMsg.innerText = "❌ Unrecognized Barcode! Item not in inventory.";
+                }
+
+                // Clear feedback after 3 sec
+                setTimeout(() => { if(scannerMsg.innerText.includes(barcode)) scannerMsg.innerText = ""; }, 3000);
+            });
+
+            generateBillBtn.addEventListener("click", () => {
+                if (currentBillItems.length === 0) return;
+
+                let grandTotal = 0;
+                let itemsCount = 0;
+                
+                // Deduct actual inventory stock
+                currentBillItems.forEach(bItem => {
+                    grandTotal += (bItem.qty * parseFloat(bItem.price));
+                    itemsCount += bItem.qty;
+                    const invItem = dbData.inventory.find(i => i.barcode === bItem.barcode);
+                    if (invItem) invItem.qty -= bItem.qty;
+                });
+
+                const billData = {
+                    id: Date.now().toString(),
+                    date: new Date().toISOString(),
+                    itemsCount: itemsCount,
+                    total: grandTotal,
+                    items: [...currentBillItems]
+                };
+
+                dbData.bills.push(billData);
+                saveData(); // Save entirely updated inventory and new bill
+                
+                alert(`✅ Retail Bill Generated Successfully!\n\nBill ID: #${billData.id}\nTotal: ₹${grandTotal.toFixed(2)}`);
+                
+                // Reset POS Live View
+                currentBillItems = [];
+                renderBill();
+                updateDashboardUI(); // Update overall dashboard totals
+                
+                scannerMsg.className = "scanner-feedback success";
+                scannerMsg.innerText = "Ready for the next customer.";
+            });
+
+            document.getElementById("logoutBtn").addEventListener("click", () => {
+                localStorage.removeItem("pharmacy");
+                localStorage.removeItem("pharmacyId");
+                window.location.href = "/pharmacy-login";
+            });
+
+            // Initialize App state
+            updateDashboardUI();
+        });
     </script>
-</MainLayout>
+</MainLayout>
