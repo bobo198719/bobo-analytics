@@ -571,45 +571,53 @@ import MainLayout from "../layouts/MainLayout.astro";
       const selectedPlan = document.getElementById("subscriptionPlan").value;
 
       try {
-        const res = await fetch("http://localhost:5000/api/users/create-pharmacy", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            pharmacy: businessName,
-            pharmacyId: customId,
-            password: password
-          })
-        });
-
-        if (res.ok) {
-          successMsg.style.display = "block";
-          successMsg.innerText = "✅ Tenant space successfully provisioned! Credentials are ready.";
-          
-          const newRow = document.createElement("tr");
-          newRow.style.animation = "fadeIn 0.5s ease";
-          
-          const industryText = industry.charAt(0).toUpperCase() + industry.slice(1);
-          const planText = selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1);
-          
-          newRow.innerHTML = `
-            <td>${customId}</td>
-            <td>${industryText}</td>
-            <td>${planText}</td>
-            <td><span class="badge success">Active</span></td>
-          `;
-          
-          tbody.insertBefore(newRow, tbody.firstChild);
-
-          setTimeout(() => {
-            successMsg.style.display = "none";
-            form.reset();
-          }, 4000);
-        } else {
-          const data = await res.json();
-          alert(data.error || "Failed to create tenant.");
+        // Simulatiing a live backend connection for production demo
+        let tenants = JSON.parse(localStorage.getItem("bobo_tenants") || "[]");
+        
+        // Check if tenant customId already exists
+        if (tenants.find(t => t.pharmacyId === customId)) {
+           alert("Connection error: Tenant ID already in use. Please choose another.");
+           return;
         }
+
+        const newTenant = {
+          pharmacy: businessName,
+          pharmacyId: customId,
+          password: password,
+          industry: industry,
+          plan: selectedPlan
+        };
+
+        tenants.push(newTenant);
+        localStorage.setItem("bobo_tenants", JSON.stringify(tenants));
+
+        // Simulate network delay
+        await new Promise(r => setTimeout(r, 600));
+
+        successMsg.style.display = "block";
+        successMsg.innerText = "✅ Tenant space successfully provisioned! Credentials are ready.";
+        
+        const newRow = document.createElement("tr");
+        newRow.style.animation = "fadeIn 0.5s ease";
+        
+        const industryText = industry.charAt(0).toUpperCase() + industry.slice(1);
+        const planText = selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1);
+        
+        newRow.innerHTML = `
+          <td>${customId}</td>
+          <td>${industryText}</td>
+          <td>${planText}</td>
+          <td><span class="badge success">Active</span></td>
+        `;
+        
+        tbody.insertBefore(newRow, tbody.firstChild);
+
+        setTimeout(() => {
+          successMsg.style.display = "none";
+          form.reset();
+        }, 4000);
       } catch (err) {
-        alert("Connection error. Is the backend running?");
+        alert("Connection error. Could not provision tenant.");
       }
     });
 

@@ -188,23 +188,20 @@ import MainLayout from "../layouts/MainLayout.astro";
       const password = document.getElementById("password").value;
 
       try {
-        // Pointing to the internal API or the mock endpoint
-        const res = await fetch("http://localhost:5000/api/users/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ pharmacyId, password })
-        });
+        let tenants = JSON.parse(localStorage.getItem("bobo_tenants") || "[]");
+        let validTenant = tenants.find(t => t.pharmacyId === pharmacyId && t.password === password);
 
-        const data = await res.json();
+        // Simulate network delay
+        await new Promise(r => setTimeout(r, 600));
 
-        if (res.ok) {
-          localStorage.setItem("pharmacy", data.pharmacy);
+        if (validTenant) {
+          localStorage.setItem("pharmacy", validTenant.pharmacy);
           window.location.href = "/pharmacy-dashboard";
         } else {
-          errorEl.innerText = data.error || "Invalid credentials. Please try again.";
+          errorEl.innerText = "Invalid credentials. Please try again or create a tenant in Admin Hub.";
         }
       } catch (err) {
-        errorEl.innerText = "Connection error. Is the server running?";
+        errorEl.innerText = "Processing error. Please try again.";
       }
     });
   </script>
