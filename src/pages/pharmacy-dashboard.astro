@@ -2,63 +2,66 @@
 import MainLayout from "../layouts/MainLayout.astro";
 ---
 
-<MainLayout title="Live Dashboard | Bobo Pharmacy">
-    <div class="live-dashboard">
+<MainLayout title="Live Dashboard | BoboAnalytics CRM">
+    <div class="live-dashboard" id="dashboardApp">
         <!-- Sidebar Navigation -->
-        <aside class="dashboard-sidebar">
+        <aside class="dashboard-sidebar" id="sidebar">
             <div class="brand">
-                <span class="icon">💊</span>
-                <h2 id="pharmacyNameHeader">Pharmacy</h2>
+                <span class="icon" id="brandIcon">🏢</span>
+                <h2 id="tenantNameHeader">Dashboard</h2>
             </div>
-            <div class="live-badge">LIVE INSTANCE</div>
-            <nav class="sidebar-nav">
-                <a href="#overview" class="nav-btn active" data-target="sec-overview">📊 Overview</a>
-                <a href="#inventory" class="nav-btn" data-target="sec-inventory">📦 Inventory</a>
-                <a href="#billing" class="nav-btn" data-target="sec-billing">🧾 Retail Billing POS</a>
+            <div class="live-badge" id="industryBadge">LIVE INSTANCE</div>
+            <nav class="sidebar-nav" id="sidebarNav">
+                <a href="#overview" class="nav-btn active" data-target="sec-overview">📊 Dashboard</a>
+                <a href="#billing" class="nav-btn" data-target="sec-billing" id="navBilling">🧾 Billing POS</a>
+                <a href="#inventory" class="nav-btn" data-target="sec-inventory" id="navInventory">📦 Inventory</a>
+                <a href="#crm" class="nav-btn" data-target="sec-crm" id="navCrm">👥 Customers & WhatsApp</a>
+                <a href="#staff" class="nav-btn" data-target="sec-staff" id="navStaff">👨‍💼 Staff Control</a>
+                <a href="#ai" class="nav-btn" data-target="sec-ai" id="navAi">🧠 AI Analytics</a>
             </nav>
             <div class="sidebar-footer">
                 <button id="logoutBtn" class="logout-btn">Log Out</button>
             </div>
         </aside>
 
-        <!-- Main Workspace (White Background as requested) -->
+        <!-- Main Workspace -->
         <main class="dashboard-workspace">
             <!-- OVERVIEW SECTION -->
             <section id="sec-overview" class="workspace-section active">
                 <header class="workspace-header">
-                    <h1>Dashboard Overview</h1>
-                    <p class="subtitle">Real-time metrics for your pharmacy.</p>
+                    <h1 id="overviewTitle">Dashboard Overview</h1>
+                    <p class="subtitle" id="overviewSubtitle">Real-time metrics for your business.</p>
                 </header>
 
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <h3>Today's Revenue</h3>
+                        <h3 id="stat1Label">Today's Revenue</h3>
                         <p class="stat-value" id="statRevenue">₹0.00</p>
                     </div>
                     <div class="stat-card">
-                        <h3>Bills Generated</h3>
-                        <p class="stat-value" id="statBills">0</p>
+                        <h3 id="stat2Label">Transactions</h3>
+                        <p class="stat-value" id="statTransactions">0</p>
                     </div>
                     <div class="stat-card">
-                        <h3>Items in Inventory</h3>
+                        <h3 id="stat3Label">Active Database</h3>
                         <p class="stat-value" id="statInventory">0</p>
                     </div>
                 </div>
 
                 <div class="empty-state" id="overviewEmptyState">
-                    <div class="empty-icon">📊</div>
-                    <h2>Your Pharmacy is Live!</h2>
-                    <p>Start by adding some medicines to your inventory, then proceed to the Retail Billing POS to generate your first bill.</p>
+                    <div class="empty-icon" id="emptyStateIcon">🏢</div>
+                    <h2 id="emptyStateTitle">Your Dashboard is Live!</h2>
+                    <p id="emptyStateDesc">Start managing your records to see real-time analytics.</p>
                 </div>
 
                 <div class="recent-bills" id="recentBillsContainer" style="display: none;">
-                    <h2>Recent Retail Bills</h2>
+                    <h2 id="recentTransTitle">Recent Transactions</h2>
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Bill No.</th>
+                                <th>Txn No.</th>
                                 <th>Time</th>
-                                <th>Items</th>
+                                <th id="transCol3">Items</th>
                                 <th>Total (₹)</th>
                             </tr>
                         </thead>
@@ -69,80 +72,31 @@ import MainLayout from "../layouts/MainLayout.astro";
                 </div>
             </section>
 
-            <!-- INVENTORY SECTION -->
-            <section id="sec-inventory" class="workspace-section">
-                <header class="workspace-header">
-                    <h1>Manage Inventory</h1>
-                    <p class="subtitle">Add new stocks so you can scan and bill them.</p>
-                </header>
-
-                <div class="action-panel">
-                    <h3>Add New Medicine</h3>
-                    <form id="addInventoryForm" class="inline-form">
-                        <div class="input-group">
-                            <label>Barcode / ID</label>
-                            <input type="text" id="invBarcode" required placeholder="Scan or type (e.g., 1001)" />
-                        </div>
-                        <div class="input-group">
-                            <label>Medicine Name</label>
-                            <input type="text" id="invName" required placeholder="e.g., Paracetamol 500mg" />
-                        </div>
-                        <div class="input-group">
-                            <label>Stock Qty</label>
-                            <input type="number" id="invQty" required min="1" value="10" />
-                        </div>
-                        <div class="input-group">
-                            <label>Price (₹)</label>
-                            <input type="number" id="invPrice" required min="0.1" step="0.1" value="50.00" />
-                        </div>
-                        <button type="submit" class="btn-primary" style="margin-top: 24px;">Add to Stock</button>
-                    </form>
-                </div>
-
-                <div class="inventory-list">
-                    <h2>Current Stock</h2>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Barcode</th>
-                                <th>Name</th>
-                                <th>Available Stock</th>
-                                <th>Unit Price (₹)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inventoryTable">
-                            <!-- Populated by JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
             <!-- RETAIL BILLING POS SECTION -->
             <section id="sec-billing" class="workspace-section">
                 <header class="workspace-header">
-                    <h1>Retail Billing & Live Scanner</h1>
-                    <p class="subtitle">Scan a barcode to instantly add it to the retail bill.</p>
+                    <h1 id="posTitle">Action / Transaction Terminal</h1>
+                    <p class="subtitle" id="posSubtitle">Process a live transaction based on your active database.</p>
                 </header>
 
                 <div class="billing-container">
                     <div class="scanner-panel">
-                        <div class="live-scanner-box">
+                        <div class="live-scanner-box" id="scannerBox">
                             <div class="scanner-line"></div>
-                            <h3>Live Barcode Scanner</h3>
-                            <p>Scanner Active. Point scanner or type exactly and press Enter.</p>
+                            <h3 id="scannerTitle">Live Scanner / Input</h3>
+                            <p id="scannerDesc">Input exactly and press Enter.</p>
                             <form id="scannerForm" class="scanner-input-container">
-                                <input type="text" id="liveScannerInput" autocomplete="off" placeholder="Scan barcode here..." />
-                                <button type="submit" class="btn-secondary">Add</button>
+                                <input type="text" id="liveScannerInput" autocomplete="off" placeholder="Input ID..." />
+                                <button type="submit" class="btn-secondary">Process</button>
                             </form>
                             <p id="scannerMsg" class="scanner-feedback"></p>
                         </div>
                     </div>
 
                     <div class="bill-panel">
-                        <h2>New Retail Bill</h2>
+                        <h2 id="billPanelTitle">New Transaction</h2>
                         <div class="bill-items" id="billItemsList">
-                            <p class="empty-bill-msg">Bill is empty. Scan an item to begin.</p>
-                            <!-- Bill items populated here -->
+                            <p class="empty-bill-msg" id="emptyBillMsg">No records selected yet.</p>
                         </div>
                         
                         <div class="bill-summary">
@@ -151,15 +105,153 @@ import MainLayout from "../layouts/MainLayout.astro";
                                 <span id="billSubtotal">₹0.00</span>
                             </div>
                             <div class="summary-row">
-                                <span>Tax (0%)</span>
+                                <span>Fees / Tax (0%)</span>
                                 <span>₹0.00</span>
                             </div>
                             <div class="summary-row total">
                                 <span>Total Amount</span>
                                 <span id="billTotal">₹0.00</span>
                             </div>
-                            <button id="generateBillBtn" class="btn-success" disabled>Complete & Generate Bill</button>
+                            <button id="generateBillBtn" class="btn-success" disabled>Complete Transaction</button>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- INVENTORY / DATA SECTION -->
+            <section id="sec-inventory" class="workspace-section">
+                <header class="workspace-header">
+                    <h1 id="inventoryTitle">Manage Records</h1>
+                    <p class="subtitle" id="inventorySubtitle">Add new entries to your database.</p>
+                </header>
+
+                <div class="action-panel">
+                    <h3 id="addFormTitle">Add New Entry</h3>
+                    <form id="addInventoryForm" class="inline-form">
+                        <div class="input-group">
+                            <label id="invIdLabel">ID / Code</label>
+                            <input type="text" id="invBarcode" required placeholder="1001" />
+                        </div>
+                        <div class="input-group">
+                            <label>Category / Type</label>
+                            <select id="invCategory" required></select>
+                        </div>
+                        <div class="input-group">
+                            <label id="invNameLabel">Name</label>
+                            <input type="text" id="invName" required placeholder="Enter name" />
+                        </div>
+                        <div class="input-group" id="invQtyGroup">
+                            <label id="invQtyLabel">Stock / Count</label>
+                            <input type="number" id="invQty" required min="1" value="10" />
+                        </div>
+                        <div class="input-group">
+                            <label id="invPriceLabel">Value/Price (₹)</label>
+                            <input type="number" id="invPrice" required min="0" step="0.1" value="50.00" />
+                        </div>
+                        <button type="submit" class="btn-primary" style="margin-top: 24px;" id="addFormBtn">Save Record</button>
+                    </form>
+                </div>
+
+                <div class="inventory-list">
+                    <h2 id="invListTitle">Current Database</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th id="listCol1">ID/Code</th>
+                                <th id="listCol2">Name & Category</th>
+                                <th id="listCol3">Count/Status</th>
+                                <th id="listCol4">Value (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTable">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- CRM / WHATSAPP SECTION -->
+            <section id="sec-crm" class="workspace-section">
+                <header class="workspace-header">
+                    <h1 id="crmTitle">Customers & WhatsApp Integration</h1>
+                    <p class="subtitle">Broadcast bills, offers, and manage audience.</p>
+                </header>
+                <div class="action-panel">
+                    <h3>Send WhatsApp Campaign (API)</h3>
+                    <form id="waForm" class="inline-form" style="flex-direction:column; gap:16px;">
+                        <div class="input-group" style="width:100%;">
+                            <label>Message Type</label>
+                            <select id="waType">
+                                <option value="offer">Marketing Offer / Discount</option>
+                                <option value="reminder">Expiry / Refill Reminder</option>
+                            </select>
+                        </div>
+                        <div class="input-group" style="width:100%;">
+                            <label>Message Payload Content</label>
+                            <textarea id="waMsg" rows="4" style="padding:10px; border:1px solid #d1d5db; border-radius:8px; font-family:sans-serif;" placeholder="Hello [Customer Name], Special Offer! 20% OFF on Baby Products valid returning today!"></textarea>
+                        </div>
+                        <button type="button" class="btn-primary" onclick="alert(`Broadcast Queued!\nTwilio / Gupshup API Hook Triggered.\n\nPayload:\n${document.getElementById('waMsg').value}`)">Broadcast to Customer Base</button>
+                    </form>
+                </div>
+                <div class="inventory-list">
+                    <h2>Client Database</h2>
+                    <table class="data-table">
+                        <thead><tr><th>Customer Name</th><th>Phone</th><th>Total Spends</th></tr></thead>
+                        <tbody>
+                            <tr><td>Rajesh K.</td><td>+91 9988776655</td><td>₹4,500.00</td></tr>
+                            <tr><td>Priya Sharma</td><td>+91 9876543210</td><td>₹2,120.00</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- STAFF MANAGEMENT SECTION -->
+            <section id="sec-staff" class="workspace-section">
+                <header class="workspace-header">
+                    <h1>Staff Access Control</h1>
+                    <p class="subtitle">Assign roles like Admin, Manager, Cashier, or Pharmacist.</p>
+                </header>
+                <div class="action-panel" style="max-width: 600px; margin-bottom: 30px;">
+                    <h3>Provision New Staff</h3>
+                    <form class="inline-form" onsubmit="event.preventDefault(); alert('Staff user created. Credentials emailed.');">
+                        <div class="input-group"><label>Name</label><input type="text" required placeholder="Amit Singh"></div>
+                        <div class="input-group">
+                            <label>Role</label>
+                            <select id="staffRoleDrop" style="padding:10px;border-radius:8px;border:1px solid #ccc;">
+                                <option>Cashier (Billing Only)</option>
+                                <option>Manager (Inventory + Reports)</option>
+                                <option>Pharmacist (Medicine Inventory)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-primary" style="margin-top:24px;">Create Key</button>
+                    </form>
+                </div>
+                <table class="data-table">
+                    <thead><tr><th>Name</th><th>Role System</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody>
+                        <tr><td>System Default</td><td><span class="badge" style="background:#818cf8;color:white;padding:4px 8px;border-radius:4px;">Owner (Full Access)</span></td><td>Active</td><td>-</td></tr>
+                        <tr><td>Rahul Verma</td><td>Cashier</td><td>Active</td><td><button style="color:red;border:none;background:none;cursor:pointer;">Disable</button></td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- AI ANALYTICS SECTION -->
+            <section id="sec-ai" class="workspace-section">
+                <header class="workspace-header">
+                    <h1>Bobo AI Insights</h1>
+                    <p class="subtitle">Predictive models, demand generation, and deep profit insights.</p>
+                </header>
+                <div class="stats-grid">
+                    <div class="stat-card" style="border-top-color:#10b981;">
+                        <h3>Top Selling Category</h3>
+                        <p class="stat-value" id="aiTopCat">Loading...</p>
+                    </div>
+                    <div class="stat-card" style="border-top-color:#ef4444;">
+                        <h3>Low Stock / Expiry Alerts</h3>
+                        <p class="stat-value" id="aiAlerts">0 Alerts</p>
+                    </div>
+                    <div class="stat-card" style="border-top-color:#a855f7;">
+                        <h3>Demand Prediction Area</h3>
+                        <p class="stat-value" id="aiDemand">Stable📈</p>
                     </div>
                 </div>
             </section>
@@ -167,22 +259,23 @@ import MainLayout from "../layouts/MainLayout.astro";
     </div>
 
     <style>
-        /* Global & Layout */
         .live-dashboard {
             display: flex;
             min-height: 100vh;
-            background: #ffffff; /* White background as requested */
+            background: #ffffff;
             font-family: 'Inter', sans-serif;
             position: absolute;
             top: 0; left: 0; right: 0;
             z-index: 9999;
             color: #1f2937;
+            --brand-main: #6366f1;
+            --brand-dark: #0b112d;
+            --brand-accent: #a855f7;
         }
 
-        /* Sidebar - Keeping Brand Dark Theme for Contrast */
         .dashboard-sidebar {
             width: 260px;
-            background: #0b112d;
+            background: var(--brand-dark);
             color: white;
             padding: 24px;
             display: flex;
@@ -190,266 +283,83 @@ import MainLayout from "../layouts/MainLayout.astro";
             box-shadow: 2px 0 10px rgba(0,0,0,0.1);
         }
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 8px;
-        }
-        .brand h2 { margin: 0; font-size: 1.2rem; font-weight: 700; }
+        .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        .brand h2 { margin: 0; font-size: 1.2rem; font-weight: 700; word-break: break-all;}
+        .brand .icon { font-size: 1.5rem; }
         
         .live-badge {
             background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-align: center;
-            letter-spacing: 1px;
-            margin-bottom: 30px;
-            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #10b981; padding: 4px 8px; border-radius: 4px;
+            font-size: 0.75rem; font-weight: 800; text-align: center;
+            letter-spacing: 1px; margin-bottom: 30px; border: 1px solid rgba(16, 185, 129, 0.4);
+            text-transform: uppercase;
         }
 
-        .sidebar-nav {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            flex: 1;
-        }
-
+        .sidebar-nav { display: flex; flex-direction: column; gap: 8px; flex: 1; overflow-y:auto; }
         .nav-btn {
-            text-decoration: none;
-            color: rgba(255, 255, 255, 0.7);
-            padding: 14px 16px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.2s;
-            cursor: pointer;
+            text-decoration: none; color: rgba(255, 255, 255, 0.7);
+            padding: 14px 16px; border-radius: 8px; font-weight: 600;
+            transition: all 0.2s; cursor: pointer;
         }
-
-        .nav-btn:hover, .nav-btn.active {
-            background: rgba(99, 102, 241, 0.15);
-            color: #818cf8;
-        }
-
+        .nav-btn:hover, .nav-btn.active { background: rgba(255,255,255,0.15); color: #fff; }
         .logout-btn {
-            width: 100%;
-            background: transparent;
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s;
+            width: 100%; background: transparent; color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s;
         }
         .logout-btn:hover { background: rgba(239, 68, 68, 0.1); }
 
-        /* Workspace Area - White Theme */
-        .dashboard-workspace {
-            flex: 1;
-            background: #f9fafb; /* Very light gray to distinguish from pure white panels */
-            padding: 40px;
-            overflow-y: auto;
-        }
-
+        .dashboard-workspace { flex: 1; background: #f9fafb; padding: 40px; overflow-y: auto; }
         .workspace-section { display: none; animation: fadeIn 0.3s ease; }
         .workspace-section.active { display: block; }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .workspace-header { margin-bottom: 32px; border-bottom: 1px solid #e5e7eb; padding-bottom: 16px; }
         .workspace-header h1 { margin: 0 0 8px; font-size: 2rem; color: #111827; }
         .subtitle { margin: 0; color: #6b7280; font-size: 1.1rem; }
 
-        /* Overview Components */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 24px;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e5e7eb;
-        }
-        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 32px; }
+        .stat-card { background: white; padding: 24px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; border-top: 4px solid var(--brand-main); }
         .stat-card h3 { margin: 0 0 8px; color: #6b7280; font-size: 1rem; font-weight: 500; }
-        .stat-value { margin: 0; font-size: 2.5rem; font-weight: 800; color: #111827; }
+        .stat-value { margin: 0; font-size: 2.2rem; font-weight: 800; color: #111827; }
 
-        .empty-state {
-            text-align: center;
-            background: white;
-            padding: 60px 24px;
-            border-radius: 16px;
-            border: 1px dashed #ced4da;
-            margin-top: 24px;
-        }
+        .empty-state { text-align: center; background: white; padding: 60px 24px; border-radius: 16px; border: 1px dashed #ced4da; margin-top: 24px; }
         .empty-icon { font-size: 4rem; margin-bottom: 16px; }
         .empty-state h2 { color: #374151; margin-bottom: 8px; }
         .empty-state p { color: #6b7280; max-width: 500px; margin: 0 auto; line-height: 1.6; }
 
-        /* Forms & Inputs */
-        .action-panel {
-            background: white;
-            padding: 24px;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e5e7eb;
-            margin-bottom: 32px;
-        }
-
+        .action-panel { background: white; padding: 24px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; margin-bottom: 32px; }
         .action-panel h3 { margin: 0 0 20px; color: #111827; }
-
-        .inline-form {
-            display: flex;
-            gap: 16px;
-            align-items: flex-start;
-            flex-wrap: wrap;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            flex: 1;
-            min-width: 200px;
-        }
-
+        .inline-form { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+        .input-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 200px; }
         .input-group label { font-size: 0.85rem; font-weight: 600; color: #374151; }
-        
-        input[type="text"], input[type="number"] {
-            padding: 10px 14px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        
-        input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
+        input[type="text"], input[type="number"], select { padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 1rem; outline: none; background:white;}
+        input:focus, select:focus { border-color: var(--brand-main); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
 
-        .btn-primary {
-            background: #6366f1;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.2s;
-            height: 42px;
-        }
-        .btn-primary:hover { background: #4f46e5; }
-        .btn-secondary {
-            background: #e5e7eb;
-            color: #374151;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-        }
+        .btn-primary { background: var(--brand-main); color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: filter 0.2s; height: 42px; display:inline-flex; align-items:center; justify-content:center;}
+        .btn-primary:hover { filter: brightness(1.1); }
+        .btn-secondary { background: #e5e7eb; color: #374151; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; }
 
-        /* Tables */
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e5e7eb;
-        }
+        .data-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; margin-bottom: 32px; }
+        .data-table th { background: #f3f4f6; text-align: left; padding: 16px; font-weight: 600; color: #374151; border-bottom: 1px solid #e5e7eb; }
+        .data-table td { padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; }
 
-        .data-table th {
-            background: #f3f4f6;
-            text-align: left;
-            padding: 16px;
-            font-weight: 600;
-            color: #374151;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .data-table td {
-            padding: 16px;
-            border-bottom: 1px solid #e5e7eb;
-            color: #4b5563;
-        }
-
-        /* Billing POS layout */
-        .billing-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 32px;
-            align-items: start;
-        }
-
-        .scanner-panel, .bill-panel {
-            background: white;
-            border-radius: 16px;
-            padding: 32px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e5e7eb;
-        }
-
-        .live-scanner-box {
-            text-align: center;
-            border: 2px dashed #6366f1;
-            padding: 40px 20px;
-            border-radius: 12px;
-            position: relative;
-            background: rgba(99, 102, 241, 0.02);
-            overflow: hidden;
-        }
-
-        .scanner-line {
-            position: absolute;
-            top: 20%; left: 0; right: 0;
-            height: 2px;
-            background: #ef4444;
-            box-shadow: 0 0 10px #ef4444;
-            animation: scanLine 2s infinite linear alternate;
-        }
-
-        @keyframes scanLine {
-            from { top: 20%; }
-            to { top: 70%; }
-        }
-
+        .billing-container { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+        .scanner-panel, .bill-panel { background: white; border-radius: 16px; padding: 32px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; }
+        .live-scanner-box { text-align: center; border: 2px dashed var(--brand-main); padding: 40px 20px; border-radius: 12px; position: relative; background: rgba(99,102,241,0.02); overflow: hidden; }
+        .scanner-line { position: absolute; top: 20%; left: 0; right: 0; height: 2px; background: var(--brand-main); box-shadow: 0 0 10px var(--brand-main); animation: scanLine 2s infinite linear alternate; }
+        @keyframes scanLine { from { top: 20%; } to { top: 70%; } }
         .live-scanner-box h3 { color: #111827; margin: 0 0 8px; }
         .live-scanner-box p { color: #6b7280; margin: 0 0 24px; font-size: 0.9rem; }
-
-        .scanner-input-container {
-            display: flex;
-            gap: 8px;
-            max-width: 300px;
-            margin: 0 auto;
-        }
-
+        .scanner-input-container { display: flex; gap: 8px; max-width: 300px; margin: 0 auto; }
         .scanner-input-container input { width: 100%; text-align: center; }
         .scanner-feedback { margin-top: 16px !important; font-weight: 600; min-height: 20px; }
         .scanner-feedback.error { color: #ef4444; }
         .scanner-feedback.success { color: #10b981; }
 
         .bill-panel h2 { margin: 0 0 24px; color: #111827; border-bottom: 1px solid #e5e7eb; padding-bottom: 16px; }
-
         .bill-items { min-height: 200px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 12px; }
         .empty-bill-msg { text-align: center; color: #9ca3af; margin-top: 40px; }
-
-        .bill-item-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px; background: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb;
-        }
+        .bill-item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb; }
         .bill-item-name { font-weight: 600; color: #374151; }
         .bill-item-price { color: #6b7280; }
         .bill-item-total { font-weight: bold; color: #111827; }
@@ -458,32 +368,159 @@ import MainLayout from "../layouts/MainLayout.astro";
         .summary-row { display: flex; justify-content: space-between; margin-bottom: 12px; color: #6b7280; font-size: 1.1rem; }
         .summary-row.total { font-size: 1.4rem; font-weight: 800; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 16px; margin-bottom: 24px; }
 
-        .btn-success {
-            width: 100%; padding: 16px; background: #10b981; color: white;
-            border: none; border-radius: 10px; font-weight: 700; font-size: 1.1rem;
-            cursor: pointer; transition: background 0.2s;
-        }
+        .btn-success { width: 100%; padding: 16px; background: #10b981; color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: background 0.2s; }
         .btn-success:hover:not(:disabled) { background: #059669; }
         .btn-success:disabled { background: #9ca3af; cursor: not-allowed; }
+        
+        @media (max-width: 1024px) {
+            .billing-container { grid-template-columns: 1fr; }
+        }
     </style>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // Validate login context
-            const pharmacyName = localStorage.getItem("pharmacy");
-            const pharmacyId = localStorage.getItem("pharmacyId");
-            
-            if (!pharmacyName || !pharmacyId) {
-                window.location.href = "/pharmacy-login";
+            const tenantInfo = JSON.parse(localStorage.getItem("activeTenantContext"));
+            if (!tenantInfo) {
+                window.location.href = "/login";
                 return;
             }
 
-            document.getElementById("pharmacyNameHeader").innerText = pharmacyName;
+            const industry = tenantInfo.industry || 'pharmacy';
+            document.getElementById("tenantNameHeader").innerText = tenantInfo.name;
+
+            const themes = {
+                pharmacy: {
+                    colorMain: "#10b981", colorDark: "#064e3b", icon: "🏥",
+                    invNav: "💊 Store Inventory", posNav: "🧾 Billing POS",
+                    crmNav: "👥 WhatsApp Customers", staffNav: "👨‍💼 Staff Roles", aiNav: "🧠 AI Analytics",
+                    overviewSub: "Pharmacy performance and AI stock alerts.",
+                    stat3: "Products Tracked", emptyDesc: "Add medicines to stock to begin billing.",
+                    invTitle: "Product Inventory", invSub: "Manage medicines, cosmetics, baby products.",
+                    addTitle: "Add New Product", labelId: "Barcode / Batch", labelName: "Product Name", labelQty: "Stock", labelPrice: "MRP (₹)",
+                    listId: "Barcode", listName: "Product", listQty: "Count & Status", posTitle: "Retail POS Terminal", posSub: "Scan medicines, snacks, cosmetics.",
+                    scanTitle: "Barcode Scanner", scanDesc: "Scan item barcode exactly.",
+                    categories: ["Medicines", "Cosmetics & Personal Care", "Baby Care", "Health & Wellness", "Snacks & Convenience", "Medical Equipment"]
+                },
+                healthcare: {
+                    colorMain: "#00c3ff", colorDark: "#001f2b", icon: "🏥",
+                    invNav: "⚕️ Patient Records", posNav: "📑 Consultations",
+                    crmNav: "👥 Patient Reminders", staffNav: "👨‍💼 Staff Roles", aiNav: "🧠 Predictive Health",
+                    overviewSub: "Patient analytics and hospital insights.",
+                    stat3: "Active Patients", emptyDesc: "Start admitting patients to monitor their status.",
+                    invTitle: "Patient Management", invSub: "Add patient history and health trends.",
+                    addTitle: "New Patient Admission", labelId: "Patient ID", labelName: "Patient Name", labelQty: "Age", labelPrice: "Consultation Fee (₹)",
+                    listId: "Patient ID", listName: "Name", listQty: "Age", posTitle: "Medical Consultation POS", posSub: "Generate medical bills for patients instantly.",
+                    scanTitle: "Patient Search Scanner", scanDesc: "Scan MRN or enter ID.",
+                    categories: ["General Consult", "Specialist", "Tests & Scans", "Surgery/Procedures", "Ward Admission"]
+                },
+                retail: {
+                    colorMain: "#ff9f43", colorDark: "#2b1600", icon: "🛒",
+                    invNav: "📦 Inventory", posNav: "🧾 Point of Sale",
+                    crmNav: "👥 Loyalty Offers", staffNav: "👨‍💼 Cashier Mgmt", aiNav: "🧠 Sales Trends",
+                    overviewSub: "Store performance and sales growth.",
+                    stat3: "Products in Stock", emptyDesc: "Add products to stock to begin retail sales.",
+                    invTitle: "Stock Inventory", invSub: "Manage retail goods and barcodes.",
+                    addTitle: "Add New Item", labelId: "Barcode / SKU", labelName: "Product Name", labelQty: "Quantity", labelPrice: "Retail Price (₹)",
+                    listId: "SKU", listName: "Product", listQty: "In Stock", posTitle: "Retail Checkout Counter", posSub: "Scan products to finalize sale.",
+                    scanTitle: "Barcode Scanner", scanDesc: "Scan barcode directly.",
+                    categories: ["Electronics", "Home Goods", "Toys", "Office Supplies", "General Retail"]
+                },
+                finance: {
+                    colorMain: "#ffd700", colorDark: "#2b2500", icon: "📈",
+                    invNav: "💼 Asset Portfolio", posNav: "💳 Transactions",
+                    crmNav: "👥 Client Updates", staffNav: "👨‍💼 Brokers", aiNav: "🧠 Market AI",
+                    overviewSub: "Real-time financial insights and risk management.",
+                    stat3: "Managed Assets", emptyDesc: "Add financial assets or client accounts first.",
+                    invTitle: "Asset Portfolio", invSub: "Track market assets or client accounts.",
+                    addTitle: "Register Asset", labelId: "Account / Asset ID", labelName: "Asset Name / Client", labelQty: "Units", labelPrice: "Asset Value (₹)",
+                    listId: "Asset ID", listName: "Asset Name", listQty: "Units Held", posTitle: "Financial Transfers", posSub: "Execute transfers or fee collections.",
+                    scanTitle: "Asset Lookup", scanDesc: "Enter unique ID to process.",
+                    categories: ["Accounts", "Equities", "Bonds", "Mutual Funds", "Forex"]
+                },
+                groceries: {
+                    colorMain: "#6aff00", colorDark: "#1b2b00", icon: "🍎",
+                    invNav: "🥦 Fresh Stock", posNav: "🛒 Quick Checkout",
+                    crmNav: "👥 Discount Texts", staffNav: "👨‍💼 Staff Shifts", aiNav: "🧠 Expiry AI",
+                    overviewSub: "Efficient fresh stock tracking.",
+                    stat3: "Perishables Tracked", emptyDesc: "Stock your grocery shelves to start billing.",
+                    invTitle: "Produce & Grocery Stock", invSub: "Track freshness and quantities.",
+                    addTitle: "Receive Fresh Stock", labelId: "SKU", labelName: "Item Name", labelQty: "Weight (Kg) / Qty", labelPrice: "Price per Kg/Unit (₹)",
+                    listId: "SKU", listName: "Item", listQty: "Current Stock", posTitle: "Grocery Checkout", posSub: "Scan items for fast grocery checkout.",
+                    scanTitle: "Grocer Scanner", scanDesc: "Scan items to cart.",
+                    categories: ["Fresh Produce", "Dairy", "Meat & Poultry", "Bakery", "Dry Goods & Staples"]
+                },
+                "clothing-store": {
+                    colorMain: "#ff4fd8", colorDark: "#2b001f", icon: "👕",
+                    invNav: "👗 Apparel Catalog", posNav: "🛍️ Register",
+                    crmNav: "👥 Catalog Drops", staffNav: "👨‍💼 Sales Reps", aiNav: "🧠 Trend AI",
+                    overviewSub: "Trend analysis and size-wise stock management.",
+                    stat3: "Garments Left", emptyDesc: "Add clothing lines across sizes.",
+                    invTitle: "Apparel Management", invSub: "Manage fashion inventory by sizing.",
+                    addTitle: "Add Garment", labelId: "Style No.", labelName: "Garment Name + Size", labelQty: "Stock", labelPrice: "MRP (₹)",
+                    listId: "Style No.", listName: "Garment", listQty: "Remaining", posTitle: "Boutique Register", posSub: "Bill fashion accessories and apparel.",
+                    scanTitle: "Style Scanner", scanDesc: "Scan clothing tags.",
+                    categories: ["Men's Wear", "Women's Wear", "Kids Clothing", "Shoes", "Accessories"]
+                },
+                "stock-trading": {
+                    colorMain: "#00e5ff", colorDark: "#001b2b", icon: "📉",
+                    invNav: "📊 Equities", posNav: "💹 Trade Terminal",
+                    crmNav: "👥 Margin Calls", staffNav: "👨‍💼 Traders", aiNav: "🧠 Bot Strategy",
+                    overviewSub: "Portfolio analytics and real-time risk assessment.",
+                    stat3: "Equities Held", emptyDesc: "Purchase stocks to populate portfolio.",
+                    invTitle: "Market Equities", invSub: "Manage stored tickers and active blocks.",
+                    addTitle: "Execute Block Purchase", labelId: "Ticker Symbol", labelName: "Company Name", labelQty: "Shares", labelPrice: "Buy Price (₹)",
+                    listId: "Ticker", listName: "Company", listQty: "Shares", posTitle: "Sell / Liquidate Holdings", posSub: "Execute a block sale.",
+                    scanTitle: "Ticker Lookup", scanDesc: "Enter exact Ticker Symbol.",
+                    categories: ["Tech Stocks", "Blue Chips", "Penny Stocks", "ETFs", "Commodities"]
+                }
+            };
+
+            const t = themes[industry] || themes['pharmacy'];
+
+            // Apply Theme Options
+            const dbApp = document.getElementById("dashboardApp");
+            dbApp.style.setProperty("--brand-main", t.colorMain);
+            dbApp.style.setProperty("--brand-dark", t.colorDark);
+            document.getElementById("sidebar").style.background = t.colorDark;
+            document.getElementById("industryBadge").innerText = `${industry.replace('-', ' ').toUpperCase()} LIVE`;
+
+            document.getElementById("brandIcon").innerText = t.icon;
+            document.getElementById("emptyStateIcon").innerText = t.icon;
+            document.getElementById("navInventory").innerText = t.invNav;
+            document.getElementById("navBilling").innerText = t.posNav;
+            if(t.crmNav) document.getElementById("navCrm").innerText = t.crmNav;
+            if(t.staffNav) document.getElementById("navStaff").innerText = t.staffNav;
+            if(t.aiNav) document.getElementById("navAi").innerText = t.aiNav;
+            
+            document.getElementById("overviewSubtitle").innerText = t.overviewSub;
+            document.getElementById("stat3Label").innerText = t.stat3;
+            document.getElementById("emptyStateDesc").innerText = t.emptyDesc;
+            document.getElementById("inventoryTitle").innerText = t.invTitle;
+            document.getElementById("inventorySubtitle").innerText = t.invSub;
+            document.getElementById("addFormTitle").innerText = t.addTitle;
+            document.getElementById("invIdLabel").innerText = t.labelId;
+            document.getElementById("invNameLabel").innerText = t.labelName;
+            document.getElementById("invQtyLabel").innerText = t.labelQty;
+            document.getElementById("invPriceLabel").innerText = t.labelPrice;
+            document.getElementById("listCol1").innerText = t.listId;
+            document.getElementById("listCol3").innerText = t.listQty;
+            document.getElementById("posTitle").innerText = t.posTitle;
+            document.getElementById("posSubtitle").innerText = t.posSub;
+            document.getElementById("scannerTitle").innerText = t.scanTitle;
+            document.getElementById("scannerDesc").innerText = t.scanDesc;
+
+            // Populate Category Select
+            const catSelect = document.getElementById("invCategory");
+            t.categories.forEach(cat => {
+                 let opt = document.createElement("option");
+                 opt.value = cat;
+                 opt.innerText = cat;
+                 catSelect.appendChild(opt);
+            });
 
             // Database Sandbox (LocalStorage)
-            const dbKey = `bobo_pharmacy_db_${pharmacyId}`;
+            const dbKey = `bobo_crm_db_${tenantInfo.id}`;
             let dbData = JSON.parse(localStorage.getItem(dbKey) || '{"inventory":[],"bills":[]}');
-            
             function saveData() { localStorage.setItem(dbKey, JSON.stringify(dbData)); }
 
             // Tab Navigation Logic
@@ -501,20 +538,16 @@ import MainLayout from "../layouts/MainLayout.astro";
                         sec.classList.remove('active');
                         if (sec.id === targetId) sec.classList.add('active');
                     });
-                    
-                    if (targetId === "sec-billing") {
-                        liveScannerInput.focus(); // Auto focus scanner when POS opens
-                    }
+                    if (targetId === "sec-billing") liveScannerInput.focus();
                 });
             });
 
-            // Refresh UI logic
+            // UI Updater
             function updateDashboardUI() {
-                // Update Overview Stats
                 let totalRev = 0;
                 dbData.bills.forEach(b => totalRev += b.total);
                 document.getElementById("statRevenue").innerText = `₹${totalRev.toFixed(2)}`;
-                document.getElementById("statBills").innerText = dbData.bills.length;
+                document.getElementById("statTransactions").innerText = dbData.bills.length;
                 document.getElementById("statInventory").innerText = dbData.inventory.length;
 
                 const emptyState = document.getElementById("overviewEmptyState");
@@ -526,13 +559,12 @@ import MainLayout from "../layouts/MainLayout.astro";
                         billsContainer.style.display = "block";
                         const tableBody = document.getElementById("recentBillsTable");
                         let rowsHtml = "";
-                        // Latest 5 bills
                         const recent = [...dbData.bills].reverse().slice(0, 5);
                         recent.forEach(b => {
                             rowsHtml += `<tr>
                                 <td>#${b.id.substring(0,8)}</td>
                                 <td>${new Date(b.date).toLocaleTimeString()}</td>
-                                <td>${b.itemsCount} items</td>
+                                <td>${b.itemsCount}</td>
                                 <td>₹${b.total.toFixed(2)}</td>
                             </tr>`;
                         });
@@ -543,49 +575,71 @@ import MainLayout from "../layouts/MainLayout.astro";
                     billsContainer.style.display = "none";
                 }
 
-                // Update Inventory Table
+                // AI Data & Inventory List
                 const invTable = document.getElementById("inventoryTable");
+                let catCounts = {};
+                let lowStock = 0;
+
                 if (dbData.inventory.length === 0) {
-                    invTable.innerHTML = `<tr><td colspan="4" style="text-align:center;">No stock added yet.</td></tr>`;
+                    invTable.innerHTML = `<tr><td colspan="4" style="text-align:center;">No records added yet.</td></tr>`;
+                    document.getElementById("aiTopCat").innerText = "Not Enough Data";
                 } else {
                     let invHtml = "";
                     dbData.inventory.forEach(item => {
                         invHtml += `<tr>
                             <td><strong>${item.barcode}</strong></td>
-                            <td>${item.name}</td>
-                            <td>${item.qty} units</td>
+                            <td>${item.name} <br><small style="color:#6b7280; font-weight:600;">${item.category || 'General'}</small></td>
+                            <td><span style="${item.qty < 5 ? 'color:#ef4444;font-weight:bold;' : ''}">${item.qty} units</span></td>
                             <td>₹${parseFloat(item.price).toFixed(2)}</td>
                         </tr>`;
+                        
+                        // AI Tracking
+                        catCounts[item.category] = (catCounts[item.category] || 0) + item.qty;
+                        if(item.qty < 5) lowStock++;
                     });
                     invTable.innerHTML = invHtml;
+                    
+                    document.getElementById("aiAlerts").innerHTML = `<strong style="color:#ef4444;">${lowStock} Items</strong> require re-order.`;
+                    
+                    let topCat = "No clear trend";
+                    let highQty = 0;
+                    for(let c in catCounts) {
+                        if(catCounts[c] > highQty) {
+                           highQty = catCounts[c];
+                           topCat = c;
+                        }
+                    }
+                    if(dbData.inventory.length > 0) {
+                        document.getElementById("aiTopCat").innerHTML = `<strong>${topCat}</strong> <br><small style="font-size:0.8rem;color:#6b7280;">High volume performance.</small>`;
+                    }
                 }
             }
 
-            // ADD INVENTORY LOGIC
             const addInvForm = document.getElementById("addInventoryForm");
             addInvForm.addEventListener("submit", (e) => {
                 e.preventDefault();
                 const barcode = document.getElementById("invBarcode").value.trim();
                 const name = document.getElementById("invName").value.trim();
+                const category = document.getElementById("invCategory").value;
                 const qty = parseInt(document.getElementById("invQty").value);
                 const price = document.getElementById("invPrice").value;
 
-                // Check if already exists
                 const existing = dbData.inventory.find(i => i.barcode === barcode);
                 if (existing) {
                     existing.qty += qty;
-                    existing.price = price; // update price
+                    existing.price = price;
+                    existing.category = category;
                 } else {
-                    dbData.inventory.push({ barcode, name, qty, price });
+                    dbData.inventory.push({ barcode, name, category, qty, price });
                 }
 
                 saveData();
                 addInvForm.reset();
                 updateDashboardUI();
-                alert(`Added ${name} directly to the live pharmacy inventory.`);
+                alert(`Added ${name} directly to the live internal system.`);
             });
 
-            // RETAIL BILLING LOGIC
+            // POS / Transaction Engine
             let currentBillItems = [];
             const billItemsList = document.getElementById("billItemsList");
             const scannerForm = document.getElementById("scannerForm");
@@ -594,7 +648,7 @@ import MainLayout from "../layouts/MainLayout.astro";
 
             function renderBill() {
                 if (currentBillItems.length === 0) {
-                    billItemsList.innerHTML = `<p class="empty-bill-msg">Bill is empty. Scan an item to begin.</p>`;
+                    billItemsList.innerHTML = `<p class="empty-bill-msg">No entries selected. Use Scanner to begin.</p>`;
                     document.getElementById("billSubtotal").innerText = "₹0.00";
                     document.getElementById("billTotal").innerText = "₹0.00";
                     generateBillBtn.disabled = true;
@@ -626,7 +680,7 @@ import MainLayout from "../layouts/MainLayout.astro";
             scannerForm.addEventListener("submit", (e) => {
                 e.preventDefault();
                 const barcode = liveScannerInput.value.trim();
-                liveScannerInput.value = ""; // clear instantly for next scan
+                liveScannerInput.value = "";
                 liveScannerInput.focus();
 
                 if (!barcode) return;
@@ -635,14 +689,13 @@ import MainLayout from "../layouts/MainLayout.astro";
                 
                 if (foundItem) {
                     if (foundItem.qty > 0) {
-                        // Check if already in bill, then increment
                         const inBill = currentBillItems.find(b => b.barcode === barcode);
                         if (inBill) {
                             if (foundItem.qty > inBill.qty) {
                                 inBill.qty++;
                             } else {
                                 scannerMsg.className = "scanner-feedback error";
-                                scannerMsg.innerText = "❌ Stock insufficient!";
+                                scannerMsg.innerText = "❌ Stock limit reached!";
                                 return;
                             }
                         } else {
@@ -655,18 +708,17 @@ import MainLayout from "../layouts/MainLayout.astro";
                         }
                         
                         scannerMsg.className = "scanner-feedback success";
-                        scannerMsg.innerText = `✅ Snapped! Added ${foundItem.name}.`;
+                        scannerMsg.innerText = `✅ Accepted ${foundItem.name}.`;
                         renderBill();
                     } else {
                         scannerMsg.className = "scanner-feedback error";
-                        scannerMsg.innerText = "❌ Item is out of stock!";
+                        scannerMsg.innerText = "❌ Exceeded Stock Quantity! Cannot process.";
                     }
                 } else {
                     scannerMsg.className = "scanner-feedback error";
-                    scannerMsg.innerText = "❌ Unrecognized Barcode! Item not in inventory.";
+                    scannerMsg.innerText = "❌ Unrecognized ID! Not in local system.";
                 }
 
-                // Clear feedback after 3 sec
                 setTimeout(() => { if(scannerMsg.innerText.includes(barcode)) scannerMsg.innerText = ""; }, 3000);
             });
 
@@ -675,11 +727,12 @@ import MainLayout from "../layouts/MainLayout.astro";
 
                 let grandTotal = 0;
                 let itemsCount = 0;
+                let summaryString = "";
                 
-                // Deduct actual inventory stock
                 currentBillItems.forEach(bItem => {
                     grandTotal += (bItem.qty * parseFloat(bItem.price));
                     itemsCount += bItem.qty;
+                    summaryString += `\n- ${bItem.name} (x${bItem.qty})`;
                     const invItem = dbData.inventory.find(i => i.barcode === bItem.barcode);
                     if (invItem) invItem.qty -= bItem.qty;
                 });
@@ -693,26 +746,26 @@ import MainLayout from "../layouts/MainLayout.astro";
                 };
 
                 dbData.bills.push(billData);
-                saveData(); // Save entirely updated inventory and new bill
+                saveData();
                 
-                alert(`✅ Retail Bill Generated Successfully!\n\nBill ID: #${billData.id}\nTotal: ₹${grandTotal.toFixed(2)}`);
+                // Trigger simulated WhatsApp Bill payload immediately after successful transaction
+                setTimeout(() => {
+                    alert(`✅ Transaction Processed Successfully!\n\n*** WHATSAPP BILL ROUTING VIA BOBO ANALYTICS ***\n\nHello [Customer Name],\nThank you for shopping at ${tenantInfo.name}.\n\nBill Amount: ₹${grandTotal.toFixed(2)}\nItems Purchased:${summaryString}\n\nVisit again!\nPowered by BoboAnalytics`);
+                }, 100);
                 
-                // Reset POS Live View
                 currentBillItems = [];
                 renderBill();
-                updateDashboardUI(); // Update overall dashboard totals
+                updateDashboardUI();
                 
                 scannerMsg.className = "scanner-feedback success";
-                scannerMsg.innerText = "Ready for the next customer.";
+                scannerMsg.innerText = "Ready for the next execution.";
             });
 
             document.getElementById("logoutBtn").addEventListener("click", () => {
-                localStorage.removeItem("pharmacy");
-                localStorage.removeItem("pharmacyId");
-                window.location.href = "/pharmacy-login";
+                localStorage.removeItem("activeTenantContext");
+                window.location.href = "/login";
             });
 
-            // Initialize App state
             updateDashboardUI();
         });
     </script>
