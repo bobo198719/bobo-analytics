@@ -1,0 +1,46 @@
+---
+
+import MainLayout from "../../layouts/MainLayout.astro";
+
+<MainLayout title="TradeGuard Analytics"><section class="hero">
+<h1>TradeGuard Analytics</h1>
+<p>Portfolio analytics and real-time risk assessment.</p><div class="stats">
+<div><h2>5k+</h2><span>Traders</span></div>
+<div><h2>Low</h2><span>Latency</span></div>
+<div><h2>AI</h2><span>Risk Model</span></div>
+<div><h2>99.9%</h2><span>Precision</span></div>
+</div></section><section class="features"><div class="card">
+<h3>Portfolio Health</h3>
+<p>Real-time asset performance.</p>
+</div><div class="card">
+<h3>Risk Mitigation</h3>
+<p>Automated stop-loss insights.</p>
+</div><div class="card">
+<h3>Market Sentiment</h3>
+<p>AI-driven news analysis.</p>
+</div></section><section class="login"><h2>Trading CRM Login</h2><form>
+<input placeholder="Username">
+<input type="password" placeholder="Password">
+<button>Login</button>
+</form></section><style>
+
+.hero{
+background:linear-gradient(135deg,#001b2b,#00364d);
+color:white;
+text-align:center;
+padding:80px 20px;
+}
+
+.stats h2{
+color:#00e5ff;
+}
+
+.card:hover{
+border-color:#00e5ff;
+}
+
+.login button{
+background:#00e5ff;
+}
+
+</style></MainLayout>
