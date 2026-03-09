@@ -2,90 +2,157 @@
 
 import MainLayout from "../../layouts/MainLayout.astro";
 
-<MainLayout title="Pharmacy Management Software"><section class="hero">
-<h1>Pharmacy Management Software</h1>
-<p>AI powered analytics and automation for modern pharmacies.</p><div class="stats">
-<div><h2>500+</h2><span>Pharmacies</span></div>
-<div><h2>99%</h2><span>Inventory Accuracy</span></div>
-<div><h2>24/7</h2><span>AI Monitoring</span></div>
-<div><h2>0%</h2><span>Expiry Loss</span></div>
-</div>
-</section><section class="features"><div class="card">
+<MainLayout title="Pharmacy Management Software"><section class="hero"><img src="/logo.png" class="logo" alt="Bobo Analytics Logo"><h1>Pharmacy Management Software</h1><p class="subtitle">
+AI powered analytics and automation for modern pharmacies.
+</p><div class="stats"><div class="stat">
+<h2>500+</h2>
+<p>Pharmacies Using Our Platform</p>
+</div><div class="stat">
+<h2>99%</h2>
+<p>Inventory Accuracy</p>
+</div><div class="stat">
+<h2>24/7</h2>
+<p>AI Monitoring</p>
+</div><div class="stat">
+<h2>0%</h2>
+<p>Medicine Expiry Loss</p>
+</div></div></section><section class="features"><div class="feature">
 <h3>Medicine Inventory</h3>
-<p>Track stock levels and expiry dates.</p>
-</div><div class="card">
+<p>Track stock levels, batch numbers and expiry dates.</p>
+</div><div class="feature">
 <h3>Barcode Scanner</h3>
-<p>Scan medicines instantly.</p>
-</div><div class="card">
+<p>Scan medicines instantly using barcode technology.</p>
+</div><div class="feature">
 <h3>Smart Billing</h3>
-<p>Generate GST invoices.</p>
-</div><div class="card">
+<p>Generate GST invoices and manage customer records.</p>
+</div><div class="feature">
 <h3>Supplier Management</h3>
-<p>Manage suppliers and purchase orders.</p>
-</div><div class="card">
+<p>Manage suppliers and purchase orders easily.</p>
+</div><div class="feature">
 <h3>Expiry Alerts</h3>
-<p>Get notifications before expiry.</p>
-</div></section><section class="login"><h2>Pharmacy CRM Login</h2><form>
-<input placeholder="Username">
-<input type="password" placeholder="Password">
-<button>Login</button>
-</form></section><style>
+<p>Get notifications before medicines expire.</p>
+</div><div class="feature">
+<h3>Analytics Dashboard</h3>
+<p>AI insights for pharmacy sales and stock performance.</p>
+</div></section><section class="login-section"><h2>Login to Pharmacy CRM</h2><form id="loginForm"><input
+type="text"
+id="username"
+placeholder="Username"
+required
+/>
+
+<input
+type="password"
+id="password"
+placeholder="Password"
+required
+/>
+
+<button type="submit">
+Login
+</button></form><p id="error"></p></section><style>
 
 .hero{
-background:linear-gradient(135deg,#002b1f,#004d36);
-color:white;
 text-align:center;
 padding:80px 20px;
+}
+
+.logo{
+width:120px;
+margin-bottom:20px;
+}
+
+.subtitle{
+color:#555;
+margin-bottom:40px;
 }
 
 .stats{
 display:flex;
 justify-content:center;
-gap:40px;
-margin-top:40px;
+gap:60px;
 flex-wrap:wrap;
+margin-top:40px;
 }
 
-.stats h2{
-color:#00ff96;
+.stat h2{
+color:#16a34a;
+font-size:32px;
 }
 
 .features{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
 gap:20px;
-padding:60px 20px;
-max-width:1100px;
-margin:auto;
-}
-
-.card{
-background:#111;
-padding:30px;
-border-radius:10px;
-border:1px solid #333;
-}
-
-.card:hover{
-border-color:#00ff96;
-}
-
-.login{
-text-align:center;
 padding:60px;
 }
 
-.login input{
-display:block;
-margin:10px auto;
-padding:10px;
-width:250px;
+.feature{
+background:#f5f5f5;
+padding:30px;
+border-radius:10px;
 }
 
-.login button{
-padding:10px 20px;
-background:#00ff96;
+.login-section{
+text-align:center;
+padding:80px 20px;
+background:#111;
+color:white;
+}
+
+.login-section input{
+display:block;
+margin:15px auto;
+padding:12px;
+width:260px;
+border-radius:6px;
 border:none;
 }
 
-</style></MainLayout>
+.login-section button{
+padding:12px 30px;
+background:#22c55e;
+border:none;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+
+</style><script>
+
+const form = document.getElementById("loginForm")
+
+form.addEventListener("submit", async (e)=>{
+
+e.preventDefault()
+
+const username=document.getElementById("username").value
+const password=document.getElementById("password").value
+
+const res=await fetch("/api/login",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({username,password})
+
+})
+
+const data=await res.json()
+
+if(res.ok){
+
+window.location.href="/pharmacy-dashboard"
+
+}else{
+
+document.getElementById("error").innerText="Invalid login"
+
+}
+
+})
+
+</script></MainLayout>
