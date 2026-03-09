@@ -84,22 +84,26 @@ import MainLayout from "../layouts/MainLayout.astro";
             <div class="form-row">
               <div class="form-group">
                 <label>Business Name</label>
-                <input type="text" placeholder="Registered Name" required />
+                <input type="text" id="businessName" placeholder="Registered Name" required />
               </div>
               <div class="form-group">
                 <label>Admin Email</label>
-                <input type="email" placeholder="admin@business.com" required />
+                <input type="email" id="adminEmail" placeholder="admin@business.com" required />
               </div>
             </div>
 
             <div class="form-row">
               <div class="form-group">
                 <label>Subscription Plan</label>
-                <select required>
+                <select id="subscriptionPlan" required>
                   <option value="starter">Starter</option>
                   <option value="professional" selected>Professional</option>
                   <option value="enterprise">Enterprise</option>
                 </select>
+              </div>
+              <div class="form-group">
+                <label>Account Password</label>
+                <input type="password" id="accountPassword" placeholder="••••••••" required />
               </div>
             </div>
 
@@ -466,34 +470,55 @@ import MainLayout from "../layouts/MainLayout.astro";
     const successMsg = document.getElementById("successMsg");
     const tbody = document.getElementById("tenantTableBody");
 
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const industry = document.getElementById("industrySelect").value;
       const customId = document.getElementById("customId").value;
-      const selectedPlan = form.querySelector("select[required]:last-of-type").value;
+      const businessName = document.getElementById("businessName").value;
+      const password = document.getElementById("accountPassword").value;
+      const selectedPlan = document.getElementById("subscriptionPlan").value;
 
-      successMsg.style.display = "block";
-      
-      const newRow = document.createElement("tr");
-      // Add a fade in animation to new row quickly
-      newRow.style.animation = "fadeIn 0.5s ease";
-      
-      const industryText = industry.charAt(0).toUpperCase() + industry.slice(1);
-      const planText = selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1);
-      
-      newRow.innerHTML = `
-        <td>${customId}</td>
-        <td>${industryText}</td>
-        <td>${planText}</td>
-        <td><span class="badge success">Active</span></td>
-      `;
-      
-      tbody.insertBefore(newRow, tbody.firstChild);
+      try {
+        const res = await fetch("http://localhost:5000/api/users/create-pharmacy", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            pharmacy: businessName,
+            pharmacyId: customId,
+            password: password
+          })
+        });
 
-      setTimeout(() => {
-        successMsg.style.display = "none";
-        form.reset();
-      }, 3000);
+        if (res.ok) {
+          successMsg.style.display = "block";
+          successMsg.innerText = "✅ Tenant space successfully provisioned! Credentials ready.";
+          
+          const newRow = document.createElement("tr");
+          newRow.style.animation = "fadeIn 0.5s ease";
+          
+          const industryText = industry.charAt(0).toUpperCase() + industry.slice(1);
+          const planText = selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1);
+          
+          newRow.innerHTML = `
+            <td>${customId}</td>
+            <td>${industryText}</td>
+            <td>${planText}</td>
+            <td><span class="badge success">Active</span></td>
+          `;
+          
+          tbody.insertBefore(newRow, tbody.firstChild);
+
+          setTimeout(() => {
+            successMsg.style.display = "none";
+            form.reset();
+          }, 3000);
+        } else {
+          const data = await res.json();
+          alert(data.error || "Failed to create tenant.");
+        }
+      } catch (err) {
+        alert("Connection error. Is the backend running?");
+      }
     });
 
     // Handle Logout
