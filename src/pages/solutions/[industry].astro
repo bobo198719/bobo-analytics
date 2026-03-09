@@ -3,151 +3,296 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
 export function getStaticPaths() {
   return [
-    { params: { industry: 'healthcare' }, props: { title: 'Healthcare Management Software', subtitle: 'Patient analytics and hospital insights.', stats: [ { val: '200+', label: 'Hospitals' }, { val: '98%', label: 'Accuracy' }, { val: '24/7', label: 'Monitoring' }, { val: '0%', label: 'Data Loss' } ], cards: [ { title: 'Patient Analytics', desc: 'Track patient history and health trends.' }, { title: 'Reporting', desc: 'Generate medical reports instantly.' }, { title: 'Smart Billing', desc: 'Automated insurance and billing.' } ] } },
-    { params: { industry: 'pharmacy' }, props: { title: 'Pharmacy Management Software', subtitle: 'AI powered analytics and automation for modern pharmacies.', stats: [ { val: '500+', label: 'Pharmacies' }, { val: '99%', label: 'Inventory Accuracy' }, { val: '24/7', label: 'AI Monitoring' }, { val: '0%', label: 'Medicine Expiry Loss' } ], cards: [ { title: 'Medicine Inventory', desc: 'Track stock levels and expiry dates.' }, { title: 'Barcode Scanner', desc: 'Scan medicines instantly.' }, { title: 'Smart Billing', desc: 'Generate GST invoices easily.' }, { title: 'Supplier Management', desc: 'Manage suppliers and purchase orders.' }, { title: 'Expiry Alerts', desc: 'Get notifications before expiry.' }, { title: 'Analytics Dashboard', desc: 'AI insights for sales and stock.' } ] } },
-    { params: { industry: 'retail' }, props: { title: 'Retail intelligence Platform', subtitle: 'Boost sales with AI-driven inventory and demand forecasting.', stats: [ { val: '1000+', label: 'Retailers' }, { val: '85%', label: 'Sales Growth' }, { val: 'AI', label: 'Forecasting' }, { val: '10%', label: 'Cost Reduction' } ], cards: [ { title: 'Demand Forecasting', desc: 'Predict what sells next.' }, { title: 'Inventory Optimization', desc: 'Reduce overstock and stockouts.' }, { title: 'Customer Insights', desc: 'Understand buying patterns.' } ] } },
-    { params: { industry: 'finance' }, props: { title: 'Financial Analytics Suite', subtitle: 'Real-time financial insights and risk management.', stats: [ { val: '100+', label: 'Banks' }, { val: 'Gold', label: 'Standard Security' }, { val: 'Real-Time', label: 'Processing' }, { val: '99.9%', label: 'Uptime' } ], cards: [ { title: 'Risk Assessment', desc: 'Evaluate credit and market risks.' }, { title: 'Profitability Analysis', desc: 'Deep dive into revenue streams.' }, { title: 'Fraud Detection', desc: 'AI-powered security alerts.' } ] } },
-    { params: { industry: 'groceries' }, props: { title: 'Grocery Smart Hub', subtitle: 'Efficient fresh stock tracking and customer retention.', stats: [ { val: '300+', label: 'Stores' }, { val: 'Fresh', label: 'Stock Guarantee' }, { val: '24/7', label: 'Support' }, { val: '15%', label: 'Margin Boost' } ], cards: [ { title: 'Freshness Tracking', desc: 'Monitor perishables effectively.' }, { title: 'Loyalty Programs', desc: 'Engage customers with rewards.' }, { title: 'Quick Billing', desc: 'Reduce checkout wait times.' } ] } },
-    { params: { industry: 'clothing-store' }, props: { title: 'Fashion Analytics Pro', subtitle: 'Trend analysis and size-wise stock management.', stats: [ { val: '150+', label: 'Brands' }, { val: 'Trend', label: 'Analytics' }, { val: 'Size-wise', label: 'Tracking' }, { val: '20%', label: 'Stock Efficiency' } ], cards: [ { title: 'Trend Prediction', desc: 'Stay ahead of fashion cycles.' }, { title: 'Size Optimization', desc: 'Keep the right sizes in stock.' }, { title: 'Visual Merchandising', desc: 'Optimize store layouts for sales.' } ] } },
-    { params: { industry: 'stock-trading' }, props: { title: 'TradeGuard Analytics', subtitle: 'Portfolio analytics and real-time risk assessment.', stats: [ { val: '5k+', label: 'Traders' }, { val: 'Low', label: 'Latency' }, { val: 'AI', label: 'Risk Model' }, { val: '99.9%', label: 'Precision' } ], cards: [ { title: 'Portfolio Health', desc: 'Real-time asset performance.' }, { title: 'Risk Mitigation', desc: 'Automated stop-loss insights.' }, { title: 'Market Sentiment', desc: 'AI-driven news analysis.' } ] } },
+    {
+      params: { industry: "healthcare" },
+      props: {
+        color: "#00c3ff",
+        title: "Healthcare Management Software",
+        subtitle: "Patient analytics and hospital insights.",
+        stats: [
+          { val: "200+", label: "Hospitals" },
+          { val: "98%", label: "Accuracy" },
+          { val: "24/7", label: "Monitoring" },
+          { val: "0%", label: "Data Loss" }
+        ],
+        cards: [
+          { title: "Patient Analytics", desc: "Track patient history and health trends." },
+          { title: "Reporting", desc: "Generate medical reports instantly." },
+          { title: "Smart Billing", desc: "Automated insurance and billing." }
+        ]
+      }
+    },
+
+    {
+      params: { industry: "pharmacy" },
+      props: {
+        color: "#00ff96",
+        title: "Pharmacy Management Software",
+        subtitle: "AI powered analytics and automation for modern pharmacies.",
+        stats: [
+          { val: "500+", label: "Pharmacies" },
+          { val: "99%", label: "Inventory Accuracy" },
+          { val: "24/7", label: "AI Monitoring" },
+          { val: "0%", label: "Medicine Expiry Loss" }
+        ],
+        cards: [
+          { title: "Medicine Inventory", desc: "Track stock levels and expiry dates." },
+          { title: "Barcode Scanner", desc: "Scan medicines instantly." },
+          { title: "Smart Billing", desc: "Generate GST invoices easily." },
+          { title: "Supplier Management", desc: "Manage suppliers and purchase orders." },
+          { title: "Expiry Alerts", desc: "Get notifications before expiry." }
+        ]
+      }
+    },
+
+    {
+      params: { industry: "retail" },
+      props: {
+        color: "#ff9f43",
+        title: "Retail Intelligence Platform",
+        subtitle: "Boost sales with AI-driven inventory analytics.",
+        stats: [
+          { val: "1000+", label: "Retailers" },
+          { val: "85%", label: "Sales Growth" },
+          { val: "AI", label: "Forecasting" },
+          { val: "10%", label: "Cost Reduction" }
+        ],
+        cards: [
+          { title: "Demand Forecasting", desc: "Predict what sells next." },
+          { title: "Inventory Optimization", desc: "Reduce overstock and stockouts." },
+          { title: "Customer Insights", desc: "Understand buying patterns." }
+        ]
+      }
+    },
+
+    {
+      params: { industry: "finance" },
+      props: {
+        color: "#ffd700",
+        title: "Financial Analytics Suite",
+        subtitle: "Real-time financial insights and risk management.",
+        stats: [
+          { val: "100+", label: "Banks" },
+          { val: "Gold", label: "Security Standard" },
+          { val: "Real-Time", label: "Processing" },
+          { val: "99.9%", label: "Uptime" }
+        ],
+        cards: [
+          { title: "Risk Assessment", desc: "Evaluate credit and market risks." },
+          { title: "Profitability Analysis", desc: "Analyze revenue streams." },
+          { title: "Fraud Detection", desc: "AI-powered security alerts." }
+        ]
+      }
+    },
+
+    {
+      params: { industry: "groceries" },
+      props: {
+        color: "#6aff00",
+        title: "Grocery Smart Hub",
+        subtitle: "Efficient stock tracking and customer retention.",
+        stats: [
+          { val: "300+", label: "Stores" },
+          { val: "Fresh", label: "Stock Guarantee" },
+          { val: "24/7", label: "Support" },
+          { val: "15%", label: "Margin Boost" }
+        ],
+        cards: [
+          { title: "Freshness Tracking", desc: "Monitor perishables effectively." },
+          { title: "Loyalty Programs", desc: "Engage customers with rewards." },
+          { title: "Quick Billing", desc: "Reduce checkout wait times." }
+        ]
+      }
+    },
+
+    {
+      params: { industry: "clothing-store" },
+      props: {
+        color: "#ff4fd8",
+        title: "Fashion Analytics Pro",
+        subtitle: "Trend analysis and size-wise stock management.",
+        stats: [
+          { val: "150+", label: "Brands" },
+          { val: "Trend", label: "Analytics" },
+          { val: "Size-wise", label: "Tracking" },
+          { val: "20%", label: "Stock Efficiency" }
+        ],
+        cards: [
+          { title: "Trend Prediction", desc: "Stay ahead of fashion cycles." },
+          { title: "Size Optimization", desc: "Keep the right sizes in stock." },
+          { title: "Visual Merchandising", desc: "Optimize store layouts." }
+        ]
+      }
+    },
+
+    {
+      params: { industry: "stock-trading" },
+      props: {
+        color: "#00e5ff",
+        title: "TradeGuard Analytics",
+        subtitle: "Portfolio analytics and real-time risk assessment.",
+        stats: [
+          { val: "5k+", label: "Traders" },
+          { val: "Low", label: "Latency" },
+          { val: "AI", label: "Risk Model" },
+          { val: "99.9%", label: "Precision" }
+        ],
+        cards: [
+          { title: "Portfolio Health", desc: "Real-time asset performance." },
+          { title: "Risk Mitigation", desc: "Automated stop-loss insights." },
+          { title: "Market Sentiment", desc: "AI-driven news analysis." }
+        ]
+      }
+    }
   ];
 }
 
 const { industry } = Astro.params;
-const { title, subtitle, stats, cards } = Astro.props;
+const { title, subtitle, stats, cards, color } = Astro.props;
 ---
 
 <MainLayout title={title}>
-    <section class="solution-hero">
-        <h1>{title}</h1>
-        <p class="subtitle">{subtitle}</p>
 
-        <div class="stats-row">
-            {stats.map(s => (
-                <div class="stat-item">
-                    <span class="stat-val">{s.val}</span>
-                    <span class="stat-label">{s.label}</span>
-                </div>
-            ))}
-        </div>
-    </section>
+<section class="hero">
+<h1>{title}</h1>
+<p>{subtitle}</p>
 
-    <section class="solution-content">
-        <div class="card-grid">
-            {cards.map(c => (
-                <div class="feature-card">
-                    <h3>{c.title}</h3>
-                    <p>{c.desc}</p>
-                </div>
-            ))}
-        </div>
+<div class="stats">
 
-        <div class="login-prompt">
-            <h2>Access Your Dashboard</h2>
-            <p>Enter your credentials to manage your {industry} data.</p>
-            <div class="login-box">
-                <form id="industryLoginForm">
-                    <input type="text" id="username" placeholder="Username" required />
-                    <input type="password" id="password" placeholder="Password" required />
-                    <button type="submit">Login to {industry}</button>
-                </form>
-                <p id="loginError" class="error-msg"></p>
-            </div>
-        </div>
-    </section>
+{stats.map(s => (
+<div class="stat">
+<span class="num">{s.val}</span>
+<span>{s.label}</span>
+</div>
+))}
 
-    <style>
-        .solution-hero {
-            text-align: center;
-            padding: 80px 20px;
-            background: #0b0b0b;
-            color: white;
-            border-bottom: 1px solid #333;
-        }
-        .solution-hero h1 { font-size: 3rem; margin-bottom: 1rem; }
-        .subtitle { font-size: 1.25rem; color: #888; max-width: 800px; margin: 0 auto 3rem; }
+</div>
 
-        .stats-row {
-            display: flex;
-            justify-content: center;
-            gap: 4rem;
-            flex-wrap: wrap;
-        }
-        .stat-item { display: flex; flex-direction: column; }
-        .stat-val { font-size: 2.5rem; font-weight: 700; color: #00ff96; }
-        .stat-label { color: #666; font-size: 0.9rem; }
+</section>
 
-        .solution-content { padding: 80px 20px; background: #0b0b0b; }
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto 60px;
-        }
-        .feature-card {
-            background: #151515;
-            padding: 30px;
-            border-radius: 12px;
-            border: 1px solid #333;
-            transition: transform 0.3s;
-        }
-        .feature-card:hover { transform: translateY(-5px); border-color: #00ff96; }
-        .feature-card h3 { color: white; margin-bottom: 10px; }
-        .feature-card p { color: #888; line-height: 1.6; }
+<section class="cards">
 
-        .login-prompt {
-            text-align: center;
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 40px;
-            background: #151515;
-            border-radius: 20px;
-            border: 1px solid #444;
-        }
-        .login-box { margin-top: 25px; }
-        .login-box form { display: flex; flex-direction: column; gap: 15px; }
-        .login-box input { padding: 12px; border-radius: 8px; border: 1px solid #333; background: #0b0b0b; color: white; }
-        .login-box button { 
-            padding: 12px; 
-            background: #00ff96; 
-            color: #0b0b0b; 
-            border: none; 
-            border-radius: 8px; 
-            font-weight: 700; 
-            cursor: pointer;
-            transition: opacity 0.3s;
-        }
-        .login-box button:hover { opacity: 0.9; }
-        .error-msg { color: #ff4d4d; margin-top: 10px; font-size: 0.9rem; }
-    </style>
+{cards.map(c => (
+<div class="card">
+<h3>{c.title}</h3>
+<p>{c.desc}</p>
+</div>
+))}
 
-    <script define:vars={{ industry }}>
-        const form = document.getElementById('industryLoginForm');
-        const errorEl = document.getElementById('loginError');
+</section>
 
-        form?.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
 
-            try {
-                const res = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    body: JSON.stringify({ username, password, industry })
-                });
-                const data = await res.json();
+<section class="login">
 
-                if (res.ok) {
-                    localStorage.setItem('auth_token', data.token);
-                    localStorage.setItem('industry', industry);
-                    window.location.href = `/${industry}-dashboard`;
-                } else {
-                    errorEl.textContent = data.error || 'Login failed';
-                }
-            } catch (err) {
-                errorEl.textContent = 'Server error. Please try again.';
-            }
-        });
-    </script>
+<h2>Login to {industry} CRM</h2>
+
+<form>
+<input placeholder="Username"/>
+<input type="password" placeholder="Password"/>
+<button>Login</button>
+</form>
+
+</section>
+
+
+
+<style>
+
+.hero{
+text-align:center;
+padding:80px 20px;
+background:#0b0b0b;
+color:white;
+}
+
+.hero h1{
+font-size:40px;
+margin-bottom:10px;
+}
+
+.hero p{
+color:#999;
+}
+
+.stats{
+display:flex;
+justify-content:center;
+gap:40px;
+margin-top:40px;
+flex-wrap:wrap;
+}
+
+.stat{
+display:flex;
+flex-direction:column;
+}
+
+.num{
+font-size:32px;
+font-weight:bold;
+color:{color};
+}
+
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:20px;
+max-width:1200px;
+margin:60px auto;
+padding:20px;
+}
+
+.card{
+background:#111;
+padding:30px;
+border-radius:12px;
+border:1px solid #333;
+transition:0.3s;
+}
+
+.card:hover{
+border-color:{color};
+transform:translateY(-6px);
+}
+
+.card h3{
+color:white;
+}
+
+.card p{
+color:#aaa;
+}
+
+.login{
+text-align:center;
+padding:60px 20px;
+}
+
+.login form{
+display:flex;
+flex-direction:column;
+gap:15px;
+max-width:350px;
+margin:auto;
+}
+
+.login input{
+padding:12px;
+border-radius:8px;
+border:1px solid #333;
+background:#111;
+color:white;
+}
+
+.login button{
+padding:12px;
+background:{color};
+border:none;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+}
+
+</style>
+
 </MainLayout>
