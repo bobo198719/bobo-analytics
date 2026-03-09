@@ -150,8 +150,8 @@ import MainLayout from "../layouts/MainLayout.astro";
                   <input type="email" id="adminEmail" placeholder="admin@business.com" required />
                 </div>
                 <div class="form-group">
-                  <label>Admin Phone (WhatsApp API)</label>
-                  <input type="text" placeholder="+91 9876543210" required />
+                  <label>Admin Phone (WhatsApp)</label>
+                  <input type="text" id="adminPhone" placeholder="+91 9876543210" required />
                 </div>
                 <div class="form-group">
                   <label>Account Password</label>
@@ -163,9 +163,9 @@ import MainLayout from "../layouts/MainLayout.astro";
                 <div class="form-group">
                   <label>Subscription Plan</label>
                   <select id="subscriptionPlan" required>
-                    <option value="starter">Starter</option>
-                    <option value="professional" selected>Professional</option>
-                    <option value="enterprise">Enterprise</option>
+                    <option value="starter">Starter - ₹5,000/yr (14 Day Trial)</option>
+                    <option value="professional" selected>Professional - ₹8,000/yr (14 Day Trial)</option>
+                    <option value="enterprise">Enterprise - ₹12,000/yr (14 Day Trial)</option>
                   </select>
                 </div>
                 <div class="form-group">
@@ -182,8 +182,8 @@ import MainLayout from "../layouts/MainLayout.astro";
               </div>
 
               <div class="onboarding-toggles">
-                 <label class="toggle-control"><input type="checkbox" checked /> Send Welcome Email</label>
-                 <label class="toggle-control"><input type="checkbox" checked /> Send WhatsApp Welcome Message</label>
+                 <label class="toggle-control"><input type="checkbox" id="sendEmailCheckbox" checked /> Send Welcome Email</label>
+                 <label class="toggle-control"><input type="checkbox" id="sendWaCheckbox" checked /> Send Live WhatsApp Welcome</label>
               </div>
 
               <div class="form-actions">
@@ -209,13 +209,6 @@ import MainLayout from "../layouts/MainLayout.astro";
               </tr>
             </thead>
             <tbody id="tenantTableBody">
-              <tr>
-                <td>apollo-pharm</td>
-                <td>Apollo Pharmacy</td>
-                <td>Pharmacy</td>
-                <td>Enterprise</td>
-                <td><span class="badge success">Active</span></td>
-              </tr>
             </tbody>
           </table>
         </section>
@@ -310,28 +303,7 @@ import MainLayout from "../layouts/MainLayout.astro";
                <th>Actions</th>
              </tr>
            </thead>
-           <tbody>
-             <tr>
-               <td>Apollo Pharmacy</td>
-               <td>Rahul Kumar</td>
-               <td>Manager</td>
-               <td>Today, 09:42 AM</td>
-               <td><button class="btn-text">Login As</button> | <button class="btn-text danger">Suspend</button></td>
-             </tr>
-             <tr>
-               <td>Apollo Pharmacy</td>
-               <td>Neha Gupta</td>
-               <td>Cashier</td>
-               <td>Yesterday</td>
-               <td><button class="btn-text">Login As</button> | <button class="btn-text danger">Suspend</button></td>
-             </tr>
-             <tr>
-               <td>MedCare Plus</td>
-               <td>Dr. Singh</td>
-               <td>Admin</td>
-               <td>Today, 02:15 PM</td>
-               <td><button class="btn-text">Login As</button> | <button class="btn-text danger">Suspend</button></td>
-             </tr>
+           <tbody id="userTableBody">
            </tbody>
         </table>
       </div>
@@ -355,28 +327,7 @@ import MainLayout from "../layouts/MainLayout.astro";
                <th>Actions</th>
              </tr>
            </thead>
-           <tbody>
-             <tr>
-               <td>Apollo Pharmacy</td>
-               <td>Professional</td>
-               <td><span class="badge success">Active</span></td>
-               <td>12 Mar 2027</td>
-               <td><button class="btn-text">Extend Plan</button></td>
-             </tr>
-             <tr>
-               <td>MedCare Plus</td>
-               <td>Starter</td>
-               <td><span class="badge error">Expired</span></td>
-               <td>01 Feb 2026</td>
-               <td><button class="btn-text" style="color:#10b981;">Generate Invoice</button> | <button class="btn-text danger">Activate Lock</button></td>
-             </tr>
-             <tr>
-               <td>FreshFoods NYC</td>
-               <td>Enterprise</td>
-               <td><span class="badge success">Active</span></td>
-               <td>04 Nov 2026</td>
-               <td><button class="btn-text">Extend Plan</button></td>
-             </tr>
+           <tbody id="billingTableBody">
            </tbody>
         </table>
       </div>
@@ -481,13 +432,13 @@ Renew now to avoid service interruption and feature locking.
            </div>
            <div class="form-group" style="margin-bottom:20px;">
               <label>Subject Line</label>
-              <input type="text" placeholder="e.g., Important BoboAnalytics Version Update" style="width:100%;" />
+              <input type="text" id="emailSubject" placeholder="e.g., Important BoboAnalytics Version Update" style="width:100%;" />
            </div>
            <div class="form-group" style="margin-bottom:20px;">
               <label>Email Body (HTML/Text)</label>
-              <textarea rows="6" placeholder="Enter message payload here..." style="width:100%; padding:10px; background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1); border-radius:8px;"></textarea>
+              <textarea id="emailBody" rows="6" placeholder="Enter message payload here..." style="width:100%; padding:10px; background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1); border-radius:8px;"></textarea>
            </div>
-           <button class="btn-primary">Send Mass Email</button>
+           <button class="btn-primary" onclick="sendMassEmail()">Send Mass Email (Live)</button>
         </div>
       </div>
 
@@ -835,32 +786,86 @@ Renew now to avoid service interruption and feature locking.
     });
 
     const tbody = document.getElementById("tenantTableBody");
+    const ubobdy = document.getElementById("userTableBody");
+    const bbody = document.getElementById("billingTableBody");
     
     function loadTenantsIntoTable() {
         let tenants = JSON.parse(localStorage.getItem("bobo_tenants") || "[]");
-        let html = `
-          <tr>
-            <td>apollo-pharm</td>
-            <td>Apollo Pharmacy</td>
-            <td>Pharmacy</td>
-            <td>Enterprise</td>
-            <td><span class="badge success">Active</span></td>
-          </tr>
-        `;
-        tenants.forEach(t => {
-            const ind = t.industry ? t.industry.charAt(0).toUpperCase() + t.industry.slice(1) : 'Pharmacy';
-            const pln = t.plan ? t.plan.charAt(0).toUpperCase() + t.plan.slice(1) : 'Professional';
-            html += `
-              <tr>
-                <td>${t.pharmacyId}</td>
-                <td>${t.pharmacy}</td>
-                <td>${ind}</td>
-                <td>${pln}</td>
-                <td><span class="badge success">Active</span></td>
-              </tr>
-            `;
-        });
-        if(tbody) tbody.innerHTML = html;
+        
+        let tHtml = "";
+        let bHtml = "";
+        
+        if (tenants.length === 0) {
+            tHtml = "<tr><td colspan='5' style='text-align:center;'>No tenants deployed yet.</td></tr>";
+            bHtml = "<tr><td colspan='5' style='text-align:center;'>No billing data generated yet.</td></tr>";
+        } else {
+            tenants.forEach(t => {
+                const ind = t.industry ? t.industry.charAt(0).toUpperCase() + t.industry.slice(1) : 'Pharmacy';
+                const pln = t.plan ? t.plan.charAt(0).toUpperCase() + t.plan.slice(1) : 'Professional';
+                
+                tHtml += `
+                  <tr>
+                    <td>${t.pharmacyId}</td>
+                    <td>${t.pharmacy}</td>
+                    <td>${ind}</td>
+                    <td>${pln}</td>
+                    <td><span class="badge success">Active</span></td>
+                  </tr>
+                `;
+
+                // Add to billing table dynamically
+                // Simulate next year expiry
+                let nextYear = new Date();
+                nextYear.setFullYear(nextYear.getFullYear() + 1);
+
+                bHtml += `
+                  <tr>
+                    <td>${t.pharmacy}</td>
+                    <td>${pln}</td>
+                    <td><span class="badge success">Active</span></td>
+                    <td>${nextYear.toLocaleDateString("en-US", { day: '2-digit', month: 'short', year: 'numeric'})}</td>
+                    <td><button class="btn-text">Extend Plan</button></td>
+                  </tr>
+                `;
+            });
+        }
+        
+        if(tbody) tbody.innerHTML = tHtml;
+        if(bbody) bbody.innerHTML = bHtml;
+
+        // User accounts mockup based on active tenants (if they exist)
+        let uHtml = "";
+        if (tenants.length === 0) {
+             uHtml = "<tr><td colspan='5' style='text-align:center;'>No users provisioned by tenants.</td></tr>";
+        } else {
+             // For each tenant, artificially inject their admin email as a primary user account
+             tenants.forEach(t => {
+                 uHtml += `
+                 <tr>
+                    <td>${t.pharmacy}</td>
+                    <td>${t.email || 'Admin'}</td>
+                    <td>Owner</td>
+                    <td>Never Logged In</td>
+                    <td><button class="btn-text" onclick="window.open('/pharmacy-login', '_blank')">Login As</button> | <button class="btn-text danger">Suspend</button></td>
+                 </tr>
+                 `;
+             });
+        }
+        if (ubobdy) ubobdy.innerHTML = uHtml;
+    }
+
+    function sendMassEmail() {
+        const sub = document.getElementById("emailSubject").value;
+        const bdy = document.getElementById("emailBody").value;
+        let tenants = JSON.parse(localStorage.getItem("bobo_tenants") || "[]");
+        let addresses = tenants.map(t => t.email || "").filter(e => e !== "").join(",");
+        
+        if (!addresses) {
+            alert("No active tenant emails found to send sequence across.");
+            return;
+        }
+
+        window.open(`mailto:?bcc=${addresses}&subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(bdy)}`, '_blank');
     }
 
     // Handle Form Submission
@@ -883,12 +888,17 @@ Renew now to avoid service interruption and feature locking.
            return;
         }
 
+        const adminEmail = document.getElementById("adminEmail").value;
+        const adminPhone = document.getElementById("adminPhone").value;
+
         const newTenant = {
           pharmacy: businessName,
           pharmacyId: customId,
           password: password,
           industry: industry,
-          plan: selectedPlan
+          plan: selectedPlan,
+          email: adminEmail,
+          phone: adminPhone
         };
 
         tenants.push(newTenant);
@@ -899,6 +909,26 @@ Renew now to avoid service interruption and feature locking.
 
         successMsg.style.display = "block";
         loadTenantsIntoTable();
+
+        // Process Live WhatsApp Request
+        if (document.getElementById("sendWaCheckbox").checked && adminPhone) {
+             const cleanNumber = adminPhone.replace(/\D/g, ""); 
+             // Form standard welcome payload
+             const waMsg = `Welcome to BoboAnalytics, ${businessName}!\n\nYour ${industry} dashboard infrastructure is successfully deployed.\n\nLogin URL: ${customId}.boboanalytics.com\nEmail: ${adminEmail}\nPassword: ${password}\n\n– BoboAnalytics Onboarding Team`;
+             
+             // Open WhatsApp dynamically acting as live integration execution via local device app/web client
+             window.open(`https://wa.me/${cleanNumber}?text=${encodeURIComponent(waMsg)}`, "_blank");
+        }
+
+        // Process Live Email Request
+        if (document.getElementById("sendEmailCheckbox").checked && adminEmail) {
+             const emailMsg = `Welcome to BoboAnalytics, ${businessName}!\n\nYour ${industry} dashboard infrastructure is successfully deployed.\n\nLogin URL: ${customId}.boboanalytics.com\nPassword: ${password}\n\n– BoboAnalytics Onboarding Team`;
+             
+             // Fire Email intention routing
+             setTimeout(() => {
+                 window.open(`mailto:${adminEmail}?subject=${encodeURIComponent("Your Subscription Environment is Ready")}&body=${encodeURIComponent(emailMsg)}`, "_self");
+             }, 800);
+        }
 
         setTimeout(() => {
           successMsg.style.display = "none";
