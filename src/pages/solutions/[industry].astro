@@ -1,0 +1,390 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+
+export function getStaticPaths() {
+  const industries = [
+    {
+      industry: "healthcare",
+      data: {
+        title: "Healthcare Management Software",
+        subtitle: "Patient analytics and hospital insights.",
+        stats: [
+          { value: "200+", label: "Hospitals" },
+          { value: "98%", label: "Accuracy" },
+          { value: "24/7", label: "Monitoring" },
+          { value: "0%", label: "Data Loss" }
+        ],
+        features: [
+          { title: "Patient Analytics", desc: "Track patient history and health trends." },
+          { title: "Reporting", desc: "Generate medical reports instantly." },
+          { title: "Smart Billing", desc: "Automated insurance and billing." }
+        ],
+        loginTitle: "Healthcare CRM Login",
+        theme: {
+          gradientFrom: "#001f2b",
+          gradientTo: "#004e6b",
+          accent: "#00c3ff"
+        }
+      }
+    },
+    {
+      industry: "retail",
+      data: {
+        title: "Retail Intelligence Platform",
+        subtitle: "Boost sales with AI-driven inventory analytics.",
+        stats: [
+          { value: "1000+", label: "Retailers" },
+          { value: "85%", label: "Sales Growth" },
+          { value: "AI", label: "Forecasting" },
+          { value: "10%", label: "Cost Reduction" }
+        ],
+        features: [
+          { title: "Demand Forecasting", desc: "Predict what sells next." },
+          { title: "Inventory Optimization", desc: "Reduce overstock and stockouts." },
+          { title: "Customer Insights", desc: "Understand buying patterns." }
+        ],
+        loginTitle: "Retail CRM Login",
+        theme: {
+          gradientFrom: "#2b1600",
+          gradientTo: "#4d2a00",
+          accent: "#ff9f43"
+        }
+      }
+    },
+    {
+      industry: "finance",
+      data: {
+        title: "Financial Analytics Suite",
+        subtitle: "Real-time financial insights and risk management.",
+        stats: [
+          { value: "100+", label: "Banks" },
+          { value: "Gold", label: "Security Standard" },
+          { value: "Real-Time", label: "Processing" },
+          { value: "99.9%", label: "Uptime" }
+        ],
+        features: [
+          { title: "Risk Assessment", desc: "Evaluate credit and market risks." },
+          { title: "Profitability Analysis", desc: "Analyze revenue streams." },
+          { title: "Fraud Detection", desc: "AI-powered security alerts." }
+        ],
+        loginTitle: "Finance CRM Login",
+        theme: {
+          gradientFrom: "#2b2500",
+          gradientTo: "#4d4300",
+          accent: "#ffd700"
+        }
+      }
+    },
+    {
+      industry: "groceries",
+      data: {
+        title: "Grocery Smart Hub",
+        subtitle: "Efficient fresh stock tracking and customer retention.",
+        stats: [
+          { value: "300+", label: "Stores" },
+          { value: "Fresh", label: "Stock Guarantee" },
+          { value: "24/7", label: "Support" },
+          { value: "15%", label: "Margin Boost" }
+        ],
+        features: [
+          { title: "Freshness Tracking", desc: "Monitor perishables effectively." },
+          { title: "Loyalty Programs", desc: "Engage customers with rewards." },
+          { title: "Quick Billing", desc: "Reduce checkout wait times." }
+        ],
+        loginTitle: "Grocery CRM Login",
+        theme: {
+          gradientFrom: "#1b2b00",
+          gradientTo: "#304d00",
+          accent: "#6aff00"
+        }
+      }
+    },
+    {
+      industry: "clothing-store",
+      data: {
+        title: "Fashion Analytics Pro",
+        subtitle: "Trend analysis and size-wise stock management.",
+        stats: [
+          { value: "150+", label: "Brands" },
+          { value: "Trend", label: "Analytics" },
+          { value: "Size", label: "Tracking" },
+          { value: "20%", label: "Stock Efficiency" }
+        ],
+        features: [
+          { title: "Trend Prediction", desc: "Stay ahead of fashion cycles." },
+          { title: "Size Optimization", desc: "Keep the right sizes in stock." },
+          { title: "Visual Merchandising", desc: "Optimize store layouts for sales." }
+        ],
+        loginTitle: "Clothing CRM Login",
+        theme: {
+          gradientFrom: "#2b001f",
+          gradientTo: "#4d0036",
+          accent: "#ff4fd8"
+        }
+      }
+    },
+    {
+      industry: "stock-trading",
+      data: {
+        title: "TradeGuard Analytics",
+        subtitle: "Portfolio analytics and real-time risk assessment.",
+        stats: [
+          { value: "5k+", label: "Traders" },
+          { value: "Low", label: "Latency" },
+          { value: "AI", label: "Risk Model" },
+          { value: "99.9%", label: "Precision" }
+        ],
+        features: [
+          { title: "Portfolio Health", desc: "Real-time asset performance." },
+          { title: "Risk Mitigation", desc: "Automated stop-loss insights." },
+          { title: "Market Sentiment", desc: "AI-driven news analysis." }
+        ],
+        loginTitle: "Trading CRM Login",
+        theme: {
+          gradientFrom: "#001b2b",
+          gradientTo: "#00364d",
+          accent: "#00e5ff"
+        }
+      }
+    }
+  ];
+
+  return industries.map(({ industry, data }) => ({
+    params: { industry },
+    props: { data },
+  }));
+}
+
+const { data } = Astro.props;
+---
+
+<MainLayout title={`${data.title} | Bobo Analytics`}>
+  <section class="hero" style={`--gradient-from: ${data.theme.gradientFrom}; --gradient-to: ${data.theme.gradientTo};`}>
+    <h1>{data.title}</h1>
+    <p>{data.subtitle}</p>
+    
+    <div class="stats">
+      {data.stats.map(stat => (
+        <div class="stat-item">
+          <h2 style={`color: ${data.theme.accent};`}>{stat.value}</h2>
+          <span>{stat.label}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="features-header">
+      <h2>Key Capabilities</h2>
+      <p>Transform your operations with our industry-specific tools.</p>
+    </div>
+    
+    <div class="feature-grid">
+      {data.features.map(feature => (
+        <div class="feature-card" style={`--accent-color: ${data.theme.accent};`}>
+          <h3>{feature.title}</h3>
+          <p>{feature.desc}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="login-section">
+    <div class="login-container">
+      <h2>{data.loginTitle}</h2>
+      <p>Access your secure dashboard.</p>
+      
+      <form class="crm-form">
+        <input type="text" placeholder="Username" required />
+        <input type="password" placeholder="Password" required />
+        <button type="submit" style={`background: ${data.theme.accent}; box-shadow: 0 4px 15px ${data.theme.accent}40;`}>
+          Sign In Target
+        </button>
+      </form>
+    </div>
+  </section>
+</MainLayout>
+
+<style>
+  .hero {
+    background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to));
+    color: white;
+    text-align: center;
+    padding: 100px 24px;
+    border-radius: 24px;
+    margin: 20px 24px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  }
+
+  .hero h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+  }
+
+  .hero p {
+    font-size: 1.25rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    margin-top: 60px;
+    flex-wrap: wrap;
+    background: rgba(0,0,0,0.2);
+    padding: 30px;
+    border-radius: 20px;
+    display: inline-flex;
+    backdrop-filter: blur(10px);
+  }
+
+  .stat-item h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .stat-item span {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0.8;
+  }
+
+  .features {
+    padding: 100px 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .features-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .features-header h2 {
+    font-size: 2.5rem;
+    margin-bottom: 16px;
+  }
+
+  .features-header p {
+    color: rgba(255,255,255,0.6);
+    font-size: 1.1rem;
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+  }
+
+  .feature-card {
+    background: rgba(255,255,255,0.03);
+    padding: 40px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: all 0.3s ease;
+  }
+
+  .feature-card:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    background: rgba(255,255,255,0.05);
+  }
+
+  .feature-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+  }
+
+  .feature-card p {
+    color: rgba(255,255,255,0.6);
+    line-height: 1.6;
+  }
+
+  .login-section {
+    padding: 60px 24px 100px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .login-container {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 50px;
+    border-radius: 24px;
+    text-align: center;
+    width: 100%;
+    max-width: 450px;
+  }
+
+  .login-container h2 {
+    font-size: 2rem;
+    margin-bottom: 8px;
+  }
+
+  .login-container p {
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 30px;
+  }
+
+  .crm-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .crm-form input {
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
+    color: white;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+  }
+
+  .crm-form input:focus {
+    outline: none;
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.3);
+  }
+
+  .crm-form button {
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    color: #111;
+    font-weight: 700;
+    font-size: 1.05rem;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.2s ease;
+  }
+
+  .crm-form button:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+  }
+
+  @media (max-width: 768px) {
+    .hero {
+      padding: 60px 20px;
+      margin: 10px;
+    }
+    .hero h1 {
+      font-size: 2.5rem;
+    }
+    .stats {
+      gap: 30px;
+      padding: 20px;
+    }
+  }
+</style>

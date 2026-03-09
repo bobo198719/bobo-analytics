@@ -1,4 +1,6 @@
 ---
+import Navbar from "../components/Navbar.astro";
+import Footer from "../components/Footer.astro";
 const { title = "Bobo Analytics" } = Astro.props;
 ---
 
@@ -8,21 +10,36 @@ const { title = "Bobo Analytics" } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
+    <link rel="icon" type="image/png" href="/logo.png" />
     <style>
+        :root {
+            --bg-color: #05081a;
+            --text-color: #ffffff;
+            --accent-color: #6366f1;
+        }
+        * {
+            box-sizing: border-box;
+        }
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: #0a0a0a;
-            color: white;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
         }
-        .container {
-            padding: 40px;
+        main {
+            flex: 1;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <Navbar />
+    <main>
         <slot />
-    </div>
+    </main>
+    <Footer />
 </body>
-</html>
+</html>

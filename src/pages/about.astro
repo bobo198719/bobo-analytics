@@ -1,0 +1,31 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+---
+
+<MainLayout title="About Us | Bobo Analytics">
+  <section class="content-page">
+    <h1>About Bobo Analytics</h1>
+    <p class="lead">We are on a mission to bring advanced AI analytics to every business, regardless of size or industry.</p>
+    
+    <div class="story">
+      <h2>Our Story</h2>
+      <p>Founded in 2026, Bobo Analytics started with a simple observation: while large corporations were leveraging AI to optimize their operations, small and medium-sized businesses were being left behind. We built Bobo to bridge that gap.</p>
+      
+      <h2>Our Vision</h2>
+      <p>To become the world's most intuitive and powerful analytics platform, empowering business owners with the insights they need to thrive in a data-driven world.</p>
+    </div>
+  </section>
+
+  <style>
+    .content-page {
+      padding: 100px 24px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 { font-size: 3rem; margin-bottom: 24px; }
+    .lead { font-size: 1.25rem; color: rgba(255,255,255,0.7); margin-bottom: 60px; line-height: 1.6; }
+    h2 { font-size: 2rem; margin: 40px 0 20px; color: #6366f1; }
+    p { line-height: 1.8; color: rgba(255,255,255,0.8); margin-bottom: 20px; }
+    .story { background: rgba(255,255,255,0.03); padding: 40px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
+  </style>
+</MainLayout>

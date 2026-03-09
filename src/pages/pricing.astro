@@ -2,23 +2,216 @@
 import MainLayout from "../layouts/MainLayout.astro";
 ---
 
-<MainLayout title="Pricing">
-    <div style="padding: 60px; text-align: center;">
-        <h1>Bobo Analytics Pricing</h1>
-        <h2 style="margin-top: 30px;">Pharmacy ERP Plan</h2>
-        <h3 style="color: #00ff88;">₹999 / month</h3>
-        <p style="margin-top: 20px;">
-            Billing POS<br />
-            Inventory Management<br />
-            Barcode Scanner<br />
-            Bill Scanner<br />
-            AI Alerts<br />
-            Analytics Dashboard
-        </p>
-        <a href="/signup">
-            <button style="margin-top: 25px; padding: 14px 22px; background: #00ff88; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">
-                Start Free Trial
-            </button>
-        </a>
+<MainLayout title="Pricing Plans | Bobo Analytics">
+  <section class="pricing-hero">
+    <h1>Simple, <span class="gradient-text">Transparent</span> Pricing</h1>
+    <p>Flexible plans tailored for pharmacies, healthcare providers, and retail stores.</p>
+  </section>
+
+  <section class="pricing-grid">
+    <div class="pricing-card">
+      <div class="tier">Starter</div>
+      <div class="price">Free</div>
+      <p class="desc">Perfect for small pharmacies exploring AI features.</p>
+      <ul>
+        <li>Basic Billing POS</li>
+        <li>100 Medicines Inventory</li>
+        <li>Standard Analytics</li>
+        <li>Email Support</li>
+      </ul>
+      <a href="/signup" class="btn-tier">Get Started</a>
     </div>
-</MainLayout>
+
+    <div class="pricing-card featured">
+      <div class="badge">Most Popular</div>
+      <div class="tier">Professional</div>
+      <div class="price">₹999 <span>/mo</span></div>
+      <p class="desc">Complete ERP solution for established pharmacies.</p>
+      <ul>
+        <li>Advanced Billing POS</li>
+        <li>Unlimited Inventory</li>
+        <li>AI Expiry Alerts</li>
+        <li>Barcode & Bill Scanner</li>
+        <li>Full Analytics Dashboard</li>
+        <li>24/7 Priority Support</li>
+      </ul>
+      <a href="/signup" class="btn-tier featured-btn">Start 14-Day Free Trial</a>
+    </div>
+
+    <div class="pricing-card">
+      <div class="tier">Enterprise</div>
+      <div class="price">Custom</div>
+      <p class="desc">Multi-tenant systems for large chains and hospitals.</p>
+      <ul>
+        <li>Multi-location Support</li>
+        <li>Custom AI Models</li>
+        <li>API Integration</li>
+        <li>Dedicated Account Manager</li>
+        <li>SLA Gaurantee</li>
+      </ul>
+      <a href="/contact" class="btn-tier">Contact Sales</a>
+    </div>
+  </section>
+
+  <style>
+    .pricing-hero {
+      text-align: center;
+      padding: 100px 24px 60px;
+    }
+
+    .pricing-hero h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .pricing-hero p {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 1.25rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto 100px;
+      padding: 24px;
+    }
+
+    .pricing-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+
+    .pricing-card:hover {
+      transform: translateY(-10px);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .featured {
+      background: rgba(99, 102, 241, 0.05);
+      border-color: #6366f1;
+      transform: scale(1.05);
+      z-index: 2;
+    }
+
+    .featured:hover {
+        transform: scale(1.05) translateY(-10px);
+    }
+
+    .badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #6366f1;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .tier {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .price {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .price span {
+      font-size: 1rem;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .desc {
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 30px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .pricing-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 40px;
+      flex: 1;
+    }
+
+    .pricing-card li {
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.95rem;
+    }
+
+    .pricing-card li::before {
+      content: "✓";
+      color: #6366f1;
+      font-weight: 900;
+    }
+
+    .btn-tier {
+      text-align: center;
+      padding: 14px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-tier:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .featured-btn {
+      background: #6366f1;
+      border-color: #6366f1;
+    }
+
+    .featured-btn:hover {
+      background: #4f46e5;
+      box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    @media (max-width: 1024px) {
+        .pricing-grid {
+            grid-template-columns: 1fr;
+            max-width: 500px;
+        }
+        .featured {
+            transform: scale(1);
+        }
+        .featured:hover {
+            transform: translateY(-10px);
+        }
+    }
+  </style>
+</MainLayout>
