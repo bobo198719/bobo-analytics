@@ -3,7 +3,7 @@
 import MainLayout from "../../layouts/MainLayout.astro";
 
 <MainLayout title="Pharmacy Management Software"><section class="hero"><img src="/logo.png" class="logo" alt="Bobo Analytics Logo"><h1>Pharmacy Management Software</h1><p class="subtitle">
-AI powered analytics and automation for modern pharmacies.
+AI powered analytics and automation for modern pharmacies
 </p><div class="stats"><div class="stat">
 <h2>500+</h2>
 <p>Pharmacies Using Our Platform</p>
@@ -50,7 +50,7 @@ required
 
 <button type="submit">
 Login
-</button></form><p id="error"></p></section><style>
+</button></form><p id="error" class="error"></p></section><style>
 
 .hero{
 text-align:center;
@@ -85,12 +85,15 @@ display:grid;
 grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
 gap:20px;
 padding:60px;
+max-width:1200px;
+margin:auto;
 }
 
 .feature{
 background:#f5f5f5;
 padding:30px;
 border-radius:10px;
+box-shadow:0 5px 20px rgba(0,0,0,0.1);
 }
 
 .login-section{
@@ -118,11 +121,16 @@ border-radius:6px;
 cursor:pointer;
 }
 
+.error{
+color:red;
+margin-top:10px;
+}
+
 </style><script>
 
-const form = document.getElementById("loginForm")
+const form=document.getElementById("loginForm")
 
-form.addEventListener("submit", async (e)=>{
+form.addEventListener("submit",async(e)=>{
 
 e.preventDefault()
 
@@ -137,7 +145,10 @@ headers:{
 "Content-Type":"application/json"
 },
 
-body:JSON.stringify({username,password})
+body:JSON.stringify({
+username:username,
+password:password
+})
 
 })
 
@@ -145,11 +156,14 @@ const data=await res.json()
 
 if(res.ok){
 
+localStorage.setItem("boboUser",username)
+localStorage.setItem("industry","pharmacy")
+
 window.location.href="/pharmacy-dashboard"
 
 }else{
 
-document.getElementById("error").innerText="Invalid login"
+document.getElementById("error").innerText="Invalid login credentials"
 
 }
 
