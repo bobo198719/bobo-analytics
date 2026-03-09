@@ -78,15 +78,30 @@ import MainLayout from "../layouts/MainLayout.astro";
       padding: 12px;
       border-radius: 10px;
       color: white;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+    input:focus, textarea:focus {
+      border-color: #6366f1;
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
     }
     .btn-submit {
-      background: #6366f1;
+      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
       color: white;
       padding: 14px;
       border: none;
       border-radius: 10px;
+      font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.2s ease;
+    }
+    .btn-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
     }
     @media (max-width: 768px) {
       .contact-grid { grid-template-columns: 1fr; gap: 40px; }

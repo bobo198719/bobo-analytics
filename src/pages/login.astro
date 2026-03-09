@@ -17,17 +17,47 @@ import MainLayout from "../layouts/MainLayout.astro";
         <div class="arrow">→</div>
       </a>
 
-      <div class="option-card disabled">
+      <a href="/solutions/healthcare#login" class="option-card">
         <div class="option-icon">🏥</div>
-        <h3>Healthcare Provider</h3>
-        <p>Coming soon: Dedicated portal for hospitals and clinics.</p>
-      </div>
+        <h3>Healthcare CRM</h3>
+        <p>Patient analytics and hospital insights.</p>
+        <div class="arrow">→</div>
+      </a>
 
-      <div class="option-card disabled">
+      <a href="/solutions/retail#login" class="option-card">
         <div class="option-icon">🛒</div>
-        <h3>Retail Manager</h3>
-        <p>Coming soon: Integrated retail intelligence dashboard.</p>
-      </div>
+        <h3>Retail Intelligence</h3>
+        <p>Boost sales with AI-driven inventory analytics.</p>
+        <div class="arrow">→</div>
+      </a>
+
+      <a href="/solutions/finance#login" class="option-card">
+        <div class="option-icon">📈</div>
+        <h3>Finance Suite</h3>
+        <p>Real-time financial insights and risk management.</p>
+        <div class="arrow">→</div>
+      </a>
+
+      <a href="/solutions/groceries#login" class="option-card">
+        <div class="option-icon">🍎</div>
+        <h3>Grocery Hub</h3>
+        <p>Efficient fresh stock tracking and management.</p>
+        <div class="arrow">→</div>
+      </a>
+
+      <a href="/solutions/clothing-store#login" class="option-card">
+        <div class="option-icon">👕</div>
+        <h3>Fashion Analytics</h3>
+        <p>Trend analysis and size-wise stock management.</p>
+        <div class="arrow">→</div>
+      </a>
+
+      <a href="/admin-login" class="option-card admin">
+        <div class="option-icon">🛡️</div>
+        <h3>Admin Portal</h3>
+        <p>Restricted access. Authorized personnel only.</p>
+        <div class="arrow">→</div>
+      </a>
     </div>
   </section>
 
@@ -75,7 +105,7 @@ import MainLayout from "../layouts/MainLayout.astro";
       gap: 12px;
     }
 
-    .option-card:hover:not(.disabled) {
+    .option-card:hover {
       background: rgba(255, 255, 255, 0.08);
       border-color: #6366f1;
       transform: translateY(-5px);
@@ -110,15 +140,16 @@ import MainLayout from "../layouts/MainLayout.astro";
       transform: translateX(0);
     }
 
-    .disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
+    .option-card.admin {
+      border-color: rgba(239, 68, 68, 0.2);
     }
 
-    .disabled h3::after {
-      content: " (Soon)";
-      font-size: 0.8rem;
-      color: #7f00ff;
+    .option-card.admin:hover {
+      border-color: #ef4444;
+    }
+
+    .option-card.admin .arrow {
+      color: #ef4444;
     }
   </style>
 </MainLayout>

@@ -9,6 +9,7 @@
     </a>
 
     <div class="nav-links">
+      <a href="/pricing" class="nav-link">Pricing</a>
       <div class="dropdown">
         <button class="dropbtn">
           Login 
@@ -19,11 +20,15 @@
             <span class="icon">💊</span> Pharmacy Login
           </a>
           <hr />
-          <a href="https://crm-healthcare.yourcrm.com" target="_blank">
-            <span class="icon">🏥</span> Healthcare CRM
+          <a href="/solutions/healthcare#login">
+            <span class="icon">🏥</span> Healthcare Login
           </a>
-          <a href="https://crm-retail.yourcrm.com" target="_blank">
-            <span class="icon">🛒</span> Retail CRM
+          <a href="/solutions/retail#login">
+            <span class="icon">🛒</span> Retail Login
+          </a>
+          <hr />
+          <a href="/login">
+            <span class="icon">🔑</span> All Logins
           </a>
         </div>
       </div>
@@ -73,6 +78,17 @@
   display: flex;
   align-items: center;
   gap: 20px;
+}
+
+.nav-link {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: white;
 }
 
 .dropdown {

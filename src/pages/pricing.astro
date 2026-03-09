@@ -4,8 +4,18 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 <MainLayout title="Pricing Plans | Bobo Analytics">
   <section class="pricing-hero">
+    <div class="glow-bg"></div>
     <h1>Simple, <span class="gradient-text">Transparent</span> Pricing</h1>
-    <p>Flexible plans tailored for pharmacies, healthcare providers, and retail stores.</p>
+    <p>Flexible plans tailored for pharmacies, healthcare providers, and retail stores. Scale as you grow.</p>
+    
+    <div class="billing-toggle">
+      <span class="left-label active">Monthly</span>
+      <label class="switch">
+        <input type="checkbox" id="billingToggle">
+        <span class="slider round"></span>
+      </label>
+      <span class="right-label">Annually <span class="save-badge">Save 20%</span></span>
+    </div>
   </section>
 
   <section class="pricing-grid">
@@ -23,9 +33,13 @@ import MainLayout from "../layouts/MainLayout.astro";
     </div>
 
     <div class="pricing-card featured">
+      <div class="glow-border"></div>
       <div class="badge">Most Popular</div>
       <div class="tier">Professional</div>
-      <div class="price">₹999 <span>/mo</span></div>
+      <div class="price-container">
+        <div class="price" id="proPriceMonthly">₹999 <span>/mo</span></div>
+        <div class="price hidden" id="proPriceAnnually">₹799 <span>/mo</span><div class="billed-yearly">Billed ₹9,588 yearly</div></div>
+      </div>
       <p class="desc">Complete ERP solution for established pharmacies.</p>
       <ul>
         <li>Advanced Billing POS</li>
@@ -47,16 +61,75 @@ import MainLayout from "../layouts/MainLayout.astro";
         <li>Custom AI Models</li>
         <li>API Integration</li>
         <li>Dedicated Account Manager</li>
-        <li>SLA Gaurantee</li>
+        <li>SLA Guarantee</li>
       </ul>
       <a href="/contact" class="btn-tier">Contact Sales</a>
     </div>
   </section>
 
+  <section class="faq-section">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-grid">
+      <div class="faq-item">
+        <h3>Can I switch plans later?</h3>
+        <p>Absolutely. You can upgrade or downgrade your plan at any time. Prorated charges will be applied automatically.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Do I need a credit card for the trial?</h3>
+        <p>No, our 14-day free trial is completely commitment-free. You only enter payment details if you decide to subscribe.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Is there a setup fee?</h3>
+        <p>No, there are no hidden fees or setup costs. You only pay the listed monthly or annual subscription price.</p>
+      </div>
+      <div class="faq-item">
+        <h3>What kind of support is included?</h3>
+        <p>Starter plans include email support. Professional and Enterprise plans benefit from 24/7 priority support and dedicated account managers respectively.</p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const toggle = document.getElementById("billingToggle");
+      const leftLabel = document.querySelector(".left-label");
+      const rightLabel = document.querySelector(".right-label");
+      const monthlyPrice = document.getElementById("proPriceMonthly");
+      const yearlyPrice = document.getElementById("proPriceAnnually");
+
+      toggle.addEventListener("change", (e) => {
+        if (e.target.checked) {
+          leftLabel.classList.remove("active");
+          rightLabel.classList.add("active");
+          monthlyPrice.classList.add("hidden");
+          yearlyPrice.classList.remove("hidden");
+        } else {
+          leftLabel.classList.add("active");
+          rightLabel.classList.remove("active");
+          monthlyPrice.classList.remove("hidden");
+          yearlyPrice.classList.add("hidden");
+        }
+      });
+    });
+  </script>
+
   <style>
     .pricing-hero {
       text-align: center;
       padding: 100px 24px 60px;
+      position: relative;
+    }
+
+    .glow-bg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: -1;
     }
 
     .pricing-hero h1 {
@@ -75,9 +148,93 @@ import MainLayout from "../layouts/MainLayout.astro";
       color: rgba(255, 255, 255, 0.6);
       font-size: 1.25rem;
       max-width: 600px;
-      margin: 0 auto;
+      margin: 0 auto 40px;
     }
 
+    /* Toggle Switch */
+    .billing-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .left-label, .right-label {
+      font-size: 1rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.5);
+      transition: color 0.3s ease;
+    }
+
+    .left-label.active, .right-label.active {
+      color: white;
+    }
+
+    .save-badge {
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      margin-left: 8px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 32px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.1);
+      transition: .4s;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 24px;
+      width: 24px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    input:checked + .slider {
+      background-color: #6366f1;
+      border-color: #6366f1;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(28px);
+    }
+
+    .slider.round {
+      border-radius: 34px;
+    }
+
+    .slider.round:before {
+      border-radius: 50%;
+    }
+
+    /* Grid */
     .pricing-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -85,6 +242,7 @@ import MainLayout from "../layouts/MainLayout.astro";
       max-width: 1200px;
       margin: 0 auto 100px;
       padding: 24px;
+      align-items: center;
     }
 
     .pricing-card {
@@ -95,12 +253,15 @@ import MainLayout from "../layouts/MainLayout.astro";
       display: flex;
       flex-direction: column;
       position: relative;
-      transition: transform 0.3s ease;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      min-height: 520px;
     }
 
     .pricing-card:hover {
       transform: translateY(-10px);
       border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
     }
 
     .featured {
@@ -108,23 +269,42 @@ import MainLayout from "../layouts/MainLayout.astro";
       border-color: #6366f1;
       transform: scale(1.05);
       z-index: 2;
+      padding: 50px 40px;
+      box-shadow: 0 20px 40px rgba(99, 102, 241, 0.1);
+      min-height: 560px;
     }
 
     .featured:hover {
-        transform: scale(1.05) translateY(-10px);
+      transform: scale(1.05) translateY(-10px);
+      box-shadow: 0 30px 60px rgba(99, 102, 241, 0.2);
+    }
+
+    .glow-border {
+      position: absolute;
+      inset: -1px;
+      border-radius: 25px;
+      padding: 2px;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
     }
 
     .badge {
       position: absolute;
-      top: 20px;
-      right: 20px;
-      background: #6366f1;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
       color: white;
-      padding: 4px 12px;
+      padding: 6px 16px;
       border-radius: 20px;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       font-weight: 700;
       text-transform: uppercase;
+      letter-spacing: 0.05em;
+      box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
     }
 
     .tier {
@@ -134,16 +314,32 @@ import MainLayout from "../layouts/MainLayout.astro";
       color: rgba(255, 255, 255, 0.8);
     }
 
+    .price-container {
+      min-height: 85px;
+      margin-bottom: 12px;
+    }
+
     .price {
       font-size: 3rem;
       font-weight: 800;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
+    }
+
+    .price.hidden {
+      display: none;
     }
 
     .price span {
       font-size: 1rem;
       font-weight: 400;
       color: rgba(255, 255, 255, 0.5);
+    }
+
+    .billed-yearly {
+      font-size: 0.85rem;
+      color: #10b981;
+      font-weight: 600;
+      margin-top: 4px;
     }
 
     .desc {
@@ -173,6 +369,18 @@ import MainLayout from "../layouts/MainLayout.astro";
       content: "✓";
       color: #6366f1;
       font-weight: 900;
+      background: rgba(99, 102, 241, 0.1);
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 0.75rem;
+    }
+
+    .featured li::before {
+      background: rgba(99, 102, 241, 0.2);
     }
 
     .btn-tier {
@@ -189,29 +397,67 @@ import MainLayout from "../layouts/MainLayout.astro";
 
     .btn-tier:hover {
       background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
     }
 
     .featured-btn {
-      background: #6366f1;
-      border-color: #6366f1;
+      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+      border: none;
+      box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
     }
 
     .featured-btn:hover {
-      background: #4f46e5;
-      box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+      background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
+      box-shadow: 0 15px 30px rgba(99, 102, 241, 0.4);
+      transform: translateY(-2px);
+    }
+
+    /* FAQ Section */
+    .faq-section {
+      max-width: 900px;
+      margin: 0 auto 100px;
+      padding: 0 24px;
+    }
+
+    .faq-section h2 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 60px;
+    }
+
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 40px;
+    }
+
+    .faq-item h3 {
+      font-size: 1.2rem;
+      margin-bottom: 12px;
+      color: white;
+    }
+
+    .faq-item p {
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 1.6;
     }
 
     @media (max-width: 1024px) {
-        .pricing-grid {
-            grid-template-columns: 1fr;
-            max-width: 500px;
-        }
-        .featured {
-            transform: scale(1);
-        }
-        .featured:hover {
-            transform: translateY(-10px);
-        }
+      .pricing-grid {
+        grid-template-columns: 1fr;
+        max-width: 500px;
+        align-items: stretch;
+      }
+      .featured {
+        transform: scale(1);
+        padding: 40px;
+      }
+      .featured:hover {
+        transform: translateY(-10px);
+      }
+      .faq-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </MainLayout>

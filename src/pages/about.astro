@@ -3,29 +3,209 @@ import MainLayout from "../layouts/MainLayout.astro";
 ---
 
 <MainLayout title="About Us | Bobo Analytics">
-  <section class="content-page">
-    <h1>About Bobo Analytics</h1>
+  <section class="about-hero">
+    <div class="glow-bg"></div>
+    <h1>About <span class="gradient-text">Bobo Analytics</span></h1>
     <p class="lead">We are on a mission to bring advanced AI analytics to every business, regardless of size or industry.</p>
-    
-    <div class="story">
-      <h2>Our Story</h2>
-      <p>Founded in 2026, Bobo Analytics started with a simple observation: while large corporations were leveraging AI to optimize their operations, small and medium-sized businesses were being left behind. We built Bobo to bridge that gap.</p>
-      
-      <h2>Our Vision</h2>
-      <p>To become the world's most intuitive and powerful analytics platform, empowering business owners with the insights they need to thrive in a data-driven world.</p>
+  </section>
+
+  <section class="story-section">
+    <div class="story-grid">
+      <div class="story-content">
+        <h2>Our Story</h2>
+        <p>Founded in 2026, Bobo Analytics started with a simple observation: while large corporations were leveraging AI to optimize their operations, small and medium-sized businesses were being left behind. The data divide was widening.</p>
+        <p>We built Bobo to bridge that gap. By democratizing access to cutting-edge predictive analytics and inventory management, we level the playing field for ambitious businesses everywhere.</p>
+      </div>
+      <div class="vision-content">
+        <h2>Our Vision</h2>
+        <div class="vision-card">
+          <div class="icon">🌍</div>
+          <p>To become the world's most intuitive and powerful analytics platform, empowering business owners with the insights they need to thrive in a data-driven world.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="values-section">
+    <h2>Core Values</h2>
+    <div class="values-grid">
+      <div class="value-card">
+        <div class="icon-circle">💡</div>
+        <h3>Innovation</h3>
+        <p>We constantly push the boundaries of what AI can do for every day retail and healthcare operations.</p>
+      </div>
+      <div class="value-card">
+        <div class="icon-circle">🤝</div>
+        <h3>Partnership</h3>
+        <p>Your success is our success. We treat every client as a long-term partner.</p>
+      </div>
+      <div class="value-card">
+        <div class="icon-circle">🔒</div>
+        <h3>Trust & Security</h3>
+        <p>Your data is sacred. We employ military-grade encryption to ensure complete privacy.</p>
+      </div>
     </div>
   </section>
 
   <style>
-    .content-page {
-      padding: 100px 24px;
-      max-width: 800px;
-      margin: 0 auto;
+    .about-hero {
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
     }
-    h1 { font-size: 3rem; margin-bottom: 24px; }
-    .lead { font-size: 1.25rem; color: rgba(255,255,255,0.7); margin-bottom: 60px; line-height: 1.6; }
-    h2 { font-size: 2rem; margin: 40px 0 20px; color: #6366f1; }
-    p { line-height: 1.8; color: rgba(255,255,255,0.8); margin-bottom: 20px; }
-    .story { background: rgba(255,255,255,0.03); padding: 40px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
+
+    .glow-bg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .about-hero h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 24px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .lead {
+      font-size: 1.25rem;
+      color: rgba(255, 255, 255, 0.6);
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .story-section {
+      max-width: 1200px;
+      margin: 0 auto 100px;
+      padding: 0 24px;
+    }
+
+    .story-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .story-content h2, .vision-content h2 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: white;
+    }
+
+    .story-content p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 1.1rem;
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+
+    .vision-card {
+      background: rgba(99, 102, 241, 0.05);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      padding: 40px;
+      border-radius: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .vision-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(to bottom, #6366f1, #a855f7);
+    }
+
+    .vision-card .icon {
+      font-size: 3rem;
+    }
+
+    .vision-card p {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.2rem;
+      line-height: 1.6;
+      font-weight: 500;
+    }
+
+    .values-section {
+      max-width: 1200px;
+      margin: 0 auto 100px;
+      padding: 0 24px;
+      text-align: center;
+    }
+
+    .values-section h2 {
+      font-size: 2.5rem;
+      margin-bottom: 60px;
+    }
+
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .value-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 40px 30px;
+      border-radius: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .value-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateY(-5px);
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    .icon-circle {
+      width: 70px;
+      height: 70px;
+      background: rgba(99, 102, 241, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto 24px;
+      border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+
+    .value-card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 16px;
+    }
+
+    .value-card p {
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 900px) {
+      .story-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+    }
   </style>
 </MainLayout>
