@@ -2,98 +2,160 @@
 import MainLayout from "../layouts/MainLayout.astro";
 ---
 
-<MainLayout title="Admin Hub | Bobo Analytics">
+<MainLayout title="Super Admin Panel | BoboAnalytics">
   <div class="admin-layout">
     <aside class="sidebar">
       <div class="sidebar-header">
         <img src="/logo.png" alt="Bobo Analytics Logo" class="admin-logo" />
-        <h2>Admin Hub</h2>
+        <div class="brand-text">
+            <h2>BoboAnalytics</h2>
+            <span class="badge super-admin">Super Admin</span>
+        </div>
       </div>
       <nav class="sidebar-nav">
+        <div class="nav-section">Core</div>
         <a href="#dashboard" class="active">Overview</a>
-        <a href="#tenants">Create Tenants</a>
-        <a href="#users">Manage Users</a>
-        <a href="#billing">Billing & Subscriptions</a>
+        <a href="#industry">Industry Manager</a>
+        <a href="#tenants">Tenant Manager</a>
+        <a href="#features">Feature Manager</a>
+        
+        <div class="nav-section">Operations</div>
+        <a href="#users">User Monitoring</a>
+        <a href="#billing">Payments & Subscriptions</a>
+        
+        <div class="nav-section">Marketing & Alerts</div>
+        <a href="#automation">Automation Center</a>
+        <a href="#whatsapp">WhatsApp Integration</a>
+        <a href="#email">Email Campaigns</a>
+        
+        <div class="nav-section">Configuration</div>
         <a href="#settings">System Settings</a>
       </nav>
       <div class="sidebar-footer">
-        <button id="logoutBtn" class="btn-logout">Logout</button>
+        <button id="logoutBtn" class="btn-logout">Logout securely</button>
       </div>
     </aside>
 
     <main class="main-content">
       <header class="top-bar">
-        <h1 id="pageTitle">Dashboard</h1>
-        <div class="user-profile">
-          <span>System Admin</span>
-          <div class="avatar">SA</div>
+        <h1 id="pageTitle">Overview</h1>
+        <div class="top-actions">
+           <button class="btn-secondary" onclick="alert('Entering Tenant Masking Mode...')">👁 Login as Client</button>
+           <div class="user-profile">
+             <span>System Master</span>
+             <div class="avatar">SM</div>
+           </div>
         </div>
       </header>
 
-      <!-- Dashboard Section -->
+      <!-- 1. Overview Section -->
       <div id="sec-dashboard" class="admin-section active">
         <section class="overview-cards">
           <div class="card revenue">
-            <h3>Total MRR</h3>
+            <h3>Monthly Recurring Revenue (MRR)</h3>
             <p class="value">₹12,45,000</p>
             <span class="trend positive">↑ 14% vs last month</span>
           </div>
           <div class="card">
             <h3>Active Industries</h3>
-            <p class="value">7</p>
-            <span class="trend">Across our network</span>
+            <p class="value">6</p>
+            <span class="trend">Pharmacy leading with 42%</span>
           </div>
           <div class="card">
-            <h3>Total Tenants</h3>
+            <h3>Total Live Tenants</h3>
             <p class="value">2,154</p>
-            <span class="trend positive">↑ 8% vs last month</span>
+            <span class="trend positive">↑ 32 onboarded today</span>
           </div>
           <div class="card">
-            <h3>System Health</h3>
-            <p class="value">99.99%</p>
-            <span class="trend positive">All Systems Operational</span>
+            <h3>WhatsApp Automations Sent</h3>
+            <p class="value">142,890</p>
+            <span class="trend">Across all clients this month</span>
           </div>
         </section>
       </div>
 
-      <!-- Tenants Section -->
+      <!-- 2. Industry Manager -->
+      <div id="sec-industry" class="admin-section">
+        <div class="section-header">
+          <h2>Industry Manager</h2>
+          <p>Define verticals and structure the baseline plans for each sector.</p>
+        </div>
+        <div class="action-bar-right"><button class="btn-primary">+ Add New Industry</button></div>
+        
+        <table class="activity-table" style="margin-top:20px;">
+           <thead>
+             <tr>
+               <th>Industry</th>
+               <th>Active Tenants</th>
+               <th>Available Plans</th>
+               <th>Actions</th>
+             </tr>
+           </thead>
+           <tbody>
+             <tr>
+               <td><strong>Pharmacy</strong></td>
+               <td>1,240</td>
+               <td>Starter, Professional, Enterprise</td>
+               <td><button class="btn-text">Edit</button> | <button class="btn-text danger">Disable</button></td>
+             </tr>
+             <tr>
+               <td><strong>Grocery</strong></td>
+               <td>842</td>
+               <td>Basic, Premium</td>
+               <td><button class="btn-text">Edit</button> | <button class="btn-text danger">Disable</button></td>
+             </tr>
+             <tr>
+               <td><strong>Clinic / Hospital</strong></td>
+               <td>72</td>
+               <td>Standard, Advanced</td>
+               <td><button class="btn-text">Edit</button> | <button class="btn-text danger">Disable</button></td>
+             </tr>
+           </tbody>
+        </table>
+      </div>
+
+      <!-- 3. Tenant Manager -->
       <div id="sec-tenants" class="admin-section">
         <section class="tenant-creation">
           <div class="section-header">
-            <h2>Provision New Tenant</h2>
-            <p>Create dedicated instances and custom IDs for new businesses joining the platform.</p>
+            <h2>Tenant Manager (Businesses)</h2>
+            <p>Provision isolated subdomains, databases, and capabilities for new clients.</p>
           </div>
 
           <div class="creation-panel">
             <form class="tenant-form" id="createTenantForm">
               <div class="form-row">
                 <div class="form-group">
-                  <label>Industry Vertical</label>
+                  <label>Industry</label>
                   <select id="industrySelect" required>
                     <option value="" disabled selected>Select Industry</option>
                     <option value="pharmacy">Pharmacy</option>
-                    <option value="healthcare">Healthcare</option>
-                    <option value="retail">Retail</option>
-                    <option value="finance">Finance</option>
-                    <option value="groceries">Groceries</option>
-                    <option value="clothing-store">Clothing Store</option>
-                    <option value="stock-trading">Stock Trading</option>
+                    <option value="grocery">Grocery</option>
+                    <option value="clinic">Clinic</option>
                   </select>
                 </div>
                 <div class="form-group">
-                  <label>Custom Instance ID</label>
-                  <input type="text" id="customId" placeholder="e.g., apollo-pharm-1" required />
+                  <label>Business Name</label>
+                  <input type="text" id="businessName" placeholder="e.g., Apollo Pharmacy" required />
+                </div>
+                <div class="form-group">
+                  <label>Subdomain / Instance ID</label>
+                  <input type="text" id="customId" placeholder="apollo-pharm" required />
                 </div>
               </div>
 
               <div class="form-row">
                 <div class="form-group">
-                  <label>Business Name</label>
-                  <input type="text" id="businessName" placeholder="Registered Name" required />
-                </div>
-                <div class="form-group">
                   <label>Admin Email</label>
                   <input type="email" id="adminEmail" placeholder="admin@business.com" required />
+                </div>
+                <div class="form-group">
+                  <label>Admin Phone (WhatsApp API)</label>
+                  <input type="text" placeholder="+91 9876543210" required />
+                </div>
+                <div class="form-group">
+                  <label>Account Password</label>
+                  <input type="password" id="accountPassword" placeholder="••••••••" required />
                 </div>
               </div>
 
@@ -107,27 +169,40 @@ import MainLayout from "../layouts/MainLayout.astro";
                   </select>
                 </div>
                 <div class="form-group">
-                  <label>Account Password</label>
-                  <input type="password" id="accountPassword" placeholder="••••••••" required />
+                  <label>Billing Cycle</label>
+                  <select>
+                    <option value="monthly">Monthly</option>
+                    <option value="yearly">Yearly (Save 20%)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Trial Days</label>
+                  <input type="number" value="14" />
                 </div>
               </div>
 
+              <div class="onboarding-toggles">
+                 <label class="toggle-control"><input type="checkbox" checked /> Send Welcome Email</label>
+                 <label class="toggle-control"><input type="checkbox" checked /> Send WhatsApp Welcome Message</label>
+              </div>
+
               <div class="form-actions">
-                <button type="submit" class="btn-primary">Provision Tenant Space</button>
+                <button type="submit" class="btn-primary" style="font-size:1.1rem; padding:16px 32px;">Deploy Tenant Infrastructure</button>
               </div>
             </form>
             <div id="successMsg" class="success-alert" style="display: none;">
-              ✅ Tenant space successfully provisioned! Credentials ready.
+              ✅ Architecture deployed: Subdomain routed, DB initialized, API activated. Welcome messages dispatched.
             </div>
           </div>
         </section>
 
         <section class="recent-activity" style="margin-top: 48px;">
-          <h2>Recent Tenant Provisions</h2>
+          <h2>Recently Deployed Tenants</h2>
           <table class="activity-table">
             <thead>
               <tr>
-                <th>Instance ID</th>
+                <th>Instance</th>
+                <th>Name</th>
                 <th>Industry</th>
                 <th>Plan</th>
                 <th>Status</th>
@@ -135,74 +210,325 @@ import MainLayout from "../layouts/MainLayout.astro";
             </thead>
             <tbody id="tenantTableBody">
               <tr>
-                <td>medcare-01</td>
+                <td>apollo-pharm</td>
+                <td>Apollo Pharmacy</td>
                 <td>Pharmacy</td>
-                <td>Professional</td>
-                <td><span class="badge success">Active</span></td>
-              </tr>
-              <tr>
-                <td>freshfoods-nyc</td>
-                <td>Groceries</td>
                 <td>Enterprise</td>
                 <td><span class="badge success">Active</span></td>
-              </tr>
-              <tr>
-                <td>trust-bank-eu</td>
-                <td>Finance</td>
-                <td>Enterprise</td>
-                <td><span class="badge pending">Provisioning</span></td>
               </tr>
             </tbody>
           </table>
         </section>
       </div>
 
-      <!-- Manage Users Section -->
+      <!-- 4. Feature Manager -->
+      <div id="sec-features" class="admin-section">
+        <div class="section-header">
+          <h2>Feature Manager (Capability Toggles)</h2>
+          <p>Strictly control what modules are accessible per payment plan.</p>
+        </div>
+        
+        <div class="card" style="margin-bottom:20px;">
+           <table class="activity-table">
+              <thead>
+                <tr>
+                   <th>Feature Module</th>
+                   <th>Starter</th>
+                   <th>Professional</th>
+                   <th>Enterprise</th>
+                   <th>Override</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                   <td><strong>Basic Inventory</strong></td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td><button class="btn-text">Force Toggle</button></td>
+                </tr>
+                <tr>
+                   <td><strong>Sales POS</strong></td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td><button class="btn-text">Force Toggle</button></td>
+                </tr>
+                <tr>
+                   <td><strong>Purchase Orders</strong></td>
+                   <td class="text-red">❌ Disabled</td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td><button class="btn-text">Force Toggle</button></td>
+                </tr>
+                <tr>
+                   <td><strong>Advanced Analytics</strong></td>
+                   <td class="text-red">❌ Disabled</td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td><button class="btn-text">Force Toggle</button></td>
+                </tr>
+                <tr>
+                   <td><strong>AI Forecasting</strong></td>
+                   <td class="text-red">❌ Disabled</td>
+                   <td class="text-red">❌ Disabled</td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td><button class="btn-text">Force Toggle</button></td>
+                </tr>
+                <tr>
+                   <td><strong>Multi-Branch Sync</strong></td>
+                   <td class="text-red">❌ Disabled</td>
+                   <td class="text-red">❌ Disabled</td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td><button class="btn-text">Force Toggle</button></td>
+                </tr>
+                <tr>
+                   <td><strong>WhatsApp Alerts</strong></td>
+                   <td class="text-red">❌ Disabled</td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td><button class="btn-text">Force Toggle</button></td>
+                </tr>
+              </tbody>
+           </table>
+        </div>
+      </div>
+
+      <!-- 5. User Monitoring -->
       <div id="sec-users" class="admin-section">
         <div class="section-header">
-          <h2>Manage Users</h2>
-          <p>View and manage all active users across instances.</p>
+          <h2>User Monitoring</h2>
+          <p>Oversee all staff accounts generated by tenant owners across all systems.</p>
         </div>
-        <div class="card" style="text-align: center; padding: 40px;">
-          <p style="color: rgba(255,255,255,0.6); font-size: 1.1rem;">No active users found for current filter.</p>
-        </div>
+        <table class="activity-table">
+           <thead>
+             <tr>
+               <th>Tenant Parent</th>
+               <th>Staff Name</th>
+               <th>Role</th>
+               <th>Last Login</th>
+               <th>Actions</th>
+             </tr>
+           </thead>
+           <tbody>
+             <tr>
+               <td>Apollo Pharmacy</td>
+               <td>Rahul Kumar</td>
+               <td>Manager</td>
+               <td>Today, 09:42 AM</td>
+               <td><button class="btn-text">Login As</button> | <button class="btn-text danger">Suspend</button></td>
+             </tr>
+             <tr>
+               <td>Apollo Pharmacy</td>
+               <td>Neha Gupta</td>
+               <td>Cashier</td>
+               <td>Yesterday</td>
+               <td><button class="btn-text">Login As</button> | <button class="btn-text danger">Suspend</button></td>
+             </tr>
+             <tr>
+               <td>MedCare Plus</td>
+               <td>Dr. Singh</td>
+               <td>Admin</td>
+               <td>Today, 02:15 PM</td>
+               <td><button class="btn-text">Login As</button> | <button class="btn-text danger">Suspend</button></td>
+             </tr>
+           </tbody>
+        </table>
       </div>
 
-      <!-- Billing Section -->
+      <!-- 6. Payments & Subscriptions -->
       <div id="sec-billing" class="admin-section">
         <div class="section-header">
-          <h2>Billing & Subscriptions</h2>
-          <p>Track payments and recurring revenue.</p>
+          <h2>Payments & Subscriptions</h2>
+          <p>Manage plan activation, expiry events, feature locking, and invoicing.</p>
         </div>
-        <div class="card" style="text-align: center; padding: 40px;">
-          <p style="color: rgba(255,255,255,0.6); font-size: 1.1rem;">No pending invoices.</p>
+        <div class="alert-box feature-lock">
+           <strong>Feature Lock System Active:</strong> If a tenant plan expires, Sales, Inventory and Analytics modules will systematically lock out and display a "Subscription Expired" notice inside their dashboard automatically.
+        </div>
+        <table class="activity-table" style="margin-top:20px;">
+           <thead>
+             <tr>
+               <th>Tenant</th>
+               <th>Plan</th>
+               <th>Status</th>
+               <th>Expiry Date</th>
+               <th>Actions</th>
+             </tr>
+           </thead>
+           <tbody>
+             <tr>
+               <td>Apollo Pharmacy</td>
+               <td>Professional</td>
+               <td><span class="badge success">Active</span></td>
+               <td>12 Mar 2027</td>
+               <td><button class="btn-text">Extend Plan</button></td>
+             </tr>
+             <tr>
+               <td>MedCare Plus</td>
+               <td>Starter</td>
+               <td><span class="badge error">Expired</span></td>
+               <td>01 Feb 2026</td>
+               <td><button class="btn-text" style="color:#10b981;">Generate Invoice</button> | <button class="btn-text danger">Activate Lock</button></td>
+             </tr>
+             <tr>
+               <td>FreshFoods NYC</td>
+               <td>Enterprise</td>
+               <td><span class="badge success">Active</span></td>
+               <td>04 Nov 2026</td>
+               <td><button class="btn-text">Extend Plan</button></td>
+             </tr>
+           </tbody>
+        </table>
+      </div>
+
+      <!-- 7. Automation Center -->
+      <div id="sec-automation" class="admin-section">
+        <div class="section-header">
+          <h2>Automation Center</h2>
+          <p>Set trigger rules for system-wide webhook actions.</p>
+        </div>
+        <div class="card">
+           <div class="automation-row">
+              <div class="auto-info">
+                 <h4>Plan Expiry approaching in 3 days</h4>
+                 <p>Trigger: 72 hours prior to expiration date</p>
+              </div>
+              <div class="auto-actions">
+                 <select><option>Send Email + WhatsApp</option><option>Email Only</option><option>WhatsApp Only</option></select>
+                 <span class="badge success">Enabled</span>
+              </div>
+           </div>
+           <div class="automation-row">
+              <div class="auto-info">
+                 <h4>Plan Successfully Activated</h4>
+                 <p>Trigger: Upon successful payment stripe hook</p>
+              </div>
+              <div class="auto-actions">
+                 <select><option>Send Welcome Message</option><option>Silent Mode</option></select>
+                 <span class="badge success">Enabled</span>
+              </div>
+           </div>
+           <div class="automation-row">
+              <div class="auto-info">
+                 <h4>Payment Received</h4>
+                 <p>Trigger: Invoice paid</p>
+              </div>
+              <div class="auto-actions">
+                 <select><option>Send Custom Tax Invoice</option><option>Silent Mode</option></select>
+                 <span class="badge success">Enabled</span>
+              </div>
+           </div>
         </div>
       </div>
 
-      <!-- System Settings Section -->
+      <!-- 8. WhatsApp Integration -->
+      <div id="sec-whatsapp" class="admin-section">
+        <div class="section-header">
+          <h2>WhatsApp Message Integration</h2>
+          <p>Using Twilio / Meta Graph APIs for direct tenant communication.</p>
+        </div>
+        <div class="grid-split">
+           <div class="card">
+              <h3>Gateway Provider</h3>
+              <select class="full-width-select">
+                 <option>Official Meta WhatsApp API</option>
+                 <option>Twilio Global</option>
+                 <option>WATI</option>
+                 <option>Interakt</option>
+              </select>
+              <br><br>
+              <button class="btn-primary">Sync API Keys</button>
+           </div>
+           <div class="card">
+              <h3>Template: Welcome Message</h3>
+              <pre class="message-preview">Welcome to BoboAnalytics!
+
+Your dashboard is ready.
+
+Login: &#123;subdomain&#125;.boboanalytics.com
+Email: &#123;admin_email&#125;
+Password: ********
+
+– BoboAnalytics Team</pre>
+           </div>
+           <div class="card">
+              <h3>Template: Plan Expiry</h3>
+              <pre class="message-preview">Hi &#123;business_name&#125;,
+
+Your BoboAnalytics subscription expires in 3 days.
+Renew now to avoid service interruption and feature locking.
+
+– Billing Team</pre>
+           </div>
+        </div>
+      </div>
+
+      <!-- 9. Email Campaigns -->
+      <div id="sec-email" class="admin-section">
+        <div class="section-header">
+          <h2>Email Campaigns</h2>
+          <p>Blast updates to clients globally or selectively.</p>
+        </div>
+        <div class="creation-panel">
+           <div class="form-group" style="margin-bottom:20px;">
+              <label>Target Audience</label>
+              <div class="checkbox-group">
+                 <label><input type="checkbox" /> All Active Clients</label>
+                 <label><input type="checkbox" /> Pharmacy Vertical Only</label>
+                 <label><input type="checkbox" /> Grocery Vertical Only</label>
+                 <label><input type="checkbox" /> Expiring Subscriptions (Next 7 Days)</label>
+              </div>
+           </div>
+           <div class="form-group" style="margin-bottom:20px;">
+              <label>Subject Line</label>
+              <input type="text" placeholder="e.g., Important BoboAnalytics Version Update" style="width:100%;" />
+           </div>
+           <div class="form-group" style="margin-bottom:20px;">
+              <label>Email Body (HTML/Text)</label>
+              <textarea rows="6" placeholder="Enter message payload here..." style="width:100%; padding:10px; background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1); border-radius:8px;"></textarea>
+           </div>
+           <button class="btn-primary">Send Mass Email</button>
+        </div>
+      </div>
+
+      <!-- 10. System Settings -->
       <div id="sec-settings" class="admin-section">
         <div class="section-header">
-          <h2>System Settings</h2>
-          <p>Configure global platform attributes.</p>
+          <h2>Global System Settings</h2>
+          <p>Core infrastructure values.</p>
         </div>
         <div class="creation-panel">
           <div class="form-row">
             <div class="form-group">
-              <label>Maintenance Mode</label>
+              <label>Platform Maintenance Mode</label>
               <select>
-                <option value="off">Off</option>
-                <option value="on">On</option>
+                <option value="off">Off (Production Live)</option>
+                <option value="on">On (Redirects to maintenance page)</option>
               </select>
             </div>
             <div class="form-group">
-              <label>Data Backup Frequency</label>
+              <label>Database Backup Frequency (AWS S3)</label>
               <select>
-                <option value="daily">Daily</option>
+                <option value="hourly">Hourly</option>
+                <option value="daily" selected>Daily Midnight</option>
                 <option value="weekly">Weekly</option>
               </select>
             </div>
           </div>
-          <button class="btn-primary" style="margin-top: 16px;">Save Settings</button>
+          <div class="form-row">
+             <div class="form-group">
+                <label>SMTP Email Protocol</label>
+                <input type="text" value="smtp.sendgrid.net" />
+             </div>
+             <div class="form-group">
+                <label>AI Forecasting Model</label>
+                <select>
+                  <option>OpenAI GPT-4o Realtime</option>
+                  <option>Anthropic Claude 3.5 Sonnet</option>
+                </select>
+             </div>
+          </div>
+          <button class="btn-primary" style="margin-top: 16px;">Save System Config</button>
         </div>
       </div>
 
@@ -210,12 +536,13 @@ import MainLayout from "../layouts/MainLayout.astro";
   </div>
 
   <style>
+    /* Styling overhaul for Super Admin */
     .admin-layout {
       position: absolute;
       top: 0; left: 0;
       width: 100vw;
       height: 100vh;
-      background: #05081a;
+      background: #030712;
       display: flex;
       font-family: 'Inter', sans-serif;
       z-index: 9999;
@@ -227,10 +554,7 @@ import MainLayout from "../layouts/MainLayout.astro";
       display: none;
       animation: fadeIn 0.3s ease;
     }
-
-    .admin-section.active {
-      display: block;
-    }
+    .admin-section.active { display: block; }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
@@ -238,81 +562,104 @@ import MainLayout from "../layouts/MainLayout.astro";
     }
 
     .sidebar {
-      width: 260px;
-      background: #0b112d;
+      width: 280px;
+      background: #111827;
       border-right: 1px solid rgba(255, 255, 255, 0.05);
       display: flex;
       flex-direction: column;
+      overflow-y: auto;
     }
 
     .sidebar-header {
       padding: 24px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 16px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      position: sticky; top:0; background: #111827; z-index:10;
     }
 
     .admin-logo {
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       object-fit: contain;
     }
 
-    .sidebar-header h2 {
-      font-size: 1.2rem;
-      font-weight: 700;
+    .brand-text h2 {
+      font-size: 1.1rem;
+      font-weight: 800;
       margin: 0;
+      letter-spacing: -0.5px;
+    }
+    
+    .badge.super-admin {
+        background: linear-gradient(90deg, #ef4444, #f97316);
+        color: white;
+        padding: 2px 6px;
+        font-size: 0.65rem;
+        border-radius: 4px;
+        margin-top: 4px;
+        display: inline-block;
     }
 
     .sidebar-nav {
       padding: 24px 16px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      flex: 1;
+      gap: 6px;
+    }
+
+    .nav-section {
+        color: #6b7280;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 16px;
+        margin-bottom: 8px;
+        padding-left: 12px;
     }
 
     .sidebar-nav a {
-      color: rgba(255, 255, 255, 0.7);
+      color: #9ca3af;
       text-decoration: none;
-      padding: 12px 16px;
+      padding: 10px 14px;
       border-radius: 8px;
       font-weight: 500;
+      font-size: 0.95rem;
       transition: all 0.2s;
     }
 
     .sidebar-nav a:hover, .sidebar-nav a.active {
-      background: rgba(99, 102, 241, 0.1);
-      color: #6366f1;
+      background: rgba(99, 102, 241, 0.15);
+      color: #818cf8;
     }
 
     .sidebar-footer {
       padding: 24px;
       border-top: 1px solid rgba(255, 255, 255, 0.05);
+      margin-top: auto;
     }
 
     .btn-logout {
       width: 100%;
-      background: transparent;
+      background: rgba(239, 68, 68, 0.1);
       border: 1px solid rgba(239, 68, 68, 0.3);
       color: #ef4444;
-      padding: 10px;
+      padding: 12px;
       border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
       transition: all 0.2s;
     }
 
-    .btn-logout:hover {
-      background: rgba(239, 68, 68, 0.1);
-    }
+    .btn-logout:hover { background: rgba(239, 68, 68, 0.2); }
 
     .main-content {
       flex: 1;
       overflow-y: auto;
       padding: 32px 48px;
-      background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
+      background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.08) 0%, transparent 60%);
     }
 
     .top-bar {
@@ -323,26 +670,23 @@ import MainLayout from "../layouts/MainLayout.astro";
     }
 
     .top-bar h1 {
-      font-size: 2rem;
+      font-size: 2.2rem;
       font-weight: 800;
       margin: 0;
     }
-
-    .user-profile {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    
+    .top-actions {
+        display: flex;
+        align-items: center;
+        gap: 20px;
     }
 
+    .user-profile { display: flex; align-items: center; gap: 12px; }
     .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: #6366f1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
+      width: 44px; height: 44px;
+      border-radius: 50%; background: #6366f1;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; border: 2px solid white;
     }
 
     .overview-cards {
@@ -353,53 +697,32 @@ import MainLayout from "../layouts/MainLayout.astro";
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 16px;
-      padding: 24px;
+      padding: 28px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
     }
 
     .card.revenue {
       background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(168, 85, 247, 0.2) 100%);
-      border-color: rgba(99, 102, 241, 0.3);
+      border-color: rgba(99, 102, 241, 0.4);
     }
 
     .card h3 {
       font-size: 0.9rem;
-      color: rgba(255, 255, 255, 0.6);
+      color: #9ca3af;
       margin: 0 0 12px 0;
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
+    .card .value { font-size: 2.2rem; font-weight: 800; margin: 0 0 8px 0; }
+    .trend { font-size: 0.85rem; color: #6b7280; }
+    .trend.positive { color: #10b981; }
 
-    .card .value {
-      font-size: 2rem;
-      font-weight: 800;
-      margin: 0 0 8px 0;
-    }
-
-    .trend {
-      font-size: 0.85rem;
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    .trend.positive {
-      color: #10b981;
-    }
-
-    .section-header {
-      margin-bottom: 24px;
-    }
-
-    .section-header h2 {
-      font-size: 1.5rem;
-      margin: 0 0 8px 0;
-    }
-
-    .section-header p {
-      color: rgba(255, 255, 255, 0.6);
-      margin: 0;
-    }
+    .section-header { margin-bottom: 24px; }
+    .section-header h2 { font-size: 1.8rem; margin: 0 0 8px 0; font-weight: 700; }
+    .section-header p { color: #9ca3af; margin: 0; font-size: 1.05rem; }
 
     .creation-panel {
       background: rgba(255, 255, 255, 0.02);
@@ -407,121 +730,72 @@ import MainLayout from "../layouts/MainLayout.astro";
       border-radius: 16px;
       padding: 32px;
     }
-
-    .form-row {
-      display: flex;
-      gap: 24px;
-      margin-bottom: 24px;
-    }
-
-    .form-group {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .form-group label {
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: rgba(255, 255, 255, 0.8);
-    }
-
-    .form-group input, .form-group select {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 12px 16px;
-      border-radius: 10px;
-      color: white;
-      font-size: 1rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
     
-    .form-group select option {
-        background: #0b112d;
-        color: white;
+    .onboarding-toggles {
+        display: flex; gap: 24px; margin: 24px 0; padding: 16px;
+        background: rgba(99, 102, 241, 0.05); border-radius: 12px; border: 1px solid rgba(99,102,241,0.2);
     }
+    .toggle-control { display:flex; align-items:center; gap:8px; font-weight:600; color:#e5e7eb; cursor:pointer;}
 
-    .form-group input:focus, .form-group select:focus {
-      border-color: #6366f1;
+    .form-row { display: flex; gap: 24px; margin-bottom: 24px; }
+    .form-group { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+    .form-group label { font-size: 0.9rem; font-weight: 600; color: #d1d5db; }
+    .form-group input, .form-group select {
+      background: #111827; border: 1px solid #374151; padding: 14px 16px;
+      border-radius: 10px; color: white; font-size: 1rem; outline: none; transition: all 0.2s;
     }
+    .form-group select option { background: #111827; color: white; }
+    .form-group input:focus, .form-group select:focus { border-color: #818cf8; box-shadow: 0 0 0 3px rgba(99,102,241,0.2)}
 
-    .form-actions {
-      margin-top: 32px;
-      display: flex;
-      justify-content: flex-end;
-    }
+    .form-actions { margin-top: 32px; display: flex; justify-content: flex-end; }
+    
+    .action-bar-right { display: flex; justify-content: flex-end; margin-bottom: 20px;}
 
     .btn-primary {
-      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-      color: white;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
+      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: white;
+      padding: 12px 24px; border: none; border-radius: 10px; font-size: 1rem;
+      font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
     }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3); }
+    
+    .btn-secondary {
+       background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);
+       padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.2);}
+    
+    .btn-text { background: transparent; border: none; color: #818cf8; cursor: pointer; font-weight: 600; padding:4px;}
+    .btn-text:hover { text-decoration: underline;}
+    .btn-text.danger { color: #ef4444; }
 
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
-    }
+    .success-alert { margin-top: 24px; padding: 16px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 10px; color: #10b981; font-weight:600;}
 
-    .success-alert {
-      margin-top: 24px;
-      padding: 16px;
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.2);
-      border-radius: 10px;
-      color: #10b981;
-    }
+    .activity-table { width: 100%; border-collapse: collapse; text-align: left; background: rgba(255,255,255,0.02); border-radius:12px; overflow:hidden; border: 1px solid rgba(255,255,255,0.05);}
+    .activity-table th { background: rgba(0,0,0,0.2); color: #9ca3af; font-weight: 600; padding: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+    .activity-table td { padding: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: #e5e7eb;}
+    
+    .text-green { color: #10b981 !important; font-weight: 600;}
+    .text-red { color: #ef4444 !important; font-weight: 600;}
 
-    .recent-activity h2 {
-      font-size: 1.5rem;
-      margin: 0 0 24px 0;
-    }
+    .badge { padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; }
+    .badge.success { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3);}
+    .badge.error { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3);}
+    .badge.pending { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
 
-    .activity-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-    }
+    .automation-row { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05);}
+    .automation-row:last-child { border-bottom: none;}
+    .auto-info h4 { margin:0 0 4px; font-size: 1.1rem;}
+    .auto-info p { margin:0; color:#9ca3af; font-size:0.9rem;}
+    .auto-actions { display:flex; align-items: center; gap:16px;}
+    .auto-actions select { background: #111827; color: white; border: 1px solid #374151; padding: 8px; border-radius: 6px;}
 
-    .activity-table th {
-      color: rgba(255, 255, 255, 0.5);
-      font-weight: 500;
-      padding: 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
+    .grid-split { display: grid; grid-template-columns: 1fr 1fr; gap: 24px;}
+    .full-width-select { width: 100%; background: #111827; color: white; padding: 12px; border: 1px solid #374151; border-radius: 8px;}
+    .message-preview { background: #000; padding: 16px; border-radius: 8px; font-family: monospace; color: #a7f3d0; white-space: pre-wrap; margin-top:16px;}
+    
+    .alert-box.feature-lock { background: rgba(249, 115, 22, 0.1); border-left: 4px solid #f97316; padding: 16px; color: #fdba74; margin-bottom: 24px; border-radius:0 8px 8px 0;}
 
-    .activity-table td {
-      padding: 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .badge {
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
-
-    .badge.success {
-      background: rgba(16, 185, 129, 0.1);
-      color: #10b981;
-    }
-
-    .badge.pending {
-      background: rgba(245, 158, 11, 0.1);
-      color: #f59e0b;
-    }
-
-    @media (max-width: 1024px) {
-      .form-row { flex-direction: column; gap: 16px; margin-bottom: 16px; }
-    }
+    @media (max-width: 1024px) { .form-row { flex-direction: column; gap: 16px; margin-bottom: 16px; } .grid-split { grid-template-columns: 1fr;}}
   </style>
 
   <script>
@@ -555,12 +829,43 @@ import MainLayout from "../layouts/MainLayout.astro";
           pageTitle.innerText = link.innerText;
         });
       });
+      
+      // Load current live tenants into overview array
+      loadTenantsIntoTable();
     });
+
+    const tbody = document.getElementById("tenantTableBody");
+    
+    function loadTenantsIntoTable() {
+        let tenants = JSON.parse(localStorage.getItem("bobo_tenants") || "[]");
+        let html = `
+          <tr>
+            <td>apollo-pharm</td>
+            <td>Apollo Pharmacy</td>
+            <td>Pharmacy</td>
+            <td>Enterprise</td>
+            <td><span class="badge success">Active</span></td>
+          </tr>
+        `;
+        tenants.forEach(t => {
+            const ind = t.industry ? t.industry.charAt(0).toUpperCase() + t.industry.slice(1) : 'Pharmacy';
+            const pln = t.plan ? t.plan.charAt(0).toUpperCase() + t.plan.slice(1) : 'Professional';
+            html += `
+              <tr>
+                <td>${t.pharmacyId}</td>
+                <td>${t.pharmacy}</td>
+                <td>${ind}</td>
+                <td>${pln}</td>
+                <td><span class="badge success">Active</span></td>
+              </tr>
+            `;
+        });
+        if(tbody) tbody.innerHTML = html;
+    }
 
     // Handle Form Submission
     const form = document.getElementById("createTenantForm");
     const successMsg = document.getElementById("successMsg");
-    const tbody = document.getElementById("tenantTableBody");
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -571,12 +876,10 @@ import MainLayout from "../layouts/MainLayout.astro";
       const selectedPlan = document.getElementById("subscriptionPlan").value;
 
       try {
-        // Simulatiing a live backend connection for production demo
         let tenants = JSON.parse(localStorage.getItem("bobo_tenants") || "[]");
         
-        // Check if tenant customId already exists
         if (tenants.find(t => t.pharmacyId === customId)) {
-           alert("Connection error: Tenant ID already in use. Please choose another.");
+           alert("Connection error: Subdomain/Instance ID already exists in routing tables.");
            return;
         }
 
@@ -591,33 +894,18 @@ import MainLayout from "../layouts/MainLayout.astro";
         tenants.push(newTenant);
         localStorage.setItem("bobo_tenants", JSON.stringify(tenants));
 
-        // Simulate network delay
-        await new Promise(r => setTimeout(r, 600));
+        // Simulate infrastructure deployment delay
+        await new Promise(r => setTimeout(r, 1200));
 
         successMsg.style.display = "block";
-        successMsg.innerText = "✅ Tenant space successfully provisioned! Credentials are ready.";
-        
-        const newRow = document.createElement("tr");
-        newRow.style.animation = "fadeIn 0.5s ease";
-        
-        const industryText = industry.charAt(0).toUpperCase() + industry.slice(1);
-        const planText = selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1);
-        
-        newRow.innerHTML = `
-          <td>${customId}</td>
-          <td>${industryText}</td>
-          <td>${planText}</td>
-          <td><span class="badge success">Active</span></td>
-        `;
-        
-        tbody.insertBefore(newRow, tbody.firstChild);
+        loadTenantsIntoTable();
 
         setTimeout(() => {
           successMsg.style.display = "none";
           form.reset();
-        }, 4000);
+        }, 5000);
       } catch (err) {
-        alert("Connection error. Could not provision tenant.");
+        alert("System error. Could not provision infrastructure.");
       }
     });
 
