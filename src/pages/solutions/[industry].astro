@@ -3,10 +3,12 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
 export function getStaticPaths() {
   return [
+
     {
       params: { industry: "healthcare" },
       props: {
         color: "#00c3ff",
+        gradient: "linear-gradient(135deg,#001f2b,#003a4d)",
         title: "Healthcare Management Software",
         subtitle: "Patient analytics and hospital insights.",
         stats: [
@@ -27,6 +29,7 @@ export function getStaticPaths() {
       params: { industry: "pharmacy" },
       props: {
         color: "#00ff96",
+        gradient: "linear-gradient(135deg,#002b1f,#004d36)",
         title: "Pharmacy Management Software",
         subtitle: "AI powered analytics and automation for modern pharmacies.",
         stats: [
@@ -49,6 +52,7 @@ export function getStaticPaths() {
       params: { industry: "retail" },
       props: {
         color: "#ff9f43",
+        gradient: "linear-gradient(135deg,#2b1600,#4d2a00)",
         title: "Retail Intelligence Platform",
         subtitle: "Boost sales with AI-driven inventory analytics.",
         stats: [
@@ -69,6 +73,7 @@ export function getStaticPaths() {
       params: { industry: "finance" },
       props: {
         color: "#ffd700",
+        gradient: "linear-gradient(135deg,#2b2500,#4d4300)",
         title: "Financial Analytics Suite",
         subtitle: "Real-time financial insights and risk management.",
         stats: [
@@ -89,8 +94,9 @@ export function getStaticPaths() {
       params: { industry: "groceries" },
       props: {
         color: "#6aff00",
+        gradient: "linear-gradient(135deg,#1b2b00,#304d00)",
         title: "Grocery Smart Hub",
-        subtitle: "Efficient stock tracking and customer retention.",
+        subtitle: "Efficient fresh stock tracking and customer retention.",
         stats: [
           { val: "300+", label: "Stores" },
           { val: "Fresh", label: "Stock Guarantee" },
@@ -109,6 +115,7 @@ export function getStaticPaths() {
       params: { industry: "clothing-store" },
       props: {
         color: "#ff4fd8",
+        gradient: "linear-gradient(135deg,#2b001f,#4d0036)",
         title: "Fashion Analytics Pro",
         subtitle: "Trend analysis and size-wise stock management.",
         stats: [
@@ -129,6 +136,7 @@ export function getStaticPaths() {
       params: { industry: "stock-trading" },
       props: {
         color: "#00e5ff",
+        gradient: "linear-gradient(135deg,#001b2b,#00364d)",
         title: "TradeGuard Analytics",
         subtitle: "Portfolio analytics and real-time risk assessment.",
         stats: [
@@ -144,16 +152,18 @@ export function getStaticPaths() {
         ]
       }
     }
+
   ];
 }
 
 const { industry } = Astro.params;
-const { title, subtitle, stats, cards, color } = Astro.props;
+const { title, subtitle, stats, cards, color, gradient } = Astro.props;
 ---
 
 <MainLayout title={title}>
 
 <section class="hero">
+
 <h1>{title}</h1>
 <p>{subtitle}</p>
 
@@ -162,7 +172,7 @@ const { title, subtitle, stats, cards, color } = Astro.props;
 {stats.map(s => (
 <div class="stat">
 <span class="num">{s.val}</span>
-<span>{s.label}</span>
+<span class="label">{s.label}</span>
 </div>
 ))}
 
@@ -182,36 +192,22 @@ const { title, subtitle, stats, cards, color } = Astro.props;
 </section>
 
 
-<section class="login">
-
-<h2>Login to {industry} CRM</h2>
-
-<form>
-<input placeholder="Username"/>
-<input type="password" placeholder="Password"/>
-<button>Login</button>
-</form>
-
-</section>
-
-
-
 <style>
 
 .hero{
-text-align:center;
+background:{gradient};
 padding:80px 20px;
-background:#0b0b0b;
+text-align:center;
 color:white;
 }
 
 .hero h1{
-font-size:40px;
+font-size:42px;
 margin-bottom:10px;
 }
 
 .hero p{
-color:#999;
+color:#ccc;
 }
 
 .stats{
@@ -222,15 +218,14 @@ margin-top:40px;
 flex-wrap:wrap;
 }
 
-.stat{
-display:flex;
-flex-direction:column;
-}
-
 .num{
 font-size:32px;
 font-weight:bold;
 color:{color};
+}
+
+.label{
+color:#aaa;
 }
 
 .cards{
@@ -252,6 +247,7 @@ transition:0.3s;
 
 .card:hover{
 border-color:{color};
+box-shadow:0 0 20px {color};
 transform:translateY(-6px);
 }
 
@@ -261,36 +257,6 @@ color:white;
 
 .card p{
 color:#aaa;
-}
-
-.login{
-text-align:center;
-padding:60px 20px;
-}
-
-.login form{
-display:flex;
-flex-direction:column;
-gap:15px;
-max-width:350px;
-margin:auto;
-}
-
-.login input{
-padding:12px;
-border-radius:8px;
-border:1px solid #333;
-background:#111;
-color:white;
-}
-
-.login button{
-padding:12px;
-background:{color};
-border:none;
-border-radius:8px;
-font-weight:bold;
-cursor:pointer;
 }
 
 </style>
