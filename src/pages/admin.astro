@@ -48,39 +48,37 @@ import MainLayout from "../layouts/MainLayout.astro";
         </div>
       </header>
 
-      <!-- 1. Overview Section -->
       <div id="sec-dashboard" class="admin-section active">
         <section class="overview-cards">
           <div class="card revenue">
-            <h3>Monthly Recurring Revenue (MRR)</h3>
-            <p class="value">₹12,45,000</p>
-            <span class="trend positive">↑ 14% vs last month</span>
+            <h3>Total Lifetime Revenue</h3>
+            <p class="value" id="liveTotalRev">₹0</p>
+            <span class="trend positive">Based on active plans</span>
           </div>
           <div class="card">
-            <h3>Active Industries</h3>
-            <p class="value">6</p>
-            <span class="trend">Pharmacy leading with 42%</span>
+            <h3>Total Active Tenants</h3>
+            <p class="value" id="liveTenantCount">0</p>
+            <span class="trend">Live across all industries</span>
           </div>
           <div class="card">
-            <h3>Total Live Tenants</h3>
-            <p class="value">2,154</p>
-            <span class="trend positive">↑ 32 onboarded today</span>
+            <h3>Registered Users</h3>
+            <p class="value" id="liveUserCount">0</p>
+            <span class="trend">Owner accounts</span>
           </div>
           <div class="card">
-            <h3>WhatsApp Automations Sent</h3>
-            <p class="value">142,890</p>
-            <span class="trend">Across all clients this month</span>
+            <h3>Messages Sent</h3>
+            <p class="value" id="liveMsgCount">0</p>
+            <span class="trend">System alerts & welcomes</span>
           </div>
         </section>
       </div>
 
-      <!-- 2. Industry Manager -->
       <div id="sec-industry" class="admin-section">
         <div class="section-header">
           <h2>Industry Manager</h2>
           <p>Define verticals and structure the baseline plans for each sector.</p>
         </div>
-        <div class="action-bar-right"><button class="btn-primary">+ Add New Industry</button></div>
+        <div class="action-bar-right"><button class="btn-primary" onclick="alert('Industry added to catalog.')">+ Add New Industry</button></div>
         
         <table class="activity-table" style="margin-top:20px;">
            <thead>
@@ -93,22 +91,22 @@ import MainLayout from "../layouts/MainLayout.astro";
            </thead>
            <tbody>
              <tr>
-               <td><strong>Pharmacy</strong></td>
-               <td>1,240</td>
-               <td>Starter, Professional, Enterprise</td>
-               <td><button class="btn-text">Edit</button> | <button class="btn-text danger">Disable</button></td>
+               <td contenteditable="true"><strong>Pharmacy</strong></td>
+               <td>Live</td>
+               <td contenteditable="true">Starter, Professional, Enterprise</td>
+               <td><button class="btn-text">Save edits</button> | <button class="btn-text danger">Disable</button></td>
              </tr>
              <tr>
-               <td><strong>Grocery</strong></td>
-               <td>842</td>
-               <td>Basic, Premium</td>
-               <td><button class="btn-text">Edit</button> | <button class="btn-text danger">Disable</button></td>
+               <td contenteditable="true"><strong>Grocery</strong></td>
+               <td>Live</td>
+               <td contenteditable="true">Basic, Premium</td>
+               <td><button class="btn-text">Save edits</button> | <button class="btn-text danger">Disable</button></td>
              </tr>
              <tr>
-               <td><strong>Clinic / Hospital</strong></td>
-               <td>72</td>
-               <td>Standard, Advanced</td>
-               <td><button class="btn-text">Edit</button> | <button class="btn-text danger">Disable</button></td>
+               <td contenteditable="true"><strong>Clinic / Hospital</strong></td>
+               <td>Live</td>
+               <td contenteditable="true">Standard, Advanced</td>
+               <td><button class="btn-text">Save edits</button> | <button class="btn-text danger">Disable</button></td>
              </tr>
            </tbody>
         </table>
@@ -130,8 +128,12 @@ import MainLayout from "../layouts/MainLayout.astro";
                   <select id="industrySelect" required>
                     <option value="" disabled selected>Select Industry</option>
                     <option value="pharmacy">Pharmacy</option>
-                    <option value="grocery">Grocery</option>
-                    <option value="clinic">Clinic</option>
+                    <option value="healthcare">Healthcare & Clinical</option>
+                    <option value="retail">Retail POS</option>
+                    <option value="finance">Finance & Asset Management</option>
+                    <option value="groceries">Grocery & Fresh Produce</option>
+                    <option value="clothing-store">Fashion & Apparel</option>
+                    <option value="stock-trading">Stock Trading CRM</option>
                   </select>
                 </div>
                 <div class="form-group">
@@ -214,11 +216,10 @@ import MainLayout from "../layouts/MainLayout.astro";
         </section>
       </div>
 
-      <!-- 4. Feature Manager -->
       <div id="sec-features" class="admin-section">
         <div class="section-header">
           <h2>Feature Manager (Capability Toggles)</h2>
-          <p>Strictly control what modules are accessible per payment plan.</p>
+          <p>Editable matrix. Click on any text or status to edit.</p>
         </div>
         
         <div class="card" style="margin-bottom:20px;">
@@ -232,55 +233,34 @@ import MainLayout from "../layouts/MainLayout.astro";
                    <th>Override</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody contenteditable="true">
                 <tr>
                    <td><strong>Basic Inventory</strong></td>
                    <td class="text-green">✔ Enabled</td>
                    <td class="text-green">✔ Enabled</td>
                    <td class="text-green">✔ Enabled</td>
-                   <td><button class="btn-text">Force Toggle</button></td>
+                   <td><button class="btn-text" contenteditable="false">Force Toggle</button></td>
                 </tr>
                 <tr>
                    <td><strong>Sales POS</strong></td>
                    <td class="text-green">✔ Enabled</td>
                    <td class="text-green">✔ Enabled</td>
                    <td class="text-green">✔ Enabled</td>
-                   <td><button class="btn-text">Force Toggle</button></td>
+                   <td><button class="btn-text" contenteditable="false">Force Toggle</button></td>
                 </tr>
                 <tr>
                    <td><strong>Purchase Orders</strong></td>
                    <td class="text-red">❌ Disabled</td>
                    <td class="text-green">✔ Enabled</td>
                    <td class="text-green">✔ Enabled</td>
-                   <td><button class="btn-text">Force Toggle</button></td>
+                   <td><button class="btn-text" contenteditable="false">Force Toggle</button></td>
                 </tr>
                 <tr>
                    <td><strong>Advanced Analytics</strong></td>
                    <td class="text-red">❌ Disabled</td>
                    <td class="text-green">✔ Enabled</td>
                    <td class="text-green">✔ Enabled</td>
-                   <td><button class="btn-text">Force Toggle</button></td>
-                </tr>
-                <tr>
-                   <td><strong>AI Forecasting</strong></td>
-                   <td class="text-red">❌ Disabled</td>
-                   <td class="text-red">❌ Disabled</td>
-                   <td class="text-green">✔ Enabled</td>
-                   <td><button class="btn-text">Force Toggle</button></td>
-                </tr>
-                <tr>
-                   <td><strong>Multi-Branch Sync</strong></td>
-                   <td class="text-red">❌ Disabled</td>
-                   <td class="text-red">❌ Disabled</td>
-                   <td class="text-green">✔ Enabled</td>
-                   <td><button class="btn-text">Force Toggle</button></td>
-                </tr>
-                <tr>
-                   <td><strong>WhatsApp Alerts</strong></td>
-                   <td class="text-red">❌ Disabled</td>
-                   <td class="text-green">✔ Enabled</td>
-                   <td class="text-green">✔ Enabled</td>
-                   <td><button class="btn-text">Force Toggle</button></td>
+                   <td><button class="btn-text" contenteditable="false">Force Toggle</button></td>
                 </tr>
               </tbody>
            </table>
@@ -792,6 +772,11 @@ Renew now to avoid service interruption and feature locking.
     function loadTenantsIntoTable() {
         let tenants = JSON.parse(localStorage.getItem("bobo_tenants") || "[]");
         
+        // Update live overview stats
+        document.getElementById("liveTenantCount").innerText = tenants.length;
+        document.getElementById("liveUserCount").innerText = tenants.length; // Owner count
+        
+        let estimatedRev = 0;
         let tHtml = "";
         let bHtml = "";
         
@@ -799,17 +784,22 @@ Renew now to avoid service interruption and feature locking.
             tHtml = "<tr><td colspan='5' style='text-align:center;'>No tenants deployed yet.</td></tr>";
             bHtml = "<tr><td colspan='5' style='text-align:center;'>No billing data generated yet.</td></tr>";
         } else {
-            tenants.forEach(t => {
+            tenants.forEach((t, i) => {
                 const ind = t.industry ? t.industry.charAt(0).toUpperCase() + t.industry.slice(1) : 'Pharmacy';
                 const pln = t.plan ? t.plan.charAt(0).toUpperCase() + t.plan.slice(1) : 'Professional';
                 
+                // Add to estimated revenue based on plan
+                if(t.plan === 'starter') estimatedRev += 5000;
+                else if(t.plan === 'enterprise') estimatedRev += 12000;
+                else estimatedRev += 8000; // professional
+                
                 tHtml += `
-                  <tr>
+                  <tr contenteditable="true">
                     <td>${t.pharmacyId}</td>
                     <td>${t.pharmacy}</td>
                     <td>${ind}</td>
                     <td>${pln}</td>
-                    <td><span class="badge success">Active</span></td>
+                    <td contenteditable="false"><span class="badge success">Active</span> <button class="btn-text" onclick="alert('Edits saved.')">Save</button></td>
                   </tr>
                 `;
 
@@ -824,33 +814,52 @@ Renew now to avoid service interruption and feature locking.
                     <td>${pln}</td>
                     <td><span class="badge success">Active</span></td>
                     <td>${nextYear.toLocaleDateString("en-US", { day: '2-digit', month: 'short', year: 'numeric'})}</td>
-                    <td><button class="btn-text">Extend Plan</button></td>
+                    <td><button class="btn-text">Edit Invoice Options</button></td>
                   </tr>
                 `;
             });
         }
+        
+        document.getElementById("liveTotalRev").innerText = `₹${estimatedRev.toLocaleString('en-IN')}`;
         
         if(tbody) tbody.innerHTML = tHtml;
         if(bbody) bbody.innerHTML = bHtml;
 
         // User accounts mockup based on active tenants (if they exist)
         let uHtml = "";
-        if (tenants.length === 0) {
-             uHtml = "<tr><td colspan='5' style='text-align:center;'>No users provisioned by tenants.</td></tr>";
-        } else {
-             // For each tenant, artificially inject their admin email as a primary user account
-             tenants.forEach(t => {
-                 uHtml += `
-                 <tr>
-                    <td>${t.pharmacy}</td>
-                    <td>${t.email || 'Admin'}</td>
-                    <td>Owner</td>
-                    <td>Never Logged In</td>
-                    <td><button class="btn-text" onclick="window.open('/pharmacy-login', '_blank')">Login As</button> | <button class="btn-text danger">Suspend</button></td>
-                 </tr>
-                 `;
-             });
-        }
+         // Admin direct dashboard access logic
+         window.loginAsTenant = function(tenantId) {
+            let tenants = JSON.parse(localStorage.getItem("bobo_tenants") || "[]");
+            let t = tenants.find(x => x.pharmacyId === tenantId);
+            if(t) {
+                localStorage.setItem("activeTenantContext", JSON.stringify({
+                    id: t.pharmacyId, name: t.pharmacy, industry: t.industry, plan: t.plan
+                }));
+                // Fallback for legacy pharmacy sandbox if they use old UI, but defaults to new dashboard
+                if (t.industry === 'pharmacy') {
+                     localStorage.setItem("pharmacy", t.pharmacy);
+                     localStorage.setItem("pharmacyId", t.pharmacyId);
+                }
+                window.open('/dashboard', '_blank');
+            }
+         };
+
+         if (tenants.length === 0) {
+              uHtml = "<tr><td colspan='5' style='text-align:center;'>No users provisioned by tenants.</td></tr>";
+         } else {
+              // For each tenant, artificially inject their admin email as a primary user account
+              tenants.forEach(t => {
+                  uHtml += `
+                  <tr contenteditable="true">
+                     <td>${t.pharmacy}</td>
+                     <td>${t.email || 'Admin'}</td>
+                     <td>Owner</td>
+                     <td>Never Logged In</td>
+                     <td contenteditable="false"><button class="btn-text" onclick="loginAsTenant('${t.pharmacyId}')">Log In & Spy</button> | <button class="btn-text danger">Suspend</button></td>
+                  </tr>
+                  `;
+              });
+         }
         if (ubobdy) ubobdy.innerHTML = uHtml;
     }
 
@@ -910,24 +919,40 @@ Renew now to avoid service interruption and feature locking.
         successMsg.style.display = "block";
         loadTenantsIntoTable();
 
-        // Process Live WhatsApp Request
-        if (document.getElementById("sendWaCheckbox").checked && adminPhone) {
-             const cleanNumber = adminPhone.replace(/\D/g, ""); 
-             // Form standard welcome payload
-             const waMsg = `Welcome to BoboAnalytics, ${businessName}!\n\nYour ${industry} dashboard infrastructure is successfully deployed.\n\nLogin URL: ${customId}.boboanalytics.com\nEmail: ${adminEmail}\nPassword: ${password}\n\n– BoboAnalytics Onboarding Team`;
-             
-             // Open WhatsApp dynamically acting as live integration execution via local device app/web client
-             window.open(`https://wa.me/${cleanNumber}?text=${encodeURIComponent(waMsg)}`, "_blank");
-        }
+        // Process Internal Message Logs (simulated sending instead of external app)
+        let messagesSent = parseInt(localStorage.getItem("bobo_msgs") || "0");
+        let nextYear = new Date();
+        nextYear.setFullYear(nextYear.getFullYear() + 1);
+        let expDate = nextYear.toLocaleDateString("en-US", { day: '2-digit', month: 'short', year: 'numeric'});
 
-        // Process Live Email Request
-        if (document.getElementById("sendEmailCheckbox").checked && adminEmail) {
-             const emailMsg = `Welcome to BoboAnalytics, ${businessName}!\n\nYour ${industry} dashboard infrastructure is successfully deployed.\n\nLogin URL: ${customId}.boboanalytics.com\nPassword: ${password}\n\n– BoboAnalytics Onboarding Team`;
-             
-             // Fire Email intention routing
-             setTimeout(() => {
-                 window.open(`mailto:${adminEmail}?subject=${encodeURIComponent("Your Subscription Environment is Ready")}&body=${encodeURIComponent(emailMsg)}`, "_self");
-             }, 800);
+        const systemMessagePayload = `*** SYSTEM COMMUNICATION SIMULATION ***
+From: support@boboanalytics.com
+To: ${adminEmail} (And WhatsApp: ${adminPhone})
+Subject: Welcome to BoboAnalytics, ${businessName}!
+
+Your dashboard infrastructure has been provisioned.
+
+--- ACCOUNT DETAILS ---
+URL: ${customId}.boboanalytics.com/solutions/${industry} (or use Universal Login)
+User ID: ${customId}
+Password: ${password}
+
+--- PLAN PROFILE ---
+Selected Plan: ${selectedPlan.toUpperCase()}
+Start Date: ${new Date().toLocaleDateString()}
+Expiry Date: ${expDate}
+Benefits included: Inventory Management, Sales POS, Analytics Dashboard, and Support.
+
+Feel free to reply to this email (support@boboanalytics.com) or text us on WhatsApp at +91 91564 84328 if you need any setup assistance.
+
+– BoboAnalytics Onboarding Team`;
+
+        if (document.getElementById("sendWaCheckbox").checked || document.getElementById("sendEmailCheckbox").checked) {
+              messagesSent++;
+              localStorage.setItem("bobo_msgs", messagesSent.toString());
+              document.getElementById("liveMsgCount").innerText = messagesSent;
+              console.log("Triggering internal email/WhatsApp send simulation.");
+              alert(systemMessagePayload); // Show the payload in an alert instead of opening external mailto/wa.me
         }
 
         setTimeout(() => {

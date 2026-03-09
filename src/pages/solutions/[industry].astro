@@ -194,16 +194,77 @@ const { data } = Astro.props;
       <h2>{data.loginTitle}</h2>
       <p>Access your secure dashboard.</p>
       
-      <form class="crm-form">
-        <input type="text" placeholder="Username" required />
-        <input type="password" placeholder="Password" required />
+      <form id="industryLoginForm" class="crm-form">
+        <!-- Hidden input to pass industry type to client JS -->
+        <input type="hidden" id="currentIndustry" value={data.industry || Astro.params.industry} />
+        
+        <input type="text" id="crmUsername" placeholder="Instance ID / Username" required />
+        <input type="password" id="crmPassword" placeholder="Password" required />
+        
         <button type="submit" style={`background: ${data.theme.accent}; box-shadow: 0 4px 15px ${data.theme.accent}40;`}>
           Sign In
         </button>
+        <p id="crmLoginError" style="color: #ef4444; margin-top: 10px; min-height: 20px; font-size: 0.9rem;"></p>
       </form>
     </div>
   </section>
 </MainLayout>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const loginForm = document.getElementById("industryLoginForm");
+    const errorMsg = document.getElementById("crmLoginError");
+
+    if (loginForm) {
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        errorMsg.innerText = "";
+        
+        const username = document.getElementById("crmUsername").value.trim();
+        const pwd = document.getElementById("crmPassword").value;
+        const currentInd = document.getElementById("currentIndustry").value;
+
+        try {
+          // Simulate latency
+          const btn = loginForm.querySelector("button");
+          const originalBtnText = btn.innerText;
+          btn.innerText = "Authenticating...";
+          await new Promise(r => setTimeout(r, 600));
+          btn.innerText = originalBtnText;
+
+          let tenants = JSON.parse(localStorage.getItem("bobo_tenants") || "[]");
+          
+          let validTenant = tenants.find(t => 
+             t.pharmacyId === username && 
+             t.password === pwd && 
+             t.industry === currentInd
+          );
+
+          if (validTenant) {
+            // Set Unified Context
+            localStorage.setItem("activeTenantContext", JSON.stringify({
+               id: validTenant.pharmacyId,
+               name: validTenant.pharmacy,
+               industry: validTenant.industry,
+               plan: validTenant.plan
+            }));
+            window.location.href = "/dashboard";
+          } else {
+             // Fallback: check if they exist but wrong industry
+             let existAnywhere = tenants.find(t => t.pharmacyId === username && t.password === pwd);
+             if (existAnywhere) {
+                errorMsg.innerText = `Invalid portal. This account belongs to the ${existAnywhere.industry} vertical.`;
+             } else {
+                errorMsg.innerText = "Invalid credentials. Contact Super Admin to provision an instance.";
+             }
+          }
+        } catch(err) {
+           errorMsg.innerText = "System error during authentication.";
+        }
+      });
+    }
+  });
+</script>
 
 <style>
   .hero {
