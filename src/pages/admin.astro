@@ -6,7 +6,7 @@ import MainLayout from "../layouts/MainLayout.astro";
   <div class="admin-layout">
     <aside class="sidebar">
       <div class="sidebar-header">
-        <div class="icon">🛡️</div>
+        <img src="/logo.png" alt="Bobo Analytics Logo" class="admin-logo" />
         <h2>Admin Hub</h2>
       </div>
       <nav class="sidebar-nav">
@@ -23,133 +23,189 @@ import MainLayout from "../layouts/MainLayout.astro";
 
     <main class="main-content">
       <header class="top-bar">
-        <h1>Dashboard</h1>
+        <h1 id="pageTitle">Dashboard</h1>
         <div class="user-profile">
           <span>System Admin</span>
           <div class="avatar">SA</div>
         </div>
       </header>
 
-      <section class="overview-cards">
-        <div class="card revenue">
-          <h3>Total MRR</h3>
-          <p class="value">₹12,45,000</p>
-          <span class="trend positive">↑ 14% vs last month</span>
-        </div>
-        <div class="card">
-          <h3>Active Industries</h3>
-          <p class="value">7</p>
-          <span class="trend">Across our network</span>
-        </div>
-        <div class="card">
-          <h3>Total Tenants</h3>
-          <p class="value">2,154</p>
-          <span class="trend positive">↑ 8% vs last month</span>
-        </div>
-        <div class="card">
-          <h3>System Health</h3>
-          <p class="value">99.99%</p>
-          <span class="trend positive">All Systems Operational</span>
-        </div>
-      </section>
-
-      <section class="tenant-creation" id="tenants">
-        <div class="section-header">
-          <h2>Provision New Tenant</h2>
-          <p>Create dedicated instances and custom IDs for new businesses joining the platform.</p>
-        </div>
-
-        <div class="creation-panel">
-          <form class="tenant-form" id="createTenantForm">
-            <div class="form-row">
-              <div class="form-group">
-                <label>Industry Vertical</label>
-                <select id="industrySelect" required>
-                  <option value="" disabled selected>Select Industry</option>
-                  <option value="pharmacy">Pharmacy</option>
-                  <option value="healthcare">Healthcare</option>
-                  <option value="retail">Retail</option>
-                  <option value="finance">Finance</option>
-                  <option value="groceries">Groceries</option>
-                  <option value="clothing-store">Clothing Store</option>
-                  <option value="stock-trading">Stock Trading</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Custom Instance ID</label>
-                <input type="text" id="customId" placeholder="e.g., apollo-pharm-1" required />
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label>Business Name</label>
-                <input type="text" id="businessName" placeholder="Registered Name" required />
-              </div>
-              <div class="form-group">
-                <label>Admin Email</label>
-                <input type="email" id="adminEmail" placeholder="admin@business.com" required />
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label>Subscription Plan</label>
-                <select id="subscriptionPlan" required>
-                  <option value="starter">Starter</option>
-                  <option value="professional" selected>Professional</option>
-                  <option value="enterprise">Enterprise</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Account Password</label>
-                <input type="password" id="accountPassword" placeholder="••••••••" required />
-              </div>
-            </div>
-
-            <div class="form-actions">
-              <button type="submit" class="btn-primary">Provision Tenant Space</button>
-            </div>
-          </form>
-          <div id="successMsg" class="success-alert" style="display: none;">
-            ✅ Tenant space successfully provisioned! Credentials sent to admin email.
+      <!-- Dashboard Section -->
+      <div id="sec-dashboard" class="admin-section active">
+        <section class="overview-cards">
+          <div class="card revenue">
+            <h3>Total MRR</h3>
+            <p class="value">₹12,45,000</p>
+            <span class="trend positive">↑ 14% vs last month</span>
           </div>
-        </div>
-      </section>
+          <div class="card">
+            <h3>Active Industries</h3>
+            <p class="value">7</p>
+            <span class="trend">Across our network</span>
+          </div>
+          <div class="card">
+            <h3>Total Tenants</h3>
+            <p class="value">2,154</p>
+            <span class="trend positive">↑ 8% vs last month</span>
+          </div>
+          <div class="card">
+            <h3>System Health</h3>
+            <p class="value">99.99%</p>
+            <span class="trend positive">All Systems Operational</span>
+          </div>
+        </section>
+      </div>
 
-      <section class="recent-activity">
-        <h2>Recent Tenant Provisions</h2>
-        <table class="activity-table">
-          <thead>
-            <tr>
-              <th>Instance ID</th>
-              <th>Industry</th>
-              <th>Plan</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="tenantTableBody">
-            <tr>
-              <td>medcare-01</td>
-              <td>Pharmacy</td>
-              <td>Professional</td>
-              <td><span class="badge success">Active</span></td>
-            </tr>
-            <tr>
-              <td>freshfoods-nyc</td>
-              <td>Groceries</td>
-              <td>Enterprise</td>
-              <td><span class="badge success">Active</span></td>
-            </tr>
-            <tr>
-              <td>trust-bank-eu</td>
-              <td>Finance</td>
-              <td>Enterprise</td>
-              <td><span class="badge pending">Provisioning</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
+      <!-- Tenants Section -->
+      <div id="sec-tenants" class="admin-section">
+        <section class="tenant-creation">
+          <div class="section-header">
+            <h2>Provision New Tenant</h2>
+            <p>Create dedicated instances and custom IDs for new businesses joining the platform.</p>
+          </div>
+
+          <div class="creation-panel">
+            <form class="tenant-form" id="createTenantForm">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Industry Vertical</label>
+                  <select id="industrySelect" required>
+                    <option value="" disabled selected>Select Industry</option>
+                    <option value="pharmacy">Pharmacy</option>
+                    <option value="healthcare">Healthcare</option>
+                    <option value="retail">Retail</option>
+                    <option value="finance">Finance</option>
+                    <option value="groceries">Groceries</option>
+                    <option value="clothing-store">Clothing Store</option>
+                    <option value="stock-trading">Stock Trading</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Custom Instance ID</label>
+                  <input type="text" id="customId" placeholder="e.g., apollo-pharm-1" required />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Business Name</label>
+                  <input type="text" id="businessName" placeholder="Registered Name" required />
+                </div>
+                <div class="form-group">
+                  <label>Admin Email</label>
+                  <input type="email" id="adminEmail" placeholder="admin@business.com" required />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Subscription Plan</label>
+                  <select id="subscriptionPlan" required>
+                    <option value="starter">Starter</option>
+                    <option value="professional" selected>Professional</option>
+                    <option value="enterprise">Enterprise</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Account Password</label>
+                  <input type="password" id="accountPassword" placeholder="••••••••" required />
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn-primary">Provision Tenant Space</button>
+              </div>
+            </form>
+            <div id="successMsg" class="success-alert" style="display: none;">
+              ✅ Tenant space successfully provisioned! Credentials ready.
+            </div>
+          </div>
+        </section>
+
+        <section class="recent-activity" style="margin-top: 48px;">
+          <h2>Recent Tenant Provisions</h2>
+          <table class="activity-table">
+            <thead>
+              <tr>
+                <th>Instance ID</th>
+                <th>Industry</th>
+                <th>Plan</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="tenantTableBody">
+              <tr>
+                <td>medcare-01</td>
+                <td>Pharmacy</td>
+                <td>Professional</td>
+                <td><span class="badge success">Active</span></td>
+              </tr>
+              <tr>
+                <td>freshfoods-nyc</td>
+                <td>Groceries</td>
+                <td>Enterprise</td>
+                <td><span class="badge success">Active</span></td>
+              </tr>
+              <tr>
+                <td>trust-bank-eu</td>
+                <td>Finance</td>
+                <td>Enterprise</td>
+                <td><span class="badge pending">Provisioning</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </div>
+
+      <!-- Manage Users Section -->
+      <div id="sec-users" class="admin-section">
+        <div class="section-header">
+          <h2>Manage Users</h2>
+          <p>View and manage all active users across instances.</p>
+        </div>
+        <div class="card" style="text-align: center; padding: 40px;">
+          <p style="color: rgba(255,255,255,0.6); font-size: 1.1rem;">No active users found for current filter.</p>
+        </div>
+      </div>
+
+      <!-- Billing Section -->
+      <div id="sec-billing" class="admin-section">
+        <div class="section-header">
+          <h2>Billing & Subscriptions</h2>
+          <p>Track payments and recurring revenue.</p>
+        </div>
+        <div class="card" style="text-align: center; padding: 40px;">
+          <p style="color: rgba(255,255,255,0.6); font-size: 1.1rem;">No pending invoices.</p>
+        </div>
+      </div>
+
+      <!-- System Settings Section -->
+      <div id="sec-settings" class="admin-section">
+        <div class="section-header">
+          <h2>System Settings</h2>
+          <p>Configure global platform attributes.</p>
+        </div>
+        <div class="creation-panel">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Maintenance Mode</label>
+              <select>
+                <option value="off">Off</option>
+                <option value="on">On</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Data Backup Frequency</label>
+              <select>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-primary" style="margin-top: 16px;">Save Settings</button>
+        </div>
+      </div>
+
     </main>
   </div>
 
@@ -165,6 +221,20 @@ import MainLayout from "../layouts/MainLayout.astro";
       z-index: 9999;
       color: white;
       overflow: hidden;
+    }
+
+    .admin-section {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .admin-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .sidebar {
@@ -183,8 +253,10 @@ import MainLayout from "../layouts/MainLayout.astro";
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    .sidebar-header .icon {
-      font-size: 1.5rem;
+    .admin-logo {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
     }
 
     .sidebar-header h2 {
@@ -313,10 +385,6 @@ import MainLayout from "../layouts/MainLayout.astro";
 
     .trend.positive {
       color: #10b981;
-    }
-
-    .tenant-creation {
-      margin-bottom: 48px;
     }
 
     .section-header {
@@ -463,6 +531,30 @@ import MainLayout from "../layouts/MainLayout.astro";
       if (!isAuth) {
         window.location.href = "/admin-login";
       }
+
+      // Tab Switching Logic
+      const navLinks = document.querySelectorAll('.sidebar-nav a');
+      const sections = document.querySelectorAll('.admin-section');
+      const pageTitle = document.getElementById('pageTitle');
+
+      navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          
+          navLinks.forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
+          
+          const targetId = 'sec-' + link.getAttribute('href').substring(1);
+          
+          sections.forEach(sec => {
+            sec.classList.remove('active');
+            if (sec.id === targetId) sec.classList.add('active');
+          });
+
+          // Update header title based on selected nav
+          pageTitle.innerText = link.innerText;
+        });
+      });
     });
 
     // Handle Form Submission
@@ -491,7 +583,7 @@ import MainLayout from "../layouts/MainLayout.astro";
 
         if (res.ok) {
           successMsg.style.display = "block";
-          successMsg.innerText = "✅ Tenant space successfully provisioned! Credentials ready.";
+          successMsg.innerText = "✅ Tenant space successfully provisioned! Credentials are ready.";
           
           const newRow = document.createElement("tr");
           newRow.style.animation = "fadeIn 0.5s ease";
@@ -511,7 +603,7 @@ import MainLayout from "../layouts/MainLayout.astro";
           setTimeout(() => {
             successMsg.style.display = "none";
             form.reset();
-          }, 3000);
+          }, 4000);
         } else {
           const data = await res.json();
           alert(data.error || "Failed to create tenant.");
