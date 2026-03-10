@@ -155,7 +155,7 @@ import MainLayout from "../layouts/MainLayout.astro";
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const ctx = document.getElementById("salesChart") as HTMLCanvasElement;
+        const ctx = document.getElementById("salesChart");
         if (ctx) {
             // @ts-ignore
             new Chart(ctx, {
@@ -177,11 +177,18 @@ import MainLayout from "../layouts/MainLayout.astro";
                 const list = document.getElementById("alerts");
                 if (list) {
                     list.innerHTML = "";
-                    alerts.forEach(a => {
+                    if (alerts.length === 0) {
                         const li = document.createElement("li");
-                        li.innerText = `${a.medicine} - ${a.message}`;
+                        li.innerText = "✅ No new alerts!";
+                        li.style.color = "#00ff88";
                         list.appendChild(li);
-                    });
+                    } else {
+                        alerts.forEach(a => {
+                            const li = document.createElement("li");
+                            li.innerText = `${a.medicine} - ${a.message}`;
+                            list.appendChild(li);
+                        });
+                    }
                 }
             } catch (e) {
                 console.error("Failed to load alerts", e);

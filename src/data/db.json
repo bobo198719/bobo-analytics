@@ -25,6 +25,16 @@
       "address": "Main Road",
       "plan": "999",
       "status": "active"
+    },
+    {
+      "id": 2,
+      "pharmacy": "Test Pharmacy",
+      "pharmacyId": "pharma123",
+      "password": "pharma123",
+      "phone": "1234567890",
+      "address": "Test Location",
+      "plan": "999",
+      "status": "active"
     }
   ],
   "inventory": [

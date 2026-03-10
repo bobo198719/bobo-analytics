@@ -1,7 +1,8 @@
 import { getDb } from '../../../lib/db.js';
 import jwt from 'jsonwebtoken';
 
-export const post = async ({ request }) => {
+export const prerender = false;
+export const POST = async ({ request }) => {
   try {
     const body = await request.json();
     const { pharmacyId, username, password, industry } = body;
@@ -41,6 +42,7 @@ export const post = async ({ request }) => {
     return new Response(JSON.stringify({ error: "Invalid credentials" }), { status: 401 });
 
   } catch (err) {
-    return new Response(JSON.stringify({ error: "Server error" }), { status: 500 });
+    console.error("Login API Error: ", err);
+    return new Response(JSON.stringify({ error: "Server error", details: err.message }), { status: 500 });
   }
 };

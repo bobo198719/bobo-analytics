@@ -1,6 +1,7 @@
 import { getDb } from '../../../lib/db.js';
 
-export const get = async () => {
+export const prerender = false;
+export const GET = async () => {
   try {
     const db = await getDb();
     const inventory = await db.collection('inventory').find({}).toArray();
