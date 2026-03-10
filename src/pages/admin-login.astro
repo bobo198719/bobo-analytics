@@ -2,67 +2,65 @@
 import MainLayout from "../layouts/MainLayout.astro";
 ---
 
-<MainLayout title="Pharmacy Login | Bobo Analytics">
-  <section class="login-wrapper">
+<MainLayout title="Admin Secure Login | Bobo Analytics">
+  <section class="admin-login-wrapper">
     <div class="login-container">
       <div class="login-header">
-        <div class="icon-circle">💊</div>
-        <h1>Pharmacy Login</h1>
-        <p>Access your secure dashboard and manage your inventory with AI.</p>
+        <div class="icon-circle">🛡️</div>
+        <h1>System Admin Portal</h1>
+        <p>Restricted access. Authorized personnel only.</p>
       </div>
 
-      <form id="loginForm" class="login-form">
+      <form class="login-form" id="adminLoginForm">
         <div class="form-group">
-          <label for="pharmacyId">Pharmacy ID</label>
+          <label for="adminId">Admin ID</label>
           <input 
             type="text" 
-            id="pharmacyId" 
-            placeholder="Enter your ID"
+            id="adminId" 
+            placeholder="Enter Admin ID"
             required
+            autocomplete="off"
           />
         </div>
 
         <div class="form-group">
-          <label for="password">Password</label>
+          <label for="password">Security Key</label>
           <input 
             type="password" 
             id="password" 
-            placeholder="••••••••"
+            placeholder="••••••••••"
             required
           />
         </div>
 
         <button type="submit" class="btn-login">
-          Sign In
+          Authenticate
         </button>
         
         <p id="error" class="error-msg"></p>
       </form>
-
-      <div class="login-footer">
-        <p>Don't have an account? <a href="/signup">Contact Sales</a></p>
-      </div>
     </div>
   </section>
 
   <style>
-    .login-wrapper {
+    .admin-login-wrapper {
       min-height: 80vh;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 60px 24px;
-      background: radial-gradient(circle at center, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
+      background: radial-gradient(circle at center, rgba(239, 68, 68, 0.05) 0%, transparent 70%);
     }
 
     .login-container {
       width: 100%;
       max-width: 440px;
       background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
       border-radius: 24px;
       padding: 40px;
       backdrop-filter: blur(10px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
     }
 
     .login-header {
@@ -73,14 +71,14 @@ import MainLayout from "../layouts/MainLayout.astro";
     .icon-circle {
       width: 64px;
       height: 64px;
-      background: rgba(99, 102, 241, 0.1);
+      background: rgba(239, 68, 68, 0.1);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 2rem;
       margin: 0 auto 20px;
-      border: 1px solid rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.3);
     }
 
     .login-header h1 {
@@ -123,13 +121,13 @@ import MainLayout from "../layouts/MainLayout.astro";
 
     .form-group input:focus {
       outline: none;
-      border-color: #6366f1;
+      border-color: #ef4444;
       background: rgba(255, 255, 255, 0.08);
-      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
     }
 
     .btn-login {
-      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+      background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
       color: white;
       padding: 14px;
       border: none;
@@ -143,7 +141,7 @@ import MainLayout from "../layouts/MainLayout.astro";
 
     .btn-login:hover {
       transform: translateY(-1px);
-      box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+      box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
     }
 
     .error-msg {
@@ -152,57 +150,24 @@ import MainLayout from "../layouts/MainLayout.astro";
       text-align: center;
       min-height: 20px;
     }
-
-    .login-footer {
-      margin-top: 32px;
-      text-align: center;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      padding-top: 24px;
-    }
-
-    .login-footer p {
-      color: rgba(255, 255, 255, 0.5);
-      font-size: 0.9rem;
-    }
-
-    .login-footer a {
-      color: #6366f1;
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    .login-footer a:hover {
-      text-decoration: underline;
-    }
   </style>
 
   <script>
-    const form = document.getElementById("loginForm");
+    const form = document.getElementById("adminLoginForm");
     const errorEl = document.getElementById("error");
 
-    form.addEventListener("submit", async (e) => {
+    form.addEventListener("submit", (e) => {
       e.preventDefault();
-      errorEl.innerText = "";
       
-      const pharmacyId = document.getElementById("pharmacyId").value;
-      const password = document.getElementById("password").value;
+      const adminId = document.getElementById("adminId").value;
+      const pwd = document.getElementById("password").value;
 
-      try {
-        let tenants = JSON.parse(localStorage.getItem("bobo_tenants") || "[]");
-        let validTenant = tenants.find(t => t.pharmacyId === pharmacyId && t.password === password);
-
-        // Simulate network delay
-        await new Promise(r => setTimeout(r, 600));
-
-        if (validTenant) {
-          localStorage.setItem("pharmacy", validTenant.pharmacy);
-          localStorage.setItem("pharmacyId", validTenant.pharmacyId);
-          window.location.href = "/pharmacy-dashboard";
-        } else {
-          errorEl.innerText = "Invalid credentials. Please try again or create a tenant in Admin Hub.";
-        }
-      } catch (err) {
-        errorEl.innerText = "Processing error. Please try again.";
+      // Mock authentication for the admin login
+      if (adminId === "admin" && pwd === "bobo2026") {
+        localStorage.setItem("adminAuth", "true");
+        window.location.href = "/admin";
+      } else {
+        errorEl.innerText = "Access denied. Invalid credentials.";
       }
     });
   </script>

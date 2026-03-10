@@ -1,48 +1,33 @@
-import { getDb } from '../../../lib/db.js';
-import jwt from 'jsonwebtoken';
+let users = [];
 
-export const prerender = false;
-export const POST = async ({ request }) => {
-  try {
-    const body = await request.json();
-    const { pharmacyId, username, password, industry } = body;
+export async function POST({ request }) {
 
-    const db = await getDb();
+const { username, password } = await request.json();
 
-    // 1. Check for legacy pharmacy login (if pharmacyId is provided)
-    if (pharmacyId) {
-      const pharmacy = await db.collection('pharmacies').findOne({ pharmacyId, password });
-      if (pharmacy) {
-        const token = jwt.sign({ id: pharmacy.id, type: 'pharmacy', industry: 'pharmacy' }, process.env.JWT_SECRET || 'secret', { expiresIn: '1d' });
-        return new Response(JSON.stringify({ 
-          message: "Login successful", 
-          pharmacy: pharmacy.pharmacy,
-          token 
-        }), { status: 200 });
-      }
-    }
+const user = users.find(
+u => u.username === username && u.password === password
+);
 
-    // 2. Check for industry-specific user login
-    const user = await db.collection('users').findOne({ username, password });
-    if (user) {
-      // Validate industry if specified (e.g., logging in from a specific solution page)
-      if (industry && user.industry !== industry && user.industry !== 'all') {
-        return new Response(JSON.stringify({ error: `Not authorized for ${industry}` }), { status: 403 });
-      }
+if (!user) {
 
-      const token = jwt.sign({ id: user.id, type: 'user', industry: user.industry }, process.env.JWT_SECRET || 'secret', { expiresIn: '1d' });
-      return new Response(JSON.stringify({ 
-        message: "Login successful", 
-        username: user.username,
-        industry: user.industry,
-        token 
-      }), { status: 200 });
-    }
+return new Response(
+JSON.stringify({ error: "Invalid credentials" }),
+{
+status: 401,
+headers: { "Content-Type": "application/json" }
+}
+);
 
-    return new Response(JSON.stringify({ error: "Invalid credentials" }), { status: 401 });
+}
 
-  } catch (err) {
-    console.error("Login API Error: ", err);
-    return new Response(JSON.stringify({ error: "Server error", details: err.message }), { status: 500 });
-  }
-};
+return new Response(
+JSON.stringify({
+message: "Login successful",
+industry: user.industry
+}),
+{
+headers: { "Content-Type": "application/json" }
+}
+);
+
+}

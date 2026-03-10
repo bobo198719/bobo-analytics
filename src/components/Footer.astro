@@ -1,0 +1,114 @@
+---
+---
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="brand">
+      <div class="logo-footer">
+        <img src="/logo.png" alt="Bobo Analytics" height="32" />
+        <span>Bobo Analytics</span>
+      </div>
+      <p>Smart Analytics for Smarter Business. Empowering industries with AI-driven insights.</p>
+    </div>
+    <div>
+      <h4>Product</h4>
+      <a href="/solutions/pharmacy">Pharmacy Software</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/signup">Start Free Trial</a>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <a href="/about">About Us</a>
+      <a href="/contact">Contact</a>
+      <a href="/blog">Blog</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms & Conditions</a>
+      <a href="/disclaimer">Disclaimer</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Bobo Analytics — AI Analytics Platform. All rights reserved.</p>
+  </div>
+</footer>
+
+<style>
+.footer {
+  background: #05081a;
+  padding: 60px 20px 30px;
+  color: white;
+  margin-top: 80px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.brand {
+  grid-column: span 1;
+}
+
+@media (min-width: 1024px) {
+  .brand {
+    grid-column: span 1.5;
+  }
+}
+
+.logo-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.logo-footer img {
+  border-radius: 4px;
+}
+
+.footer p {
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.footer h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.footer a {
+  display: block;
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.footer a:hover {
+  color: #6366f1;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 60px;
+  padding-top: 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.footer-bottom p {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+</style>

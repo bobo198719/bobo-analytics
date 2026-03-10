@@ -1,174 +1,314 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
-import IndustryCard from "../components/IndustryCard.astro";
-import Stats from "../components/Stats.astro";
-import DemoForm from "../components/DemoForm.astro";
 ---
 
-<MainLayout title="Bobo Analytics">
+<MainLayout title="Bobo Analytics | AI-Driven Business Insights">
+  <section class="hero">
+    <div class="hero-content">
+      <h1>AI Analytics Platform for <span class="gradient-text">Every Industry</span></h1>
+      <p>Powerful, industry-specific software designed to transform your data into actionable intelligence. Optimized for pharmacy, healthcare, retail, and more.</p>
+      <div class="hero-buttons">
+        <a href="/login" class="btn-primary">Login to CRM</a>
+        <a href="/signup" class="btn-secondary">Start Free Trial</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+        <div class="glow-sphere"></div>
+    </div>
+  </section>
 
-<section class="hero">
+  <section class="stats">
+    <div class="stat-container">
+      <div class="stat">
+        <div class="stat-number">500+</div>
+        <p>Pharmacies Onboarded</p>
+      </div>
+      <div class="stat">
+        <div class="stat-number">120k</div>
+        <p>Invoices Processed</p>
+      </div>
+      <div class="stat">
+        <div class="stat-number">98%</div>
+        <p>Success Rate</p>
+      </div>
+      <div class="stat">
+        <div class="stat-number">24/7</div>
+        <p>AI Monitoring</p>
+      </div>
+    </div>
+  </section>
 
-  <h1>AI Analytics Platform for Every Industry</h1>
-  <p>Select your industry and experience software built specially for you.</p>
+  <section class="industries">
+    <div class="section-header">
+      <h2>Solutions for Every Industry</h2>
+      <p>Choose your sector to see how Bobo Analytics can revolutionize your workflow.</p>
+    </div>
+    <div class="industry-grid">
+      <a href="/solutions/healthcare" class="industry-card">
+        <div class="card-icon">🏥</div>
+        <h3>Healthcare</h3>
+        <p>Patient data analytics and management.</p>
+      </a>
+      <a href="/solutions/pharmacy" class="industry-card">
+        <div class="card-icon">💊</div>
+        <h3>Pharmacy</h3>
+        <p>Inventory and prescription tracking.</p>
+      </a>
+      <a href="/solutions/retail" class="industry-card">
+        <div class="card-icon">🛒</div>
+        <h3>Retail</h3>
+        <p>Consumer behavior and sales insights.</p>
+      </a>
+      <a href="/solutions/finance" class="industry-card">
+        <div class="card-icon">📈</div>
+        <h3>Finance</h3>
+        <p>Market analysis and risk assessment.</p>
+      </a>
+      <a href="/solutions/groceries" class="industry-card">
+        <div class="card-icon">🍎</div>
+        <h3>Groceries</h3>
+        <p>Supply chain and stock optimization.</p>
+      </a>
+      <a href="/solutions/clothing-store" class="industry-card">
+        <div class="card-icon">👕</div>
+        <h3>Clothing Store</h3>
+        <p>Fashion trends and inventory management.</p>
+      </a>
+      <a href="/solutions/stock-trading" class="industry-card">
+        <div class="card-icon">📊</div>
+        <h3>Stock Trading</h3>
+        <p>Real-time market signals and data.</p>
+      </a>
+    </div>
+  </section>
 
-  <a href="/pharmacy-login">
-    <button class="login-btn">Login to CRM</button>
-  </a>
-
-</section>
-
-<Stats />
-
-<section class="industries">
-
-<h2>Industries We Serve</h2>
-
-<div class="grid">
-
-<IndustryCard
-title="Healthcare"
-description="Patient analytics, hospital insights and reporting"
-link="/solutions/healthcare"
-/>
-
-<IndustryCard
-title="Pharmacy"
-description="Inventory analytics, expiry prediction and smart billing"
-link="/solutions/pharmacy"
-/>
-
-<IndustryCard
-title="Retail"
-description="Demand forecasting and sales intelligence"
-link="/solutions/retail"
-/>
-
-<IndustryCard
-title="Finance"
-description="Financial analytics and business insights"
-link="/solutions/finance"
-/>
-
-<IndustryCard
-title="Groceries"
-description="Fresh stock tracking and customer retention"
-link="/solutions/groceries"
-/>
-
-<IndustryCard
-title="Clothing Store"
-description="Fashion trends, size-wise stock and seasonal sales"
-link="/solutions/clothing-store"
-/>
-
-<IndustryCard
-title="Stock Trading"
-description="Portfolio analytics, risk assessment and real-time alerts"
-link="/solutions/stock-trading"
-/>
-
-</div>
-
-</section>
-
-<section class="dashboard-preview">
-
-<h2>Your Pharmacy Dashboard</h2>
-
-<img src="/dashboard.png" alt="Pharmacy Dashboard">
-
-</section>
-
-<DemoForm />
-
-<footer>
-
-<p>Bobo Analytics</p>
-
-<div class="footer-links">
-
-<a href="/privacy">Privacy Policy</a>
-<a href="/terms">Terms & Conditions</a>
-<a href="/disclaimer">Disclaimer</a>
-
-</div>
-
-</footer>
-
+  <section class="dashboard-preview">
+    <div class="container">
+      <div class="dashboard-header">
+        <h2>Advanced Pharmacy Dashboard</h2>
+        <p>Get a bird's-eye view of your entire operation with our intuitive interface.</p>
+      </div>
+      <div class="dashboard-image-wrapper">
+        <img src="/dashboard-image.png" alt="Pharmacy Dashboard Preview" class="dashboard-img" />
+        <div class="image-overlay"></div>
+      </div>
+    </div>
+  </section>
 </MainLayout>
 
 <style>
+  .hero {
+    padding: 120px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: radial-gradient(circle at top, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+    position: relative;
+    overflow: hidden;
+  }
 
-.hero{
-text-align:center;
-padding:80px 20px;
-background:linear-gradient(90deg,#ff8a00,#3aa0ff);
-color:white;
-}
+  .hero-content {
+    max-width: 800px;
+    z-index: 2;
+  }
 
-.hero h1{
-font-size:36px;
-margin-bottom:10px;
-}
+  .hero h1 {
+    font-size: clamp(2.5rem, 8vw, 4.5rem);
+    line-height: 1.1;
+    font-weight: 800;
+    margin-bottom: 24px;
+    letter-spacing: -0.04em;
+  }
 
-.hero p{
-margin-bottom:20px;
-}
+  .gradient-text {
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 
-.login-btn{
-padding:10px 20px;
-border:none;
-background:white;
-color:black;
-border-radius:6px;
-cursor:pointer;
-}
+  .hero p {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 40px;
+    line-height: 1.6;
+  }
 
-.industries{
-padding:60px 20px;
-text-align:center;
-background:#0b0b0b;
-color:white;
-}
+  .hero-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+  }
 
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:20px;
-margin-top:30px;
-}
+  .btn-primary {
+    background: white;
+    color: #05081a;
+    padding: 14px 32px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
 
-.dashboard-preview{
-padding:80px 20px;
-text-align:center;
-background:#111;
-color:white;
-}
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1);
+  }
 
-.dashboard-preview img{
-max-width:900px;
-width:100%;
-border-radius:12px;
-}
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 14px 32px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
+  }
 
-footer{
-text-align:center;
-padding:40px;
-background:black;
-color:white;
-}
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
 
-.footer-links{
-margin-top:10px;
-display:flex;
-justify-content:center;
-gap:20px;
-}
+  .glow-sphere {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 1;
+  }
 
-.footer-links a{
-color:white;
-text-decoration:none;
-}
+  .stats {
+    padding: 60px 24px;
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
 
+  .stat-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    text-align: center;
+  }
+
+  .stat-number {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #6366f1;
+    margin-bottom: 8px;
+  }
+
+  .stat p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .industries {
+    padding: 100px 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .section-header h2 {
+    font-size: 2.5rem;
+    margin-bottom: 16px;
+  }
+
+  .section-header p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.1rem;
+  }
+
+  .industry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+
+  .industry-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 40px 32px;
+    border-radius: 20px;
+    text-decoration: none;
+    color: white;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .industry-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: #6366f1;
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+  }
+
+  .industry-card h3 {
+    font-size: 1.5rem;
+    margin: 0;
+  }
+
+  .industry-card p {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .dashboard-preview {
+    padding: 100px 24px;
+    background: linear-gradient(to bottom, transparent, rgba(99, 102, 241, 0.05));
+  }
+
+  .dashboard-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .dashboard-image-wrapper {
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+    border-radius: 20px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+  }
+
+  .dashboard-img {
+    width: 100%;
+    display: block;
+    border-radius: 12px;
+  }
+
+  @media (max-width: 768px) {
+    .hero {
+      padding: 80px 24px;
+    }
+    .hero-buttons {
+      flex-direction: column;
+    }
+  }
 </style>

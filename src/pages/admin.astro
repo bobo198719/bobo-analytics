@@ -2,309 +2,972 @@
 import MainLayout from "../layouts/MainLayout.astro";
 ---
 
-<MainLayout title="Bobo Analytics Admin">
+<MainLayout title="Super Admin Panel | BoboAnalytics">
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/logo.png" alt="Bobo Analytics Logo" class="admin-logo" />
+        <div class="brand-text">
+            <h2>BoboAnalytics</h2>
+            <span class="badge super-admin">Super Admin</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">Core</div>
+        <a href="#dashboard" class="active">Overview</a>
+        <a href="#industry">Industry Manager</a>
+        <a href="#tenants">Tenant Manager</a>
+        <a href="#features">Feature Manager</a>
+        
+        <div class="nav-section">Operations</div>
+        <a href="#users">User Monitoring</a>
+        <a href="#billing">Payments & Subscriptions</a>
+        
+        <div class="nav-section">Marketing & Alerts</div>
+        <a href="#automation">Automation Center</a>
+        <a href="#whatsapp">WhatsApp Integration</a>
+        <a href="#email">Email Campaigns</a>
+        
+        <div class="nav-section">Configuration</div>
+        <a href="#settings">System Settings</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button id="logoutBtn" class="btn-logout">Logout securely</button>
+      </div>
+    </aside>
 
-<div class="admin">
+    <main class="main-content">
+      <header class="top-bar">
+        <h1 id="pageTitle">Overview</h1>
+        <div class="top-actions">
+           <button class="btn-secondary" onclick="alert('Entering Tenant Masking Mode...')">👁 Login as Client</button>
+           <div class="user-profile">
+             <span>System Master</span>
+             <div class="avatar">SM</div>
+           </div>
+        </div>
+      </header>
 
-<!-- SIDEBAR -->
+      <div id="sec-dashboard" class="admin-section active">
+        <section class="overview-cards">
+          <div class="card revenue">
+            <h3>Total Lifetime Revenue</h3>
+            <p class="value" id="liveTotalRev">₹0</p>
+            <span class="trend positive">Based on active plans</span>
+          </div>
+          <div class="card">
+            <h3>Total Active Tenants</h3>
+            <p class="value" id="liveTenantCount">0</p>
+            <span class="trend">Live across all industries</span>
+          </div>
+          <div class="card">
+            <h3>Registered Users</h3>
+            <p class="value" id="liveUserCount">0</p>
+            <span class="trend">Owner accounts</span>
+          </div>
+          <div class="card">
+            <h3>Messages Sent</h3>
+            <p class="value" id="liveMsgCount">0</p>
+            <span class="trend">System alerts & welcomes</span>
+          </div>
+        </section>
+      </div>
 
-<div class="sidebar">
+      <div id="sec-industry" class="admin-section">
+        <div class="section-header">
+          <h2>Industry Manager</h2>
+          <p>Define verticals and structure the baseline plans for each sector.</p>
+        </div>
+        <div class="action-bar-right"><button class="btn-primary" onclick="alert('Industry added to catalog.')">+ Add New Industry</button></div>
+        
+        <table class="activity-table" style="margin-top:20px;">
+           <thead>
+             <tr>
+               <th>Industry</th>
+               <th>Active Tenants</th>
+               <th>Available Plans</th>
+               <th>Actions</th>
+             </tr>
+           </thead>
+           <tbody>
+             <tr>
+               <td contenteditable="true"><strong>Pharmacy</strong></td>
+               <td>Live</td>
+               <td contenteditable="true">Starter, Professional, Enterprise</td>
+               <td><button class="btn-text">Save edits</button> | <button class="btn-text danger">Disable</button></td>
+             </tr>
+             <tr>
+               <td contenteditable="true"><strong>Grocery</strong></td>
+               <td>Live</td>
+               <td contenteditable="true">Basic, Premium</td>
+               <td><button class="btn-text">Save edits</button> | <button class="btn-text danger">Disable</button></td>
+             </tr>
+             <tr>
+               <td contenteditable="true"><strong>Clinic / Hospital</strong></td>
+               <td>Live</td>
+               <td contenteditable="true">Standard, Advanced</td>
+               <td><button class="btn-text">Save edits</button> | <button class="btn-text danger">Disable</button></td>
+             </tr>
+           </tbody>
+        </table>
+      </div>
 
-<h2 class="logo">Bobo Admin</h2>
+      <!-- 3. Tenant Manager -->
+      <div id="sec-tenants" class="admin-section">
+        <section class="tenant-creation">
+          <div class="section-header">
+            <h2>Tenant Manager (Businesses)</h2>
+            <p>Provision isolated subdomains, databases, and capabilities for new clients.</p>
+          </div>
 
-<ul>
+          <div class="creation-panel">
+            <form class="tenant-form" id="createTenantForm">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Industry</label>
+                  <select id="industrySelect" required>
+                    <option value="" disabled selected>Select Industry</option>
+                    <option value="pharmacy">Pharmacy</option>
+                    <option value="healthcare">Healthcare & Clinical</option>
+                    <option value="retail">Retail POS</option>
+                    <option value="finance">Finance & Asset Management</option>
+                    <option value="groceries">Grocery & Fresh Produce</option>
+                    <option value="clothing-store">Fashion & Apparel</option>
+                    <option value="stock-trading">Stock Trading CRM</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Business Name</label>
+                  <input type="text" id="businessName" placeholder="e.g., Apollo Pharmacy" required />
+                </div>
+                <div class="form-group">
+                  <label>Subdomain / Instance ID</label>
+                  <input type="text" id="customId" placeholder="apollo-pharm" required />
+                </div>
+              </div>
 
-<li class="active">Dashboard</li>
-<li>Pharmacies</li>
-<li>Medicines</li>
-<li>Orders</li>
-<li>Analytics</li>
-<li>Reports</li>
-<li>Settings</li>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Admin Email</label>
+                  <input type="email" id="adminEmail" placeholder="admin@business.com" required />
+                </div>
+                <div class="form-group">
+                  <label>Admin Phone (WhatsApp)</label>
+                  <input type="text" id="adminPhone" placeholder="+91 9876543210" required />
+                </div>
+                <div class="form-group">
+                  <label>Account Password</label>
+                  <input type="password" id="accountPassword" placeholder="••••••••" required />
+                </div>
+              </div>
 
-</ul>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Subscription Plan</label>
+                  <select id="subscriptionPlan" required>
+                    <option value="starter">Starter - ₹5,000/yr (14 Day Trial)</option>
+                    <option value="professional" selected>Professional - ₹8,000/yr (14 Day Trial)</option>
+                    <option value="enterprise">Enterprise - ₹12,000/yr (14 Day Trial)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Billing Cycle</label>
+                  <select>
+                    <option value="monthly">Monthly</option>
+                    <option value="yearly">Yearly (Save 20%)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Trial Days</label>
+                  <input type="number" value="14" />
+                </div>
+              </div>
 
-</div>
+              <div class="onboarding-toggles">
+                 <label class="toggle-control"><input type="checkbox" id="sendEmailCheckbox" checked /> Send Welcome Email</label>
+                 <label class="toggle-control"><input type="checkbox" id="sendWaCheckbox" checked /> Send Live WhatsApp Welcome</label>
+              </div>
 
+              <div class="form-actions">
+                <button type="submit" class="btn-primary" style="font-size:1.1rem; padding:16px 32px;">Deploy Tenant Infrastructure</button>
+              </div>
+            </form>
+            <div id="successMsg" class="success-alert" style="display: none;">
+              ✅ Architecture deployed: Subdomain routed, DB initialized, API activated. Welcome messages dispatched.
+            </div>
+          </div>
+        </section>
 
-<!-- MAIN AREA -->
+        <section class="recent-activity" style="margin-top: 48px;">
+          <h2>Recently Deployed Tenants</h2>
+          <table class="activity-table">
+            <thead>
+              <tr>
+                <th>Instance</th>
+                <th>Name</th>
+                <th>Industry</th>
+                <th>Plan</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="tenantTableBody">
+            </tbody>
+          </table>
+        </section>
+      </div>
 
-<div class="main">
+      <div id="sec-features" class="admin-section">
+        <div class="section-header">
+          <h2>Feature Manager (Capability Toggles)</h2>
+          <p>Editable matrix. Click on any text or status to edit.</p>
+        </div>
+        
+        <div class="card" style="margin-bottom:20px;">
+           <table class="activity-table">
+              <thead>
+                <tr>
+                   <th>Feature Module</th>
+                   <th>Starter</th>
+                   <th>Professional</th>
+                   <th>Enterprise</th>
+                   <th>Override</th>
+                </tr>
+              </thead>
+              <tbody contenteditable="true">
+                <tr>
+                   <td><strong>Basic Inventory</strong></td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td><button class="btn-text" contenteditable="false">Force Toggle</button></td>
+                </tr>
+                <tr>
+                   <td><strong>Sales POS</strong></td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td><button class="btn-text" contenteditable="false">Force Toggle</button></td>
+                </tr>
+                <tr>
+                   <td><strong>Purchase Orders</strong></td>
+                   <td class="text-red">❌ Disabled</td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td><button class="btn-text" contenteditable="false">Force Toggle</button></td>
+                </tr>
+                <tr>
+                   <td><strong>Advanced Analytics</strong></td>
+                   <td class="text-red">❌ Disabled</td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td class="text-green">✔ Enabled</td>
+                   <td><button class="btn-text" contenteditable="false">Force Toggle</button></td>
+                </tr>
+              </tbody>
+           </table>
+        </div>
+      </div>
 
-<h1>Admin Dashboard</h1>
+      <!-- 5. User Monitoring -->
+      <div id="sec-users" class="admin-section">
+        <div class="section-header">
+          <h2>User Monitoring</h2>
+          <p>Oversee all staff accounts generated by tenant owners across all systems.</p>
+        </div>
+        <table class="activity-table">
+           <thead>
+             <tr>
+               <th>Tenant Parent</th>
+               <th>Staff Name</th>
+               <th>Role</th>
+               <th>Last Login</th>
+               <th>Actions</th>
+             </tr>
+           </thead>
+           <tbody id="userTableBody">
+           </tbody>
+        </table>
+      </div>
 
-<!-- CARDS -->
+      <!-- 6. Payments & Subscriptions -->
+      <div id="sec-billing" class="admin-section">
+        <div class="section-header">
+          <h2>Payments & Subscriptions</h2>
+          <p>Manage plan activation, expiry events, feature locking, and invoicing.</p>
+        </div>
+        <div class="alert-box feature-lock">
+           <strong>Feature Lock System Active:</strong> If a tenant plan expires, Sales, Inventory and Analytics modules will systematically lock out and display a "Subscription Expired" notice inside their dashboard automatically.
+        </div>
+        <table class="activity-table" style="margin-top:20px;">
+           <thead>
+             <tr>
+               <th>Tenant</th>
+               <th>Plan</th>
+               <th>Status</th>
+               <th>Expiry Date</th>
+               <th>Actions</th>
+             </tr>
+           </thead>
+           <tbody id="billingTableBody">
+           </tbody>
+        </table>
+      </div>
 
-<div class="cards">
+      <!-- 7. Automation Center -->
+      <div id="sec-automation" class="admin-section">
+        <div class="section-header">
+          <h2>Automation Center</h2>
+          <p>Set trigger rules for system-wide webhook actions.</p>
+        </div>
+        <div class="card">
+           <div class="automation-row">
+              <div class="auto-info">
+                 <h4>Plan Expiry approaching in 3 days</h4>
+                 <p>Trigger: 72 hours prior to expiration date</p>
+              </div>
+              <div class="auto-actions">
+                 <select><option>Send Email + WhatsApp</option><option>Email Only</option><option>WhatsApp Only</option></select>
+                 <span class="badge success">Enabled</span>
+              </div>
+           </div>
+           <div class="automation-row">
+              <div class="auto-info">
+                 <h4>Plan Successfully Activated</h4>
+                 <p>Trigger: Upon successful payment stripe hook</p>
+              </div>
+              <div class="auto-actions">
+                 <select><option>Send Welcome Message</option><option>Silent Mode</option></select>
+                 <span class="badge success">Enabled</span>
+              </div>
+           </div>
+           <div class="automation-row">
+              <div class="auto-info">
+                 <h4>Payment Received</h4>
+                 <p>Trigger: Invoice paid</p>
+              </div>
+              <div class="auto-actions">
+                 <select><option>Send Custom Tax Invoice</option><option>Silent Mode</option></select>
+                 <span class="badge success">Enabled</span>
+              </div>
+           </div>
+        </div>
+      </div>
 
-<div class="card revenue">
-<h3>Total Revenue</h3>
-<p>₹1,20,000</p>
-<span>+10% this week</span>
-</div>
+      <!-- 8. WhatsApp Integration -->
+      <div id="sec-whatsapp" class="admin-section">
+        <div class="section-header">
+          <h2>WhatsApp Message Integration</h2>
+          <p>Using Twilio / Meta Graph APIs for direct tenant communication.</p>
+        </div>
+        <div class="grid-split">
+           <div class="card">
+              <h3>Gateway Provider</h3>
+              <select class="full-width-select">
+                 <option>Official Meta WhatsApp API</option>
+                 <option>Twilio Global</option>
+                 <option>WATI</option>
+                 <option>Interakt</option>
+              </select>
+              <br><br>
+              <button class="btn-primary">Sync API Keys</button>
+           </div>
+           <div class="card">
+              <h3>Template: Welcome Message</h3>
+              <pre class="message-preview">Welcome to BoboAnalytics!
 
-<div class="card">
-<h3>Total Pharmacies</h3>
-<p>215</p>
-<span>+8 new</span>
-</div>
+Your dashboard is ready.
 
-<div class="card">
-<h3>Total Orders</h3>
-<p>2,458</p>
-<span>+5% growth</span>
-</div>
+Login: &#123;subdomain&#125;.boboanalytics.com
+Email: &#123;admin_email&#125;
+Password: ********
 
-<div class="card">
-<h3>Medicines</h3>
-<p>1,245</p>
-<span>inventory</span>
-</div>
+– BoboAnalytics Team</pre>
+           </div>
+           <div class="card">
+              <h3>Template: Plan Expiry</h3>
+              <pre class="message-preview">Hi &#123;business_name&#125;,
 
-</div>
+Your BoboAnalytics subscription expires in 3 days.
+Renew now to avoid service interruption and feature locking.
 
+– Billing Team</pre>
+           </div>
+        </div>
+      </div>
 
-<!-- ANALYTICS -->
+      <!-- 9. Email Campaigns -->
+      <div id="sec-email" class="admin-section">
+        <div class="section-header">
+          <h2>Email Campaigns</h2>
+          <p>Blast updates to clients globally or selectively.</p>
+        </div>
+        <div class="creation-panel">
+           <div class="form-group" style="margin-bottom:20px;">
+              <label>Target Audience</label>
+              <div class="checkbox-group">
+                 <label><input type="checkbox" /> All Active Clients</label>
+                 <label><input type="checkbox" /> Pharmacy Vertical Only</label>
+                 <label><input type="checkbox" /> Grocery Vertical Only</label>
+                 <label><input type="checkbox" /> Expiring Subscriptions (Next 7 Days)</label>
+              </div>
+           </div>
+           <div class="form-group" style="margin-bottom:20px;">
+              <label>Subject Line</label>
+              <input type="text" id="emailSubject" placeholder="e.g., Important BoboAnalytics Version Update" style="width:100%;" />
+           </div>
+           <div class="form-group" style="margin-bottom:20px;">
+              <label>Email Body (HTML/Text)</label>
+              <textarea id="emailBody" rows="6" placeholder="Enter message payload here..." style="width:100%; padding:10px; background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1); border-radius:8px;"></textarea>
+           </div>
+           <button class="btn-primary" onclick="sendMassEmail()">Send Mass Email (Live)</button>
+        </div>
+      </div>
 
-<div class="analytics">
+      <!-- 10. System Settings -->
+      <div id="sec-settings" class="admin-section">
+        <div class="section-header">
+          <h2>Global System Settings</h2>
+          <p>Core infrastructure values.</p>
+        </div>
+        <div class="creation-panel">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Platform Maintenance Mode</label>
+              <select>
+                <option value="off">Off (Production Live)</option>
+                <option value="on">On (Redirects to maintenance page)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Database Backup Frequency (AWS S3)</label>
+              <select>
+                <option value="hourly">Hourly</option>
+                <option value="daily" selected>Daily Midnight</option>
+                <option value="weekly">Weekly</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+             <div class="form-group">
+                <label>SMTP Email Protocol</label>
+                <input type="text" value="smtp.sendgrid.net" />
+             </div>
+             <div class="form-group">
+                <label>AI Forecasting Model</label>
+                <select>
+                  <option>OpenAI GPT-4o Realtime</option>
+                  <option>Anthropic Claude 3.5 Sonnet</option>
+                </select>
+             </div>
+          </div>
+          <button class="btn-primary" style="margin-top: 16px;">Save System Config</button>
+        </div>
+      </div>
 
-<h2>Sales Analytics</h2>
+    </main>
+  </div>
 
-<div class="chart">
+  <style>
+    /* Styling overhaul for Super Admin */
+    .admin-layout {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #030712;
+      display: flex;
+      font-family: 'Inter', sans-serif;
+      z-index: 9999;
+      color: white;
+      overflow: hidden;
+    }
 
-<div style="height:120px"></div>
-<div style="height:150px"></div>
-<div style="height:100px"></div>
-<div style="height:80px"></div>
-<div style="height:140px"></div>
-<div style="height:60px"></div>
-<div style="height:170px"></div>
-<div style="height:90px"></div>
+    .admin-section {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .admin-section.active { display: block; }
 
-</div>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-</div>
+    .sidebar {
+      width: 280px;
+      background: #111827;
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
 
+    .sidebar-header {
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      position: sticky; top:0; background: #111827; z-index:10;
+    }
 
-<!-- TOP SELLING -->
+    .admin-logo {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+    }
 
-<div class="top-selling">
+    .brand-text h2 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin: 0;
+      letter-spacing: -0.5px;
+    }
+    
+    .badge.super-admin {
+        background: linear-gradient(90deg, #ef4444, #f97316);
+        color: white;
+        padding: 2px 6px;
+        font-size: 0.65rem;
+        border-radius: 4px;
+        margin-top: 4px;
+        display: inline-block;
+    }
 
-<h2>Top Selling Medicines</h2>
+    .sidebar-nav {
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
 
-<div class="products">
+    .nav-section {
+        color: #6b7280;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 16px;
+        margin-bottom: 8px;
+        padding-left: 12px;
+    }
 
-<div class="product">Atorvastatin</div>
-<div class="product">Omeprazole</div>
-<div class="product">Metformin</div>
-<div class="product">Paracetamol</div>
+    .sidebar-nav a {
+      color: #9ca3af;
+      text-decoration: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
 
-</div>
+    .sidebar-nav a:hover, .sidebar-nav a.active {
+      background: rgba(99, 102, 241, 0.15);
+      color: #818cf8;
+    }
 
-</div>
+    .sidebar-footer {
+      padding: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      margin-top: auto;
+    }
 
+    .btn-logout {
+      width: 100%;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #ef4444;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
 
-<!-- ORDERS TABLE -->
+    .btn-logout:hover { background: rgba(239, 68, 68, 0.2); }
 
-<div class="orders">
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px 48px;
+      background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.08) 0%, transparent 60%);
+    }
 
-<h2>Latest Orders</h2>
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+    }
 
-<table>
+    .top-bar h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin: 0;
+    }
+    
+    .top-actions {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
 
-<tr>
-<th>Order ID</th>
-<th>Medicine</th>
-<th>Price</th>
-<th>Status</th>
-</tr>
+    .user-profile { display: flex; align-items: center; gap: 12px; }
+    .avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%; background: #6366f1;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; border: 2px solid white;
+    }
 
-<tr>
-<td>#ORD121</td>
-<td>Metformin</td>
-<td>$10.50</td>
-<td class="delivered">Delivered</td>
-</tr>
+    .overview-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      margin-bottom: 48px;
+    }
 
-<tr>
-<td>#ORD122</td>
-<td>Omeprazole</td>
-<td>$15.05</td>
-<td class="delivered">Delivered</td>
-</tr>
+    .card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
 
-<tr>
-<td>#ORD123</td>
-<td>Atorvastatin</td>
-<td>$13.01</td>
-<td class="pending">Pending</td>
-</tr>
+    .card.revenue {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(168, 85, 247, 0.2) 100%);
+      border-color: rgba(99, 102, 241, 0.4);
+    }
 
-<tr>
-<td>#ORD124</td>
-<td>Paracetamol</td>
-<td>$6.10</td>
-<td class="processing">Processing</td>
-</tr>
+    .card h3 {
+      font-size: 0.9rem;
+      color: #9ca3af;
+      margin: 0 0 12px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .card .value { font-size: 2.2rem; font-weight: 800; margin: 0 0 8px 0; }
+    .trend { font-size: 0.85rem; color: #6b7280; }
+    .trend.positive { color: #10b981; }
 
-</table>
+    .section-header { margin-bottom: 24px; }
+    .section-header h2 { font-size: 1.8rem; margin: 0 0 8px 0; font-weight: 700; }
+    .section-header p { color: #9ca3af; margin: 0; font-size: 1.05rem; }
 
-</div>
+    .creation-panel {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 32px;
+    }
+    
+    .onboarding-toggles {
+        display: flex; gap: 24px; margin: 24px 0; padding: 16px;
+        background: rgba(99, 102, 241, 0.05); border-radius: 12px; border: 1px solid rgba(99,102,241,0.2);
+    }
+    .toggle-control { display:flex; align-items:center; gap:8px; font-weight:600; color:#e5e7eb; cursor:pointer;}
 
-</div>
+    .form-row { display: flex; gap: 24px; margin-bottom: 24px; }
+    .form-group { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+    .form-group label { font-size: 0.9rem; font-weight: 600; color: #d1d5db; }
+    .form-group input, .form-group select {
+      background: #111827; border: 1px solid #374151; padding: 14px 16px;
+      border-radius: 10px; color: white; font-size: 1rem; outline: none; transition: all 0.2s;
+    }
+    .form-group select option { background: #111827; color: white; }
+    .form-group input:focus, .form-group select:focus { border-color: #818cf8; box-shadow: 0 0 0 3px rgba(99,102,241,0.2)}
 
-</div>
+    .form-actions { margin-top: 32px; display: flex; justify-content: flex-end; }
+    
+    .action-bar-right { display: flex; justify-content: flex-end; margin-bottom: 20px;}
 
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: white;
+      padding: 12px 24px; border: none; border-radius: 10px; font-size: 1rem;
+      font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3); }
+    
+    .btn-secondary {
+       background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);
+       padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.2);}
+    
+    .btn-text { background: transparent; border: none; color: #818cf8; cursor: pointer; font-weight: 600; padding:4px;}
+    .btn-text:hover { text-decoration: underline;}
+    .btn-text.danger { color: #ef4444; }
+
+    .success-alert { margin-top: 24px; padding: 16px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 10px; color: #10b981; font-weight:600;}
+
+    .activity-table { width: 100%; border-collapse: collapse; text-align: left; background: rgba(255,255,255,0.02); border-radius:12px; overflow:hidden; border: 1px solid rgba(255,255,255,0.05);}
+    .activity-table th { background: rgba(0,0,0,0.2); color: #9ca3af; font-weight: 600; padding: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+    .activity-table td { padding: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: #e5e7eb;}
+    
+    .text-green { color: #10b981 !important; font-weight: 600;}
+    .text-red { color: #ef4444 !important; font-weight: 600;}
+
+    .badge { padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; }
+    .badge.success { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3);}
+    .badge.error { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3);}
+    .badge.pending { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+
+    .automation-row { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05);}
+    .automation-row:last-child { border-bottom: none;}
+    .auto-info h4 { margin:0 0 4px; font-size: 1.1rem;}
+    .auto-info p { margin:0; color:#9ca3af; font-size:0.9rem;}
+    .auto-actions { display:flex; align-items: center; gap:16px;}
+    .auto-actions select { background: #111827; color: white; border: 1px solid #374151; padding: 8px; border-radius: 6px;}
+
+    .grid-split { display: grid; grid-template-columns: 1fr 1fr; gap: 24px;}
+    .full-width-select { width: 100%; background: #111827; color: white; padding: 12px; border: 1px solid #374151; border-radius: 8px;}
+    .message-preview { background: #000; padding: 16px; border-radius: 8px; font-family: monospace; color: #a7f3d0; white-space: pre-wrap; margin-top:16px;}
+    
+    .alert-box.feature-lock { background: rgba(249, 115, 22, 0.1); border-left: 4px solid #f97316; padding: 16px; color: #fdba74; margin-bottom: 24px; border-radius:0 8px 8px 0;}
+
+    @media (max-width: 1024px) { .form-row { flex-direction: column; gap: 16px; margin-bottom: 16px; } .grid-split { grid-template-columns: 1fr;}}
+  </style>
+
+  <script>
+    // Authentication Check
+    document.addEventListener("DOMContentLoaded", () => {
+      const isAuth = localStorage.getItem("adminAuth");
+      if (!isAuth) {
+        window.location.href = "/admin-login";
+      }
+
+      // Tab Switching Logic
+      const navLinks = document.querySelectorAll('.sidebar-nav a');
+      const sections = document.querySelectorAll('.admin-section');
+      const pageTitle = document.getElementById('pageTitle');
+
+      navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          
+          navLinks.forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
+          
+          const targetId = 'sec-' + link.getAttribute('href').substring(1);
+          
+          sections.forEach(sec => {
+            sec.classList.remove('active');
+            if (sec.id === targetId) sec.classList.add('active');
+          });
+
+          // Update header title based on selected nav
+          pageTitle.innerText = link.innerText;
+        });
+      });
+      
+      // Load current live tenants into overview array
+      loadTenantsIntoTable();
+    });
+
+    const tbody = document.getElementById("tenantTableBody");
+    const ubobdy = document.getElementById("userTableBody");
+    const bbody = document.getElementById("billingTableBody");
+    
+    function loadTenantsIntoTable() {
+        let tenants = JSON.parse(localStorage.getItem("bobo_tenants") || "[]");
+        
+        // Update live overview stats
+        document.getElementById("liveTenantCount").innerText = tenants.length;
+        document.getElementById("liveUserCount").innerText = tenants.length; // Owner count
+        
+        let estimatedRev = 0;
+        let tHtml = "";
+        let bHtml = "";
+        
+        if (tenants.length === 0) {
+            tHtml = "<tr><td colspan='5' style='text-align:center;'>No tenants deployed yet.</td></tr>";
+            bHtml = "<tr><td colspan='5' style='text-align:center;'>No billing data generated yet.</td></tr>";
+        } else {
+            tenants.forEach((t, i) => {
+                const ind = t.industry ? t.industry.charAt(0).toUpperCase() + t.industry.slice(1) : 'Pharmacy';
+                const pln = t.plan ? t.plan.charAt(0).toUpperCase() + t.plan.slice(1) : 'Professional';
+                
+                // Add to estimated revenue based on plan
+                if(t.plan === 'starter') estimatedRev += 5000;
+                else if(t.plan === 'enterprise') estimatedRev += 12000;
+                else estimatedRev += 8000; // professional
+                
+                tHtml += `
+                  <tr contenteditable="true">
+                    <td>${t.pharmacyId}</td>
+                    <td>${t.pharmacy}</td>
+                    <td>${ind}</td>
+                    <td>${pln}</td>
+                    <td contenteditable="false"><span class="badge success">Active</span> <button class="btn-text" onclick="alert('Edits saved.')">Save</button></td>
+                  </tr>
+                `;
+
+                // Add to billing table dynamically
+                // Simulate next year expiry
+                let nextYear = new Date();
+                nextYear.setFullYear(nextYear.getFullYear() + 1);
+
+                bHtml += `
+                  <tr>
+                    <td>${t.pharmacy}</td>
+                    <td>${pln}</td>
+                    <td><span class="badge success">Active</span></td>
+                    <td>${nextYear.toLocaleDateString("en-US", { day: '2-digit', month: 'short', year: 'numeric'})}</td>
+                    <td><button class="btn-text">Edit Invoice Options</button></td>
+                  </tr>
+                `;
+            });
+        }
+        
+        document.getElementById("liveTotalRev").innerText = `₹${estimatedRev.toLocaleString('en-IN')}`;
+        
+        if(tbody) tbody.innerHTML = tHtml;
+        if(bbody) bbody.innerHTML = bHtml;
+
+        // User accounts mockup based on active tenants (if they exist)
+        let uHtml = "";
+         // Admin direct dashboard access logic
+         window.loginAsTenant = function(tenantId) {
+            let tenants = JSON.parse(localStorage.getItem("bobo_tenants") || "[]");
+            let t = tenants.find(x => x.pharmacyId === tenantId);
+            if(t) {
+                localStorage.setItem("activeTenantContext", JSON.stringify({
+                    id: t.pharmacyId, name: t.pharmacy, industry: t.industry, plan: t.plan
+                }));
+                // Fallback for legacy pharmacy sandbox if they use old UI, but defaults to new dashboard
+                if (t.industry === 'pharmacy') {
+                     localStorage.setItem("pharmacy", t.pharmacy);
+                     localStorage.setItem("pharmacyId", t.pharmacyId);
+                }
+                window.open('/dashboard', '_blank');
+            }
+         };
+
+         if (tenants.length === 0) {
+              uHtml = "<tr><td colspan='5' style='text-align:center;'>No users provisioned by tenants.</td></tr>";
+         } else {
+              // For each tenant, artificially inject their admin email as a primary user account
+              tenants.forEach(t => {
+                  uHtml += `
+                  <tr contenteditable="true">
+                     <td>${t.pharmacy}</td>
+                     <td>${t.email || 'Admin'}</td>
+                     <td>Owner</td>
+                     <td>Never Logged In</td>
+                     <td contenteditable="false"><button class="btn-text" onclick="loginAsTenant('${t.pharmacyId}')">Log In & Spy</button> | <button class="btn-text danger">Suspend</button></td>
+                  </tr>
+                  `;
+              });
+         }
+        if (ubobdy) ubobdy.innerHTML = uHtml;
+    }
+
+    function sendMassEmail() {
+        const sub = document.getElementById("emailSubject").value;
+        const bdy = document.getElementById("emailBody").value;
+        let tenants = JSON.parse(localStorage.getItem("bobo_tenants") || "[]");
+        let addresses = tenants.map(t => t.email || "").filter(e => e !== "").join(",");
+        
+        if (!addresses) {
+            alert("No active tenant emails found to send sequence across.");
+            return;
+        }
+
+        window.open(`mailto:?bcc=${addresses}&subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(bdy)}`, '_blank');
+    }
+
+    // Handle Form Submission
+    const form = document.getElementById("createTenantForm");
+    const successMsg = document.getElementById("successMsg");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const industry = document.getElementById("industrySelect").value;
+      const customId = document.getElementById("customId").value;
+      const businessName = document.getElementById("businessName").value;
+      const password = document.getElementById("accountPassword").value;
+      const selectedPlan = document.getElementById("subscriptionPlan").value;
+
+      try {
+        let tenants = JSON.parse(localStorage.getItem("bobo_tenants") || "[]");
+        
+        if (tenants.find(t => t.pharmacyId === customId)) {
+           alert("Connection error: Subdomain/Instance ID already exists in routing tables.");
+           return;
+        }
+
+        const adminEmail = document.getElementById("adminEmail").value;
+        const adminPhone = document.getElementById("adminPhone").value;
+
+        const newTenant = {
+          pharmacy: businessName,
+          pharmacyId: customId,
+          password: password,
+          industry: industry,
+          plan: selectedPlan,
+          email: adminEmail,
+          phone: adminPhone
+        };
+
+        tenants.push(newTenant);
+        localStorage.setItem("bobo_tenants", JSON.stringify(tenants));
+
+        // Simulate infrastructure deployment delay
+        await new Promise(r => setTimeout(r, 1200));
+
+        successMsg.style.display = "block";
+        loadTenantsIntoTable();
+
+        // Process Internal Message Logs (simulated sending instead of external app)
+        let messagesSent = parseInt(localStorage.getItem("bobo_msgs") || "0");
+        let nextYear = new Date();
+        nextYear.setFullYear(nextYear.getFullYear() + 1);
+        let expDate = nextYear.toLocaleDateString("en-US", { day: '2-digit', month: 'short', year: 'numeric'});
+
+        const systemMessagePayload = `*** SYSTEM COMMUNICATION SIMULATION ***
+From: support@boboanalytics.com
+To: ${adminEmail} (And WhatsApp: ${adminPhone})
+Subject: Welcome to BoboAnalytics, ${businessName}!
+
+Your dashboard infrastructure has been provisioned.
+
+--- ACCOUNT DETAILS ---
+URL: ${customId}.boboanalytics.com/solutions/${industry} (or use Universal Login)
+User ID: ${customId}
+Password: ${password}
+
+--- PLAN PROFILE ---
+Selected Plan: ${selectedPlan.toUpperCase()}
+Start Date: ${new Date().toLocaleDateString()}
+Expiry Date: ${expDate}
+Benefits included: Inventory Management, Sales POS, Analytics Dashboard, and Support.
+
+Feel free to reply to this email (support@boboanalytics.com) or text us on WhatsApp at +91 91564 84328 if you need any setup assistance.
+
+– BoboAnalytics Onboarding Team`;
+
+        if (document.getElementById("sendWaCheckbox").checked || document.getElementById("sendEmailCheckbox").checked) {
+              messagesSent++;
+              localStorage.setItem("bobo_msgs", messagesSent.toString());
+              document.getElementById("liveMsgCount").innerText = messagesSent;
+              console.log("Triggering internal email/WhatsApp send simulation.");
+              alert(systemMessagePayload); // Show the payload in an alert instead of opening external mailto/wa.me
+        }
+
+        setTimeout(() => {
+          successMsg.style.display = "none";
+          form.reset();
+        }, 5000);
+      } catch (err) {
+        alert("System error. Could not provision infrastructure.");
+      }
+    });
+
+    // Handle Logout
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.removeItem("adminAuth");
+      window.location.href = "/admin-login";
+    });
+  </script>
 </MainLayout>
-
-<style>
-
-.admin{
-display:flex;
-min-height:100vh;
-background:#f5f7fb;
-font-family:Arial;
-}
-
-
-/* SIDEBAR */
-
-.sidebar{
-width:240px;
-background:#1e293b;
-color:white;
-padding:30px 20px;
-}
-
-.logo{
-margin-bottom:40px;
-}
-
-.sidebar ul{
-list-style:none;
-padding:0;
-}
-
-.sidebar li{
-padding:12px;
-border-radius:6px;
-cursor:pointer;
-margin-bottom:5px;
-}
-
-.sidebar li:hover{
-background:#334155;
-}
-
-.sidebar .active{
-background:#3b82f6;
-}
-
-
-/* MAIN */
-
-.main{
-flex:1;
-padding:40px;
-}
-
-
-/* CARDS */
-
-.cards{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:20px;
-margin-bottom:40px;
-}
-
-.card{
-background:white;
-padding:25px;
-border-radius:12px;
-box-shadow:0 2px 10px rgba(0,0,0,0.05);
-}
-
-.revenue{
-background:linear-gradient(135deg,#3b82f6,#6366f1);
-color:white;
-}
-
-
-/* ANALYTICS */
-
-.analytics{
-background:white;
-padding:25px;
-border-radius:12px;
-margin-bottom:40px;
-}
-
-.chart{
-display:flex;
-align-items:flex-end;
-gap:12px;
-height:180px;
-margin-top:20px;
-}
-
-.chart div{
-width:30px;
-background:linear-gradient(#8b5cf6,#3b82f6);
-border-radius:5px;
-}
-
-
-/* TOP SELLING */
-
-.top-selling{
-background:white;
-padding:25px;
-border-radius:12px;
-margin-bottom:40px;
-}
-
-.products{
-display:flex;
-gap:20px;
-margin-top:15px;
-}
-
-.product{
-background:#eef2ff;
-padding:10px 15px;
-border-radius:6px;
-}
-
-
-/* ORDERS */
-
-.orders{
-background:white;
-padding:25px;
-border-radius:12px;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-}
-
-th,td{
-padding:12px;
-border-bottom:1px solid #eee;
-}
-
-.delivered{
-color:green;
-}
-
-.pending{
-color:orange;
-}
-
-.processing{
-color:#6366f1;
-}
-
-</style>

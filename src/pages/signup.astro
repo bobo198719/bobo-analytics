@@ -2,65 +2,162 @@
 import MainLayout from "../layouts/MainLayout.astro";
 ---
 
-<MainLayout title="Signup | Bobo Analytics">
+<MainLayout title="Create Your Account | Bobo Analytics">
+  <section class="auth-wrapper">
+    <div class="auth-container">
+      <div class="auth-header">
+        <div class="icon-circle">✨</div>
+        <h1>Create Your Account</h1>
+        <p>Start your 14-day free trial. No credit card required.</p>
+      </div>
 
-<section class="auth">
+      <form class="auth-form">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" placeholder="John Doe" required />
+        </div>
 
-<h1>Create Your Account</h1>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" placeholder="john@example.com" required />
+        </div>
 
-<form class="auth-form">
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" placeholder="••••••••" required />
+        </div>
 
-<input type="text" placeholder="Full Name" required />
+        <button type="submit" class="btn-primary">Create Account</button>
+      </form>
 
-<input type="email" placeholder="Email Address" required />
+      <div class="auth-footer">
+        <p>Already have an account? <a href="/login">Log In</a></p>
+      </div>
+    </div>
+  </section>
 
-<input type="password" placeholder="Password" required />
+  <style>
+    .auth-wrapper {
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 24px;
+      background: radial-gradient(circle at center, rgba(168, 85, 247, 0.05) 0%, transparent 70%);
+    }
 
-<button type="submit">Create Account</button>
+    .auth-container {
+      width: 100%;
+      max-width: 440px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 40px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
 
-</form>
+    .auth-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
 
-<p class="login-link">
-Already have an account?
-<a href="/pharmacy-login">Login</a>
-</p>
+    .icon-circle {
+      width: 64px;
+      height: 64px;
+      background: rgba(168, 85, 247, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto 20px;
+      border: 1px solid rgba(168, 85, 247, 0.2);
+    }
 
-</section>
+    .auth-header h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
 
-<style>
-.auth{
-max-width:420px;
-margin:auto;
-padding:40px;
-}
+    .auth-header p {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.95rem;
+    }
 
-.auth-form{
-display:flex;
-flex-direction:column;
-gap:12px;
-margin-top:20px;
-}
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
 
-.auth-form input{
-padding:12px;
-border-radius:6px;
-border:1px solid #333;
-background:#111;
-color:white;
-}
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
-.auth-form button{
-padding:12px;
-border:none;
-border-radius:6px;
-background:#00ff88;
-font-weight:bold;
-cursor:pointer;
-}
+    .form-group label {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.8);
+    }
 
-.login-link{
-margin-top:15px;
-}
-</style>
+    .form-group input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 12px 16px;
+      border-radius: 10px;
+      color: white;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
 
+    .form-group input:focus {
+      outline: none;
+      border-color: #a855f7;
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(168, 85, 247, 0.3);
+    }
+
+    .auth-footer {
+      margin-top: 32px;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 24px;
+    }
+
+    .auth-footer p {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.9rem;
+    }
+
+    .auth-footer a {
+      color: #a855f7;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .auth-footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </MainLayout>

@@ -2,281 +2,156 @@
 import MainLayout from "../../layouts/MainLayout.astro";
 ---
 
-<MainLayout title="Pharmacy Software | Bobo Analytics">
-
-<!-- PREMIUM HERO -->
-<section class="hero">
-
-  <div class="hero-box">
-    <h1>AI-Powered Pharmacy Management</h1>
-
-    <p>
-      Built exclusively for pharmacies to manage billing,
-      prescriptions, inventory automation and financial analytics
-      using intelligent software.
-    </p>
-
-    <div class="hero-buttons">
-      <a href="#" class="primary">Login to CRM</a>
-      <a href="#demo" class="secondary">Book Demo</a>
-    </div>
-  </div>
-
-</section>
-
-
-<!-- TRUST METRICS -->
-<section class="metrics">
-
-<div class="metric">
+<MainLayout title="Pharmacy Management Software"><section class="hero"><h1>Pharmacy Management Software</h1>
+<p class="subtitle">
+AI powered analytics and automation for modern pharmacies
+</p><div class="stats"><div class="stat">
 <h2>500+</h2>
-<p>Pharmacies Ready</p>
-</div>
-
-<div class="metric">
+<p>Pharmacies Using Our Platform</p>
+</div><div class="stat">
 <h2>99%</h2>
-<p>Billing Accuracy</p>
-</div>
-
-<div class="metric">
+<p>Inventory Accuracy</p>
+</div><div class="stat">
 <h2>24/7</h2>
 <p>AI Monitoring</p>
-</div>
-
-<div class="metric">
+</div><div class="stat">
 <h2>0%</h2>
-<p>Expiry Loss Target</p>
-</div>
+<p>Medicine Expiry Loss</p>
+</div></div></section><section class="features"><div class="feature">
+<h3>Medicine Inventory</h3>
+<p>Track stock levels, batch numbers and expiry dates.</p>
+</div><div class="feature">
+<h3>Barcode Scanner</h3>
+<p>Scan medicines instantly using barcode technology.</p>
+</div><div class="feature">
+<h3>Smart Billing</h3>
+<p>Generate GST invoices and manage customer records.</p>
+</div><div class="feature">
+<h3>Supplier Management</h3>
+<p>Manage suppliers and purchase orders easily.</p>
+</div><div class="feature">
+<h3>Expiry Alerts</h3>
+<p>Get notifications before medicines expire.</p>
+</div></section><section class="login-box"><h2>Login to Pharmacy CRM</h2><form id="loginForm"><input
+type="text"
+id="username"
+placeholder="Username"
+required
+/>
 
-</section>
+<input
+type="password"
+id="password"
+placeholder="Password"
+required
+/>
 
+<button type="submit">
+Login
+</button></form><p id="error"></p></section><style>
 
-<!-- FEATURES -->
-<section class="features">
-
-<h2>Everything a Modern Pharmacy Needs</h2>
-
-<div class="grid">
-
-<div class="card">
-<h3>💊 Smart Billing POS</h3>
-<p>Instant invoices with medicine tracking.</p>
-</div>
-
-<div class="card">
-<h3>📦 Inventory Automation</h3>
-<p>Expiry alerts & stock intelligence.</p>
-</div>
-
-<div class="card">
-<h3>👨‍⚕️ Prescription CRM</h3>
-<p>Track patients and repeat purchases.</p>
-</div>
-
-<div class="card">
-<h3>🤖 AI Insights</h3>
-<p>Predict demand before shortages.</p>
-</div>
-
-<div class="card">
-<h3>📊 Financial Analytics</h3>
-<p>Real-time profit visibility.</p>
-</div>
-
-<div class="card">
-<h3>🏪 Multi-Store Control</h3>
-<p>Manage all branches centrally.</p>
-</div>
-
-</div>
-
-</section>
-
-
-<!-- DASHBOARD SHOWCASE -->
-<section class="dashboard">
-
-<h2>Your Pharmacy Dashboard</h2>
-
-<p>One screen to control your entire pharmacy business.</p>
-
-<img src="/dashboard-image.png" alt="Pharmacy Dashboard" />
-
-</section>
-
-
-<!-- WORKFLOW TIMELINE -->
-<section class="workflow">
-
-<h2>How Bobo Analytics Works</h2>
-
-<div class="timeline">
-
-<div class="step">1️⃣ Sell Medicines</div>
-<div class="step">2️⃣ Data Auto Syncs</div>
-<div class="step">3️⃣ AI Analyses Sales</div>
-<div class="step">4️⃣ Grow Profit</div>
-
-</div>
-
-</section>
-
-
-<!-- PREMIUM CTA -->
-<section id="demo" class="cta">
-
-<h2>Transform Your Pharmacy Today</h2>
-
-<p>Join the next generation of intelligent pharmacies.</p>
-
-<a href="#" class="primary big">Request Live Demo</a>
-
-</section>
-
-</MainLayout>
-
-
-<style>
-
-/* HERO */
 .hero{
-  background:
-  linear-gradient(135deg,#065f46,#22c55e);
-  padding:120px 20px;
-  display:flex;
-  justify-content:center;
+text-align:center;
+padding:80px 20px;
 }
 
-.hero-box{
-  max-width:700px;
-  text-align:center;
-  backdrop-filter:blur(12px);
-  background:rgba(255,255,255,0.1);
-  padding:50px;
-  border-radius:18px;
-  color:white;
-  box-shadow:0 20px 50px rgba(0,0,0,.25);
+.subtitle{
+color:#666;
+margin-bottom:40px;
 }
 
-.hero h1{
-  font-size:38px;
-  margin-bottom:15px;
+.stats{
+display:flex;
+justify-content:center;
+gap:50px;
+flex-wrap:wrap;
 }
 
-.hero-buttons{
-  margin-top:25px;
-  display:flex;
-  justify-content:center;
-  gap:15px;
-  flex-wrap:wrap;
+.stat h2{
+color:#16a34a;
+font-size:32px;
 }
 
-.primary{
-  background:white;
-  color:#065f46;
-  padding:14px 26px;
-  border-radius:8px;
-  text-decoration:none;
-  font-weight:bold;
-}
-
-.secondary{
-  border:2px solid white;
-  color:white;
-  padding:12px 24px;
-  border-radius:8px;
-  text-decoration:none;
-}
-
-/* METRICS */
-.metrics{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  text-align:center;
-  padding:50px 20px;
-  background:#ecfdf5;
-}
-
-.metric h2{
-  color:#16a34a;
-  font-size:34px;
-}
-
-/* FEATURES */
 .features{
-  padding:80px 20px;
-  background:#f9fafb;
-  text-align:center;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+padding:60px;
+max-width:1200px;
+margin:auto;
 }
 
-.grid{
-  margin-top:40px;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:25px;
+.feature{
+background:#f5f5f5;
+padding:25px;
+border-radius:10px;
 }
 
-.card{
-  background:white;
-  padding:28px;
-  border-radius:14px;
-  box-shadow:0 10px 25px rgba(0,0,0,.08);
-  transition:.3s;
-  border-top:4px solid #22c55e;
+.login-box{
+text-align:center;
+padding:80px 20px;
+background:#111;
+color:white;
 }
 
-.card:hover{
-  transform:translateY(-8px);
+.login-box input{
+display:block;
+margin:10px auto;
+padding:12px;
+width:260px;
+border-radius:6px;
+border:none;
 }
 
-/* DASHBOARD */
-.dashboard{
-  text-align:center;
-  padding:90px 20px;
-  background:#065f46;
-  color:white;
+.login-box button{
+padding:12px 25px;
+background:#22c55e;
+border:none;
+color:white;
+border-radius:6px;
+cursor:pointer;
 }
 
-.dashboard img{
-  margin-top:30px;
-  max-width:950px;
-  width:100%;
-  border-radius:16px;
-  box-shadow:0 25px 60px rgba(0,0,0,.45);
+</style><script>
+
+const form=document.getElementById("loginForm")
+
+form.addEventListener("submit",async(e)=>{
+
+e.preventDefault()
+
+const username=document.getElementById("username").value
+const password=document.getElementById("password").value
+
+const res=await fetch("/api/auth/login",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+username:username,
+password:password
+})
+
+})
+
+const data=await res.json()
+
+if(res.ok){
+
+localStorage.setItem("boboUser",username)
+
+window.location.href="/pharmacy-dashboard"
+
+}else{
+
+document.getElementById("error").innerText="Invalid login"
+
 }
 
-/* WORKFLOW */
-.workflow{
-  padding:80px 20px;
-  text-align:center;
-}
+})
 
-.timeline{
-  display:flex;
-  justify-content:center;
-  gap:25px;
-  flex-wrap:wrap;
-  margin-top:30px;
-}
-
-.step{
-  background:#dcfce7;
-  padding:15px 20px;
-  border-radius:8px;
-  font-weight:600;
-}
-
-/* CTA */
-.cta{
-  text-align:center;
-  padding:100px 20px;
-  background:linear-gradient(135deg,#064e3b,#16a34a);
-  color:white;
-}
-
-.big{
-  margin-top:20px;
-  display:inline-block;
-}
-
-</style>
+</script></MainLayout>
