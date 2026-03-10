@@ -14,6 +14,7 @@ import MainLayout from "../layouts/MainLayout.astro";
             <nav class="sidebar-nav" id="sidebarNav">
                 <a href="#overview" class="nav-btn active" data-target="sec-overview">📊 Dashboard</a>
                 <a href="#inventory" class="nav-btn" data-target="sec-inventory" id="navInventory">📦 Inventory</a>
+                <a href="#scanners" class="nav-btn" data-target="sec-scanners" id="navScanners">📸 AI & Camera Scanners</a>
                 <a href="#crm" class="nav-btn" data-target="sec-crm" id="navCrm">👥 Customers & WhatsApp</a>
                 <a href="#staff" class="nav-btn" data-target="sec-staff" id="navStaff">👨‍💼 Staff Control</a>
                 <a href="#ai" class="nav-btn" data-target="sec-ai" id="navAi">🧠 AI Analytics</a>
@@ -79,45 +80,6 @@ import MainLayout from "../layouts/MainLayout.astro";
                 </header>
 
                 
-                <div class="scanners-flex-container" style="display:flex; flex-wrap:wrap; gap:20px; margin-bottom: 32px;">
-                    <!-- LIVE CAMERA BARCODE SCANNER -->
-                    <div class="action-panel" style="flex:1; min-width:300px; margin-bottom:0; box-shadow: 0 4px 6px -1px rgba(16,185,129,0.1); border-top: 4px solid var(--brand-main);">
-                         <h3 style="display:flex; align-items:center; gap:8px;">📷 Live Barcode Scanner</h3>
-                         <p style="font-size:0.85rem; color:#6b7280; margin-bottom:12px;">Scan items via webcam directly to active terminal.</p>
-                         <div id="barcode-reader" style="width:100%; border-radius:8px; overflow:hidden; background:#111827; min-height: 250px; display:flex; align-items:center; justify-content:center; color:#4b5563;">[Camera Feed Offline]</div>
-                         <div style="display:flex; gap:10px; margin-top:16px;">
-                             <button type="button" id="startBarcodeCam" class="btn-primary" style="flex:1; font-size: 0.9rem;">Start Camera</button>
-                             <button type="button" id="stopBarcodeCam" class="btn-secondary" style="flex:1; font-size: 0.9rem;" disabled>Stop</button>
-                         </div>
-                         <p id="barcodeStatusMsg" style="margin-top:10px; font-size:0.85rem; font-weight:600;"></p>
-                    </div>
-
-                    <!-- AI INVOICE SCANNER -->
-                    <div class="action-panel" style="flex:1; min-width:300px; margin-bottom:0; box-shadow: 0 4px 6px -1px rgba(99,102,241,0.1); border-top: 4px solid #6366f1;">
-                        <h3 style="display:flex; align-items:center; gap:8px;">🧾 Smart Invoice Capture</h3>
-                        <p style="font-size:0.85rem; color:#6b7280; margin-bottom:12px;">Auto-extract bill lines into live inventory.</p>
-                        
-                        <div style="width:100%; border-radius:8px; background:#111827; min-height: 250px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
-                            <video id="invoiceVideo" style="width:100%; height:100%; object-fit:cover; display:none;" autoplay playsinline></video>
-                            <canvas id="invoiceCanvas" style="display:none;"></canvas>
-                            <img id="invoicePreview" style="width:100%; height:100%; object-fit:contain; display:none; background:#fff;" />
-                            <span id="camPlaceholderText" style="color:#4b5563;">[Camera Feed Offline]</span>
-                        </div>
-
-                        <div style="display:flex; gap:10px; margin-top:16px;">
-                            <button type="button" id="startInvoiceCam" class="btn-secondary" style="flex:1; font-size: 0.9rem;">Live WebCam</button>
-                            <button type="button" id="captureInvoiceBtn" class="btn-primary" style="flex:1; font-size: 0.9rem; display:none;">📸 Snap Photo</button>
-                        </div>
-                        
-                        <div style="margin-top:16px; border-top:1px dashed #e5e7eb; padding-top:16px;">
-                            <label style="font-size:0.85rem; font-weight:600; margin-bottom:8px; display:block;">Or Upload Digital Bill</label>
-                            <input type="file" id="billInputStore" accept="image/*" style="font-family:sans-serif; width:100%; margin-bottom:12px;" />
-                            <button type="button" id="processAiBtn" class="btn-primary" style="width:100%;">Extract & Add to Database</button>
-                        </div>
-                        <div id="aiExtractionResults" style="margin-top: 12px; font-size: 0.85rem; color:#10b981; font-weight:600;"></div>
-                    </div>
-                </div>
-    
                 <div class="billing-container">
                     <div class="scanner-panel">
                         <div class="live-scanner-box" id="scannerBox">
@@ -197,6 +159,54 @@ import MainLayout from "../layouts/MainLayout.astro";
                         <tbody id="inventoryTable">
                         </tbody>
                     </table>
+                </div>
+            </section>
+
+            
+            <!-- AI & HARDWARE SCANNERS SECTION -->
+            <section id="sec-scanners" class="workspace-section">
+                <header class="workspace-header">
+                    <h1>AI & Hardware Scanners</h1>
+                    <p class="subtitle">Extract text from bills using AI, or scan physical barcodes instantly.</p>
+                </header>
+
+                <div class="scanners-flex-container" style="display:flex; flex-wrap:wrap; gap:20px; margin-bottom: 32px;">
+                    <!-- LIVE CAMERA BARCODE SCANNER -->
+                    <div class="action-panel" style="flex:1; min-width:300px; margin-bottom:0; box-shadow: 0 4px 6px -1px rgba(16,185,129,0.1); border-top: 4px solid var(--brand-main);">
+                         <h3 style="display:flex; align-items:center; gap:8px;">📷 Live Barcode Scanner</h3>
+                         <p style="font-size:0.85rem; color:#6b7280; margin-bottom:12px;">Scan items via webcam directly to active terminal.</p>
+                         <div id="barcode-reader" style="width:100%; border-radius:8px; overflow:hidden; background:#111827; min-height: 250px; display:flex; align-items:center; justify-content:center; color:#4b5563;">[Camera Feed Offline]</div>
+                         <div style="display:flex; gap:10px; margin-top:16px;">
+                             <button type="button" id="startBarcodeCam" class="btn-primary" style="flex:1; font-size: 0.9rem;">Start Camera</button>
+                             <button type="button" id="stopBarcodeCam" class="btn-secondary" style="flex:1; font-size: 0.9rem;" disabled>Stop</button>
+                         </div>
+                         <p id="barcodeStatusMsg" style="margin-top:10px; font-size:0.85rem; font-weight:600;"></p>
+                    </div>
+
+                    <!-- AI INVOICE SCANNER -->
+                    <div class="action-panel" style="flex:1; min-width:300px; margin-bottom:0; box-shadow: 0 4px 6px -1px rgba(99,102,241,0.1); border-top: 4px solid #6366f1;">
+                        <h3 style="display:flex; align-items:center; gap:8px;">🧾 Smart Invoice Capture</h3>
+                        <p style="font-size:0.85rem; color:#6b7280; margin-bottom:12px;">Capture bill elements automatically to Live Transaction form.</p>
+                        
+                        <div style="width:100%; border-radius:8px; background:#111827; min-height: 250px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+                            <video id="invoiceVideo" style="width:100%; height:100%; object-fit:cover; display:none;" autoplay playsinline></video>
+                            <canvas id="invoiceCanvas" style="display:none;"></canvas>
+                            <img id="invoicePreview" style="width:100%; height:100%; object-fit:contain; display:none; background:#fff;" />
+                            <span id="camPlaceholderText" style="color:#4b5563;">[Camera Feed Offline]</span>
+                        </div>
+
+                        <div style="display:flex; gap:10px; margin-top:16px;">
+                            <button type="button" id="startInvoiceCam" class="btn-secondary" style="flex:1; font-size: 0.9rem;">Live WebCam</button>
+                            <button type="button" id="captureInvoiceBtn" class="btn-primary" style="flex:1; font-size: 0.9rem; display:none;">📸 Snap Photo</button>
+                        </div>
+                        
+                        <div style="margin-top:16px; border-top:1px dashed #e5e7eb; padding-top:16px;">
+                            <label style="font-size:0.85rem; font-weight:600; margin-bottom:8px; display:block;">Or Upload Digital Bill</label>
+                            <input type="file" id="billInputStore" accept="image/*" style="font-family:sans-serif; width:100%; margin-bottom:12px;" />
+                            <button type="button" id="processAiBtn" class="btn-primary" style="width:100%;">Extract Elements to Live Bill</button>
+                        </div>
+                        <div id="aiExtractionResults" style="margin-top: 12px; font-size: 0.85rem; color:#10b981; font-weight:600;"></div>
+                    </div>
                 </div>
             </section>
 
