@@ -6,6 +6,95 @@ import MainLayout from "../layouts/MainLayout.astro";
     <h1>Retailer Bill Scanner</h1>
     <p>Upload retailer invoice and extract medicines automatically.</p>
 
-    <input type="file" />
-    <button>Scan Bill</button>
+    <input type="file" id="billInput" accept="image/*" />
+    <button id="scanBtn" class="btn">Scan Bill</button>
+    <div id="results" class="results-box"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    <script>
+      const btn = document.getElementById('scanBtn');
+      const input = document.getElementById('billInput');
+      const results = document.getElementById('results');
+
+      btn.addEventListener('click', async () => {
+        if (!input.files[0]) return alert('Please select a bill image');
+        
+        btn.innerText = 'Analyzing Image...';
+        btn.disabled = true;
+        results.innerHTML = '<p class="loading">Loading AI Vision model...</p>';
+        
+        try {
+          // Fast recognition using Tesseract in-browser
+          const { data: { text } } = await Tesseract.recognize(
+            input.files[0],
+            'eng',
+            { logger: m => console.log(m) }
+          );
+
+          // Cleaning logic directly derived from earlier backend routines
+          const lines = text.split('\n');
+          const medicines = [];
+          
+          lines.forEach(line => {
+            // Very basic heuristic for medicine matching (usually alphabetical words > 3 in length)
+            if(line.match(/[A-Za-z]/) && line.trim().length > 3){
+                medicines.push(line.trim());
+            }
+          });
+
+          if (medicines.length > 0) {
+            results.innerHTML = `<h3>Detected Medicines (${medicines.length}):</h3><ul class="med-list">${medicines.map(m => `<li>${m}</li>`).join('')}</ul>`;
+          } else {
+            results.innerHTML = `<p style="color:#ffcc00">No medicines detected. Please try a clearer image.</p>`;
+          }
+        } catch (e) {
+          results.innerHTML = `<p style="color:red">Scanner Error: ${e.message}</p>`;
+        } finally {
+          btn.innerText = 'Scan Bill';
+          btn.disabled = false;
+        }
+      });
+    </script>
+
+    <style>
+      .btn {
+        background: #00ff88;
+        color: black;
+        border: none;
+        padding: 10px 20px;
+        font-weight: bold;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .results-box {
+        margin-top: 20px;
+        padding: 20px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 8px;
+        min-height: 80px;
+      }
+      .loading {
+        color: #888;
+        animation: pulse 1.5s infinite;
+      }
+      .med-list {
+        margin-top: 10px;
+        list-style: square inside;
+      }
+      .med-list li {
+        margin-bottom: 5px;
+        padding: 5px;
+        background: rgba(0,0,0,0.2);
+        border-radius: 4px;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+    </style>
 </MainLayout>

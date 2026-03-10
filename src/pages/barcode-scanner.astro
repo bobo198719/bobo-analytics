@@ -51,7 +51,7 @@ import MainLayout from "../layouts/MainLayout.astro";
 
     <script>
         document.getElementById("scanBtn")?.addEventListener("click", () => {
-            const input = document.getElementById("barcode") as HTMLInputElement;
+            const input = document.getElementById("barcode");
             const result = document.getElementById("result");
             const code = input?.value;
 
