@@ -13,10 +13,9 @@ import MainLayout from "../layouts/MainLayout.astro";
             <div class="live-badge" id="industryBadge">LIVE INSTANCE</div>
             <nav class="sidebar-nav" id="sidebarNav">
                 <a href="#overview" class="nav-btn active" data-target="sec-overview">📊 Dashboard</a>
-                <a href="#billing" class="nav-btn" data-target="sec-billing" id="navBilling">🧾 Billing POS</a>
                 <a href="#inventory" class="nav-btn" data-target="sec-inventory" id="navInventory">📦 Inventory</a>
-                <a href="/bill-scanner" class="nav-btn" id="navBillScanner">🧾 AI Invoice Scanner</a>
-                <a href="/barcode-scanner" class="nav-btn" id="navBarcodeScanner">📷 Barcode Camera</a>
+                <a href="#ai-scanner" class="nav-btn" data-target="sec-ai-scanner" id="navBillScanner">🧾 AI Invoice Scanner</a>
+                <a href="#barcode-camera" class="nav-btn" data-target="sec-barcode-camera" id="navBarcodeScanner">📷 Barcode Camera</a>
                 <a href="#crm" class="nav-btn" data-target="sec-crm" id="navCrm">👥 Customers & WhatsApp</a>
                 <a href="#staff" class="nav-btn" data-target="sec-staff" id="navStaff">👨‍💼 Staff Control</a>
                 <a href="#ai" class="nav-btn" data-target="sec-ai" id="navAi">🧠 AI Analytics</a>
@@ -74,11 +73,11 @@ import MainLayout from "../layouts/MainLayout.astro";
                 </div>
             </section>
 
-            <!-- RETAIL BILLING POS SECTION -->
-            <section id="sec-billing" class="workspace-section">
+            <!-- INVENTORY / DATA SECTION -->
+            <section id="sec-inventory" class="workspace-section">
                 <header class="workspace-header">
-                    <h1 id="posTitle">Action / Transaction Terminal</h1>
-                    <p class="subtitle" id="posSubtitle">Process a live transaction based on your active database.</p>
+                    <h1 id="inventoryTitle">Manage Records</h1>
+                    <p class="subtitle" id="inventorySubtitle">Add new entries to your database.</p>
                 </header>
 
                 <div class="billing-container">
@@ -118,14 +117,6 @@ import MainLayout from "../layouts/MainLayout.astro";
                         </div>
                     </div>
                 </div>
-            </section>
-
-            <!-- INVENTORY / DATA SECTION -->
-            <section id="sec-inventory" class="workspace-section">
-                <header class="workspace-header">
-                    <h1 id="inventoryTitle">Manage Records</h1>
-                    <p class="subtitle" id="inventorySubtitle">Add new entries to your database.</p>
-                </header>
 
                 <div class="action-panel">
                     <h3 id="addFormTitle">Add New Entry</h3>
@@ -171,6 +162,36 @@ import MainLayout from "../layouts/MainLayout.astro";
                 </div>
             </section>
 
+            <!-- AI SCANNER SECTION -->
+            <section id="sec-ai-scanner" class="workspace-section">
+                <header class="workspace-header">
+                    <h1>AI Invoice Scanner</h1>
+                    <p class="subtitle">Upload retailer invoice and extract records automatically.</p>
+                </header>
+                <div class="action-panel">
+                    <input type="file" id="billInput" accept="image/*" style="display:block; margin-bottom: 16px; font-family: sans-serif;"/>
+                    <button id="scanBtnAi" class="btn-primary">Scan Document</button>
+                    <div id="resultsAi" class="results-box" style="margin-top: 20px; padding: 20px; background: #f9fafb; border: 1px dashed #e5e7eb; border-radius: 8px;">Waiting for document upload...</div>
+                </div>
+            </section>
+
+            <!-- BARCODE SCANNER SECTION -->
+            <section id="sec-barcode-camera" class="workspace-section">
+                <header class="workspace-header">
+                    <h1>Barcode Camera</h1>
+                    <p class="subtitle">Scan or type a barcode id to search.</p>
+                </header>
+                <div class="action-panel">
+                    <div style="display:flex; gap:10px; margin-bottom:16px; max-width:400px;">
+                        <input type="text" id="barcodeCameraInput" placeholder="Enter barcode" style="flex:1; padding:10px; border:1px solid #d1d5db; border-radius:6px;" />
+                        <button id="scanBtnCamera" class="btn-primary">Search</button>
+                    </div>
+                    <div id="resultCamera" style="padding: 20px; background: #f9fafb; border: 1px dashed #e5e7eb; border-radius: 8px;">
+                        <p>No barcode scanned yet.</p>
+                    </div>
+                </div>
+            </section>
+            
             <!-- CRM / WHATSAPP SECTION -->
             <section id="sec-crm" class="workspace-section">
                 <header class="workspace-header">
@@ -379,6 +400,7 @@ import MainLayout from "../layouts/MainLayout.astro";
         }
     </style>
 
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const tenantInfo = JSON.parse(localStorage.getItem("activeTenantContext"));
@@ -489,7 +511,7 @@ import MainLayout from "../layouts/MainLayout.astro";
             document.getElementById("brandIcon").innerText = t.icon;
             document.getElementById("emptyStateIcon").innerText = t.icon;
             document.getElementById("navInventory").innerText = t.invNav;
-            document.getElementById("navBilling").innerText = t.posNav;
+            if(document.getElementById("navBilling")) document.getElementById("navBilling").innerText = t.posNav;
             if(t.crmNav) document.getElementById("navCrm").innerText = t.crmNav;
             if(t.staffNav) document.getElementById("navStaff").innerText = t.staffNav;
             if(t.aiNav) document.getElementById("navAi").innerText = t.aiNav;
@@ -532,15 +554,18 @@ import MainLayout from "../layouts/MainLayout.astro";
 
             navBtns.forEach(btn => {
                 btn.addEventListener('click', (e) => {
+                    const targetId = btn.getAttribute('data-target');
+                    if (!targetId) return; // Allow normal navigation for external links
+
                     e.preventDefault();
                     navBtns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    const targetId = btn.getAttribute('data-target');
+                    
                     sections.forEach(sec => {
                         sec.classList.remove('active');
                         if (sec.id === targetId) sec.classList.add('active');
                     });
-                    if (targetId === "sec-billing") liveScannerInput.focus();
+                    if (targetId === "sec-inventory") { if(liveScannerInput) liveScannerInput.focus(); }
                 });
             });
 
@@ -768,6 +793,64 @@ import MainLayout from "../layouts/MainLayout.astro";
                 window.location.href = "/pharmacy-login";
             });
 
+            
+            // EXTERNAL TOOLS LOGIC
+            const scanBtnAi = document.getElementById('scanBtnAi');
+            const billInput = document.getElementById('billInput');
+            const resultsAi = document.getElementById('resultsAi');
+
+            if(scanBtnAi) {
+                scanBtnAi.addEventListener('click', async () => {
+                    if (!billInput.files[0]) return alert('Please select a bill image');
+                    
+                    scanBtnAi.innerText = 'Analyzing Image...';
+                    scanBtnAi.disabled = true;
+                    resultsAi.innerHTML = '<p class="loading" style="color:#6b7280; font-weight:bold;">Loading AI Vision model...</p>';
+                    
+                    try {
+                        const { data: { text } } = await window.Tesseract.recognize(
+                            billInput.files[0], 'eng'
+                        );
+
+                        const lines = text.split('\n');
+                        const medicines = [];
+                        
+                        lines.forEach(line => {
+                            if(line.match(/[A-Za-z]/) && line.trim().length > 3){
+                                medicines.push(line.trim());
+                            }
+                        });
+
+                        if (medicines.length > 0) {
+                            resultsAi.innerHTML = '<h3>Detected Records (' + medicines.length + '):</h3><ul style="margin-top:10px; padding-left:20px;">' + medicines.map(m => '<li>' + m + '</li>').join('') + '</ul>';
+                        } else {
+                            resultsAi.innerHTML = '<p style="color:#ef4444">No data detected. Try clearer image.</p>';
+                        }
+                    } catch (e) {
+                        resultsAi.innerHTML = '<p style="color:red">Scanner Error: ' + e.message + '</p>';
+                    } finally {
+                        scanBtnAi.innerText = 'Scan Document';
+                        scanBtnAi.disabled = false;
+                    }
+                });
+            }
+
+            const scanBtnCamera = document.getElementById("scanBtnCamera");
+            if (scanBtnCamera) {
+                scanBtnCamera.addEventListener("click", () => {
+                    const input = document.getElementById("barcodeCameraInput");
+                    const result = document.getElementById("resultCamera");
+                    const code = input?.value;
+
+                    if (!code) {
+                        if (result) result.innerHTML = "<p>Please enter a barcode.</p>";
+                        return;
+                    }
+
+                    if (result) result.innerHTML = "<p>Searching system for barcode: <b>"+code+"</b></p>";
+                });
+            }
+            // END TOOLS LOGIC
             updateDashboardUI();
         });
     </script>
