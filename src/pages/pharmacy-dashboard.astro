@@ -165,62 +165,174 @@ import MainLayout from "../layouts/MainLayout.astro";
             </section>
 
             
-            <!-- AI & HARDWARE SCANNERS SECTION -->
+
+            <!-- AI INVOICE SCANNER SECTION -->
             <section id="sec-scanners" class="workspace-section">
                 <header class="workspace-header">
-                    <h1>AI & Hardware Scanners</h1>
-                    <p class="subtitle">Extract text from bills using AI, or scan physical barcodes instantly.</p>
+                    <h1>🧾 AI Invoice Scanner</h1>
+                    <p class="subtitle">Upload or snap a photo of any invoice — AI extracts header info, all line items, HSN, batch, expiry, GST. Review and edit before saving to inventory.</p>
                 </header>
 
-                <div class="scanners-flex-container" style="display:flex; flex-wrap:wrap; gap:20px; margin-bottom: 32px;">
-                    <!-- LIVE CAMERA BARCODE SCANNER -->
-                    <div class="action-panel" style="flex:1; min-width:300px; margin-bottom:0; box-shadow: 0 4px 6px -1px rgba(16,185,129,0.1); border-top: 4px solid var(--brand-main);">
-                         <h3 style="display:flex; align-items:center; gap:8px;">📷 Live Barcode Scanner</h3>
-                         <p style="font-size:0.85rem; color:#6b7280; margin-bottom:12px;">Scan items via webcam directly to active terminal.</p>
-                         <div id="barcode-reader" style="width:100%; border-radius:8px; overflow:hidden; background:#111827; min-height: 250px; display:flex; align-items:center; justify-content:center; color:#4b5563;">[Camera Feed Offline]</div>
-                         <div style="display:flex; gap:10px; margin-top:16px;">
-                             <button type="button" id="startBarcodeCam" class="btn-primary" style="flex:1; font-size: 0.9rem;">Start Camera</button>
-                             <button type="button" id="stopBarcodeCam" class="btn-secondary" style="flex:1; font-size: 0.9rem;" disabled>Stop</button>
-                         </div>
-                         <p id="barcodeStatusMsg" style="margin-top:10px; font-size:0.85rem; font-weight:600;"></p>
-                    </div>
-
-                    <!-- AI INVOICE SCANNER -->
-                    <div class="action-panel" style="flex:1; min-width:300px; margin-bottom:0; box-shadow: 0 4px 6px -1px rgba(99,102,241,0.1); border-top: 4px solid #6366f1;">
-                        <h3 style="display:flex; align-items:center; gap:8px;">🧾 Smart Invoice Capture</h3>
-                        <p style="font-size:0.85rem; color:#6b7280; margin-bottom:12px;">Capture bill elements automatically to Live Transaction form.</p>
-                        
-                        <div style="width:100%; border-radius:8px; background:#111827; min-height: 250px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+                <div style="display:flex; flex-wrap:wrap; gap:20px;">
+                    <!-- LEFT: CAPTURE PANEL -->
+                    <div class="action-panel" style="flex:1; min-width:280px; border-top:4px solid #6366f1;">
+                        <h3>📷 Capture or Upload Invoice</h3>
+                        <div style="width:100%; border-radius:8px; background:#111827; min-height:260px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; margin-bottom:16px;">
                             <video id="invoiceVideo" style="width:100%; height:100%; object-fit:cover; display:none;" autoplay playsinline></video>
                             <canvas id="invoiceCanvas" style="display:none;"></canvas>
                             <img id="invoicePreview" style="width:100%; height:100%; object-fit:contain; display:none; background:#fff;" />
-                            <span id="camPlaceholderText" style="color:#4b5563;">[Camera Feed Offline]</span>
+                            <span id="camPlaceholderText" style="color:#6b7280; font-size:0.9rem;">[ Camera Offline — Upload or Start Camera ]</span>
+                        </div>
+                        <div style="display:flex; gap:10px; margin-bottom:14px;">
+                            <button type="button" id="startInvoiceCam" class="btn-secondary" style="flex:1;">📹 Live Camera</button>
+                            <button type="button" id="captureInvoiceBtn" class="btn-primary" style="flex:1; display:none;">📸 Snap</button>
+                        </div>
+                        <hr style="border:none; border-top:1px dashed #e5e7eb; margin:12px 0;" />
+                        <label style="font-size:0.85rem; font-weight:600; display:block; margin-bottom:8px;">📁 Upload Bill Image / PDF</label>
+                        <input type="file" id="billInputStore" accept="image/*" style="width:100%; margin-bottom:14px; font-size:0.85rem;" />
+                        <button type="button" id="processAiBtn" class="btn-primary" style="width:100%; padding:14px; font-size:1rem; letter-spacing:0.5px;">🔍 Extract Bill Data with AI</button>
+                        <div id="aiExtractionResults" style="margin-top:12px; font-size:0.85rem; font-weight:600; min-height:20px;"></div>
+                    </div>
+
+                    <!-- RIGHT: REVIEW PANEL -->
+                    <div style="flex:2; min-width:320px; display:flex; flex-direction:column; gap:16px;">
+
+                        <!-- Invoice Header extracted -->
+                        <div id="invoiceHeaderBox" style="display:none; background:#f0f9ff; border:1px solid #bae6fd; border-radius:12px; padding:20px;">
+                            <h3 style="margin:0 0 12px; font-size:1rem; color:#0369a1;">📋 Invoice Header — Extracted</h3>
+                            <div id="invoiceHeaderGrid" style="display:grid; grid-template-columns:1fr 1fr; gap:8px 24px; font-size:0.82rem;"></div>
                         </div>
 
-                        <div style="display:flex; gap:10px; margin-top:16px;">
-                            <button type="button" id="startInvoiceCam" class="btn-secondary" style="flex:1; font-size: 0.9rem;">Live WebCam</button>
-                            <button type="button" id="captureInvoiceBtn" class="btn-primary" style="flex:1; font-size: 0.9rem; display:none;">📸 Snap Photo</button>
-                        </div>
-                        
-                        <div style="margin-top:16px; border-top:1px dashed #e5e7eb; padding-top:16px;">
-                            <label style="font-size:0.85rem; font-weight:600; margin-bottom:8px; display:block;">Or Upload Digital Bill</label>
-                            <input type="file" id="billInputStore" accept="image/*" style="font-family:sans-serif; width:100%; margin-bottom:12px;" />
-                            <button type="button" id="processAiBtn" class="btn-primary" style="width:100%;">Extract Elements to Live Bill</button>
-                        </div>
-                        <div id="aiExtractionResults" style="margin-top: 12px; font-size: 0.85rem; color:#10b981; font-weight:600;"></div>
-                        <div id="aiCapturedReviewBox" style="display:none; margin-top: 16px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; background: #fff;">
-                            <h4 style="margin-bottom: 12px; font-weight:600;">Review Captured Items</h4>
-                            <div style="max-height: 200px; overflow-y: auto; margin-bottom:12px;">
-                                <table class="data-table" style="width:100%; font-size: 0.85rem;" id="aiReviewTable">
-                                    <thead><tr><th>Product Name</th><th>Qty</th><th>Price</th><th>Action</th></tr></thead>
+                        <!-- Line Items Review Table -->
+                        <div id="aiCapturedReviewBox" style="display:none; background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:20px;">
+                            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+                                <h3 style="margin:0; font-size:1rem; color:#374151;">✏️ Review &amp; Edit Line Items</h3>
+                                <button type="button" id="addAiRowBtn" class="btn-secondary" style="font-size:0.8rem; padding:6px 12px;">+ Add Row</button>
+                            </div>
+                            <div style="overflow-x:auto; max-height:340px; overflow-y:auto;">
+                                <table style="width:100%; border-collapse:collapse; font-size:0.78rem;" id="aiReviewTable">
+                                    <thead style="position:sticky; top:0; background:#f9fafb; z-index:1;">
+                                        <tr>
+                                            <th style="padding:7px 6px; border:1px solid #e5e7eb; white-space:nowrap; text-align:left;">Product Name</th>
+                                            <th style="padding:7px 6px; border:1px solid #e5e7eb; white-space:nowrap;">HSN</th>
+                                            <th style="padding:7px 6px; border:1px solid #e5e7eb; white-space:nowrap;">Batch</th>
+                                            <th style="padding:7px 6px; border:1px solid #e5e7eb; white-space:nowrap;">Expiry</th>
+                                            <th style="padding:7px 6px; border:1px solid #e5e7eb; white-space:nowrap;">Qty</th>
+                                            <th style="padding:7px 6px; border:1px solid #e5e7eb; white-space:nowrap;">Free</th>
+                                            <th style="padding:7px 6px; border:1px solid #e5e7eb; white-space:nowrap;">MRP</th>
+                                            <th style="padding:7px 6px; border:1px solid #e5e7eb; white-space:nowrap;">Rate</th>
+                                            <th style="padding:7px 6px; border:1px solid #e5e7eb; white-space:nowrap;">Dis%</th>
+                                            <th style="padding:7px 6px; border:1px solid #e5e7eb; white-space:nowrap;">GST%</th>
+                                            <th style="padding:7px 6px; border:1px solid #e5e7eb; white-space:nowrap;">Amount</th>
+                                            <th style="padding:7px 6px; border:1px solid #e5e7eb;">Del</th>
+                                        </tr>
+                                    </thead>
                                     <tbody id="aiReviewTableBody"></tbody>
                                 </table>
                             </div>
-                            <div style="display:flex; gap:10px;">
-                                <button type="button" class="btn-primary" id="confirmAiPushBtn" style="flex:1;">Confirm & Send to POS</button>
-                                <button type="button" class="btn-secondary" id="cancelAiPushBtn" style="background:#fef2f2; color:#ef4444; border-color:#ef4444; flex:0.4;">Discard</button>
+                            <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;">
+                                <button type="button" class="btn-primary" id="confirmAiPushBtn" style="flex:1; padding:12px;">✅ Confirm &amp; Save to Inventory</button>
+                                <button type="button" id="cancelAiPushBtn" style="background:#fef2f2; color:#ef4444; border:1px solid #fca5a5; border-radius:8px; padding:12px 16px; cursor:pointer; flex:0.3;">Discard</button>
                             </div>
                         </div>
+
+                        <!-- Empty placeholder -->
+                        <div id="aiScannerEmpty" style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:300px; background:#f9fafb; border:2px dashed #e5e7eb; border-radius:12px; text-align:center; padding:32px;">
+                            <div style="font-size:3.5rem; margin-bottom:16px;">🧾</div>
+                            <p style="color:#6b7280; font-size:0.95rem; max-width:320px; line-height:1.6;">Upload or snap a photo of your pharmacy invoice.<br/>AI will extract <strong>Invoice Header</strong>, <strong>All Line Items</strong> with HSN, Batch, Expiry, GST — ready to review and save.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- BARCODE BILLING POS SECTION -->
+            <section id="sec-billing" class="workspace-section">
+                <header class="workspace-header">
+                    <h1>🖥️ Barcode Billing POS</h1>
+                    <p class="subtitle">Scan barcodes, search products, auto-calculate GST and generate professional invoices with WhatsApp delivery.</p>
+                </header>
+                <div style="display:flex; gap:20px; flex-wrap:wrap;">
+
+                    <!-- Scanner Input -->
+                    <div class="action-panel" style="flex:1; min-width:280px;">
+                        <h3>📷 Live Barcode Scanner</h3>
+                        <div id="barcode-reader" style="width:100%; border-radius:8px; background:#111827; min-height:220px; display:flex; align-items:center; justify-content:center; color:#6b7280; font-size:0.9rem; margin-bottom:14px;">[Camera Feed Offline]</div>
+                        <div style="display:flex; gap:10px; margin-bottom:14px;">
+                            <button type="button" id="startBarcodeCam" class="btn-primary" style="flex:1;">Start Camera</button>
+                            <button type="button" id="stopBarcodeCam" class="btn-secondary" style="flex:1;" disabled>Stop</button>
+                        </div>
+                        <p id="barcodeStatusMsg" style="font-size:0.85rem; font-weight:600; min-height:20px;"></p>
+                        <hr style="border:none; border-top:1px dashed #e5e7eb; margin:12px 0;" />
+                        <h3>🔍 Manual Barcode / Product Search</h3>
+                        <form id="scannerForm" style="display:flex; gap:8px; margin-bottom:8px;">
+                            <input type="text" id="liveScannerInput" placeholder="Type or scan barcode..." style="flex:1; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:0.9rem;" />
+                            <button type="submit" class="btn-primary" style="padding:10px 16px;">Add</button>
+                        </form>
+                        <p id="scannerMsg" style="font-size:0.85rem; font-weight:600; min-height:20px;"></p>
+                    </div>
+
+                    <!-- Live Bill -->
+                    <div style="flex:2; min-width:320px; display:flex; flex-direction:column; gap:14px;">
+                        <div class="action-panel" style="margin-bottom:0;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                <h3 style="margin:0;">🧾 Current Bill</h3>
+                                <span id="billInvoiceNo" style="font-size:0.8rem; color:#6b7280; background:#f3f4f6; padding:4px 10px; border-radius:6px;">Invoice #—</span>
+                            </div>
+
+                            <div id="billItems" style="min-height:120px; border:1px dashed #e5e7eb; border-radius:8px; padding:10px; margin-bottom:14px; max-height:260px; overflow-y:auto;">
+                                <p id="emptyBillMsg" style="color:#9ca3af; text-align:center; margin-top:32px;">No items added yet. Scan or search a product.</p>
+                            </div>
+
+                            <!-- GST Summary -->
+                            <div style="font-size:0.88rem; border-top:1px solid #f3f4f6; padding-top:12px;">
+                                <div style="display:flex; justify-content:space-between; padding:3px 0; color:#6b7280;"><span>Subtotal</span><span id="billSubtotal">₹0.00</span></div>
+                                <div style="display:flex; justify-content:space-between; padding:3px 0; color:#6b7280;"><span>Discount</span><span id="billDiscount">₹0.00</span></div>
+                                <div style="display:flex; justify-content:space-between; padding:3px 0; color:#6b7280;"><span>CGST</span><span id="billCgst">₹0.00</span></div>
+                                <div style="display:flex; justify-content:space-between; padding:3px 0; color:#6b7280;"><span>SGST</span><span id="billSgst">₹0.00</span></div>
+                                <div style="display:flex; justify-content:space-between; padding:3px 0; color:#6b7280;"><span>Round Off</span><span id="billRoundOff">₹0.00</span></div>
+                                <div style="display:flex; justify-content:space-between; padding:10px 0 6px; border-top:2px solid #e5e7eb; font-weight:800; font-size:1.15rem;"><span>Net Amount</span><span id="billTotal">₹0.00</span></div>
+                            </div>
+
+                            <!-- Customer -->
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+                                <input type="text" id="billCustomerName" placeholder="Customer Name" style="padding:8px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:0.85rem;" />
+                                <input type="text" id="billCustomerPhone" placeholder="Phone Number" style="padding:8px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:0.85rem;" />
+                            </div>
+
+                            <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
+                                <button id="generateBillBtn" class="btn-success" style="flex:2;" disabled>🖨 Generate Invoice</button>
+                                <button id="waShareBtn" class="btn-secondary" style="flex:1; background:#25d366; color:#fff; border-color:#25d366;" disabled>💬 WhatsApp</button>
+                                <button id="clearBillBtn" class="btn-secondary" style="flex:0.5;">🗑 Clear</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- REPORTS & GST SECTION -->
+            <section id="sec-reports" class="workspace-section">
+                <header class="workspace-header">
+                    <h1>📈 Reports &amp; GST Summary</h1>
+                    <p class="subtitle">View daily, monthly sales, GST collected, low stock and expiry alerts. Export as CSV.</p>
+                </header>
+                <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:16px; margin-bottom:28px;">
+                    <div class="stat-card" style="border-top-color:#6366f1;"><h3>Today Sales</h3><p class="stat-value" id="repToday">₹0</p></div>
+                    <div class="stat-card" style="border-top-color:#10b981;"><h3>This Month</h3><p class="stat-value" id="repMonth">₹0</p></div>
+                    <div class="stat-card" style="border-top-color:#f59e0b;"><h3>Inventory Value</h3><p class="stat-value" id="repInvValue">₹0</p></div>
+                    <div class="stat-card" style="border-top-color:#ef4444;"><h3>Low Stock Items</h3><p class="stat-value" id="repLowStock">0</p></div>
+                    <div class="stat-card" style="border-top-color:#a855f7;"><h3>Expiry Alerts</h3><p class="stat-value" id="repExpiry">0</p></div>
+                    <div class="stat-card" style="border-top-color:#ec4899;"><h3>GST Collected</h3><p class="stat-value" id="repGst">₹0</p></div>
+                </div>
+                <div class="action-panel">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+                        <h3 style="margin:0;">Transaction Ledger</h3>
+                        <button type="button" class="btn-secondary" id="exportReportBtn" style="font-size:0.85rem;">⬇ Export CSV</button>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead><tr><th>Invoice #</th><th>Date</th><th>Customer</th><th>Items</th><th>Subtotal</th><th>CGST</th><th>SGST</th><th>Net Amount</th><th>Status</th></tr></thead>
+                            <tbody id="reportTable"><tr><td colspan="9" style="text-align:center; color:#9ca3af; padding:32px;">No transactions yet. Start billing to see reports.</td></tr></tbody>
+                        </table>
                     </div>
                 </div>
             </section>
