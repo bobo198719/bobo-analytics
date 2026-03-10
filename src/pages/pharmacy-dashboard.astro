@@ -13,10 +13,12 @@ import MainLayout from "../layouts/MainLayout.astro";
             <div class="live-badge" id="industryBadge">LIVE INSTANCE</div>
             <nav class="sidebar-nav" id="sidebarNav">
                 <a href="#overview" class="nav-btn active" data-target="sec-overview">📊 Dashboard</a>
-                <a href="#inventory" class="nav-btn" data-target="sec-inventory" id="navInventory">📦 Inventory</a>
-                <a href="#scanners" class="nav-btn" data-target="sec-scanners" id="navScanners">📸 AI & Camera Scanners</a>
+                <a href="#inventory" class="nav-btn" data-target="sec-inventory" id="navInventory">📦 Store Inventory</a>
+                <a href="#scanners" class="nav-btn" data-target="sec-scanners" id="navScanners">🧾 AI Invoice Scanner</a>
+                <a href="#billing" class="nav-btn" data-target="sec-billing" id="navBilling">🖥️ Barcode Billing</a>
                 <a href="#crm" class="nav-btn" data-target="sec-crm" id="navCrm">👥 Customers & WhatsApp</a>
-                <a href="#staff" class="nav-btn" data-target="sec-staff" id="navStaff">👨‍💼 Staff Control</a>
+                <a href="#staff" class="nav-btn" data-target="sec-staff" id="navStaff">👨‍💼 Staff Roles</a>
+                <a href="#reports" class="nav-btn" data-target="sec-reports" id="navReports">📈 Reports & GST</a>
                 <a href="#ai" class="nav-btn" data-target="sec-ai" id="navAi">🧠 AI Analytics</a>
             </nav>
             <div class="sidebar-footer">
@@ -578,6 +580,11 @@ import MainLayout from "../layouts/MainLayout.astro";
             const dbKey = `bobo_crm_db_${tenantInfo.id}`;
             let dbData = JSON.parse(localStorage.getItem(dbKey) || '{"inventory":[],"bills":[]}');
             function saveData() { localStorage.setItem(dbKey, JSON.stringify(dbData)); }
+            window.deleteItem = function(barcode) {
+                if(!confirm("Remove this product?")) return;
+                dbData.inventory = dbData.inventory.filter(i => i.barcode !== barcode);
+                saveData(); updateDashboardUI();
+            };
 
             // Tab Navigation Logic
             const navBtns = document.querySelectorAll('.nav-btn');
@@ -634,68 +641,101 @@ import MainLayout from "../layouts/MainLayout.astro";
                     billsContainer.style.display = "none";
                 }
 
-                // AI Data & Inventory List
+                // AI Data & Inventory List (Full Schema)
                 const invTable = document.getElementById("inventoryTable");
                 let catCounts = {};
                 let lowStock = 0;
+                let expiryAlerts = 0;
+
+                if (!invTable) return;
 
                 if (dbData.inventory.length === 0) {
-                    invTable.innerHTML = `<tr><td colspan="4" style="text-align:center;">No records added yet.</td></tr>`;
-                    document.getElementById("aiTopCat").innerText = "Not Enough Data";
+                    invTable.innerHTML = `<tr><td colspan="12" style="text-align:center; padding:32px; color:#9ca3af;">No products yet. Use the Add Product form or AI Invoice Scanner.</td></tr>`;
+                    if(document.getElementById("aiTopCat")) document.getElementById("aiTopCat").innerText = "Not Enough Data";
                 } else {
                     let invHtml = "";
-                    dbData.inventory.forEach(item => {
+                    dbData.inventory.forEach((item, idx) => {
+                        const qty = parseInt(item.qty) || 0;
+                        const mrp = parseFloat(item.mrp || item.price || 0);
+                        const rate = parseFloat(item.selling_price || item.price || 0);
+                        const gst = item.gst_percent || '5';
+                        const isLow = qty < 10;
+                        if(isLow) lowStock++;
+                        catCounts[item.category] = (catCounts[item.category] || 0) + qty;
+
                         invHtml += `<tr>
-                            <td><strong>${item.barcode}</strong></td>
-                            <td>${item.name} <br><small style="color:#6b7280; font-weight:600;">${item.category || 'General'}</small></td>
-                            <td><span style="${item.qty < 5 ? 'color:#ef4444;font-weight:bold;' : ''}">${item.qty} units</span></td>
-                            <td>₹${parseFloat(item.price).toFixed(2)}</td>
+                            <td><code style="background:#f3f4f6;padding:2px 5px;border-radius:4px;font-size:0.75rem;">${item.barcode||'—'}</code></td>
+                            <td><strong>${item.name||'—'}</strong></td>
+                            <td><small style="background:#ede9fe;color:#7c3aed;padding:2px 6px;border-radius:4px;font-size:0.75rem;">${item.category||'General'}</small></td>
+                            <td style="font-size:0.82rem;">${item.manufacturer||'—'}</td>
+                            <td style="font-size:0.82rem;">${item.hsn_code||'—'}</td>
+                            <td style="font-size:0.82rem;">${item.pack_size||'—'}</td>
+                            <td style="font-size:0.82rem;">₹${mrp.toFixed(2)}</td>
+                            <td style="font-size:0.82rem;">₹${rate.toFixed(2)}</td>
+                            <td style="font-size:0.82rem;">${gst}%</td>
+                            <td><span style="color:${isLow?'#ef4444':'#10b981'};font-weight:700;">${qty}${isLow?' ⚠️':''}</span></td>
+                            <td style="font-size:0.82rem;color:${item.expiry_date?'#6b7280':'#d1d5db'}">${item.expiry_date||'—'}</td>
+                            <td><button onclick="window.deleteInvItem('${item.barcode}')" style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:1rem;">🗑</button></td>
                         </tr>`;
-                        
-                        // AI Tracking
-                        catCounts[item.category] = (catCounts[item.category] || 0) + item.qty;
-                        if(item.qty < 5) lowStock++;
                     });
                     invTable.innerHTML = invHtml;
-                    
-                    document.getElementById("aiAlerts").innerHTML = `<strong style="color:#ef4444;">${lowStock} Items</strong> require re-order.`;
-                    
+
+                    if(document.getElementById("aiAlerts")) document.getElementById("aiAlerts").innerHTML = `<strong style="color:#ef4444;">${lowStock} Low Stock</strong> items need re-order.`;
+
                     let topCat = "No clear trend";
                     let highQty = 0;
-                    for(let c in catCounts) {
-                        if(catCounts[c] > highQty) {
-                           highQty = catCounts[c];
-                           topCat = c;
-                        }
-                    }
-                    if(dbData.inventory.length > 0) {
-                        document.getElementById("aiTopCat").innerHTML = `<strong>${topCat}</strong> <br><small style="font-size:0.8rem;color:#6b7280;">High volume performance.</small>`;
-                    }
+                    for(let c in catCounts) { if(catCounts[c] > highQty) { highQty = catCounts[c]; topCat = c; } }
+                    if(document.getElementById("aiTopCat")) document.getElementById("aiTopCat").innerHTML = `<strong>${topCat}</strong>`;
                 }
+
+                // Reports stats
+                let todaySales = 0, monthSales = 0;
+                const todayStr = new Date().toDateString();
+                const thisMonth = new Date().getMonth();
+                dbData.bills.forEach(b => {
+                    if(new Date(b.date).toDateString() === todayStr) todaySales += b.total;
+                    if(new Date(b.date).getMonth() === thisMonth) monthSales += b.total;
+                });
+                if(document.getElementById("repToday")) document.getElementById("repToday").innerText = "₹" + todaySales.toFixed(0);
+                if(document.getElementById("repMonth")) document.getElementById("repMonth").innerText = "₹" + monthSales.toFixed(0);
+                if(document.getElementById("repLowStock")) document.getElementById("repLowStock").innerText = lowStock;
             }
 
+            // Delete inventory item
+            window.deleteInvItem = function(barcode) {
+                if(!confirm('Remove product ' + barcode + ' from inventory?')) return;
+                dbData.inventory = dbData.inventory.filter(i => i.barcode !== barcode);
+                saveData(); updateDashboardUI();
+            };
+
             const addInvForm = document.getElementById("addInventoryForm");
-            addInvForm.addEventListener("submit", (e) => {
+            if(addInvForm) addInvForm.addEventListener("submit", (e) => {
                 e.preventDefault();
-                const barcode = document.getElementById("invBarcode").value.trim();
-                const name = document.getElementById("invName").value.trim();
-                const category = document.getElementById("invCategory").value;
-                const qty = parseInt(document.getElementById("invQty").value);
-                const price = document.getElementById("invPrice").value;
+                const barcode = document.getElementById("invBarcode")?.value.trim() || '';
+                const name = document.getElementById("invName")?.value.trim() || '';
+                if(!barcode || !name) return alert('Barcode and Product Name are required.');
+                const category = document.getElementById("invCategory")?.value || 'Medicine';
+                const qty = parseInt(document.getElementById("invQty")?.value) || 1;
+                const price = parseFloat(document.getElementById("invPrice")?.value) || 0;
+                const mrp = parseFloat(document.getElementById("invMrp")?.value || price);
+                const sell = parseFloat(document.getElementById("invSell")?.value || price);
+                const mfr = document.getElementById("invMfr")?.value?.trim() || '';
+                const hsn = document.getElementById("invHsn")?.value?.trim() || '';
+                const pack = document.getElementById("invPack")?.value?.trim() || '';
+                const gst = document.getElementById("invGst")?.value || '5';
+                const expiry = document.getElementById("invExpiry")?.value?.trim() || '';
 
                 const existing = dbData.inventory.find(i => i.barcode === barcode);
                 if (existing) {
-                    existing.qty += qty;
-                    existing.price = price;
-                    existing.category = category;
+                    existing.qty += qty; existing.price = price; existing.mrp = mrp; existing.selling_price = sell;
+                    existing.category = category; existing.manufacturer = mfr; existing.hsn_code = hsn;
+                    existing.pack_size = pack; existing.gst_percent = gst; existing.expiry_date = expiry;
                 } else {
-                    dbData.inventory.push({ barcode, name, category, qty, price });
+                    dbData.inventory.push({ barcode, name, category, qty, price, mrp, selling_price: sell, manufacturer: mfr, hsn_code: hsn, pack_size: pack, gst_percent: gst, expiry_date: expiry });
                 }
-
                 saveData();
                 addInvForm.reset();
                 updateDashboardUI();
-                alert(`Added ${name} directly to the live internal system.`);
             });
 
             // POS / Transaction Engine
@@ -837,66 +877,49 @@ import MainLayout from "../layouts/MainLayout.astro";
 
             if(startBarcodeBtn) {
                 startBarcodeBtn.addEventListener('click', () => {
-                    barcodeStatusMsg.innerText = "Starting camera sequence...";
-                    barcodeStatusMsg.style.color = "#6b7280";
+                    if(barcodeStatusMsg) { barcodeStatusMsg.innerText = "Starting camera..."; }
                     if (!html5QrcodeScanner && window.Html5Qrcode) {
                         html5QrcodeScanner = new window.Html5Qrcode("barcode-reader");
                     }
-                    if(!html5QrcodeScanner) {
-                        barcodeStatusMsg.innerText = "Error: Library not loaded.";
-                        return;
-                    }
+                    if(!html5QrcodeScanner) { if(barcodeStatusMsg) barcodeStatusMsg.innerText = "Library loading, try again."; return; }
                     
                     html5QrcodeScanner.start(
                         { facingMode: "environment" }, 
                         { fps: 10, qrbox: {width: 250, height: 250} },
                         (decodedText) => {
-                            // SCANNED EVENT
-                            barcodeStatusMsg.innerText = "✅ Captured: " + decodedText;
-                            barcodeStatusMsg.style.color = "#10b981";
-                            
+                            if(barcodeStatusMsg) { barcodeStatusMsg.innerText = "✅ Scanned: " + decodedText; barcodeStatusMsg.style.color = "#10b981"; }
                             const liveInput = document.getElementById("liveScannerInput");
                             if (liveInput) {
                                 liveInput.value = decodedText;
-                                // Force trigger POS simulation directly
-                                const scannerForm = document.getElementById("scannerForm");
-                                if(scannerForm) scannerForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles:true }));
+                                const sf = document.getElementById("scannerForm");
+                                if(sf) sf.dispatchEvent(new Event('submit', { cancelable: true, bubbles:true }));
                             }
-                            
-                            // Visual flash
-                            const box = document.getElementById("barcode-reader");
-                            box.style.border = "4px solid #10b981";
-                            setTimeout(() => { box.style.border = "none"; }, 500);
                         },
-                        (errorMessage) => { 
-                            // ignore background noise 
-                        }
+                        () => {}
                     ).then(() => {
-                        document.getElementById('barcode-reader').style.background = 'transparent';
-                        barcodeStatusMsg.innerText = "Camera active. Show barcode.";
+                        const barcodeReaderEl = document.getElementById('barcode-reader');
+                        if(barcodeReaderEl) barcodeReaderEl.style.background = 'transparent';
+                        if(barcodeStatusMsg) barcodeStatusMsg.innerText = "Camera active. Show barcode.";
                         startBarcodeBtn.disabled = true;
                         stopBarcodeBtn.disabled = false;
-                    }).catch((err) => {
-                        barcodeStatusMsg.innerText = "Camera access denied. Check browser permissions.";
-                        barcodeStatusMsg.style.color = "red";
+                    }).catch(() => {
+                        if(barcodeStatusMsg) { barcodeStatusMsg.innerText = "Camera access denied."; barcodeStatusMsg.style.color = "red"; }
                     });
                 });
 
-                stopBarcodeBtn.addEventListener('click', () => {
+                if(stopBarcodeBtn) stopBarcodeBtn.addEventListener('click', () => {
                     if(html5QrcodeScanner) {
                         html5QrcodeScanner.stop().then(() => {
-                            barcodeStatusMsg.innerText = "Camera stopped.";
-                            barcodeStatusMsg.style.color = "#6b7280";
                             startBarcodeBtn.disabled = false;
                             stopBarcodeBtn.disabled = true;
-                            document.getElementById('barcode-reader').style.background = '#111827';
-                            document.getElementById('barcode-reader').innerHTML = '[Camera Feed Offline]';
+                            const br = document.getElementById('barcode-reader');
+                            if(br) { br.style.background = '#111827'; br.innerHTML = '[Camera Feed Offline]'; }
                         });
                     }
                 });
             }
 
-            // AI INVOICE LOGIC
+            // AI INVOICE CAMERA
             const invoiceVideo = document.getElementById('invoiceVideo');
             const invoiceCanvas = document.getElementById('invoiceCanvas');
             const invoicePreview = document.getElementById('invoicePreview');
@@ -909,111 +932,224 @@ import MainLayout from "../layouts/MainLayout.astro";
             
             let invoiceStream = null;
             let captureImageBlob = null;
+            window.aiStagingBuffer = [];
 
             if (startInvoiceCam) {
                 startInvoiceCam.addEventListener('click', async () => {
                     if (invoiceStream) {
-                        invoiceStream.getTracks().forEach(track => track.stop());
+                        invoiceStream.getTracks().forEach(t => t.stop());
                         invoiceStream = null;
-                        invoiceVideo.style.display = 'none';
-                        captureInvoiceBtn.style.display = 'none';
-                        camPlaceholderText.style.display = 'block';
-                        startInvoiceCam.innerText = "Live WebCam";
+                        if(invoiceVideo) invoiceVideo.style.display = 'none';
+                        if(captureInvoiceBtn) captureInvoiceBtn.style.display = 'none';
+                        if(camPlaceholderText) camPlaceholderText.style.display = 'block';
+                        startInvoiceCam.innerText = "📹 Live Camera";
                     } else {
                         try {
-                            // Turn on Cam
-                            invoiceStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } } });
-                            invoiceVideo.srcObject = invoiceStream;
-                            invoiceVideo.style.display = 'block';
-                            invoicePreview.style.display = 'none';
-                            camPlaceholderText.style.display = 'none';
+                            invoiceStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 } } });
+                            if(invoiceVideo) { invoiceVideo.srcObject = invoiceStream; invoiceVideo.style.display = 'block'; }
+                            if(invoicePreview) invoicePreview.style.display = 'none';
+                            if(camPlaceholderText) camPlaceholderText.style.display = 'none';
                             captureImageBlob = null;
-                            if(billInputStore) billInputStore.value = "";
-                            captureInvoiceBtn.style.display = 'block';
-                            startInvoiceCam.innerText = "Turn Off Cam";
-                        } catch (err) {
-                            alert("Camera access denied or device not found.");
-                        }
+                            if(captureInvoiceBtn) captureInvoiceBtn.style.display = 'block';
+                            startInvoiceCam.innerText = "Turn Off Camera";
+                        } catch (err) { alert("Camera access denied or not found."); }
                     }
                 });
 
-                captureInvoiceBtn.addEventListener('click', () => {
-                    const context = invoiceCanvas.getContext('2d');
-                    invoiceCanvas.width = invoiceVideo.videoWidth || 640;
-                    invoiceCanvas.height = invoiceVideo.videoHeight || 480;
-                    context.drawImage(invoiceVideo, 0, 0, invoiceCanvas.width, invoiceCanvas.height);
-                    
-                    invoicePreview.src = invoiceCanvas.toDataURL('image/png');
-                    invoicePreview.style.display = 'block';
-                    invoiceVideo.style.display = 'none';
+                if(captureInvoiceBtn) captureInvoiceBtn.addEventListener('click', () => {
+                    if(!invoiceCanvas || !invoiceVideo) return;
+                    const ctx = invoiceCanvas.getContext('2d');
+                    invoiceCanvas.width = invoiceVideo.videoWidth || 1280;
+                    invoiceCanvas.height = invoiceVideo.videoHeight || 720;
+                    ctx.drawImage(invoiceVideo, 0, 0, invoiceCanvas.width, invoiceCanvas.height);
+                    if(invoicePreview) { invoicePreview.src = invoiceCanvas.toDataURL('image/png'); invoicePreview.style.display = 'block'; }
+                    if(invoiceVideo) invoiceVideo.style.display = 'none';
                     captureInvoiceBtn.style.display = 'none';
-                    startInvoiceCam.innerText = "Retake Snap";
-                    
-                    invoiceStream.getTracks().forEach(track => track.stop());
-                    invoiceStream = null;
-
-                    invoiceCanvas.toBlob(blob => {
-                        captureImageBlob = blob;
-                    });
-                });
-
-                processAiBtn.addEventListener('click', async () => {
-                    let fileOrBlob = billInputStore.files && billInputStore.files[0] ? billInputStore.files[0] : captureImageBlob;
-                    if (!fileOrBlob) return alert('Please capture a photo or upload an image first.');
-
-                    processAiBtn.innerText = "Processing Details with AI...";
-                    processAiBtn.disabled = true;
-                    if(aiExtractionResults) {
-                        aiExtractionResults.innerText = "Scanning document geometry & extracting text...";
-                        aiExtractionResults.style.color = "#6366f1";
-                    }
-
-                    try {
-                        const { data: { text } } = await window.Tesseract.recognize(fileOrBlob, 'eng');
-                        
-                        const lines = text.split('\n');
-                        let newCount = 0;
-                        
-                        lines.forEach(line => {
-                            let txt = line.trim();
-                            // Very basic parsing rule: 
-                            if(txt.length > 4 && txt.match(/[A-Z]/i) && txt.toLowerCase().indexOf('total') === -1) {
-                                newCount++;
-                                const ranPrice = (Math.random() * 200 + 10).toFixed(2);
-                                const mockBarcode = "EXT-" + Math.floor(Math.random() * 90000 + 10000);
-                                
-                                // Auto push to LIVE Inventory Database
-                                dbData.inventory.push({
-                                    barcode: mockBarcode,
-                                    name: txt.substring(0, 40),
-                                    category: "AI Extracted",
-                                    qty: Math.floor(Math.random() * 20) + 1,
-                                    price: ranPrice
-                                });
-                            }
-                        });
-
-                        saveData();
-                        updateDashboardUI();
-                        
-                        if(aiExtractionResults) {
-                            aiExtractionResults.innerText = "✅ Successfully captured & live! " + newCount + " entries illuminated and inserted into Database.";
-                            aiExtractionResults.style.color = "#10b981";
-                        }
-                        if(billInputStore) billInputStore.value = "";
-                        captureImageBlob = null;
-                    } catch (e) {
-                        if(aiExtractionResults) {
-                            aiExtractionResults.innerText = "❌ Scan Failed: " + e.message;
-                            aiExtractionResults.style.color = "#ef4444";
-                        }
-                    } finally {
-                        processAiBtn.innerText = "Extract & Add to Database";
-                        processAiBtn.disabled = false;
-                    }
+                    startInvoiceCam.innerText = "📹 Retake";
+                    if(invoiceStream) { invoiceStream.getTracks().forEach(t => t.stop()); invoiceStream = null; }
+                    invoiceCanvas.toBlob(blob => { captureImageBlob = blob; });
                 });
             }
-            // ==========================================
+
+            if(processAiBtn) processAiBtn.addEventListener('click', async () => {
+                const fileOrBlob = (billInputStore && billInputStore.files[0]) ? billInputStore.files[0] : captureImageBlob;
+                if (!fileOrBlob) return alert('Please capture a photo or upload a bill image first.');
+
+                processAiBtn.innerText = "🔍 Extracting...";
+                processAiBtn.disabled = true;
+                if(aiExtractionResults) { aiExtractionResults.innerText = "AI engine scanning document..."; aiExtractionResults.style.color = "#6366f1"; }
+
+                const emptyBox = document.getElementById("aiScannerEmpty");
+                const headerBox = document.getElementById("invoiceHeaderBox");
+                if(emptyBox) emptyBox.style.display = 'none';
+
+                try {
+                    const { data: { text } } = await window.Tesseract.recognize(fileOrBlob, 'eng', { logger: () => {} });
+                    const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+                    
+                    // INVOICE HEADER EXTRACTION
+                    const header = {};
+                    const dateRgx = /\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4}/;
+                    const phoneRgx = /\d{10}/;
+                    const gstinRgx = /[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[A-Z0-9]{1}Z[A-Z0-9]/;
+                    const amtRgx = /[\d,]+\.?\d{0,2}/;
+                    
+                    lines.forEach(line => {
+                        if(!header.invoice_no && /invoice\s*(no|number|#)/i.test(line)) { const v = line.split(/[:=]/).pop(); if(v) header.invoice_no = v.trim(); }
+                        if(!header.invoice_date && /\bdate\b/i.test(line)) { const m = line.match(dateRgx); if(m) header.invoice_date = m[0]; }
+                        if(!header.seller_phone && phoneRgx.test(line)) { const m = line.match(phoneRgx); if(m) header.seller_phone = m[0]; }
+                        if(!header.seller_gstin && gstinRgx.test(line)) { const m = line.match(gstinRgx); if(m) header.seller_gstin = m[0]; }
+                        if(!header.seller_name && /pharmacy|medical|chemist|drugs|health|clinic/i.test(line) && line.length < 60) header.seller_name = line;
+                        if(!header.net_amount && /net\s*amount|total/i.test(line)) { const m = line.match(amtRgx); if(m) header.net_amount = m[0]; }
+                    });
+
+                    if(headerBox) {
+                        const grid = document.getElementById("invoiceHeaderGrid");
+                        if(grid) {
+                            const fields = [['Invoice No', header.invoice_no],['Date', header.invoice_date],['Seller', header.seller_name],['GSTIN', header.seller_gstin],['Phone', header.seller_phone],['Net Amount', header.net_amount]].filter(r => r[1]);
+                            grid.innerHTML = fields.map(r => '<div style="padding:4px 0;"><span style="color:#6b7280;font-size:0.78rem;">' + r[0] + '</span><br><strong style="font-size:0.88rem;">' + r[1] + '</strong></div>').join('');
+                            headerBox.style.display = fields.length ? 'block' : 'none';
+                        }
+                    }
+                    
+                    // LINE ITEM EXTRACTION
+                    window.aiStagingBuffer = [];
+                    const skipRgx = /total|cgst|sgst|igst|gst|tax|subtotal|discount|roundoff|bank|invoice|\bdate\b|due|gstin|ref|dl no|subject|advance|payment|terms|for |per |authorized|signature|note|remarks/i;
+                    
+                    lines.forEach(line => {
+                        if(skipRgx.test(line)) return;
+                        const tokens = line.split(/\s+/);
+                        const words = tokens.filter(t => /[A-Za-z]/.test(t) && t.length > 1);
+                        const numTokens = tokens.filter(t => /^[\d\.]+$/.test(t) && parseFloat(t) > 0);
+                        
+                        if(words.length >= 1 && numTokens.length >= 2) {
+                            const name = words.slice(0, 5).join(' ').substring(0, 50);
+                            const nums = numTokens.map(Number).sort((a,b) => a-b);
+                            const qty = nums.find(n => Number.isInteger(n) && n >= 1 && n < 10000) || 1;
+                            const amount = nums[nums.length - 1];
+                            const rate = nums.find(n => n !== qty && n !== amount) || (amount / qty);
+                            
+                            const hsnM = line.match(/\b\d{8}\b/);
+                            const expiM = line.match(/\b\d{1,2}[-/]20\d{2}\b/);
+                            const gstM = line.match(/\b(5|12|18|28)\b/);
+
+                            window.aiStagingBuffer.push({
+                                barcode: 'EXT-' + Math.floor(Math.random() * 90000 + 10000),
+                                name, hsn_code: hsnM ? hsnM[0] : '', batch_no: '',
+                                expiry_date: expiM ? expiM[0] : '',
+                                qty, free_qty: 0, mrp: amount,
+                                price: parseFloat(rate.toFixed(2)),
+                                selling_price: parseFloat(rate.toFixed(2)),
+                                discount_percent: 0,
+                                gst_percent: gstM ? gstM[1] : '5',
+                                total_amount: amount, category: 'AI Extracted'
+                            });
+                        }
+                    });
+
+                    window.renderAiReviewTable();
+                    
+                    if(aiExtractionResults) {
+                        aiExtractionResults.innerText = window.aiStagingBuffer.length > 0 
+                            ? ('✅ Extracted ' + window.aiStagingBuffer.length + ' line items. Review & edit below, then Save to Inventory.')
+                            : '⚠️ No line items found. Try a higher-resolution image or ensure the bill is flat and fully visible.';
+                        aiExtractionResults.style.color = window.aiStagingBuffer.length > 0 ? '#10b981' : '#f59e0b';
+                    }
+                    if(billInputStore) billInputStore.value = '';
+                    captureImageBlob = null;
+
+                } catch (e) {
+                    if(aiExtractionResults) { aiExtractionResults.innerText = '❌ Error: ' + e.message; aiExtractionResults.style.color = '#ef4444'; }
+                } finally {
+                    if(processAiBtn) { processAiBtn.innerText = '🔍 Extract Bill Data with AI'; processAiBtn.disabled = false; }
+                }
+            });
+
+            window.renderAiReviewTable = function() {
+                const reviewBox = document.getElementById("aiCapturedReviewBox");
+                const tbd = document.getElementById("aiReviewTableBody");
+                if(!reviewBox || !tbd) return;
+
+                if(!window.aiStagingBuffer || window.aiStagingBuffer.length === 0) {
+                    reviewBox.style.display = 'none'; return;
+                }
+
+                tbd.innerHTML = window.aiStagingBuffer.map((item, idx) => 
+                    '<tr data-idx="' + idx + '">' +
+                    '<td><input type="text" class="ai-edit-name" data-idx="' + idx + '" value="' + (item.name||'') + '" style="width:110px;padding:3px;border:1px solid #d1d5db;border-radius:4px;font-size:0.76rem;" /></td>' +
+                    '<td><input type="text" class="ai-edit-hsn" data-idx="' + idx + '" value="' + (item.hsn_code||'') + '" style="width:72px;padding:3px;border:1px solid #d1d5db;border-radius:4px;font-size:0.76rem;" /></td>' +
+                    '<td><input type="text" class="ai-edit-batch" data-idx="' + idx + '" value="' + (item.batch_no||'') + '" style="width:55px;padding:3px;border:1px solid #d1d5db;border-radius:4px;font-size:0.76rem;" /></td>' +
+                    '<td><input type="text" class="ai-edit-expiry" data-idx="' + idx + '" value="' + (item.expiry_date||'') + '" style="width:60px;padding:3px;border:1px solid #d1d5db;border-radius:4px;font-size:0.76rem;" /></td>' +
+                    '<td><input type="number" class="ai-edit-qty" data-idx="' + idx + '" value="' + (item.qty||1) + '" style="width:46px;padding:3px;border:1px solid #d1d5db;border-radius:4px;font-size:0.76rem;" /></td>' +
+                    '<td><input type="number" class="ai-edit-free" data-idx="' + idx + '" value="' + (item.free_qty||0) + '" style="width:38px;padding:3px;border:1px solid #d1d5db;border-radius:4px;font-size:0.76rem;" /></td>' +
+                    '<td><input type="number" class="ai-edit-mrp" data-idx="' + idx + '" value="' + (item.mrp||0) + '" style="width:55px;padding:3px;border:1px solid #d1d5db;border-radius:4px;font-size:0.76rem;" /></td>' +
+                    '<td><input type="number" class="ai-edit-rate" data-idx="' + idx + '" value="' + parseFloat(item.price||0).toFixed(2) + '" style="width:55px;padding:3px;border:1px solid #d1d5db;border-radius:4px;font-size:0.76rem;" /></td>' +
+                    '<td><input type="number" class="ai-edit-disc" data-idx="' + idx + '" value="' + (item.discount_percent||0) + '" style="width:36px;padding:3px;border:1px solid #d1d5db;border-radius:4px;font-size:0.76rem;" /></td>' +
+                    '<td><input type="number" class="ai-edit-gst" data-idx="' + idx + '" value="' + (item.gst_percent||5) + '" style="width:36px;padding:3px;border:1px solid #d1d5db;border-radius:4px;font-size:0.76rem;" /></td>' +
+                    '<td style="font-size:0.76rem;">₹' + parseFloat(item.total_amount||0).toFixed(2) + '</td>' +
+                    '<td><button type="button" onclick="window.aiStagingBuffer.splice(' + idx + ',1); window.renderAiReviewTable();" style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:1rem;">🗑</button></td>' +
+                    '</tr>'
+                ).join('');
+
+                reviewBox.style.display = 'block';
+
+                const addRowBtn = document.getElementById("addAiRowBtn");
+                if(addRowBtn) addRowBtn.onclick = () => {
+                    window.aiStagingBuffer.push({ barcode: 'EXT-' + Math.floor(Math.random()*90000+10000), name:'New Product', hsn_code:'', batch_no:'', expiry_date:'', qty:1, free_qty:0, mrp:0, price:0, selling_price:0, gst_percent:'5', discount_percent:0, total_amount:0, category:'AI Extracted' });
+                    window.renderAiReviewTable();
+                };
+            };
+
+            const confirmAiPushBtn = document.getElementById("confirmAiPushBtn");
+            if(confirmAiPushBtn) confirmAiPushBtn.addEventListener("click", () => {
+                const rows = document.querySelectorAll("#aiReviewTableBody tr");
+                let savedCount = 0;
+                rows.forEach((row, idx) => {
+                    if(!window.aiStagingBuffer[idx]) return;
+                    const barcode = window.aiStagingBuffer[idx].barcode;
+                    const name = row.querySelector(".ai-edit-name")?.value || '';
+                    if(!name) return;
+                    const qty = parseInt(row.querySelector(".ai-edit-qty")?.value) || 1;
+                    const rate = parseFloat(row.querySelector(".ai-edit-rate")?.value) || 0;
+                    const mrp = parseFloat(row.querySelector(".ai-edit-mrp")?.value) || 0;
+                    const gst = row.querySelector(".ai-edit-gst")?.value || '5';
+                    const hsn = row.querySelector(".ai-edit-hsn")?.value || '';
+                    const batch = row.querySelector(".ai-edit-batch")?.value || '';
+                    const expiry = row.querySelector(".ai-edit-expiry")?.value || '';
+                    const disc = parseFloat(row.querySelector(".ai-edit-disc")?.value) || 0;
+
+                    const finalItem = { barcode, name, hsn_code:hsn, batch_no:batch, expiry_date:expiry, qty, free_qty: parseInt(row.querySelector(".ai-edit-free")?.value)||0, mrp, price:rate, selling_price:rate, discount_percent:disc, gst_percent:gst, category:'AI Extracted', manufacturer:'', pack_size:'' };
+
+                    const exist = dbData.inventory.find(i => i.barcode === barcode);
+                    if(exist) exist.qty += qty; else dbData.inventory.push(finalItem);
+                    savedCount++;
+                });
+
+                saveData(); updateDashboardUI();
+                const rbox = document.getElementById("aiCapturedReviewBox");
+                if(rbox) rbox.style.display = 'none';
+                const hbox = document.getElementById("invoiceHeaderBox");
+                if(hbox) hbox.style.display = 'none';
+                const emptyBox = document.getElementById("aiScannerEmpty");
+                if(emptyBox) emptyBox.style.display = 'flex';
+                if(aiExtractionResults) { aiExtractionResults.innerText = '✅ ' + savedCount + ' products saved to inventory!'; aiExtractionResults.style.color = '#10b981'; }
+                window.aiStagingBuffer = [];
+                
+                const invBtn = document.getElementById("navInventory");
+                if(invBtn) invBtn.click();
+            });
+
+            const cancelAiPushBtn = document.getElementById("cancelAiPushBtn");
+            if(cancelAiPushBtn) cancelAiPushBtn.addEventListener("click", () => {
+                window.aiStagingBuffer = [];
+                const rbox = document.getElementById("aiCapturedReviewBox");
+                if(rbox) rbox.style.display = 'none';
+                const hbox = document.getElementById("invoiceHeaderBox");
+                if(hbox) hbox.style.display = 'none';
+                const emptyBox = document.getElementById("aiScannerEmpty");
+                if(emptyBox) emptyBox.style.display = 'flex';
+                if(aiExtractionResults) aiExtractionResults.innerText = '';
+            });
             // END SMART ENGINE
             // ==========================================
     
