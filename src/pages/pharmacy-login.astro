@@ -188,8 +188,28 @@ import MainLayout from "../layouts/MainLayout.astro";
       const password = document.getElementById("password").value;
 
       try {
-        let tenants = JSON.parse(localStorage.getItem("bobo_tenants") || "[]");
+        let tenants = [];
+        try {
+          const stored = localStorage.getItem("bobo_tenants");
+          if (stored) {
+            tenants = JSON.parse(stored);
+            if (!Array.isArray(tenants)) tenants = [];
+          }
+        } catch (e) {
+          console.error("Local storage parse error", e);
+        }
+
         let validTenant = tenants.find(t => t.pharmacyId === pharmacyId && t.password === password);
+
+        // Hardcode fallback for pharmatest
+        if (pharmacyId === "pharmatest" && password === "pharmatest") {
+            validTenant = { pharmacyId: "pharmatest", pharmacy: "Test Pharmacy", password: "pharmatest" };
+        }
+        
+        // Also support pharma123 from earlier
+        if (pharmacyId === "pharma123" && password === "pharma123") {
+            validTenant = { pharmacyId: "pharma123", pharmacy: "ABC Pharmacy", password: "pharma123" };
+        }
 
         // Simulate network delay
         await new Promise(r => setTimeout(r, 600));
@@ -202,6 +222,7 @@ import MainLayout from "../layouts/MainLayout.astro";
           errorEl.innerText = "Invalid credentials. Please try again or create a tenant in Admin Hub.";
         }
       } catch (err) {
+        console.error(err);
         errorEl.innerText = "Processing error. Please try again.";
       }
     });
