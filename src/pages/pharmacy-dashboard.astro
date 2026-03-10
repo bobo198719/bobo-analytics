@@ -402,7 +402,7 @@ import MainLayout from "../layouts/MainLayout.astro";
 
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
+        function initApp() {
             const tenantInfo = JSON.parse(localStorage.getItem("activeTenantContext"));
             if (!tenantInfo) {
                 window.location.href = "/pharmacy-login";
@@ -852,6 +852,12 @@ import MainLayout from "../layouts/MainLayout.astro";
             }
             // END TOOLS LOGIC
             updateDashboardUI();
-        });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
     </script>
 </MainLayout>
