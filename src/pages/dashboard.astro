@@ -528,10 +528,10 @@ import MainLayout from "../layouts/MainLayout.astro";
             document.getElementById("invPriceLabel").innerText = t.labelPrice;
             document.getElementById("listCol1").innerText = t.listId;
             document.getElementById("listCol3").innerText = t.listQty;
-            document.getElementById("posTitle").innerText = t.posTitle;
-            document.getElementById("posSubtitle").innerText = t.posSub;
-            document.getElementById("scannerTitle").innerText = t.scanTitle;
-            document.getElementById("scannerDesc").innerText = t.scanDesc;
+            if(document.getElementById("posTitle")) document.getElementById("posTitle").innerText = t.posTitle;
+            if(document.getElementById("posSubtitle")) document.getElementById("posSubtitle").innerText = t.posSub;
+            if(document.getElementById("scannerTitle")) document.getElementById("scannerTitle").innerText = t.scanTitle;
+            if(document.getElementById("scannerDesc")) document.getElementById("scannerDesc").innerText = t.scanDesc;
 
             // Populate Category Select
             const catSelect = document.getElementById("invCategory");
