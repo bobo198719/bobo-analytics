@@ -206,6 +206,19 @@ import MainLayout from "../layouts/MainLayout.astro";
                             <button type="button" id="processAiBtn" class="btn-primary" style="width:100%;">Extract Elements to Live Bill</button>
                         </div>
                         <div id="aiExtractionResults" style="margin-top: 12px; font-size: 0.85rem; color:#10b981; font-weight:600;"></div>
+                        <div id="aiCapturedReviewBox" style="display:none; margin-top: 16px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; background: #fff;">
+                            <h4 style="margin-bottom: 12px; font-weight:600;">Review Captured Items</h4>
+                            <div style="max-height: 200px; overflow-y: auto; margin-bottom:12px;">
+                                <table class="data-table" style="width:100%; font-size: 0.85rem;" id="aiReviewTable">
+                                    <thead><tr><th>Product Name</th><th>Qty</th><th>Price</th><th>Action</th></tr></thead>
+                                    <tbody id="aiReviewTableBody"></tbody>
+                                </table>
+                            </div>
+                            <div style="display:flex; gap:10px;">
+                                <button type="button" class="btn-primary" id="confirmAiPushBtn" style="flex:1;">Confirm & Send to POS</button>
+                                <button type="button" class="btn-secondary" id="cancelAiPushBtn" style="background:#fef2f2; color:#ef4444; border-color:#ef4444; flex:0.4;">Discard</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
