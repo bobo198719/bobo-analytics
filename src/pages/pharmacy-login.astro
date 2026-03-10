@@ -217,6 +217,11 @@ import MainLayout from "../layouts/MainLayout.astro";
         if (validTenant) {
           localStorage.setItem("pharmacy", validTenant.pharmacy);
           localStorage.setItem("pharmacyId", validTenant.pharmacyId);
+          localStorage.setItem("activeTenantContext", JSON.stringify({
+            id: validTenant.pharmacyId,
+            name: validTenant.pharmacy,
+            industry: "pharmacy"
+          }));
           window.location.href = "/pharmacy-dashboard";
         } else {
           errorEl.innerText = "Invalid credentials. Please try again or create a tenant in Admin Hub.";

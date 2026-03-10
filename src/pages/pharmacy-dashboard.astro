@@ -381,7 +381,7 @@ import MainLayout from "../layouts/MainLayout.astro";
         document.addEventListener("DOMContentLoaded", () => {
             const tenantInfo = JSON.parse(localStorage.getItem("activeTenantContext"));
             if (!tenantInfo) {
-                window.location.href = "/login";
+                window.location.href = "/pharmacy-login";
                 return;
             }
 
@@ -763,7 +763,7 @@ import MainLayout from "../layouts/MainLayout.astro";
 
             document.getElementById("logoutBtn").addEventListener("click", () => {
                 localStorage.removeItem("activeTenantContext");
-                window.location.href = "/login";
+                window.location.href = "/pharmacy-login";
             });
 
             updateDashboardUI();
