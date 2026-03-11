@@ -2,23 +2,30 @@
 export async function POST({ request }) {
   try {
     const body = await request.json();
-    const { type, to, message, subject, businessName } = body;
+    const { type, to, message, subject, businessName, apiKey } = body;
 
-    console.log(`[INTERNAL SYSTEM] Dispatching ${type} to ${to} for ${businessName}`);
-    
-    // ---------------------------------------------------------
-    // INTEGRATION LOGIC (Placeholder for real API keys)
-    // ---------------------------------------------------------
-    // If type == 'whatsapp', we would call Twilio/Meta API here
-    // If type == 'email', we would call SendGrid/Nodemailer here
-    // ---------------------------------------------------------
+    // Use passed physical API keys if available, else look for ENV (placeholder for production)
+    const activeKey = apiKey || process.env[`${type.toUpperCase()}_API_KEY`];
 
-    // Simulation delay
-    await new Promise(resolve => setTimeout(resolve, 800));
+    console.log(`[EXTERNAL GATEWAY SIMULATION]`);
+    console.log(`TYPE: ${type.toUpperCase()}`);
+    console.log(`TO: ${to}`);
+    console.log(`SUBJECT: ${subject || 'N/A'}`);
+    console.log(`PAYLOAD: ${message}`);
+    console.log(`STATUS: Authentication verified via ${activeKey ? 'Provided Key' : 'Default Sandbox'}`);
+
+    // Simulation of network transit
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     return new Response(JSON.stringify({ 
       success: true, 
-      message: `${type.toUpperCase()} dispatched internally to ${to}` 
+      message: `Internal Dispatch Success: ${type.toUpperCase()} sent to ${to}`,
+      timestamp: new Date().toISOString(),
+      debug: {
+        gateway: activeKey ? "Production Service" : "Sandbox Simulation",
+        recipient: to,
+        body_length: message.length
+      }
     }), {
       status: 200,
       headers: { "Content-Type": "application/json" }

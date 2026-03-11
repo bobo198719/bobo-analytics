@@ -30,6 +30,7 @@ import MainLayout from "../layouts/MainLayout.astro";
         
         <div class="nav-section">Configuration</div>
         <a href="#settings">System Settings</a>
+        <a href="#logs">System Activity Log</a>
       </nav>
       <div class="sidebar-footer">
         <button id="logoutBtn" class="btn-logout">Logout securely</button>
@@ -495,6 +496,17 @@ Renew now to avoid service interruption and feature locking.
         </div>
       </div>
 
+      <!-- 11. System Activity Log -->
+      <div id="sec-logs" class="admin-section">
+        <div class="section-header">
+          <h2>System Activity Log (Internal)</h2>
+          <p>Real-time updates of background tasks and automated notifications.</p>
+        </div>
+        <div class="card" style="background:#000; font-family: monospace; font-size: 0.85rem; padding: 20px; color: #10b981; min-height: 200px; max-height: 400px; overflow-y: auto;" id="systemLog">
+           [SYSTEM READY] Listening for infrastructure events...<br>
+        </div>
+      </div>
+
     </main>
   </div>
 
@@ -841,12 +853,12 @@ Renew now to avoid service interruption and feature locking.
                 else estimatedRev += 8000; // professional
                 
                 tHtml += `
-                  <tr contenteditable="true">
+                  <tr>
                     <td>${t.pharmacyId}</td>
                     <td>${t.pharmacy}</td>
                     <td>${ind}</td>
                     <td>${pln}</td>
-                    <td contenteditable="false"><span class="badge success">Active</span> <button class="btn-text" onclick="alert('Edits saved.')">Save</button></td>
+                    <td><span class="badge success">Active</span></td>
                   </tr>
                 `;
 
@@ -861,7 +873,7 @@ Renew now to avoid service interruption and feature locking.
                     <td>${pln}</td>
                     <td><span class="badge success">Active</span></td>
                     <td>${nextYear.toLocaleDateString("en-US", { day: '2-digit', month: 'short', year: 'numeric'})}</td>
-                    <td><button class="btn-text">Edit Invoice Options</button></td>
+                    <td><button class="btn-text" onclick="editInvoiceOptions('${t.pharmacyId}')">Edit Invoice Options</button></td>
                   </tr>
                 `;
             });
@@ -907,6 +919,19 @@ Renew now to avoid service interruption and feature locking.
             }
          };
 
+         window.editInvoiceOptions = function(tenantId) {
+            let tenants = JSON.parse(localStorage.getItem("bobo_tenants") || "[]");
+            let t = tenants.find(x => x.pharmacyId === tenantId);
+            if(!t) return;
+            
+            const customOffer = prompt("Edit Custom Offer Name / Invoice Header:", t.customRateName || "");
+            if (customOffer !== null) {
+                t.customRateName = customOffer;
+                localStorage.setItem("bobo_tenants", JSON.stringify(tenants));
+                alert("Invoice options updated for " + t.pharmacy);
+            }
+         };
+
          window.editBaselineFeatures = function(industry) {
             const industryKey = industry.toLowerCase().split(' ')[0]; // pharmacy, clinic, retail, stock
             const coreId = `base-${industryKey}-core`;
@@ -940,14 +965,14 @@ Renew now to avoid service interruption and feature locking.
                   const feats = (t.features || ['Inventory', 'Sales POS', 'Analytics']).join(', ');
                   
                   uHtml += `
-                  <tr contenteditable="true">
+                  <tr>
                      <td>${ind}</td>
                      <td><strong>${t.pharmacy}</strong></td>
                      <td>${t.pharmacyId}</td>
                      <td><code>${t.password}</code></td>
                      <td>${t.email || 'Admin'}</td>
                      <td style="font-size: 0.8rem; color: #9ca3af; max-width: 200px;">${feats}</td>
-                     <td contenteditable="false">
+                     <td>
                         <button class="btn-text" onclick="loginAsTenant('${t.pharmacyId}')">Login & Spy</button> | 
                         <button class="btn-text" onclick="editTenantFeatures('${t.pharmacyId}')">Edit Features</button>
                      </td>
@@ -1072,6 +1097,9 @@ Link: ${customId}.boboanalytics.com/solutions/${industry}
 *SUPPORT:*
 +91 91564 84328 / support@boboanalytics.com`;
 
+              const twKey = document.getElementById("twilioKey").value;
+              logSystemEvent(`[QUEUED] WhatsApp to ${adminPhone}...`);
+
               fetch('/api/admin/notify', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -1079,20 +1107,24 @@ Link: ${customId}.boboanalytics.com/solutions/${industry}
                   type: 'whatsapp',
                   to: adminPhone,
                   message: waText,
-                  businessName: businessName
+                  businessName: businessName,
+                  apiKey: twKey
                 })
               }).then(res => res.json()).then(data => {
                 if(data.success) {
                   messagesSent++;
                   localStorage.setItem("bobo_msgs", messagesSent.toString());
                   document.getElementById("liveMsgCount").innerText = messagesSent;
-                  console.log("Internal WhatsApp dispatched successfully.");
+                  logSystemEvent(`[SUCCESS] WhatsApp dispatched to ${adminPhone}.`);
                 }
               });
         }
 
         // Internal Integration: Sending Email
         if (document.getElementById("sendEmailCheckbox").checked) {
+              const sgKey = document.getElementById("sendgridKey").value;
+              logSystemEvent(`[QUEUED] Email to ${adminEmail}...`);
+
               fetch('/api/admin/notify', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -1101,14 +1133,15 @@ Link: ${customId}.boboanalytics.com/solutions/${industry}
                   to: adminEmail,
                   subject: `Welcome to BoboAnalytics, ${businessName}!`,
                   message: systemMessagePayload,
-                  businessName: businessName
+                  businessName: businessName,
+                  apiKey: sgKey
                 })
               }).then(res => res.json()).then(data => {
                 if(data.success) {
                   messagesSent++;
                   localStorage.setItem("bobo_msgs", messagesSent.toString());
                   document.getElementById("liveMsgCount").innerText = messagesSent;
-                  console.log("Internal Email dispatched successfully.");
+                  logSystemEvent(`[SUCCESS] Email dispatched to ${adminEmail}.`);
                 }
               });
         }
@@ -1123,6 +1156,15 @@ Link: ${customId}.boboanalytics.com/solutions/${industry}
         alert("System error. Could not provision infrastructure.");
       }
     });
+
+    function logSystemEvent(msg) {
+        const logBox = document.getElementById("systemLog");
+        if(logBox) {
+            const time = new Date().toLocaleTimeString();
+            logBox.innerHTML += `[${time}] ${msg}<br>`;
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+    }
 
     // Handle Logout
     document.getElementById("logoutBtn").addEventListener("click", () => {
