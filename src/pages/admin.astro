@@ -84,6 +84,7 @@ import MainLayout from "../layouts/MainLayout.astro";
            <thead>
              <tr>
                <th>Industry</th>
+               <th>Core Features</th>
                <th>Active Tenants</th>
                <th>Available Plans</th>
                <th>Actions</th>
@@ -92,21 +93,24 @@ import MainLayout from "../layouts/MainLayout.astro";
            <tbody>
              <tr>
                <td contenteditable="true"><strong>Pharmacy</strong></td>
+               <td contenteditable="true">Inventory, Sales, Expiry, GST</td>
                <td>Live</td>
                <td contenteditable="true">Starter, Professional, Enterprise</td>
-               <td><button class="btn-text">Save edits</button> | <button class="btn-text danger">Disable</button></td>
+               <td><button class="btn-text">Save edits</button></td>
              </tr>
              <tr>
                <td contenteditable="true"><strong>Grocery</strong></td>
+               <td contenteditable="true">Stock, POS, Weights, Loyalty</td>
                <td>Live</td>
                <td contenteditable="true">Basic, Premium</td>
-               <td><button class="btn-text">Save edits</button> | <button class="btn-text danger">Disable</button></td>
+               <td><button class="btn-text">Save edits</button></td>
              </tr>
              <tr>
                <td contenteditable="true"><strong>Clinic / Hospital</strong></td>
+               <td contenteditable="true">Patients, Billing, Prescription</td>
                <td>Live</td>
                <td contenteditable="true">Standard, Advanced</td>
-               <td><button class="btn-text">Save edits</button> | <button class="btn-text danger">Disable</button></td>
+               <td><button class="btn-text">Save edits</button></td>
              </tr>
            </tbody>
         </table>
@@ -182,6 +186,35 @@ import MainLayout from "../layouts/MainLayout.astro";
                   <input type="number" value="14" />
                 </div>
               </div>
+184: 
+185:               <div class="form-row">
+186:                 <div class="form-group">
+187:                   <label>Custom Rate / Offer Name</label>
+188:                   <input type="text" id="customRateName" placeholder="e.g. Festival Offer" />
+189:                 </div>
+190:                 <div class="form-group">
+191:                   <label>Annual Rate (₹)</label>
+192:                   <input type="number" id="customRateAmount" placeholder="e.g. 7500" />
+193:                 </div>
+194:                 <div class="form-group">
+195:                   <label>Special Discount (%)</label>
+196:                   <input type="number" id="specialDiscount" placeholder="0" />
+197:                 </div>
+198:               </div>
+199: 
+200:               <div class="form-group" style="margin-bottom: 24px;">
+201:                 <label>Provision Features (Customized Plan)</label>
+202:                 <div class="feature-checkboxes" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
+203:                   <label class="toggle-control"><input type="checkbox" name="feature" value="Inventory" checked> Inventory</label>
+204:                   <label class="toggle-control"><input type="checkbox" name="feature" value="Sales POS" checked> Sales POS</label>
+205:                   <label class="toggle-control"><input type="checkbox" name="feature" value="Purchases"> Purchases</label>
+206:                   <label class="toggle-control"><input type="checkbox" name="feature" value="Analytics" checked> Analytics</label>
+207:                   <label class="toggle-control"><input type="checkbox" name="feature" value="GST Assistant"> GST Assistant</label>
+208:                   <label class="toggle-control"><input type="checkbox" name="feature" value="WhatsApp"> WhatsApp</label>
+209:                   <label class="toggle-control"><input type="checkbox" name="feature" value="Loyalty CRM"> Loyalty CRM</label>
+210:                   <label class="toggle-control"><input type="checkbox" name="feature" value="Multi-branch"> Multi-branch</label>
+211:                 </div>
+212:               </div>
 
               <div class="onboarding-toggles">
                  <label class="toggle-control"><input type="checkbox" id="sendEmailCheckbox" checked /> Send Welcome Email</label>
@@ -218,49 +251,49 @@ import MainLayout from "../layouts/MainLayout.astro";
 
       <div id="sec-features" class="admin-section">
         <div class="section-header">
-          <h2>Feature Manager (Capability Toggles)</h2>
-          <p>Editable matrix. Click on any text or status to edit.</p>
+          <h2>Feature Ecosystem per Industry</h2>
+          <p>Define modules available for each vertical and their respective baseline offers.</p>
         </div>
         
         <div class="card" style="margin-bottom:20px;">
            <table class="activity-table">
               <thead>
                 <tr>
-                   <th>Feature Module</th>
-                   <th>Starter</th>
-                   <th>Professional</th>
-                   <th>Enterprise</th>
-                   <th>Override</th>
+                   <th>Industry Vertical</th>
+                   <th>Core Features (Starter)</th>
+                   <th>Premium Features (Enterprise)</th>
+                   <th>Default Plan</th>
+                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody contenteditable="true">
+              <tbody>
                 <tr>
-                   <td><strong>Basic Inventory</strong></td>
-                   <td class="text-green">✔ Enabled</td>
-                   <td class="text-green">✔ Enabled</td>
-                   <td class="text-green">✔ Enabled</td>
-                   <td><button class="btn-text" contenteditable="false">Force Toggle</button></td>
+                   <td><strong>Pharmacy</strong></td>
+                   <td>Inventory, Sales POS, Expiry</td>
+                   <td>AI Forecasting, GST Filing, WhatsApp</td>
+                   <td>Professional (₹8,000)</td>
+                   <td><button class="btn-text">Edit Baseline</button></td>
                 </tr>
                 <tr>
-                   <td><strong>Sales POS</strong></td>
-                   <td class="text-green">✔ Enabled</td>
-                   <td class="text-green">✔ Enabled</td>
-                   <td class="text-green">✔ Enabled</td>
-                   <td><button class="btn-text" contenteditable="false">Force Toggle</button></td>
+                   <td><strong>Clinic / Hospital</strong></td>
+                   <td>OPD, Patient Records, Prescription</td>
+                   <td>Lab Sync, Bed Management, Telehealth</td>
+                   <td>Enterprise (₹12,000)</td>
+                   <td><button class="btn-text">Edit Baseline</button></td>
                 </tr>
                 <tr>
-                   <td><strong>Purchase Orders</strong></td>
-                   <td class="text-red">❌ Disabled</td>
-                   <td class="text-green">✔ Enabled</td>
-                   <td class="text-green">✔ Enabled</td>
-                   <td><button class="btn-text" contenteditable="false">Force Toggle</button></td>
+                   <td><strong>Retail / Groceries</strong></td>
+                   <td>Stock, Barcode, Multi-pay</td>
+                   <td>E-com Sync, Loyalty, Advanced Analytics</td>
+                   <td>Starter (₹5,000)</td>
+                   <td><button class="btn-text">Edit Baseline</button></td>
                 </tr>
                 <tr>
-                   <td><strong>Advanced Analytics</strong></td>
-                   <td class="text-red">❌ Disabled</td>
-                   <td class="text-green">✔ Enabled</td>
-                   <td class="text-green">✔ Enabled</td>
-                   <td><button class="btn-text" contenteditable="false">Force Toggle</button></td>
+                   <td><strong>Stock Trading CRM</strong></td>
+                   <td>Client Portfolio, Trade Entry</td>
+                   <td>Algo Strategy, Risk Reports, Auto-Tax</td>
+                   <td>Professional (₹8,000)</td>
+                   <td><button class="btn-text">Edit Baseline</button></td>
                 </tr>
               </tbody>
            </table>
@@ -276,10 +309,12 @@ import MainLayout from "../layouts/MainLayout.astro";
         <table class="activity-table">
            <thead>
              <tr>
-               <th>Tenant Parent</th>
-               <th>Staff Name</th>
-               <th>Role</th>
-               <th>Last Login</th>
+               <th>Industry</th>
+               <th>Business Name</th>
+               <th>ID</th>
+               <th>Password</th>
+               <th>Admin Email</th>
+               <th>Features</th>
                <th>Actions</th>
              </tr>
            </thead>
@@ -726,6 +761,10 @@ Renew now to avoid service interruption and feature locking.
     
     .alert-box.feature-lock { background: rgba(249, 115, 22, 0.1); border-left: 4px solid #f97316; padding: 16px; color: #fdba74; margin-bottom: 24px; border-radius:0 8px 8px 0;}
 
+    code { background: rgba(0,0,0,0.4); padding: 4px 8px; border-radius: 4px; font-family: monospace; color: #a7f3d0; border: 1px solid rgba(255,255,255,0.1); }
+    .feature-checkboxes label { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: #d1d5db; padding: 4px; transition: background 0.2s; border-radius: 4px;}
+    .feature-checkboxes label:hover { background: rgba(255,255,255,0.05); }
+
     @media (max-width: 1024px) { .form-row { flex-direction: column; gap: 16px; margin-bottom: 16px; } .grid-split { grid-template-columns: 1fr;}}
   </style>
 
@@ -844,18 +883,42 @@ Renew now to avoid service interruption and feature locking.
             }
          };
 
+         window.editTenantFeatures = function(tenantId) {
+            let tenants = JSON.parse(localStorage.getItem("bobo_tenants") || "[]");
+            let t = tenants.find(x => x.pharmacyId === tenantId);
+            if(!t) return;
+            
+            const currentFeatures = (t.features || ['Inventory', 'Sales POS', 'Analytics']).join(', ');
+            const newFeatures = prompt("Update Features for " + t.pharmacy + " (comma separated):", currentFeatures);
+            
+            if (newFeatures !== null) {
+                t.features = newFeatures.split(',').map(f => f.trim()).filter(f => f !== "");
+                localStorage.setItem("bobo_tenants", JSON.stringify(tenants));
+                loadTenantsIntoTable();
+                alert("Features updated successfully for " + t.pharmacy);
+            }
+         };
+
          if (tenants.length === 0) {
               uHtml = "<tr><td colspan='5' style='text-align:center;'>No users provisioned by tenants.</td></tr>";
          } else {
               // For each tenant, artificially inject their admin email as a primary user account
               tenants.forEach(t => {
+                  const ind = t.industry ? t.industry.charAt(0).toUpperCase() + t.industry.slice(1) : 'Pharmacy';
+                  const feats = (t.features || ['Inventory', 'Sales POS', 'Analytics']).join(', ');
+                  
                   uHtml += `
                   <tr contenteditable="true">
-                     <td>${t.pharmacy}</td>
+                     <td>${ind}</td>
+                     <td><strong>${t.pharmacy}</strong></td>
+                     <td>${t.pharmacyId}</td>
+                     <td><code>${t.password}</code></td>
                      <td>${t.email || 'Admin'}</td>
-                     <td>Owner</td>
-                     <td>Never Logged In</td>
-                     <td contenteditable="false"><button class="btn-text" onclick="loginAsTenant('${t.pharmacyId}')">Log In & Spy</button> | <button class="btn-text danger">Suspend</button></td>
+                     <td style="font-size: 0.8rem; color: #9ca3af; max-width: 200px;">${feats}</td>
+                     <td contenteditable="false">
+                        <button class="btn-text" onclick="loginAsTenant('${t.pharmacyId}')">Login & Spy</button> | 
+                        <button class="btn-text" onclick="editTenantFeatures('${t.pharmacyId}')">Edit Features</button>
+                     </td>
                   </tr>
                   `;
               });
@@ -899,6 +962,12 @@ Renew now to avoid service interruption and feature locking.
 
         const adminEmail = document.getElementById("adminEmail").value;
         const adminPhone = document.getElementById("adminPhone").value;
+        
+        // Custom Plan & Rate fields
+        const customRateName = document.getElementById("customRateName").value;
+        const customRateAmount = document.getElementById("customRateAmount").value;
+        const specialDiscount = document.getElementById("specialDiscount").value;
+        const selectedFeatures = Array.from(document.querySelectorAll('input[name="feature"]:checked')).map(cb => cb.value);
 
         const newTenant = {
           pharmacy: businessName,
@@ -907,7 +976,11 @@ Renew now to avoid service interruption and feature locking.
           industry: industry,
           plan: selectedPlan,
           email: adminEmail,
-          phone: adminPhone
+          phone: adminPhone,
+          customRateName: customRateName || (selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1) + " Plan"),
+          customRateAmount: customRateAmount || (selectedPlan === 'starter' ? 5000 : (selectedPlan === 'enterprise' ? 12000 : 8000)),
+          specialDiscount: specialDiscount || 0,
+          features: selectedFeatures
         };
 
         tenants.push(newTenant);

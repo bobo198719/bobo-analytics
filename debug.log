@@ -1,0 +1,13 @@
+
+> bobo-analytics@1.0.0 dev
+> astro dev --host 0.0.0.0 --port 4321
+
+03:26:29 [types] Generated 4ms
+
+ astro  v4.16.19 ready in 254 ms
+
+┃ Local    http://localhost:4321/
+┃ Network  http://192.168.1.34:4321/
+           http://172.22.0.1:4321/
+
+03:26:29 watching for file changes...

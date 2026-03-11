@@ -16,9 +16,14 @@ import MainLayout from "../layouts/MainLayout.astro";
                 <a href="#inventory" class="nav-btn" data-target="sec-inventory" id="navInventory">📦 Store Inventory</a>
                 <a href="#scanners" class="nav-btn" data-target="sec-scanners" id="navScanners">🧾 AI Invoice Scanner</a>
                 <a href="#billing" class="nav-btn" data-target="sec-billing" id="navBilling">🖥️ Barcode Billing</a>
+                <a href="#expiry" class="nav-btn" data-target="sec-expiry" id="navExpiry">⏳ Expiry Alerts</a>
+                <a href="#profit" class="nav-btn" data-target="sec-profit" id="navProfit">💰 Profit Intelligence</a>
+                <a href="#offers" class="nav-btn" data-target="sec-offers" id="navOffers">🎁 Offers & Promotions</a>
+                <a href="#gst" class="nav-btn" data-target="sec-gst" id="navGst">🧾 GST Filing</a>
+                <a href="#reports" class="nav-btn" data-target="sec-reports" id="navReports">📈 Reports</a>
+                <a href="#branches" class="nav-btn" data-target="sec-branches" id="navBranches">🏪 Multi-Branch</a>
                 <a href="#crm" class="nav-btn" data-target="sec-crm" id="navCrm">👥 Customers & WhatsApp</a>
                 <a href="#staff" class="nav-btn" data-target="sec-staff" id="navStaff">👨‍💼 Staff Roles</a>
-                <a href="#reports" class="nav-btn" data-target="sec-reports" id="navReports">📈 Reports & GST</a>
                 <a href="#ai" class="nav-btn" data-target="sec-ai" id="navAi">🧠 AI Analytics</a>
             </nav>
             <div class="sidebar-footer">
@@ -72,6 +77,20 @@ import MainLayout from "../layouts/MainLayout.astro";
                         </tbody>
                     </table>
                 </div>
+
+                <div class="action-panel">
+                    <h3 style="margin-bottom:14px;">Visual Analytics</h3>
+                    <div id="overviewChartGrid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px;">
+                        <div style="background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:12px;">
+                            <h4 style="margin:0 0 10px; font-size:0.9rem;">Category Mix (Donut)</h4>
+                            <canvas id="overviewDonutChart" height="180"></canvas>
+                        </div>
+                        <div style="background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:12px;">
+                            <h4 style="margin:0 0 10px; font-size:0.9rem;">Monthly Sales (Bar)</h4>
+                            <canvas id="overviewBarChart" height="180"></canvas>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <!-- INVENTORY / DATA SECTION -->
@@ -80,46 +99,6 @@ import MainLayout from "../layouts/MainLayout.astro";
                     <h1 id="inventoryTitle">Manage Records</h1>
                     <p class="subtitle" id="inventorySubtitle">Add new entries to your database.</p>
                 </header>
-
-                
-                <div class="billing-container">
-                    <div class="scanner-panel">
-                        <div class="live-scanner-box" id="scannerBox">
-                            <div class="scanner-line"></div>
-                            <h3 id="scannerTitle">Live Scanner / Input</h3>
-                            <p id="scannerDesc">Input exactly and press Enter.</p>
-                            <form id="scannerForm" class="scanner-input-container">
-                                <input type="text" id="liveScannerInput" autocomplete="off" placeholder="Input ID..." />
-                                <button type="submit" class="btn-secondary">Process</button>
-                            </form>
-                            <p id="scannerMsg" class="scanner-feedback"></p>
-                        </div>
-                    </div>
-
-                    <div class="bill-panel">
-                        <h2 id="billPanelTitle">New Transaction</h2>
-                        <div class="bill-items" id="billItemsList">
-                            <p class="empty-bill-msg" id="emptyBillMsg">No records selected yet.</p>
-                        </div>
-                        
-                        <div class="bill-summary">
-                            <div class="summary-row">
-                                <span>Subtotal</span>
-                                <span id="billSubtotal">₹0.00</span>
-                            </div>
-                            <div class="summary-row">
-                                <span>Fees / Tax (0%)</span>
-                                <span>₹0.00</span>
-                            </div>
-                            <div class="summary-row total">
-                                <span>Total Amount</span>
-                                <span id="billTotal">₹0.00</span>
-                            </div>
-                            <button id="generateBillBtn" class="btn-success" disabled>Complete Transaction</button>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="action-panel">
                     <h3 id="addFormTitle">Add New Entry</h3>
                     <form id="addInventoryForm" class="inline-form">
@@ -143,6 +122,34 @@ import MainLayout from "../layouts/MainLayout.astro";
                             <label id="invPriceLabel">Value/Price (₹)</label>
                             <input type="number" id="invPrice" required min="0" step="0.1" value="50.00" />
                         </div>
+                        <div class="input-group">
+                            <label>MRP (Rs)</label>
+                            <input type="number" id="invMrp" min="0" step="0.1" value="50.00" />
+                        </div>
+                        <div class="input-group">
+                            <label>Selling Price (Rs)</label>
+                            <input type="number" id="invSell" min="0" step="0.1" value="50.00" />
+                        </div>
+                        <div class="input-group">
+                            <label>Manufacturer</label>
+                            <input type="text" id="invMfr" placeholder="WS" />
+                        </div>
+                        <div class="input-group">
+                            <label>HSN Code</label>
+                            <input type="text" id="invHsn" placeholder="12345678" />
+                        </div>
+                        <div class="input-group">
+                            <label>Pack Size</label>
+                            <input type="text" id="invPack" placeholder="100ml" />
+                        </div>
+                        <div class="input-group">
+                            <label>GST %</label>
+                            <input type="number" id="invGst" min="0" step="0.1" value="5" />
+                        </div>
+                        <div class="input-group">
+                            <label>Expiry Date</label>
+                            <input type="text" id="invExpiry" placeholder="10-2025" />
+                        </div>
                         <button type="submit" class="btn-primary" style="margin-top: 24px;" id="addFormBtn">Save Record</button>
                     </form>
                 </div>
@@ -152,10 +159,18 @@ import MainLayout from "../layouts/MainLayout.astro";
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th id="listCol1">ID/Code</th>
-                                <th id="listCol2">Name & Category</th>
-                                <th id="listCol3">Count/Status</th>
-                                <th id="listCol4">Value (₹)</th>
+                                <th id="listCol1">Barcode</th>
+                                <th id="listCol2">Product</th>
+                                <th>Category</th>
+                                <th>Manufacturer</th>
+                                <th>HSN</th>
+                                <th>Pack</th>
+                                <th>MRP</th>
+                                <th>Purchase</th>
+                                <th>Selling</th>
+                                <th id="listCol3">Stock Qty</th>
+                                <th>Expiry</th>
+                                <th id="listCol4">Action</th>
                             </tr>
                         </thead>
                         <tbody id="inventoryTable">
@@ -189,7 +204,7 @@ import MainLayout from "../layouts/MainLayout.astro";
                         </div>
                         <hr style="border:none; border-top:1px dashed #e5e7eb; margin:12px 0;" />
                         <label style="font-size:0.85rem; font-weight:600; display:block; margin-bottom:8px;">📁 Upload Bill Image / PDF</label>
-                        <input type="file" id="billInputStore" accept="image/*" style="width:100%; margin-bottom:14px; font-size:0.85rem;" />
+                        <input type="file" id="billInputStore" accept=".jpg,.jpeg,.png,.pdf,image/*,application/pdf" style="width:100%; margin-bottom:14px; font-size:0.85rem;" />
                         <button type="button" id="processAiBtn" class="btn-primary" style="width:100%; padding:14px; font-size:1rem; letter-spacing:0.5px;">🔍 Extract Bill Data with AI</button>
                         <div id="aiExtractionResults" style="margin-top:12px; font-size:0.85rem; font-weight:600; min-height:20px;"></div>
                     </div>
@@ -308,35 +323,6 @@ import MainLayout from "../layouts/MainLayout.astro";
                     </div>
                 </div>
             </section>
-
-            <!-- REPORTS & GST SECTION -->
-            <section id="sec-reports" class="workspace-section">
-                <header class="workspace-header">
-                    <h1>📈 Reports &amp; GST Summary</h1>
-                    <p class="subtitle">View daily, monthly sales, GST collected, low stock and expiry alerts. Export as CSV.</p>
-                </header>
-                <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:16px; margin-bottom:28px;">
-                    <div class="stat-card" style="border-top-color:#6366f1;"><h3>Today Sales</h3><p class="stat-value" id="repToday">₹0</p></div>
-                    <div class="stat-card" style="border-top-color:#10b981;"><h3>This Month</h3><p class="stat-value" id="repMonth">₹0</p></div>
-                    <div class="stat-card" style="border-top-color:#f59e0b;"><h3>Inventory Value</h3><p class="stat-value" id="repInvValue">₹0</p></div>
-                    <div class="stat-card" style="border-top-color:#ef4444;"><h3>Low Stock Items</h3><p class="stat-value" id="repLowStock">0</p></div>
-                    <div class="stat-card" style="border-top-color:#a855f7;"><h3>Expiry Alerts</h3><p class="stat-value" id="repExpiry">0</p></div>
-                    <div class="stat-card" style="border-top-color:#ec4899;"><h3>GST Collected</h3><p class="stat-value" id="repGst">₹0</p></div>
-                </div>
-                <div class="action-panel">
-                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
-                        <h3 style="margin:0;">Transaction Ledger</h3>
-                        <button type="button" class="btn-secondary" id="exportReportBtn" style="font-size:0.85rem;">⬇ Export CSV</button>
-                    </div>
-                    <div style="overflow-x:auto;">
-                        <table class="data-table">
-                            <thead><tr><th>Invoice #</th><th>Date</th><th>Customer</th><th>Items</th><th>Subtotal</th><th>CGST</th><th>SGST</th><th>Net Amount</th><th>Status</th></tr></thead>
-                            <tbody id="reportTable"><tr><td colspan="9" style="text-align:center; color:#9ca3af; padding:32px;">No transactions yet. Start billing to see reports.</td></tr></tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
             <!-- CRM / WHATSAPP SECTION -->
             <section id="sec-crm" class="workspace-section">
                 <header class="workspace-header">
@@ -354,10 +340,18 @@ import MainLayout from "../layouts/MainLayout.astro";
                             </select>
                         </div>
                         <div class="input-group" style="width:100%;">
+                            <label>Email Subject (for Email campaigns)</label>
+                            <input type="text" id="waEmailSubject" style="padding:10px; border:1px solid #d1d5db; border-radius:8px;" placeholder="Special Offer from our pharmacy" />
+                        </div>
+                        <div class="input-group" style="width:100%;">
                             <label>Message Payload Content</label>
                             <textarea id="waMsg" rows="4" style="padding:10px; border:1px solid #d1d5db; border-radius:8px; font-family:sans-serif;" placeholder="Hello [Customer Name], Special Offer! 20% OFF on Baby Products valid returning today!"></textarea>
                         </div>
-                        <button type="button" class="btn-primary" onclick="alert(`Broadcast Queued!\nTwilio / Gupshup API Hook Triggered.\n\nPayload:\n${document.getElementById('waMsg').value}`)">Broadcast to Customer Base</button>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <button type="button" class="btn-primary" style="background:#25d366; border-color:#25d366;" onclick="sendCampaign('whatsapp')">Send WhatsApp</button>
+                            <button type="button" class="btn-primary" onclick="sendCampaign('sms')">Send SMS</button>
+                            <button type="button" class="btn-primary" style="background:#2563eb; border-color:#2563eb;" onclick="sendCampaign('email')">Send Email</button>
+                        </div>
                     </form>
                 </div>
                 <div class="inventory-list">
@@ -402,28 +396,253 @@ import MainLayout from "../layouts/MainLayout.astro";
                 </table>
             </section>
 
+            <!-- EXPIRY ALERTS SECTION -->
+            <section id="sec-expiry" class="workspace-section">
+                <header class="workspace-header">
+                    <h1>⏳ Expiry Alerts</h1>
+                    <p class="subtitle">Track medicines expiring soon. Act before loss hits your shelf.</p>
+                </header>
+                <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:24px;">
+                    <div class="stat-card" style="border-top-color:#ef4444; flex:1; min-width:160px; cursor:pointer;" onclick="filterExpiry('expired')" id="expiredCard"><h3>🔴 Expired</h3><p class="stat-value" id="cntExpired">0</p></div>
+                    <div class="stat-card" style="border-top-color:#f59e0b; flex:1; min-width:160px; cursor:pointer;" onclick="filterExpiry('30')" id="exp30Card"><h3>🟠 Expiring in 30 Days</h3><p class="stat-value" id="cnt30">0</p></div>
+                    <div class="stat-card" style="border-top-color:#eab308; flex:1; min-width:160px; cursor:pointer;" onclick="filterExpiry('90')" id="exp90Card"><h3>🟡 Expiring in 90 Days</h3><p class="stat-value" id="cnt90">0</p></div>
+                    <div class="stat-card" style="border-top-color:#10b981; flex:1; min-width:160px; cursor:pointer;" onclick="filterExpiry('safe')" id="safCard"><h3>🟢 Safe Stock</h3><p class="stat-value" id="cntSafe">0</p></div>
+                </div>
+                <div class="action-panel">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+                        <h3 style="margin:0;" id="expiryTableTitle">All Products — Expiry Status</h3>
+                        <button class="btn-secondary" style="font-size:0.82rem;" onclick="exportExpiryCSV()">⬇ Export CSV</button>
+                    </div>
+                    <div style="overflow-x:auto;"><table class="data-table" style="min-width:700px;"><thead><tr><th>Product</th><th>Batch</th><th>Expiry Date</th><th>Stock Qty</th><th>Days Left</th><th>Status</th></tr></thead><tbody id="expiryTableBody"><tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:32px;">No expiry data. Add products with expiry dates in Store Inventory.</td></tr></tbody></table></div>
+                </div>
+            </section>
+
+            <!-- PROFIT INTELLIGENCE SECTION -->
+            <section id="sec-profit" class="workspace-section">
+                <header class="workspace-header">
+                    <h1>💰 Profit Intelligence</h1>
+                    <p class="subtitle">Margin analysis per medicine — best performers, loss products, and profit trends.</p>
+                </header>
+                <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:24px;">
+                    <div class="stat-card" style="border-top-color:#10b981; flex:1; min-width:160px;"><h3>Total Inventory Cost</h3><p class="stat-value" id="profCost">₹0</p></div>
+                    <div class="stat-card" style="border-top-color:#6366f1; flex:1; min-width:160px;"><h3>Total Selling Value</h3><p class="stat-value" id="profSell">₹0</p></div>
+                    <div class="stat-card" style="border-top-color:#f59e0b; flex:1; min-width:160px;"><h3>Gross Profit</h3><p class="stat-value" id="profGross">₹0</p></div>
+                    <div class="stat-card" style="border-top-color:#a855f7; flex:1; min-width:160px;"><h3>Avg Margin %</h3><p class="stat-value" id="profAvgMargin">0%</p></div>
+                </div>
+                <div class="action-panel">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+                        <h3 style="margin:0;">📊 Per-Medicine Profit Analysis</h3>
+                        <div style="display:flex; gap:8px;">
+                            <select id="profitFilter" style="padding:7px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:0.85rem;" onchange="renderProfitTable()">
+                                <option value="all">All Products</option>
+                                <option value="best">Best Margin (Top 10)</option>
+                                <option value="loss">Loss / Zero Margin</option>
+                            </select>
+                            <button class="btn-secondary" style="font-size:0.82rem;" onclick="exportProfitCSV()">⬇ Export CSV</button>
+                        </div>
+                    </div>
+                    <div style="overflow-x:auto;"><table class="data-table" style="min-width:700px;"><thead><tr><th>Product</th><th>Category</th><th>Purchase Rate (₹)</th><th>MRP (₹)</th><th>Selling Price (₹)</th><th>Profit/Unit (₹)</th><th>Margin %</th><th>Stock</th><th>Stock Value (₹)</th><th>Status</th></tr></thead><tbody id="profitTableBody"><tr><td colspan="10" style="text-align:center;color:#9ca3af;padding:32px;">Add products with MRP and purchase rate to see profit analysis.</td></tr></tbody></table></div>
+                </div>
+            </section>
+
+            <!-- OFFERS & PROMOTIONS SECTION -->
+            <section id="sec-offers" class="workspace-section">
+                <header class="workspace-header">
+                    <h1>🎁 Offers & Promotions</h1>
+                    <p class="subtitle">Create discount offers, buy-get-free deals and send to customers via WhatsApp, SMS or Email.</p>
+                </header>
+                <div style="display:flex; gap:20px; flex-wrap:wrap;">
+                    <!-- Create Offer -->
+                    <div class="action-panel" style="flex:1; min-width:300px;">
+                        <h3>➕ Create New Offer</h3>
+                        <form id="offerForm" style="display:flex; flex-direction:column; gap:14px;">
+                            <div class="input-group"><label>Offer Title</label><input type="text" id="offerTitle" placeholder="10% OFF on Baby Products" required /></div>
+                            <div class="input-group"><label>Offer Type</label>
+                                <select id="offerType" style="padding:10px; border-radius:8px; border:1px solid #d1d5db;" onchange="toggleOfferFields()">
+                                    <option value="percent">% Discount on Category</option>
+                                    <option value="flat">Flat ₹ Discount</option>
+                                    <option value="buygetnfree">Buy N Get N Free</option>
+                                </select>
+                            </div>
+                            <div id="offerPercField" class="input-group"><label>Discount %</label><input type="number" id="offerPercVal" min="1" max="99" placeholder="10" /></div>
+                            <div id="offerBuyGetField" style="display:none; gap:10px; flex-wrap:wrap;">
+                                <div class="input-group" style="flex:1;"><label>Buy Qty</label><input type="number" id="offerBuyQty" min="1" placeholder="10" /></div>
+                                <div class="input-group" style="flex:1;"><label>Get Free Qty</label><input type="number" id="offerFreeQty" min="1" placeholder="2" /></div>
+                            </div>
+                            <div class="input-group"><label>Applicable Category</label>
+                                <select id="offerCategory" style="padding:10px; border-radius:8px; border:1px solid #d1d5db;">
+                                    <option>All Products</option><option>Medicine</option><option>Baby Products</option><option>Cosmetics</option><option>Ayurvedic</option><option>Vitamins</option><option>Surgical</option>
+                                </select>
+                            </div>
+                            <div class="input-group"><label>Valid Until</label><input type="date" id="offerExpiry" /></div>
+                            <div class="input-group"><label>Custom Message (optional)</label><textarea id="offerMsg" rows="3" style="padding:10px; border:1px solid #d1d5db; border-radius:8px; font-family:inherit;" placeholder="Hello! Get 10% off on Baby Products this week only at [Store Name]."></textarea></div>
+                            <button type="submit" class="btn-primary">💾 Save Offer</button>
+                        </form>
+                    </div>
+                    <!-- Active Offers + Send -->
+                    <div style="flex:2; min-width:300px; display:flex; flex-direction:column; gap:16px;">
+                        <div class="action-panel" style="margin-bottom:0;">
+                            <h3>📋 Active Offers</h3>
+                            <div id="offersList" style="display:flex; flex-direction:column; gap:10px; min-height:80px;"><p style="color:#9ca3af; font-size:0.9rem;">No offers created yet.</p></div>
+                        </div>
+                        <div class="action-panel" style="margin-bottom:0;">
+                            <h3>📨 Broadcast Offer</h3>
+                            <div style="display:flex; flex-direction:column; gap:12px;">
+                                <div class="input-group"><label>Select Offer</label><select id="broadcastOfferSelect" style="padding:10px; border-radius:8px; border:1px solid #d1d5db;"><option>No offers yet</option></select></div>
+                                <div class="input-group"><label>Send Via</label>
+                                    <div style="display:flex; gap:10px;">
+                                        <button class="btn-secondary" style="flex:1; background:#25d366; color:#fff; border-color:#25d366;" onclick="broadcastOffer('whatsapp')">💬 WhatsApp</button>
+                                        <button class="btn-secondary" style="flex:1;" onclick="broadcastOffer('sms')">📱 SMS</button>
+                                        <button class="btn-secondary" style="flex:1;" onclick="broadcastOffer('email')">📧 Email</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- GST FILING SECTION -->
+            <section id="sec-gst" class="workspace-section">
+                <header class="workspace-header">
+                    <h1>🧾 Smart GST Filing Assistant</h1>
+                    <p class="subtitle">Auto-prepare GSTR-1, GSTR-3B and sales summary. Export ready-to-file GST returns.</p>
+                </header>
+                <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:24px;">
+                    <div class="stat-card" style="border-top-color:#6366f1; flex:1; min-width:160px;"><h3>Taxable Sales</h3><p class="stat-value" id="gstTaxable">₹0</p></div>
+                    <div class="stat-card" style="border-top-color:#10b981; flex:1; min-width:160px;"><h3>CGST Collected</h3><p class="stat-value" id="gstCgst">₹0</p></div>
+                    <div class="stat-card" style="border-top-color:#a855f7; flex:1; min-width:160px;"><h3>SGST Collected</h3><p class="stat-value" id="gstSgst">₹0</p></div>
+                    <div class="stat-card" style="border-top-color:#f59e0b; flex:1; min-width:160px;"><h3>Total GST Liability</h3><p class="stat-value" id="gstTotal">₹0</p></div>
+                </div>
+                <div style="display:flex; gap:16px; flex-wrap:wrap;">
+                    <div class="action-panel" style="flex:1; min-width:280px;">
+                        <h3>📅 Period Selection</h3>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+                            <select id="gstMonth" style="padding:9px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:0.85rem;">
+                                <option>January</option><option>February</option><option>March</option><option>April</option><option>May</option><option>June</option><option>July</option><option>August</option><option>September</option><option>October</option><option>November</option><option>December</option>
+                            </select>
+                            <select id="gstYear" style="padding:9px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:0.85rem;">
+                                <option>2024</option><option>2025</option><option>2026</option>
+                            </select>
+                            <button class="btn-primary" onclick="generateGstReport()" style="padding:9px 18px;">Generate</button>
+                        </div>
+                        <div id="gstSummaryBox" style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:16px; font-size:0.85rem;">
+                            <strong>Select period and click Generate to prepare GST return.</strong>
+                        </div>
+                    </div>
+                    <div class="action-panel" style="flex:2; min-width:280px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+                            <h3 style="margin:0;">📊 GSTR-1 / Sales Register</h3>
+                            <div style="display:flex; gap:8px;">
+                                <button class="btn-secondary" style="font-size:0.82rem;" onclick="exportGstCSV()">⬇ CSV</button>
+                                <button class="btn-secondary" style="font-size:0.82rem;" onclick="printGst()">🖨 Print / PDF</button>
+                            </div>
+                        </div>
+                        <div style="overflow-x:auto;"><table class="data-table" style="min-width:600px;"><thead><tr><th>Invoice #</th><th>Date</th><th>Customer</th><th>Taxable</th><th>GST%</th><th>CGST</th><th>SGST</th><th>Total</th></tr></thead><tbody id="gstTableBody"><tr><td colspan="8" style="text-align:center;color:#9ca3af;padding:24px;">Generate GST report to view sales register.</td></tr></tbody></table></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- REPORTS SECTION (upgraded) -->
+            <section id="sec-reports" class="workspace-section">
+                <header class="workspace-header">
+                    <h1>📈 Reports Center</h1>
+                    <p class="subtitle">Daily, Monthly, Stock, Customer reports — export as PDF, Excel or CSV.</p>
+                </header>
+                <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:24px;">
+                    <button class="btn-primary" onclick="loadReport('daily')" style="font-size:0.85rem; padding:9px 16px;">📅 Daily Sales</button>
+                    <button class="btn-secondary" onclick="loadReport('monthly')" style="font-size:0.85rem; padding:9px 16px;">📆 Monthly Sales</button>
+                    <button class="btn-secondary" onclick="loadReport('stock')" style="font-size:0.85rem; padding:9px 16px;">📦 Stock Report</button>
+                    <button class="btn-secondary" onclick="loadReport('customer')" style="font-size:0.85rem; padding:9px 16px;">👥 Customer Report</button>
+                    <button class="btn-secondary" onclick="loadReport('profit')" style="font-size:0.85rem; padding:9px 16px;">💰 Profit Report</button>
+                </div>
+                <div class="action-panel">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+                        <h3 style="margin:0;" id="reportTitle">📅 Daily Sales Report</h3>
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn-secondary" style="font-size:0.82rem;" onclick="exportReport('csv')">⬇ CSV</button>
+                            <button class="btn-secondary" style="font-size:0.82rem; background:#217346; color:#fff; border-color:#217346;" onclick="exportReport('excel')">📊 Excel</button>
+                            <button class="btn-secondary" style="font-size:0.82rem; background:#c0392b; color:#fff; border-color:#c0392b;" onclick="exportReport('pdf')">🖨 PDF</button>
+                        </div>
+                    </div>
+                    <div id="reportStatsRow" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:12px; margin-bottom:16px;"></div>
+                    <div id="reportChartGrid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; margin-bottom:16px;">
+                        <div style="background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:12px;">
+                            <h4 style="margin:0 0 8px; font-size:0.86rem;">Sales by Category (Pie)</h4>
+                            <canvas id="reportPieChart" height="170"></canvas>
+                        </div>
+                        <div style="background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:12px;">
+                            <h4 style="margin:0 0 8px; font-size:0.86rem;">Stock by Category (Donut)</h4>
+                            <canvas id="reportDonutChart" height="170"></canvas>
+                        </div>
+                        <div style="background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:12px;">
+                            <h4 style="margin:0 0 8px; font-size:0.86rem;">Monthly Revenue (Bar)</h4>
+                            <canvas id="reportBarChart" height="170"></canvas>
+                        </div>
+                        <div style="background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:12px;">
+                            <h4 style="margin:0 0 8px; font-size:0.86rem;">Top Products (Column)</h4>
+                            <canvas id="reportColumnChart" height="170"></canvas>
+                        </div>
+                    </div>
+                    <div style="overflow-x:auto;"><table class="data-table" id="reportMainTable"><thead><tr id="reportHead"></tr></thead><tbody id="reportBody"><tr><td colspan="8" style="text-align:center;color:#9ca3af;padding:32px;">Select a report type above.</td></tr></tbody></table></div>
+                </div>
+            </section>
+
+            <!-- MULTI-BRANCH SECTION -->
+            <section id="sec-branches" class="workspace-section">
+                <header class="workspace-header">
+                    <h1>🏪 Multi-Branch Management</h1>
+                    <p class="subtitle">Manage multiple pharmacy branches, compare sales and share central inventory.</p>
+                </header>
+                <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:24px;" id="branchStatCards">
+                    <div class="stat-card" style="border-top-color:#6366f1; flex:1; min-width:160px;"><h3>🏪 Total Branches</h3><p class="stat-value" id="branchCount">1</p></div>
+                    <div class="stat-card" style="border-top-color:#10b981; flex:1; min-width:160px;"><h3>Company Revenue</h3><p class="stat-value" id="branchTotalRev">₹0</p></div>
+                    <div class="stat-card" style="border-top-color:#f59e0b; flex:1; min-width:160px;"><h3>Total Inventory Items</h3><p class="stat-value" id="branchTotalInv">0</p></div>
+                </div>
+                <div style="display:flex; gap:20px; flex-wrap:wrap;">
+                    <div class="action-panel" style="flex:1; min-width:280px; max-width:320px;">
+                        <h3>➕ Add Branch</h3>
+                        <form id="branchForm" style="display:flex; flex-direction:column; gap:12px;">
+                            <div class="input-group"><label>Branch Name</label><input type="text" id="branchName" placeholder="Branch 2 – Alkapuri" required /></div>
+                            <div class="input-group"><label>Manager Name</label><input type="text" id="branchManager" placeholder="Ramesh Shah" /></div>
+                            <div class="input-group"><label>Location / City</label><input type="text" id="branchCity" placeholder="Vadodara, Gujarat" /></div>
+                            <button type="submit" class="btn-primary">Save Branch</button>
+                        </form>
+                    </div>
+                    <div style="flex:2; min-width:300px;">
+                        <div id="branchCardsGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:16px;" ></div>
+                    </div>
+                </div>
+            </section>
+
             <!-- AI ANALYTICS SECTION -->
             <section id="sec-ai" class="workspace-section">
                 <header class="workspace-header">
-                    <h1>Bobo AI Insights</h1>
-                    <p class="subtitle">Predictive models, demand generation, and deep profit insights.</p>
+                    <h1>🧠 AI Analytics</h1>
+                    <p class="subtitle">Smart demand forecasting, buying pattern insights and growth opportunities.</p>
                 </header>
                 <div class="stats-grid">
-                    <div class="stat-card" style="border-top-color:#10b981;">
-                        <h3>Top Selling Category</h3>
-                        <p class="stat-value" id="aiTopCat">Loading...</p>
+                    <div class="stat-card" style="border-top-color:#10b981;"><h3>Top Selling Category</h3><p class="stat-value" id="aiTopCat">Loading...</p></div>
+                    <div class="stat-card" style="border-top-color:#ef4444;"><h3>Low Stock / Expiry Alerts</h3><p class="stat-value" id="aiAlerts">0 Alerts</p></div>
+                    <div class="stat-card" style="border-top-color:#a855f7;"><h3>Demand Signal</h3><p class="stat-value" id="aiDemand">Stable 📈</p></div>
+                </div>
+                <div style="display:flex; gap:20px; flex-wrap:wrap; margin-top:20px;">
+                    <div class="action-panel" style="flex:1; min-width:280px;">
+                        <h3>🔥 Top Selling Medicines</h3>
+                        <div id="topSellingList" style="display:flex; flex-direction:column; gap:8px; min-height:60px;"><p style="color:#9ca3af;font-size:0.9rem;">Bill more items to see top sellers.</p></div>
                     </div>
-                    <div class="stat-card" style="border-top-color:#ef4444;">
-                        <h3>Low Stock / Expiry Alerts</h3>
-                        <p class="stat-value" id="aiAlerts">0 Alerts</p>
+                    <div class="action-panel" style="flex:1; min-width:280px;">
+                        <h3>🐌 Slow Moving Products</h3>
+                        <div id="slowMovingList" style="display:flex; flex-direction:column; gap:8px; min-height:60px;"><p style="color:#9ca3af;font-size:0.9rem;">Products with no sales in 30 days will appear here.</p></div>
                     </div>
-                    <div class="stat-card" style="border-top-color:#a855f7;">
-                        <h3>Demand Prediction Area</h3>
-                        <p class="stat-value" id="aiDemand">Stable📈</p>
+                    <div class="action-panel" style="flex:1; min-width:280px;">
+                        <h3>👤 Customer Buying Patterns</h3>
+                        <div id="buyingPatternList" style="display:flex; flex-direction:column; gap:8px; min-height:60px;"><p style="color:#9ca3af;font-size:0.9rem;">Bill customers with phone numbers to see patterns.</p></div>
                     </div>
                 </div>
             </section>
         </main>
+
     </div>
 
     <style>
@@ -539,14 +758,29 @@ import MainLayout from "../layouts/MainLayout.astro";
         .btn-success { width: 100%; padding: 16px; background: #10b981; color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: background 0.2s; }
         .btn-success:hover:not(:disabled) { background: #059669; }
         .btn-success:disabled { background: #9ca3af; cursor: not-allowed; }
+        #overviewDonutChart, #overviewBarChart, #reportPieChart, #reportDonutChart, #reportBarChart, #reportColumnChart {
+            max-height: 220px;
+        }
         
         @media (max-width: 1024px) {
             .billing-container { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .dashboard-workspace { padding: 16px; }
+            .workspace-header h1 { font-size: 1.45rem; }
+            .action-panel { padding: 18px; }
+            .stat-value { font-size: 1.7rem; }
+            #overviewChartGrid, #reportChartGrid { grid-template-columns: 1fr !important; gap: 10px !important; }
+            #overviewDonutChart, #overviewBarChart, #reportPieChart, #reportDonutChart, #reportBarChart, #reportColumnChart {
+                max-height: 180px;
+            }
+            .data-table th, .data-table td { padding: 8px; font-size: 0.78rem; }
         }
     </style>
 
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         function initApp() {
             const tenantInfo = JSON.parse(localStorage.getItem("activeTenantContext"));
@@ -691,10 +925,165 @@ import MainLayout from "../layouts/MainLayout.astro";
             // Database Sandbox (LocalStorage)
             const dbKey = `bobo_crm_db_${tenantInfo.id}`;
             let dbData = JSON.parse(localStorage.getItem(dbKey) || '{"inventory":[],"bills":[]}');
-            function saveData() { localStorage.setItem(dbKey, JSON.stringify(dbData)); }
+            const baseSellerName = tenantInfo?.name || tenantInfo?.pharmacy || "Bobo Pharmacy";
+            const nowIso = () => new Date().toISOString();
+            const num = (value, fallback = 0) => {
+                const parsed = parseFloat(value);
+                return Number.isFinite(parsed) ? parsed : fallback;
+            };
+            const intNum = (value, fallback = 0) => {
+                const parsed = parseInt(value, 10);
+                return Number.isFinite(parsed) ? parsed : fallback;
+            };
+            const nextId = (rows, field, start = 1) => rows.reduce((max, row) => Math.max(max, intNum(row?.[field], 0)), start - 1) + 1;
+            const cleanText = (value) => String(value || "").trim();
+            function toDisplayExpiry(value) {
+                const raw = cleanText(value);
+                if (!raw) return "";
+                if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+                if (/^\d{2}[-/]\d{4}$/.test(raw)) return raw.replace("/", "-");
+                return raw;
+            }
+            function normalizeProductRecord(record = {}) {
+                const purchasePrice = num(record.purchase_price ?? record.price ?? record.rate ?? 0);
+                const sellingPrice = num(record.selling_price ?? record.sell ?? record.mrp ?? purchasePrice);
+                const stockQty = intNum(record.stock_qty ?? record.qty ?? record.quantity ?? 0);
+                const normalized = {
+                    product_id: intNum(record.product_id, nextId(dbData?.inventory || [], "product_id", 5001)),
+                    barcode: cleanText(record.barcode) || `EXT-${Math.floor(Math.random() * 90000 + 10000)}`,
+                    product_name: cleanText(record.product_name ?? record.name),
+                    category: cleanText(record.category) || "Medicine",
+                    manufacturer: cleanText(record.manufacturer),
+                    hsn_code: cleanText(record.hsn_code),
+                    pack_size: cleanText(record.pack_size ?? record.pack),
+                    mrp: num(record.mrp ?? sellingPrice),
+                    purchase_price: purchasePrice,
+                    selling_price: sellingPrice,
+                    gst_percent: num(record.gst_percent ?? 5),
+                    stock_qty: stockQty,
+                    expiry_date: toDisplayExpiry(record.expiry_date),
+                    created_at: record.created_at || nowIso()
+                };
+                normalized.name = normalized.product_name;
+                normalized.qty = normalized.stock_qty;
+                normalized.price = normalized.purchase_price;
+                normalized.pack = normalized.pack_size;
+                return normalized;
+            }
+            function ensureDbShape(raw) {
+                const data = raw || {};
+                data.inventory = Array.isArray(data.inventory) ? data.inventory.map(normalizeProductRecord) : [];
+                data.products = data.inventory;
+                data.bills = Array.isArray(data.bills) ? data.bills : [];
+                data.invoices = Array.isArray(data.invoices) ? data.invoices : [];
+                data.invoice_items = Array.isArray(data.invoice_items) ? data.invoice_items : [];
+                data.customers = Array.isArray(data.customers) ? data.customers.map(customer => ({
+                    customer_id: intNum(customer.customer_id ?? customer.id, 0),
+                    customer_name: cleanText(customer.customer_name ?? customer.name),
+                    phone: cleanText(customer.phone),
+                    email: cleanText(customer.email),
+                    address: cleanText(customer.address),
+                    gstin: cleanText(customer.gstin),
+                    customer_type: cleanText(customer.customer_type) || "Retail"
+                })) : [];
+                data.staff = Array.isArray(data.staff) && data.staff.length > 0 ? data.staff : [{
+                    staff_id: 1,
+                    staff_name: "Owner",
+                    role: "Admin",
+                    phone: cleanText(tenantInfo?.phone),
+                    login_email: cleanText(tenantInfo?.email),
+                    password_hash: "",
+                    permissions: "full control"
+                }];
+                data.gst_records = Array.isArray(data.gst_records) ? data.gst_records : [];
+                data.ocr_extractions = Array.isArray(data.ocr_extractions) ? data.ocr_extractions : [];
+                data.barcode_stock = Array.isArray(data.barcode_stock) ? data.barcode_stock : [];
+                data.whatsapp_messages = Array.isArray(data.whatsapp_messages) ? data.whatsapp_messages : [];
+                data.offers = Array.isArray(data.offers) ? data.offers : [];
+                data.branches = Array.isArray(data.branches) ? data.branches : [];
+                return data;
+            }
+            function syncBarcodeStock(product) {
+                const existing = dbData.barcode_stock.find(row => row.barcode === product.barcode);
+                const payload = {
+                    barcode: product.barcode,
+                    product_id: product.product_id,
+                    stock: product.stock_qty,
+                    value: num(product.purchase_price * product.stock_qty)
+                };
+                if (existing) Object.assign(existing, payload);
+                else dbData.barcode_stock.push(payload);
+            }
+            function upsertProductRecord(record) {
+                const incoming = normalizeProductRecord(record);
+                const existing = dbData.inventory.find(item => item.barcode === incoming.barcode || item.product_id === incoming.product_id);
+                if (existing) {
+                    existing.product_name = incoming.product_name || existing.product_name;
+                    existing.name = existing.product_name;
+                    existing.category = incoming.category || existing.category;
+                    existing.manufacturer = incoming.manufacturer || existing.manufacturer;
+                    existing.hsn_code = incoming.hsn_code || existing.hsn_code;
+                    existing.pack_size = incoming.pack_size || existing.pack_size;
+                    existing.pack = existing.pack_size;
+                    existing.mrp = incoming.mrp || existing.mrp;
+                    existing.purchase_price = incoming.purchase_price;
+                    existing.price = existing.purchase_price;
+                    existing.selling_price = incoming.selling_price || existing.selling_price;
+                    existing.gst_percent = incoming.gst_percent;
+                    existing.stock_qty = incoming.stock_qty;
+                    existing.qty = existing.stock_qty;
+                    existing.expiry_date = incoming.expiry_date || existing.expiry_date;
+                    syncBarcodeStock(existing);
+                    return existing;
+                }
+                dbData.inventory.push(incoming);
+                syncBarcodeStock(incoming);
+                return incoming;
+            }
+            function upsertCustomer(record = {}) {
+                if (!cleanText(record.customer_name) && !cleanText(record.phone)) return null;
+                const existing = dbData.customers.find(item =>
+                    (record.phone && item.phone === record.phone) ||
+                    (record.customer_name && item.customer_name === record.customer_name)
+                );
+                if (existing) {
+                    existing.customer_name = cleanText(record.customer_name) || existing.customer_name;
+                    existing.phone = cleanText(record.phone) || existing.phone;
+                    existing.email = cleanText(record.email) || existing.email || "";
+                    existing.address = cleanText(record.address) || existing.address || "";
+                    existing.gstin = cleanText(record.gstin) || existing.gstin || "";
+                    existing.customer_type = cleanText(record.customer_type) || existing.customer_type || "Retail";
+                    return existing;
+                }
+                const customer = {
+                    customer_id: nextId(dbData.customers, "customer_id", 101),
+                    customer_name: cleanText(record.customer_name),
+                    phone: cleanText(record.phone),
+                    email: cleanText(record.email),
+                    address: cleanText(record.address),
+                    gstin: cleanText(record.gstin),
+                    customer_type: cleanText(record.customer_type) || "Retail"
+                };
+                dbData.customers.push(customer);
+                return customer;
+            }
+            function splitTax(taxable, gstPercent) {
+                const totalTax = num(taxable) * (num(gstPercent) / 100);
+                return {
+                    cgst: num(totalTax / 2),
+                    sgst: num(totalTax / 2),
+                    igst: 0
+                };
+            }
+            dbData = ensureDbShape(dbData);
+            function saveData() {
+                dbData = ensureDbShape(dbData);
+                localStorage.setItem(dbKey, JSON.stringify(dbData));
+            }
             window.deleteItem = function(barcode) {
                 if(!confirm("Remove this product?")) return;
                 dbData.inventory = dbData.inventory.filter(i => i.barcode !== barcode);
+                dbData.barcode_stock = dbData.barcode_stock.filter(i => i.barcode !== barcode);
                 saveData(); updateDashboardUI();
             };
 
@@ -717,6 +1106,7 @@ import MainLayout from "../layouts/MainLayout.astro";
                         if (sec.id === targetId) sec.classList.add('active');
                     });
                     if (targetId === "sec-inventory") { if(liveScannerInput) liveScannerInput.focus(); }
+                    if (targetId === "sec-overview" || targetId === "sec-reports") { scheduleChartRender(); }
                 });
             });
 
@@ -767,24 +1157,24 @@ import MainLayout from "../layouts/MainLayout.astro";
                 } else {
                     let invHtml = "";
                     dbData.inventory.forEach((item, idx) => {
-                        const qty = parseInt(item.qty) || 0;
-                        const mrp = parseFloat(item.mrp || item.price || 0);
-                        const rate = parseFloat(item.selling_price || item.price || 0);
-                        const gst = item.gst_percent || '5';
+                        const qty = intNum(item.stock_qty ?? item.qty, 0);
+                        const mrp = num(item.mrp || item.selling_price || 0);
+                        const purchase = num(item.purchase_price ?? item.price ?? 0);
+                        const rate = num(item.selling_price || item.price || 0);
                         const isLow = qty < 10;
                         if(isLow) lowStock++;
                         catCounts[item.category] = (catCounts[item.category] || 0) + qty;
 
                         invHtml += `<tr>
                             <td><code style="background:#f3f4f6;padding:2px 5px;border-radius:4px;font-size:0.75rem;">${item.barcode||'—'}</code></td>
-                            <td><strong>${item.name||'—'}</strong></td>
+                            <td><strong>${item.product_name||item.name||'—'}</strong></td>
                             <td><small style="background:#ede9fe;color:#7c3aed;padding:2px 6px;border-radius:4px;font-size:0.75rem;">${item.category||'General'}</small></td>
                             <td style="font-size:0.82rem;">${item.manufacturer||'—'}</td>
                             <td style="font-size:0.82rem;">${item.hsn_code||'—'}</td>
                             <td style="font-size:0.82rem;">${item.pack_size||'—'}</td>
                             <td style="font-size:0.82rem;">₹${mrp.toFixed(2)}</td>
-                            <td style="font-size:0.82rem;">₹${rate.toFixed(2)}</td>
-                            <td style="font-size:0.82rem;">${gst}%</td>
+                            <td style="font-size:0.82rem;">Rs ${purchase.toFixed(2)}</td>
+                            <td style="font-size:0.82rem;">Rs ${rate.toFixed(2)}</td>
                             <td><span style="color:${isLow?'#ef4444':'#10b981'};font-weight:700;">${qty}${isLow?' ⚠️':''}</span></td>
                             <td style="font-size:0.82rem;color:${item.expiry_date?'#6b7280':'#d1d5db'}">${item.expiry_date||'—'}</td>
                             <td><button onclick="window.deleteInvItem('${item.barcode}')" style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:1rem;">🗑</button></td>
@@ -817,6 +1207,7 @@ import MainLayout from "../layouts/MainLayout.astro";
             window.deleteInvItem = function(barcode) {
                 if(!confirm('Remove product ' + barcode + ' from inventory?')) return;
                 dbData.inventory = dbData.inventory.filter(i => i.barcode !== barcode);
+                dbData.barcode_stock = dbData.barcode_stock.filter(i => i.barcode !== barcode);
                 saveData(); updateDashboardUI();
             };
 
@@ -838,13 +1229,22 @@ import MainLayout from "../layouts/MainLayout.astro";
                 const expiry = document.getElementById("invExpiry")?.value?.trim() || '';
 
                 const existing = dbData.inventory.find(i => i.barcode === barcode);
-                if (existing) {
-                    existing.qty += qty; existing.price = price; existing.mrp = mrp; existing.selling_price = sell;
-                    existing.category = category; existing.manufacturer = mfr; existing.hsn_code = hsn;
-                    existing.pack_size = pack; existing.gst_percent = gst; existing.expiry_date = expiry;
-                } else {
-                    dbData.inventory.push({ barcode, name, category, qty, price, mrp, selling_price: sell, manufacturer: mfr, hsn_code: hsn, pack_size: pack, gst_percent: gst, expiry_date: expiry });
-                }
+                const currentStock = existing ? intNum(existing.stock_qty ?? existing.qty, 0) : 0;
+                upsertProductRecord({
+                    product_id: existing?.product_id,
+                    barcode,
+                    product_name: name,
+                    category,
+                    stock_qty: currentStock + qty,
+                    purchase_price: price,
+                    mrp,
+                    selling_price: sell,
+                    manufacturer: mfr,
+                    hsn_code: hsn,
+                    pack_size: pack,
+                    gst_percent: gst,
+                    expiry_date: expiry
+                });
                 saveData();
                 addInvForm.reset();
                 updateDashboardUI();
@@ -899,10 +1299,11 @@ import MainLayout from "../layouts/MainLayout.astro";
                 const foundItem = dbData.inventory.find(i => i.barcode === barcode);
                 
                 if (foundItem) {
-                    if (foundItem.qty > 0) {
+                    const availableQty = intNum(foundItem.stock_qty ?? foundItem.qty, 0);
+                    if (availableQty > 0) {
                         const inBill = currentBillItems.find(b => b.barcode === barcode);
                         if (inBill) {
-                            if (foundItem.qty > inBill.qty) {
+                            if (availableQty > inBill.qty) {
                                 inBill.qty++;
                             } else {
                                 scannerMsg.className = "scanner-feedback error";
@@ -912,8 +1313,8 @@ import MainLayout from "../layouts/MainLayout.astro";
                         } else {
                             currentBillItems.push({
                                 barcode: foundItem.barcode,
-                                name: foundItem.name,
-                                price: foundItem.price,
+                                name: foundItem.product_name || foundItem.name,
+                                price: foundItem.selling_price || foundItem.price,
                                 qty: 1
                             });
                         }
@@ -936,27 +1337,148 @@ import MainLayout from "../layouts/MainLayout.astro";
             generateBillBtn.addEventListener("click", () => {
                 if (currentBillItems.length === 0) return;
 
+                const invoiceId = nextId(dbData.invoices, "invoice_id", 1001);
+                const invoiceNo = String(invoiceId);
                 let grandTotal = 0;
                 let itemsCount = 0;
                 let summaryString = "";
-                
-                currentBillItems.forEach(bItem => {
-                    grandTotal += (bItem.qty * parseFloat(bItem.price));
-                    itemsCount += bItem.qty;
-                    summaryString += `\n- ${bItem.name} (x${bItem.qty})`;
+                let subtotal = 0;
+                let cgstTotal = 0;
+                let sgstTotal = 0;
+                const invoiceItems = [];
+                const gstBuckets = {};
+
+                currentBillItems.forEach((bItem, index) => {
                     const invItem = dbData.inventory.find(i => i.barcode === bItem.barcode);
-                    if (invItem) invItem.qty -= bItem.qty;
+                    const qty = intNum(bItem.qty, 1);
+                    const rate = num(invItem?.selling_price ?? bItem.price, 0);
+                    const gstPercent = num(invItem?.gst_percent, 5);
+                    const taxableAmount = num(rate * qty);
+                    const taxSplit = splitTax(taxableAmount, gstPercent);
+                    const totalAmount = num(taxableAmount + taxSplit.cgst + taxSplit.sgst + taxSplit.igst);
+
+                    grandTotal += totalAmount;
+                    subtotal += taxableAmount;
+                    cgstTotal += taxSplit.cgst;
+                    sgstTotal += taxSplit.sgst;
+                    itemsCount += qty;
+                    summaryString += `\n- ${bItem.name} (x${qty})`;
+
+                    if (invItem) {
+                        invItem.stock_qty = Math.max(0, intNum(invItem.stock_qty ?? invItem.qty, 0) - qty);
+                        invItem.qty = invItem.stock_qty;
+                        syncBarcodeStock(invItem);
+                    }
+
+                    invoiceItems.push({
+                        item_id: nextId(dbData.invoice_items.concat(invoiceItems), "item_id", 1),
+                        invoice_id: invoiceId,
+                        sr_no: index + 1,
+                        hsn_code: cleanText(invItem?.hsn_code),
+                        product_name: cleanText(invItem?.product_name ?? bItem.name),
+                        category: cleanText(invItem?.category) || "Medicine",
+                        pack: cleanText(invItem?.pack_size),
+                        manufacturer: cleanText(invItem?.manufacturer),
+                        batch_no: cleanText(invItem?.batch_no),
+                        expiry_date: cleanText(invItem?.expiry_date),
+                        quantity: qty,
+                        free_qty: 0,
+                        mrp: num(invItem?.mrp ?? invItem?.selling_price ?? rate),
+                        rate,
+                        discount_percent: 0,
+                        gst_percent: gstPercent,
+                        taxable_amount: taxableAmount,
+                        cgst_amount: taxSplit.cgst,
+                        sgst_amount: taxSplit.sgst,
+                        igst_amount: taxSplit.igst,
+                        total_amount: totalAmount
+                    });
+
+                    if (!gstBuckets[gstPercent]) {
+                        gstBuckets[gstPercent] = { taxable_amount: 0, cgst: 0, sgst: 0, igst: 0 };
+                    }
+                    gstBuckets[gstPercent].taxable_amount += taxableAmount;
+                    gstBuckets[gstPercent].cgst += taxSplit.cgst;
+                    gstBuckets[gstPercent].sgst += taxSplit.sgst;
+                    gstBuckets[gstPercent].igst += taxSplit.igst;
                 });
 
+                const customer = upsertCustomer({
+                    customer_name: "Walk-in Customer",
+                    customer_type: "Retail"
+                });
                 const billData = {
                     id: Date.now().toString(),
-                    date: new Date().toISOString(),
-                    itemsCount: itemsCount,
+                    invoiceId,
+                    invoiceNo,
+                    date: nowIso(),
+                    itemsCount,
+                    subtotal,
+                    cgst: cgstTotal,
+                    sgst: sgstTotal,
                     total: grandTotal,
-                    items: [...currentBillItems]
+                    customer: customer?.customer_name || "Walk-in",
+                    customerPhone: customer?.phone || "",
+                    items: invoiceItems.map(item => ({
+                        barcode: currentBillItems.find(b => b.name === item.product_name)?.barcode || "",
+                        name: item.product_name,
+                        qty: item.quantity,
+                        price: item.rate
+                    }))
                 };
 
                 dbData.bills.push(billData);
+                dbData.invoices.push({
+                    invoice_id: invoiceId,
+                    invoice_no: invoiceNo,
+                    invoice_date: new Date().toLocaleDateString("en-IN"),
+                    due_date: new Date().toLocaleDateString("en-IN"),
+                    ref_no: "",
+                    seller_name: baseSellerName,
+                    seller_address: cleanText(tenantInfo?.address),
+                    seller_phone: cleanText(tenantInfo?.phone),
+                    seller_email: cleanText(tenantInfo?.email),
+                    seller_gstin: cleanText(tenantInfo?.gstin),
+                    buyer_name: customer?.customer_name || "Walk-in Customer",
+                    buyer_address: cleanText(customer?.address),
+                    buyer_phone: cleanText(customer?.phone),
+                    buyer_gstin: cleanText(customer?.gstin),
+                    place_of_supply: cleanText(tenantInfo?.state) || "Gujarat",
+                    payment_terms: "Cash",
+                    bank_name: cleanText(tenantInfo?.bank_name),
+                    bank_account: cleanText(tenantInfo?.bank_account),
+                    bank_ifsc: cleanText(tenantInfo?.bank_ifsc),
+                    total_qty: itemsCount,
+                    subtotal,
+                    discount: 0,
+                    cgst_total: cgstTotal,
+                    sgst_total: sgstTotal,
+                    igst_total: 0,
+                    round_off: 0,
+                    net_amount: grandTotal,
+                    amount_words: "",
+                    created_at: nowIso()
+                });
+                dbData.invoice_items.push(...invoiceItems);
+                Object.entries(gstBuckets).forEach(([gstPercent, bucket]) => {
+                    dbData.gst_records.push({
+                        gst_id: nextId(dbData.gst_records, "gst_id", 1),
+                        invoice_id: invoiceId,
+                        gst_percent: num(gstPercent),
+                        taxable_amount: num(bucket.taxable_amount),
+                        cgst: num(bucket.cgst),
+                        sgst: num(bucket.sgst),
+                        igst: num(bucket.igst)
+                    });
+                });
+                dbData.whatsapp_messages.push({
+                    message_id: nextId(dbData.whatsapp_messages, "message_id", 1),
+                    customer_phone: customer?.phone || "",
+                    invoice_id: invoiceId,
+                    message_type: "bill",
+                    status: "sent",
+                    sent_time: nowIso()
+                });
                 saveData();
                 
                 // Trigger simulated WhatsApp Bill payload immediately after successful transaction
@@ -982,55 +1504,91 @@ import MainLayout from "../layouts/MainLayout.astro";
             // ==========================================
             // SMART CAMERA & AI SCANNER ENGINE
             // ==========================================
-            let html5QrcodeScanner = null;
+                        let html5QrcodeScanner = null;
             const startBarcodeBtn = document.getElementById('startBarcodeCam');
             const stopBarcodeBtn = document.getElementById('stopBarcodeCam');
             const barcodeStatusMsg = document.getElementById('barcodeStatusMsg');
+            let barcodeScannerRunning = false;
+            let lastScannedCode = '';
+            let lastScannedAt = 0;
 
             if(startBarcodeBtn) {
-                startBarcodeBtn.addEventListener('click', () => {
-                    if(barcodeStatusMsg) { barcodeStatusMsg.innerText = "Starting camera..."; }
+                startBarcodeBtn.addEventListener('click', async () => {
+                    if (barcodeScannerRunning) return;
+                    if(barcodeStatusMsg) { barcodeStatusMsg.innerText = 'Starting camera...'; }
                     if (!html5QrcodeScanner && window.Html5Qrcode) {
-                        html5QrcodeScanner = new window.Html5Qrcode("barcode-reader");
+                        html5QrcodeScanner = new window.Html5Qrcode('barcode-reader');
                     }
-                    if(!html5QrcodeScanner) { if(barcodeStatusMsg) barcodeStatusMsg.innerText = "Library loading, try again."; return; }
-                    
+                    if(!html5QrcodeScanner) { if(barcodeStatusMsg) barcodeStatusMsg.innerText = 'Library loading, try again.'; return; }
+
+                    let cameraConfig = { facingMode: 'environment' };
+                    if (window.Html5Qrcode?.getCameras) {
+                        try {
+                            const cameras = await window.Html5Qrcode.getCameras();
+                            if (cameras && cameras.length > 0) {
+                                const rear = cameras.find(c => /back|rear|environment/i.test(c.label || ''));
+                                cameraConfig = rear ? { deviceId: { exact: rear.id } } : { deviceId: { exact: cameras[0].id } };
+                            }
+                        } catch (_) {}
+                    }
+
+                    const formatConfig = window.Html5QrcodeSupportedFormats ? [
+                        window.Html5QrcodeSupportedFormats.CODE_128,
+                        window.Html5QrcodeSupportedFormats.CODE_39,
+                        window.Html5QrcodeSupportedFormats.EAN_13,
+                        window.Html5QrcodeSupportedFormats.EAN_8,
+                        window.Html5QrcodeSupportedFormats.UPC_A,
+                        window.Html5QrcodeSupportedFormats.UPC_E,
+                        window.Html5QrcodeSupportedFormats.QR_CODE
+                    ] : undefined;
+
                     html5QrcodeScanner.start(
-                        { facingMode: "environment" }, 
-                        { fps: 10, qrbox: {width: 250, height: 250} },
+                        cameraConfig,
+                        { fps: 12, qrbox: { width: 280, height: 180 }, rememberLastUsedCamera: true, formatsToSupport: formatConfig },
                         (decodedText) => {
-                            if(barcodeStatusMsg) { barcodeStatusMsg.innerText = "✅ Scanned: " + decodedText; barcodeStatusMsg.style.color = "#10b981"; }
-                            const liveInput = document.getElementById("liveScannerInput");
+                            const cleanCode = String(decodedText || '').trim().replace(/[^\x20-\x7E]/g, '');
+                            const now = Date.now();
+                            if (!cleanCode) return;
+                            if (cleanCode === lastScannedCode && (now - lastScannedAt) < 1200) return;
+                            lastScannedCode = cleanCode;
+                            lastScannedAt = now;
+                            if(barcodeStatusMsg) { barcodeStatusMsg.innerText = 'Scanned: ' + cleanCode; barcodeStatusMsg.style.color = '#10b981'; }
+                            const liveInput = document.getElementById('liveScannerInput');
                             if (liveInput) {
-                                liveInput.value = decodedText;
-                                const sf = document.getElementById("scannerForm");
+                                liveInput.value = cleanCode;
+                                const sf = document.getElementById('scannerForm');
                                 if(sf) sf.dispatchEvent(new Event('submit', { cancelable: true, bubbles:true }));
                             }
                         },
                         () => {}
                     ).then(() => {
+                        barcodeScannerRunning = true;
                         const barcodeReaderEl = document.getElementById('barcode-reader');
                         if(barcodeReaderEl) barcodeReaderEl.style.background = 'transparent';
-                        if(barcodeStatusMsg) barcodeStatusMsg.innerText = "Camera active. Show barcode.";
+                        if(barcodeStatusMsg) barcodeStatusMsg.innerText = 'Camera active. Show barcode.';
                         startBarcodeBtn.disabled = true;
-                        stopBarcodeBtn.disabled = false;
-                    }).catch(() => {
-                        if(barcodeStatusMsg) { barcodeStatusMsg.innerText = "Camera access denied."; barcodeStatusMsg.style.color = "red"; }
+                        if(stopBarcodeBtn) stopBarcodeBtn.disabled = false;
+                    }).catch((err) => {
+                        barcodeScannerRunning = false;
+                        if(barcodeStatusMsg) { barcodeStatusMsg.innerText = 'Camera access denied.'; barcodeStatusMsg.style.color = 'red'; }
+                        console.error('Barcode scanner start failed', err);
                     });
                 });
 
                 if(stopBarcodeBtn) stopBarcodeBtn.addEventListener('click', () => {
                     if(html5QrcodeScanner) {
                         html5QrcodeScanner.stop().then(() => {
+                            barcodeScannerRunning = false;
                             startBarcodeBtn.disabled = false;
                             stopBarcodeBtn.disabled = true;
                             const br = document.getElementById('barcode-reader');
                             if(br) { br.style.background = '#111827'; br.innerHTML = '[Camera Feed Offline]'; }
+                        }).catch(() => {
+                            barcodeScannerRunning = false;
                         });
                     }
                 });
             }
-
             // AI INVOICE CAMERA
             const invoiceVideo = document.getElementById('invoiceVideo');
             const invoiceCanvas = document.getElementById('invoiceCanvas');
@@ -1096,7 +1654,8 @@ import MainLayout from "../layouts/MainLayout.astro";
                 if(emptyBox) emptyBox.style.display = 'none';
 
                 try {
-                    const { data: { text } } = await window.Tesseract.recognize(fileOrBlob, 'eng', { logger: () => {} });
+                    const { data } = await window.Tesseract.recognize(fileOrBlob, 'eng', { logger: () => {} });
+                    const text = data?.text || '';
                     const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
                     
                     // -------------------------------------------------------
@@ -1152,6 +1711,11 @@ import MainLayout from "../layouts/MainLayout.astro";
                             }
                         }
                     });
+
+                    window.aiExtractedHeader = header;
+                    window.aiLastOcrText = text;
+                    window.aiConfidenceScore = data?.confidence || 0;
+                    window.aiSourceFileName = fileOrBlob?.name || `capture-${Date.now()}.png`;
 
                     if(headerBox) {
                         const grid = document.getElementById("invoiceHeaderGrid");
@@ -1253,12 +1817,22 @@ import MainLayout from "../layouts/MainLayout.astro";
 
                         window.aiStagingBuffer.push({
                             barcode: 'EXT-' + Math.floor(Math.random() * 90000 + 10000),
-                            name, hsn_code: hsn, batch_no: batch, expiry_date: expiry,
-                            qty, free_qty: 0, mrp,
+                            product_name: name,
+                            name,
+                            hsn_code: hsn,
+                            batch_no: batch,
+                            expiry_date: expiry,
+                            quantity: qty,
+                            qty,
+                            free_qty: 0,
+                            mrp,
+                            rate: parseFloat(rate.toFixed(2)),
                             price: parseFloat(rate.toFixed(2)),
+                            purchase_price: parseFloat(rate.toFixed(2)),
                             selling_price: parseFloat(rate.toFixed(2)),
                             discount_percent: 0,
                             gst_percent: gstM ? gstM[1] : '5',
+                            taxable_amount: parseFloat(amount.toFixed(2)),
                             total_amount: parseFloat(amount.toFixed(2)),
                             category: 'AI Extracted'
                         });
@@ -1312,7 +1886,7 @@ import MainLayout from "../layouts/MainLayout.astro";
 
                 const addRowBtn = document.getElementById("addAiRowBtn");
                 if(addRowBtn) addRowBtn.onclick = () => {
-                    window.aiStagingBuffer.push({ barcode: 'EXT-' + Math.floor(Math.random()*90000+10000), name:'New Product', hsn_code:'', batch_no:'', expiry_date:'', qty:1, free_qty:0, mrp:0, price:0, selling_price:0, gst_percent:'5', discount_percent:0, total_amount:0, category:'AI Extracted' });
+                    window.aiStagingBuffer.push({ barcode: 'EXT-' + Math.floor(Math.random()*90000+10000), product_name:'New Product', name:'New Product', hsn_code:'', batch_no:'', expiry_date:'', quantity:1, qty:1, free_qty:0, mrp:0, rate:0, price:0, purchase_price:0, selling_price:0, gst_percent:'5', discount_percent:0, taxable_amount:0, total_amount:0, category:'AI Extracted' });
                     window.renderAiReviewTable();
                 };
             };
@@ -1321,26 +1895,165 @@ import MainLayout from "../layouts/MainLayout.astro";
             if(confirmAiPushBtn) confirmAiPushBtn.addEventListener("click", () => {
                 const rows = document.querySelectorAll("#aiReviewTableBody tr");
                 let savedCount = 0;
+                const invoiceId = nextId(dbData.invoices, "invoice_id", 1001);
+                const header = window.aiExtractedHeader || {};
+                const invoiceItems = [];
+                const gstBuckets = {};
+                let totalQty = 0;
+                let subtotal = 0;
+                let discount = 0;
+                let cgstTotal = 0;
+                let sgstTotal = 0;
+                let igstTotal = 0;
+
                 rows.forEach((row, idx) => {
                     if(!window.aiStagingBuffer[idx]) return;
-                    const barcode = window.aiStagingBuffer[idx].barcode;
+                    const staged = window.aiStagingBuffer[idx];
+                    const barcode = staged.barcode;
                     const name = row.querySelector(".ai-edit-name")?.value || '';
                     if(!name) return;
-                    const qty = parseInt(row.querySelector(".ai-edit-qty")?.value) || 1;
-                    const rate = parseFloat(row.querySelector(".ai-edit-rate")?.value) || 0;
-                    const mrp = parseFloat(row.querySelector(".ai-edit-mrp")?.value) || 0;
-                    const gst = row.querySelector(".ai-edit-gst")?.value || '5';
+                    const qty = intNum(row.querySelector(".ai-edit-qty")?.value, 1);
+                    const freeQty = intNum(row.querySelector(".ai-edit-free")?.value, 0);
+                    const rate = num(row.querySelector(".ai-edit-rate")?.value, 0);
+                    const mrp = num(row.querySelector(".ai-edit-mrp")?.value, 0);
+                    const gst = num(row.querySelector(".ai-edit-gst")?.value, 5);
                     const hsn = row.querySelector(".ai-edit-hsn")?.value || '';
                     const batch = row.querySelector(".ai-edit-batch")?.value || '';
                     const expiry = row.querySelector(".ai-edit-expiry")?.value || '';
-                    const disc = parseFloat(row.querySelector(".ai-edit-disc")?.value) || 0;
+                    const disc = num(row.querySelector(".ai-edit-disc")?.value, 0);
+                    const taxableAmount = num(rate * qty * (1 - (disc / 100)));
+                    const taxSplit = splitTax(taxableAmount, gst);
+                    const totalAmount = num(taxableAmount + taxSplit.cgst + taxSplit.sgst + taxSplit.igst);
 
-                    const finalItem = { barcode, name, hsn_code:hsn, batch_no:batch, expiry_date:expiry, qty, free_qty: parseInt(row.querySelector(".ai-edit-free")?.value)||0, mrp, price:rate, selling_price:rate, discount_percent:disc, gst_percent:gst, category:'AI Extracted', manufacturer:'', pack_size:'' };
+                    totalQty += qty;
+                    subtotal += taxableAmount;
+                    discount += num((rate * qty) - taxableAmount);
+                    cgstTotal += taxSplit.cgst;
+                    sgstTotal += taxSplit.sgst;
+                    igstTotal += taxSplit.igst;
 
-                    const exist = dbData.inventory.find(i => i.barcode === barcode);
-                    if(exist) exist.qty += qty; else dbData.inventory.push(finalItem);
+                    invoiceItems.push({
+                        item_id: nextId(dbData.invoice_items.concat(invoiceItems), "item_id", 1),
+                        invoice_id: invoiceId,
+                        sr_no: idx + 1,
+                        hsn_code: hsn,
+                        product_name: name,
+                        category: staged.category || 'Medicine',
+                        pack: staged.pack_size || '',
+                        manufacturer: staged.manufacturer || '',
+                        batch_no: batch,
+                        expiry_date: expiry,
+                        quantity: qty,
+                        free_qty: freeQty,
+                        mrp,
+                        rate,
+                        discount_percent: disc,
+                        gst_percent: gst,
+                        taxable_amount: taxableAmount,
+                        cgst_amount: taxSplit.cgst,
+                        sgst_amount: taxSplit.sgst,
+                        igst_amount: taxSplit.igst,
+                        total_amount: totalAmount
+                    });
+
+                    if (!gstBuckets[gst]) gstBuckets[gst] = { taxable_amount: 0, cgst: 0, sgst: 0, igst: 0 };
+                    gstBuckets[gst].taxable_amount += taxableAmount;
+                    gstBuckets[gst].cgst += taxSplit.cgst;
+                    gstBuckets[gst].sgst += taxSplit.sgst;
+                    gstBuckets[gst].igst += taxSplit.igst;
+
+                    const existing = dbData.inventory.find(i => i.barcode === barcode);
+                    const currentStock = existing ? intNum(existing.stock_qty ?? existing.qty, 0) : 0;
+                    upsertProductRecord({
+                        product_id: existing?.product_id,
+                        barcode,
+                        product_name: name,
+                        category: staged.category || 'AI Extracted',
+                        manufacturer: staged.manufacturer || '',
+                        hsn_code: hsn,
+                        pack_size: staged.pack_size || '',
+                        mrp,
+                        purchase_price: rate,
+                        selling_price: rate,
+                        gst_percent: gst,
+                        stock_qty: currentStock + qty + freeQty,
+                        expiry_date: expiry
+                    });
                     savedCount++;
                 });
+
+                const buyer = upsertCustomer({
+                    customer_name: header.buyer_name || '',
+                    phone: header.buyer_phone || '',
+                    email: header.buyer_email || '',
+                    address: header.buyer_address || '',
+                    gstin: header.buyer_gstin || '',
+                    customer_type: header.buyer_name ? 'Doctor / Retail' : ''
+                });
+                const roundOff = num((num(header.net_amount?.replace(/[^\d.]/g, ""), subtotal + cgstTotal + sgstTotal + igstTotal) - (subtotal + cgstTotal + sgstTotal + igstTotal)).toFixed(2));
+                const netAmount = num(subtotal + cgstTotal + sgstTotal + igstTotal + roundOff);
+
+                dbData.invoices.push({
+                    invoice_id: invoiceId,
+                    invoice_no: cleanText(header.invoice_no) || String(invoiceId),
+                    invoice_date: cleanText(header.invoice_date),
+                    due_date: cleanText(header.due_date),
+                    ref_no: cleanText(header.ref_no),
+                    seller_name: cleanText(header.seller_name) || baseSellerName,
+                    seller_address: cleanText(header.seller_address),
+                    seller_phone: cleanText(header.seller_phone),
+                    seller_email: cleanText(header.seller_email),
+                    seller_gstin: cleanText(header.seller_gstin),
+                    buyer_name: cleanText(header.buyer_name),
+                    buyer_address: cleanText(header.buyer_address),
+                    buyer_phone: cleanText(header.buyer_phone),
+                    buyer_gstin: cleanText(header.buyer_gstin),
+                    place_of_supply: cleanText(header.place_of_supply) || "Gujarat",
+                    payment_terms: cleanText(header.payment_terms) || "Advance Payment",
+                    bank_name: cleanText(header.bank_name),
+                    bank_account: cleanText(header.bank_account),
+                    bank_ifsc: cleanText(header.bank_ifsc),
+                    total_qty: totalQty,
+                    subtotal,
+                    discount,
+                    cgst_total: cgstTotal,
+                    sgst_total: sgstTotal,
+                    igst_total: igstTotal,
+                    round_off: roundOff,
+                    net_amount: netAmount,
+                    amount_words: cleanText(header.amount_words),
+                    created_at: nowIso()
+                });
+                dbData.invoice_items.push(...invoiceItems);
+                Object.entries(gstBuckets).forEach(([gstPercent, bucket]) => {
+                    dbData.gst_records.push({
+                        gst_id: nextId(dbData.gst_records, "gst_id", 1),
+                        invoice_id: invoiceId,
+                        gst_percent: num(gstPercent),
+                        taxable_amount: num(bucket.taxable_amount),
+                        cgst: num(bucket.cgst),
+                        sgst: num(bucket.sgst),
+                        igst: num(bucket.igst)
+                    });
+                });
+                dbData.ocr_extractions.push({
+                    extraction_id: nextId(dbData.ocr_extractions, "extraction_id", 1),
+                    file_name: window.aiSourceFileName || `capture-${Date.now()}.png`,
+                    extracted_text: window.aiLastOcrText || "",
+                    invoice_detected: invoiceItems.length > 0 ? "yes" : "no",
+                    confidence_score: `${Math.round(num(window.aiConfidenceScore, 0))}%`,
+                    processed_status: invoiceItems.length > 0 ? "complete" : "review_required"
+                });
+                if (buyer?.phone) {
+                    dbData.whatsapp_messages.push({
+                        message_id: nextId(dbData.whatsapp_messages, "message_id", 1),
+                        customer_phone: buyer.phone,
+                        invoice_id: invoiceId,
+                        message_type: "bill",
+                        status: "queued",
+                        sent_time: nowIso()
+                    });
+                }
 
                 saveData(); updateDashboardUI();
                 const rbox = document.getElementById("aiCapturedReviewBox");
@@ -1367,9 +2080,457 @@ import MainLayout from "../layouts/MainLayout.astro";
                 if(emptyBox) emptyBox.style.display = 'flex';
                 if(aiExtractionResults) aiExtractionResults.innerText = '';
             });
+            // ==========================================
+            // EXPIRY ALERTS ENGINE
+            // ==========================================
+            let _expiryFullList = [];
+            window.filterExpiry = function(filter) {
+                const now = new Date(); now.setHours(0,0,0,0);
+                let list = _expiryFullList;
+                const title = document.getElementById('expiryTableTitle');
+                if(filter === 'expired') { list = list.filter(i => i._days < 0); if(title) title.innerText = '🔴 Expired Medicines'; }
+                else if(filter === '30') { list = list.filter(i => i._days >= 0 && i._days <= 30); if(title) title.innerText = '🟠 Expiring within 30 Days'; }
+                else if(filter === '90') { list = list.filter(i => i._days > 30 && i._days <= 90); if(title) title.innerText = '🟡 Expiring within 90 Days'; }
+                else if(filter === 'safe') { list = list.filter(i => i._days > 90); if(title) title.innerText = '🟢 Safe Stock'; }
+                else { if(title) title.innerText = 'All Products — Expiry Status'; }
+                renderExpiryTable(list);
+            };
+            function renderExpiryTable(list) {
+                const tbody = document.getElementById('expiryTableBody');
+                if(!tbody) return;
+                if(list.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:32px;">No items match this filter.</td></tr>'; return; }
+                tbody.innerHTML = list.map(i => {
+                    const d = i._days;
+                    const badge = d < 0 ? '<span style="background:#fee2e2;color:#ef4444;padding:3px 8px;border-radius:20px;font-size:0.75rem;font-weight:700;">EXPIRED</span>'
+                        : d <= 30 ? '<span style="background:#fef3c7;color:#d97706;padding:3px 8px;border-radius:20px;font-size:0.75rem;font-weight:700;">CRITICAL</span>'
+                        : d <= 90 ? '<span style="background:#fef9c3;color:#ca8a04;padding:3px 8px;border-radius:20px;font-size:0.75rem;font-weight:700;">WARNING</span>'
+                        : '<span style="background:#d1fae5;color:#059669;padding:3px 8px;border-radius:20px;font-size:0.75rem;font-weight:700;">SAFE</span>';
+                    return '<tr><td><strong>' + (i.name||'—') + '</strong></td><td>' + (i.batch_no||'—') + '</td><td>' + (i.expiry_date||'—') + '</td><td>' + (i.qty||0) + '</td><td>' + (d < 0 ? Math.abs(d) + ' days ago' : d + ' days') + '</td><td>' + badge + '</td></tr>';
+                }).join('');
+            }
+            window.exportExpiryCSV = function() {
+                const rows = [['Product','Batch','Expiry','Stock','Days Left','Status']];
+                _expiryFullList.forEach(i => rows.push([i.name, i.batch_no||'', i.expiry_date||'', i.qty, i._days, i._days<0?'EXPIRED':i._days<=30?'CRITICAL':i._days<=90?'WARNING':'SAFE']));
+                downloadCSV(rows, 'expiry_report.csv');
+            };
+            function updateExpirySection() {
+                const now = new Date(); now.setHours(0,0,0,0);
+                _expiryFullList = dbData.inventory.filter(i => i.expiry_date).map(i => {
+                    const parts = i.expiry_date.split(/[-\/]/);
+                    let expDate;
+                    if(parts.length === 2) expDate = new Date(parseInt(parts[1]), parseInt(parts[0])-1, 1);
+                    else expDate = new Date(i.expiry_date);
+                    const days = Math.floor((expDate - now) / 86400000);
+                    return { ...i, _days: days };
+                });
+                const ce = document.getElementById('cntExpired'); if(ce) ce.innerText = _expiryFullList.filter(i=>i._days<0).length;
+                const c3 = document.getElementById('cnt30'); if(c3) c3.innerText = _expiryFullList.filter(i=>i._days>=0&&i._days<=30).length;
+                const c9 = document.getElementById('cnt90'); if(c9) c9.innerText = _expiryFullList.filter(i=>i._days>30&&i._days<=90).length;
+                const cs = document.getElementById('cntSafe'); if(cs) cs.innerText = _expiryFullList.filter(i=>i._days>90).length;
+                renderExpiryTable(_expiryFullList);
+            }
+
+            // ==========================================
+            // PROFIT INTELLIGENCE ENGINE
+            // ==========================================
+            window.renderProfitTable = function() {
+                const filter = document.getElementById('profitFilter')?.value || 'all';
+                let items = dbData.inventory.map(i => {
+                    const purchase = parseFloat(i.price || 0);
+                    const selling = parseFloat(i.selling_price || i.mrp || purchase);
+                    const mrp = parseFloat(i.mrp || selling);
+                    const profit = selling - purchase;
+                    const margin = purchase > 0 ? ((profit / purchase) * 100) : 0;
+                    return { ...i, purchase, selling, mrp, profit, margin };
+                });
+                if(filter === 'best') items = items.sort((a,b)=>b.margin-a.margin).slice(0,10);
+                else if(filter === 'loss') items = items.filter(i => i.profit <= 0);
+                const tbody = document.getElementById('profitTableBody');
+                if(!tbody) return;
+                if(items.length === 0) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#9ca3af;padding:32px;">No matching products.</td></tr>'; return; }
+                tbody.innerHTML = items.map(i => {
+                    const badge = i.profit < 0 ? '<span style="background:#fee2e2;color:#ef4444;padding:2px 7px;border-radius:20px;font-size:0.73rem;">Loss</span>'
+                        : i.margin > 30 ? '<span style="background:#d1fae5;color:#059669;padding:2px 7px;border-radius:20px;font-size:0.73rem;">Best ⭐</span>'
+                        : i.margin > 15 ? '<span style="background:#ede9fe;color:#7c3aed;padding:2px 7px;border-radius:20px;font-size:0.73rem;">Good</span>'
+                        : '<span style="background:#fef3c7;color:#d97706;padding:2px 7px;border-radius:20px;font-size:0.73rem;">Low</span>';
+                    return '<tr><td><strong>' + i.name + '</strong></td><td>' + (i.category||'—') + '</td><td>₹' + i.purchase.toFixed(2) + '</td><td>₹' + i.mrp.toFixed(2) + '</td><td>₹' + i.selling.toFixed(2) + '</td><td style="color:' + (i.profit<0?'#ef4444':'#10b981') + ';font-weight:700;">₹' + i.profit.toFixed(2) + '</td><td>' + i.margin.toFixed(1) + '%</td><td>' + (i.qty||0) + '</td><td>₹' + (i.purchase*(i.qty||0)).toFixed(0) + '</td><td>' + badge + '</td></tr>';
+                }).join('');
+            };
+            function updateProfitSection() {
+                let totalCost=0, totalSell=0;
+                dbData.inventory.forEach(i => {
+                    const p=parseFloat(i.price||0), s=parseFloat(i.selling_price||i.mrp||p), q=parseInt(i.qty||0);
+                    totalCost += p*q; totalSell += s*q;
+                });
+                const gross = totalSell - totalCost;
+                const avg = totalCost>0 ? ((gross/totalCost)*100).toFixed(1) : 0;
+                const set = (id,v) => { const el=document.getElementById(id); if(el) el.innerText=v; };
+                set('profCost','₹'+totalCost.toFixed(0)); set('profSell','₹'+totalSell.toFixed(0));
+                set('profGross','₹'+gross.toFixed(0)); set('profAvgMargin',avg+'%');
+                window.renderProfitTable();
+            }
+            window.exportProfitCSV = function() {
+                const rows = [['Product','Category','Purchase','MRP','Selling','Profit','Margin%','Stock','Stock Value']];
+                dbData.inventory.forEach(i => {
+                    const p=parseFloat(i.price||0),s=parseFloat(i.selling_price||i.mrp||p),q=parseInt(i.qty||0);
+                    rows.push([i.name,i.category||'',p,parseFloat(i.mrp||s),s,(s-p).toFixed(2),(p>0?((s-p)/p*100).toFixed(1):0),q,(p*q).toFixed(0)]);
+                });
+                downloadCSV(rows, 'profit_report.csv');
+            };
+
+            // ==========================================
+            // OFFERS & PROMOTIONS ENGINE
+            // ==========================================
+            window.toggleOfferFields = function() {
+                const t = document.getElementById('offerType')?.value;
+                const pf = document.getElementById('offerPercField');
+                const bf = document.getElementById('offerBuyGetField');
+                if(pf) pf.style.display = t === 'buygetnfree' ? 'none' : 'flex';
+                if(bf) bf.style.display = t === 'buygetnfree' ? 'flex' : 'none';
+            };
+            const offerForm = document.getElementById('offerForm');
+            if(offerForm) offerForm.addEventListener('submit', e => {
+                e.preventDefault();
+                const offer = {
+                    id: Date.now(), title: document.getElementById('offerTitle').value,
+                    type: document.getElementById('offerType').value,
+                    discount: document.getElementById('offerPercVal').value || '',
+                    buyQty: document.getElementById('offerBuyQty')?.value || '',
+                    freeQty: document.getElementById('offerFreeQty')?.value || '',
+                    category: document.getElementById('offerCategory').value,
+                    expiry: document.getElementById('offerExpiry').value,
+                    msg: document.getElementById('offerMsg').value
+                };
+                if(!dbData.offers) dbData.offers = [];
+                dbData.offers.push(offer); saveData(); renderOffers(); offerForm.reset();
+            });
+            function renderOffers() {
+                const ol = document.getElementById('offersList');
+                const bos = document.getElementById('broadcastOfferSelect');
+                if(!ol) return;
+                const offers = dbData.offers || [];
+                ol.innerHTML = offers.length === 0 ? '<p style="color:#9ca3af;font-size:0.9rem;">No offers created yet.</p>' :
+                    offers.map(o => '<div style="display:flex;justify-content:space-between;align-items:center;border:1px solid #e5e7eb;border-radius:8px;padding:10px 14px;background:#fafafa;">' +
+                        '<div><strong style="font-size:0.9rem;">' + o.title + '</strong><br><small style="color:#6b7280;">' + o.category + ' · ' + (o.expiry||'No expiry') + '</small></div>' +
+                        '<button onclick="deleteOffer(' + o.id + ')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:1rem;">🗑</button></div>'
+                    ).join('');
+                if(bos) bos.innerHTML = offers.length === 0 ? '<option>No offers yet</option>' : offers.map(o => '<option value="'+o.id+'">'+o.title+'</option>').join('');
+            }
+                        window.deleteOffer = function(id) {
+                if(!dbData.offers) return;
+                dbData.offers = dbData.offers.filter(o => o.id !== id);
+                saveData();
+                renderOffers();
+            };
+            function buildBrandedMessage(rawMessage) {
+                const storeName = cleanText(tenantInfo?.name) || baseSellerName;
+                return (rawMessage || '').trim() + '\n\nRegards,\n' + storeName + '\nPowered by Bobo Analytics';
+            }
+            window.sendCampaign = function(channel) {
+                const msgBody = document.getElementById('waMsg')?.value || '';
+                if(!msgBody.trim()) return alert('Please enter campaign message.');
+                const branded = buildBrandedMessage(msgBody);
+                const subject = document.getElementById('waEmailSubject')?.value || ('Offer from ' + (tenantInfo?.name || baseSellerName));
+                if(channel === 'whatsapp') {
+                    window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(branded), '_blank');
+                } else if(channel === 'sms') {
+                    alert('SMS API payload queued:\n\n' + branded);
+                } else {
+                    const mailTo = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(branded);
+                    window.open(mailTo, '_blank');
+                }
+            };
+            window.broadcastOffer = function(channel) {
+                const sel = document.getElementById('broadcastOfferSelect');
+                const offers = dbData.offers || [];
+                const offer = offers.find(o => o.id == sel?.value) || offers[0];
+                if(!offer) return alert('No offer selected.');
+                const raw = offer.msg || (offer.title + ' - Valid till ' + (offer.expiry || 'limited period') + '. Visit our pharmacy.');
+                const msg = buildBrandedMessage(raw);
+                if(channel === 'whatsapp') { window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(msg), '_blank'); }
+                else if(channel === 'sms') { alert('SMS API (Twilio/MSG91) triggered!\n\nPayload:\n' + msg); }
+                else {
+                    const emailSubject = 'Offer from ' + (tenantInfo?.name || baseSellerName);
+                    window.open('mailto:?subject=' + encodeURIComponent(emailSubject) + '&body=' + encodeURIComponent(msg), '_blank');
+                }
+            };
+
+            // ==========================================
+            // GST FILING ENGINE
+            // ==========================================
+            let _gstData = [];
+            window.generateGstReport = function() {
+                const month = document.getElementById('gstMonth')?.value;
+                const year = parseInt(document.getElementById('gstYear')?.value);
+                const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+                const mi = months.indexOf(month);
+                _gstData = (dbData.bills||[]).filter(b => { const d=new Date(b.date||b.timestamp); return d.getMonth()===mi && d.getFullYear()===year; });
+                let taxable=0, cgst=0, sgst=0;
+                _gstData.forEach(b => { taxable += b.subtotal||b.total||0; cgst += b.cgst||0; sgst += b.sgst||0; });
+                const tax = cgst+sgst;
+                const s = (id,v) => { const el=document.getElementById(id); if(el) el.innerText=v; };
+                s('gstTaxable','₹'+taxable.toFixed(2)); s('gstCgst','₹'+cgst.toFixed(2)); s('gstSgst','₹'+sgst.toFixed(2)); s('gstTotal','₹'+tax.toFixed(2));
+                const box = document.getElementById('gstSummaryBox');
+                if(box) box.innerHTML = '<strong>GSTR-1 Summary — ' + month + ' ' + year + '</strong><br><br>' +
+                    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:0.85rem;">' +
+                    '<div>📄 Total Invoices</div><div><strong>' + _gstData.length + '</strong></div>' +
+                    '<div>💰 Taxable Value</div><div><strong>₹' + taxable.toFixed(2) + '</strong></div>' +
+                    '<div>🟢 CGST (2.5%)</div><div><strong>₹' + cgst.toFixed(2) + '</strong></div>' +
+                    '<div>🔵 SGST (2.5%)</div><div><strong>₹' + sgst.toFixed(2) + '</strong></div>' +
+                    '<div>📊 Total GST</div><div><strong>₹' + tax.toFixed(2) + '</strong></div></div>';
+                const tbody = document.getElementById('gstTableBody');
+                if(tbody) { if(_gstData.length===0) { tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:#9ca3af;padding:24px;">No sales recorded in this period.</td></tr>'; return; }
+                    tbody.innerHTML = _gstData.map(b => '<tr><td>' + (b.invoiceNo||'—') + '</td><td>' + new Date(b.date||b.timestamp).toLocaleDateString('en-IN') + '</td><td>' + (b.customer||'Walk-in') + '</td><td>₹' + (b.subtotal||b.total||0).toFixed(2) + '</td><td>5%</td><td>₹' + (b.cgst||0).toFixed(2) + '</td><td>₹' + (b.sgst||0).toFixed(2) + '</td><td>₹' + (b.total||0).toFixed(2) + '</td></tr>').join('');
+                }
+            };
+            window.exportGstCSV = function() {
+                const rows = [['Invoice#','Date','Customer','Taxable','GST%','CGST','SGST','Total']];
+                _gstData.forEach(b => rows.push([b.invoiceNo||'—',new Date(b.date||b.timestamp).toLocaleDateString('en-IN'),b.customer||'Walk-in',(b.subtotal||b.total||0).toFixed(2),'5%',(b.cgst||0).toFixed(2),(b.sgst||0).toFixed(2),(b.total||0).toFixed(2)]));
+                downloadCSV(rows, 'gst_report.csv');
+            };
+            window.printGst = function() { window.print(); };
+
+            const chartRefs = {};
+            function upsertChart(key, canvasId, type, data, options) {
+                if (!window.Chart) return;
+                const canvas = document.getElementById(canvasId);
+                if (!canvas) return;
+                if (chartRefs[key]) chartRefs[key].destroy();
+                chartRefs[key] = new window.Chart(canvas, { type, data, options });
+            }
+            function computeCategoryMap() {
+                const map = {};
+                (dbData.inventory || []).forEach(item => {
+                    const cat = item.category || 'General';
+                    const qty = intNum(item.stock_qty ?? item.qty, 0);
+                    map[cat] = (map[cat] || 0) + qty;
+                });
+                return map;
+            }
+            function computeMonthlyRevenueMap() {
+                const labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                const values = new Array(12).fill(0);
+                (dbData.bills || []).forEach(b => {
+                    const d = new Date(b.date || b.timestamp);
+                    if (!Number.isNaN(d.getTime())) values[d.getMonth()] += num(b.total, 0);
+                });
+                return { labels, values };
+            }
+            function computeTopProductMap(limit = 6) {
+                const map = {};
+                (dbData.bills || []).forEach(b => (b.items || []).forEach(item => {
+                    const name = item.name || item.product_name || 'Unknown';
+                    map[name] = (map[name] || 0) + intNum(item.qty, 1);
+                }));
+                return Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0, limit);
+            }
+            let chartRenderTimer = null;
+            const compactChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false,
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 10 } } }
+            };
+            function isSectionVisible(id) {
+                const section = document.getElementById(id);
+                return !!section && section.classList.contains('active');
+            }
+            function renderCharts() {
+                const palette = ['#6366f1','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899'];
+                const catMap = computeCategoryMap();
+                const catLabels = Object.keys(catMap);
+                const catValues = Object.values(catMap);
+                const monthly = computeMonthlyRevenueMap();
+                const topProducts = computeTopProductMap();
+                if (isSectionVisible('sec-overview')) {
+                    upsertChart('overviewDonut', 'overviewDonutChart', 'doughnut', {
+                        labels: catLabels.length ? catLabels : ['No Data'],
+                        datasets: [{ data: catValues.length ? catValues : [1], backgroundColor: palette }]
+                    }, compactChartOptions);
+                    upsertChart('overviewBar', 'overviewBarChart', 'bar', {
+                        labels: monthly.labels,
+                        datasets: [{ label: 'Sales', data: monthly.values, backgroundColor: '#10b981' }]
+                    }, { ...compactChartOptions, plugins: { legend: { display: false } } });
+                }
+                if (isSectionVisible('sec-reports')) {
+                    upsertChart('reportPie', 'reportPieChart', 'pie', {
+                        labels: catLabels.length ? catLabels : ['No Data'],
+                        datasets: [{ data: catValues.length ? catValues : [1], backgroundColor: palette }]
+                    }, compactChartOptions);
+                    upsertChart('reportDonut', 'reportDonutChart', 'doughnut', {
+                        labels: catLabels.length ? catLabels : ['No Data'],
+                        datasets: [{ data: catValues.length ? catValues : [1], backgroundColor: palette }]
+                    }, compactChartOptions);
+                    upsertChart('reportBar', 'reportBarChart', 'bar', {
+                        labels: monthly.labels,
+                        datasets: [{ label: 'Revenue', data: monthly.values, backgroundColor: '#6366f1' }]
+                    }, { ...compactChartOptions, plugins: { legend: { display: false } } });
+                    upsertChart('reportColumn', 'reportColumnChart', 'bar', {
+                        labels: topProducts.length ? topProducts.map(x => x[0]) : ['No Data'],
+                        datasets: [{ label: 'Units Sold', data: topProducts.length ? topProducts.map(x => x[1]) : [0], backgroundColor: '#f59e0b' }]
+                    }, { ...compactChartOptions, indexAxis: 'x', plugins: { legend: { display: false } } });
+                }
+            }
+            function scheduleChartRender() {
+                if (chartRenderTimer) clearTimeout(chartRenderTimer);
+                chartRenderTimer = setTimeout(renderCharts, 180);
+            }
+
+            // ==========================================
+            // REPORTS CENTER ENGINE
+            // ==========================================
+            let _currentReportType = 'daily';
+            let _currentReportData = [];
+            window.loadReport = function(type) {
+                _currentReportType = type;
+                const titleEl = document.getElementById('reportTitle');
+                const headEl = document.getElementById('reportHead');
+                const bodyEl = document.getElementById('reportBody');
+                const statsEl = document.getElementById('reportStatsRow');
+                if(!titleEl||!headEl||!bodyEl) return;
+                document.querySelectorAll('#sec-reports .btn-primary, #sec-reports .btn-secondary').forEach(b => { b.className = b.className.replace('btn-primary','btn-secondary'); });
+                if(type==='daily') {
+                    titleEl.innerText = '📅 Daily Sales Report — Today';
+                    const today = new Date().toDateString();
+                    _currentReportData = (dbData.bills||[]).filter(b => new Date(b.date||b.timestamp).toDateString()===today);
+                    headEl.innerHTML = '<th>Invoice#</th><th>Time</th><th>Customer</th><th>Items</th><th>Subtotal</th><th>GST</th><th>Net</th>';
+                    const total = _currentReportData.reduce((s,b)=>s+(b.total||0),0);
+                    if(statsEl) statsEl.innerHTML = '<div class="stat-card" style="border-top-color:#10b981;"><h3>Today Revenue</h3><p class="stat-value">₹'+total.toFixed(0)+'</p></div><div class="stat-card" style="border-top-color:#6366f1;"><h3>Bills Today</h3><p class="stat-value">'+_currentReportData.length+'</p></div>';
+                    bodyEl.innerHTML = _currentReportData.length===0 ? '<tr><td colspan="7" style="text-align:center;color:#9ca3af;padding:32px;">No sales today.</td></tr>' :
+                        _currentReportData.map(b=>'<tr><td>'+(b.invoiceNo||'—')+'</td><td>'+new Date(b.date||b.timestamp).toLocaleTimeString('en-IN')+'</td><td>'+(b.customer||'Walk-in')+'</td><td>'+(b.items?.length||0)+'</td><td>₹'+(b.subtotal||0).toFixed(2)+'</td><td>₹'+((b.cgst||0)+(b.sgst||0)).toFixed(2)+'</td><td>₹'+(b.total||0).toFixed(2)+'</td></tr>').join('');
+                } else if(type==='monthly') {
+                    titleEl.innerText = '📆 Monthly Sales Report — ' + new Date().toLocaleString('en-IN',{month:'long',year:'numeric'});
+                    const m=new Date().getMonth(), y=new Date().getFullYear();
+                    _currentReportData = (dbData.bills||[]).filter(b=>{const d=new Date(b.date||b.timestamp);return d.getMonth()===m&&d.getFullYear()===y;});
+                    headEl.innerHTML = '<th>Invoice#</th><th>Date</th><th>Customer</th><th>Items</th><th>Subtotal</th><th>GST</th><th>Net</th>';
+                    const total = _currentReportData.reduce((s,b)=>s+(b.total||0),0);
+                    if(statsEl) statsEl.innerHTML = '<div class="stat-card" style="border-top-color:#10b981;"><h3>Month Revenue</h3><p class="stat-value">₹'+total.toFixed(0)+'</p></div><div class="stat-card" style="border-top-color:#6366f1;"><h3>Total Bills</h3><p class="stat-value">'+_currentReportData.length+'</p></div>';
+                    bodyEl.innerHTML = _currentReportData.length===0 ? '<tr><td colspan="7" style="text-align:center;color:#9ca3af;padding:32px;">No sales this month.</td></tr>' :
+                        _currentReportData.map(b=>'<tr><td>'+(b.invoiceNo||'—')+'</td><td>'+new Date(b.date||b.timestamp).toLocaleDateString('en-IN')+'</td><td>'+(b.customer||'Walk-in')+'</td><td>'+(b.items?.length||0)+'</td><td>₹'+(b.subtotal||0).toFixed(2)+'</td><td>₹'+((b.cgst||0)+(b.sgst||0)).toFixed(2)+'</td><td>₹'+(b.total||0).toFixed(2)+'</td></tr>').join('');
+                } else if(type==='stock') {
+                    titleEl.innerText = '📦 Stock Report';
+                    _currentReportData = dbData.inventory;
+                    headEl.innerHTML = '<th>Barcode</th><th>Product</th><th>Category</th><th>Stock Qty</th><th>MRP</th><th>Purchase Price</th><th>Stock Value</th><th>Status</th>';
+                    const low = _currentReportData.filter(i=>parseInt(i.qty||0)<10).length;
+                    const val = _currentReportData.reduce((s,i)=>s+parseFloat(i.price||0)*parseInt(i.qty||0),0);
+                    if(statsEl) statsEl.innerHTML = '<div class="stat-card" style="border-top-color:#6366f1;"><h3>Total Products</h3><p class="stat-value">'+_currentReportData.length+'</p></div><div class="stat-card" style="border-top-color:#ef4444;"><h3>Low Stock</h3><p class="stat-value">'+low+'</p></div><div class="stat-card" style="border-top-color:#10b981;"><h3>Inventory Value</h3><p class="stat-value">₹'+val.toFixed(0)+'</p></div>';
+                    bodyEl.innerHTML = _currentReportData.length===0 ? '<tr><td colspan="8" style="text-align:center;color:#9ca3af;padding:32px;">No inventory.</td></tr>' :
+                        _currentReportData.map(i=>'<tr><td><code>'+i.barcode+'</code></td><td>'+i.name+'</td><td>'+(i.category||'—')+'</td><td style="color:'+((i.qty||0)<10?'#ef4444':'#10b981')+';font-weight:700;">'+i.qty+(i.qty<10?' ⚠️':'')+'</td><td>₹'+(parseFloat(i.mrp||i.price||0)).toFixed(2)+'</td><td>₹'+parseFloat(i.price||0).toFixed(2)+'</td><td>₹'+(parseFloat(i.price||0)*parseInt(i.qty||0)).toFixed(0)+'</td><td>'+(i.qty<10?'Low Stock':'OK')+'</td></tr>').join('');
+                } else if(type==='customer') {
+                    titleEl.innerText = '👥 Customer Sales Report';
+                    const custMap = {};
+                    (dbData.bills||[]).forEach(b => { const k=b.customerPhone||b.customer||'Walk-in'; if(!custMap[k]) custMap[k]={name:b.customer||'Walk-in',phone:b.customerPhone||'—',bills:0,total:0}; custMap[k].bills++; custMap[k].total+=b.total||0; });
+                    _currentReportData = Object.values(custMap).sort((a,b)=>b.total-a.total);
+                    headEl.innerHTML = '<th>Customer</th><th>Phone</th><th>Total Bills</th><th>Total Spent</th><th>Avg Bill</th>';
+                    if(statsEl) statsEl.innerHTML = '<div class="stat-card" style="border-top-color:#6366f1;"><h3>Unique Customers</h3><p class="stat-value">'+_currentReportData.length+'</p></div>';
+                    bodyEl.innerHTML = _currentReportData.length===0 ? '<tr><td colspan="5" style="text-align:center;color:#9ca3af;padding:32px;">No customer data.</td></tr>' :
+                        _currentReportData.map(c=>'<tr><td><strong>'+c.name+'</strong></td><td>'+c.phone+'</td><td>'+c.bills+'</td><td>₹'+c.total.toFixed(0)+'</td><td>₹'+(c.total/c.bills).toFixed(0)+'</td></tr>').join('');
+                } else if(type==='profit') {
+                    titleEl.innerText = '💰 Profit Report';
+                    _currentReportData = dbData.inventory.map(i => {
+                        const p=parseFloat(i.price||0),s=parseFloat(i.selling_price||i.mrp||p),q=parseInt(i.qty||0);
+                        return {...i,_profit:(s-p)*q,_margin:p>0?(s-p)/p*100:0};
+                    }).sort((a,b)=>b._profit-a._profit);
+                    headEl.innerHTML = '<th>Product</th><th>Category</th><th>Stock</th><th>Purchase</th><th>Selling</th><th>Profit/Unit</th><th>Total Profit</th><th>Margin%</th>';
+                    const totalP = _currentReportData.reduce((s,i)=>s+i._profit,0);
+                    if(statsEl) statsEl.innerHTML = '<div class="stat-card" style="border-top-color:#10b981;"><h3>Total Stock Profit</h3><p class="stat-value">₹'+totalP.toFixed(0)+'</p></div>';
+                    bodyEl.innerHTML = _currentReportData.length===0 ? '<tr><td colspan="8" style="text-align:center;color:#9ca3af;padding:32px;">No inventory.</td></tr>' :
+                        _currentReportData.map(i=>'<tr><td>'+i.name+'</td><td>'+(i.category||'—')+'</td><td>'+i.qty+'</td><td>₹'+parseFloat(i.price||0).toFixed(2)+'</td><td>₹'+parseFloat(i.selling_price||i.mrp||i.price||0).toFixed(2)+'</td><td style="color:'+(i._profit/Math.max(parseInt(i.qty||1),1)>=0?'#10b981':'#ef4444')+'">₹'+(i._profit/Math.max(parseInt(i.qty||1),1)).toFixed(2)+'</td><td style="color:'+(i._profit>=0?'#10b981':'#ef4444')+';font-weight:700;">₹'+i._profit.toFixed(0)+'</td><td>'+i._margin.toFixed(1)+'%</td></tr>').join('');
+                }
+                scheduleChartRender();
+            };
+            window.exportReport = function(format) {
+                if(format==='csv') {
+                    const headers = Array.from(document.querySelectorAll('#reportHead th')).map(t=>t.innerText);
+                    const rows = [headers, ...Array.from(document.querySelectorAll('#reportBody tr')).map(r=>Array.from(r.querySelectorAll('td')).map(c=>c.innerText.trim()))];
+                    downloadCSV(rows, _currentReportType+'_report.csv');
+                } else if(format==='pdf') {
+                    window.print();
+                } else if(format==='excel') {
+                    const headers = Array.from(document.querySelectorAll('#reportHead th')).map(t=>t.innerText);
+                    const rows = [headers, ...Array.from(document.querySelectorAll('#reportBody tr')).map(r=>Array.from(r.querySelectorAll('td')).map(c=>c.innerText.trim()))];
+                    const tsv = rows.map(r=>r.join('\t')).join('\n');
+                    const blob = new Blob([tsv],{type:'application/vnd.ms-excel'});
+                    const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=_currentReportType+'_report.xls'; a.click();
+                }
+            };
+            // CSV Download utility
+            function downloadCSV(rows, filename) {
+                const csv = rows.map(r=>r.map(c=>'"'+String(c||'').replace(/"/g,'""')+'"').join(',')).join('\n');
+                const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+                const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; a.click();
+            }
+
+            // ==========================================
+            // MULTI-BRANCH ENGINE
+            // ==========================================
+            const branchForm = document.getElementById('branchForm');
+            if(branchForm) branchForm.addEventListener('submit', e => {
+                e.preventDefault();
+                if(!dbData.branches) dbData.branches = [{ id:1, name:'Main Branch', manager:'Owner', city:'HQ', sales:0, inventory: dbData.inventory.length }];
+                dbData.branches.push({ id: Date.now(), name: document.getElementById('branchName').value, manager: document.getElementById('branchManager').value, city: document.getElementById('branchCity').value, sales:0, inventory:0 });
+                saveData(); renderBranchCards(); branchForm.reset();
+            });
+            function renderBranchCards() {
+                if(!dbData.branches) dbData.branches = [{ id:1, name:'Main Branch', manager:'Owner', city:'HQ', sales: (dbData.bills||[]).reduce((s,b)=>s+(b.total||0),0), inventory: dbData.inventory.length }];
+                const grid = document.getElementById('branchCardsGrid');
+                if(!grid) return;
+                const totalRev = dbData.branches.reduce((s,b)=>s+b.sales,0) + (dbData.bills||[]).reduce((s,b)=>s+(b.total||0),0);
+                const set = (id,v) => { const el=document.getElementById(id); if(el) el.innerText=v; };
+                set('branchCount', dbData.branches.length);
+                set('branchTotalRev', '₹'+totalRev.toFixed(0));
+                set('branchTotalInv', dbData.inventory.length);
+                const colors = ['#6366f1','#10b981','#f59e0b','#a855f7','#ec4899'];
+                grid.innerHTML = dbData.branches.map((b,i) => {
+                    const mainSales = b.id===1 ? (dbData.bills||[]).reduce((s,bl)=>s+(bl.total||0),0) : b.sales;
+                    return '<div class="action-panel" style="margin-bottom:0; border-top:4px solid '+colors[i%colors.length]+';"><div style="display:flex;justify-content:space-between;align-items:flex-start;"><div><strong style="font-size:1rem;">'+b.name+'</strong><br><small style="color:#6b7280;">'+b.city+' · Manager: '+b.manager+'</small></div><span style="background:'+colors[i%colors.length]+'20;color:'+colors[i%colors.length]+';padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:700;">'+(b.id===1?'HQ':'Branch')+'</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;"><div style="background:#f9fafb;padding:10px;border-radius:8px;"><div style="font-size:0.75rem;color:#6b7280;">Sales</div><div style="font-weight:700;font-size:1.1rem;color:'+colors[i%colors.length]+'">₹'+mainSales.toFixed(0)+'</div></div><div style="background:#f9fafb;padding:10px;border-radius:8px;"><div style="font-size:0.75rem;color:#6b7280;">Products</div><div style="font-weight:700;font-size:1.1rem;">'+(b.id===1?dbData.inventory.length:b.inventory||0)+'</div></div></div></div>';
+                }).join('');
+            }
+
+            // ==========================================
+            // AI ANALYTICS ENGINE
+            // ==========================================
+            function updateAiAnalytics() {
+                // Top selling — from bills
+                const prodSales = {};
+                (dbData.bills||[]).forEach(b => { (b.items||[]).forEach(item => { prodSales[item.name] = (prodSales[item.name]||0) + (parseInt(item.qty||1)); }); });
+                const topSelling = Object.entries(prodSales).sort((a,b)=>b[1]-a[1]).slice(0,5);
+                const tsList = document.getElementById('topSellingList');
+                if(tsList) tsList.innerHTML = topSelling.length===0 ? '<p style="color:#9ca3af;font-size:0.9rem;">Bill more items to see top sellers.</p>' :
+                    topSelling.map(([name,qty],i) => '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:'+(i===0?'#fef3c7':'#f9fafb')+';border-radius:8px;border-left:4px solid '+(i===0?'#f59e0b':'#e5e7eb')+'"><span style="font-size:0.88rem;font-weight:600;">'+(i+1)+'. '+name+'</span><span style="background:#ede9fe;color:#7c3aed;padding:3px 10px;border-radius:20px;font-size:0.8rem;font-weight:700;">'+qty+' sold</span></div>').join('');
+
+                // Slow moving — products with no sales
+                const soldNames = new Set(Object.keys(prodSales));
+                const slowMoving = dbData.inventory.filter(i => !soldNames.has(i.name)).slice(0,5);
+                const smList = document.getElementById('slowMovingList');
+                if(smList) smList.innerHTML = slowMoving.length===0 ? '<p style="color:#10b981;font-size:0.9rem;">All products have recent sales. ✅</p>' :
+                    slowMoving.map(i => '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#fef2f2;border-radius:8px;border-left:4px solid #fca5a5;"><span style="font-size:0.88rem;font-weight:600;">'+i.name+'</span><span style="color:#ef4444;font-size:0.8rem;">'+i.qty+' in stock</span></div>').join('');
+
+                // Buying patterns
+                const custPattern = {};
+                (dbData.bills||[]).forEach(b => { const k=b.customerPhone||b.customer; if(k&&k!=='Walk-in') { if(!custPattern[k]) custPattern[k]={name:b.customer||k,count:0,total:0,cats:[]}; custPattern[k].count++; custPattern[k].total+=b.total||0; } });
+                const patterns = Object.values(custPattern).sort((a,b)=>b.count-a.count).slice(0,5);
+                const bpList = document.getElementById('buyingPatternList');
+                if(bpList) bpList.innerHTML = patterns.length===0 ? '<p style="color:#9ca3af;font-size:0.9rem;">Bill customers with phone numbers to see patterns.</p>' :
+                    patterns.map(c => '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#f0fdf4;border-radius:8px;border-left:4px solid #6ee7b7;"><span style="font-size:0.88rem;font-weight:600;">'+c.name+'</span><span style="color:#059669;font-size:0.8rem;">'+c.count+' visits · ₹'+c.total.toFixed(0)+'</span></div>').join('');
+            }
+
+            // Extend updateDashboardUI to call new engines
+            const _origUpdate = updateDashboardUI;
+            updateDashboardUI = function() {
+                _origUpdate();
+                updateExpirySection();
+                updateProfitSection();
+                renderOffers();
+                renderBranchCards();
+                updateAiAnalytics();
+                loadReport('daily');
+                scheduleChartRender();
+            };
+
+            // ==========================================
             // END SMART ENGINE
             // ==========================================
-    
             updateDashboardUI();
         }
 
