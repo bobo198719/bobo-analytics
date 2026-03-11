@@ -797,9 +797,20 @@ Renew now to avoid service interruption and feature locking.
         });
       });
       
-      // Load current live tenants into overview array
+      // Load current live tenants and baselines
       loadTenantsIntoTable();
+      loadBaselines();
     });
+
+    function loadBaselines() {
+      const baselines = JSON.parse(localStorage.getItem("bobo_baselines") || "{}");
+      Object.keys(baselines).forEach(industry => {
+        const coreEl = document.getElementById(`base-${industry}-core`);
+        const premEl = document.getElementById(`base-${industry}-prem`);
+        if (coreEl) coreEl.innerText = baselines[industry].core;
+        if (premEl) premEl.innerText = baselines[industry].premium;
+      });
+    }
 
     const tbody = document.getElementById("tenantTableBody");
     const ubobdy = document.getElementById("userTableBody");
@@ -897,8 +908,9 @@ Renew now to avoid service interruption and feature locking.
          };
 
          window.editBaselineFeatures = function(industry) {
-            const coreId = `base-${industry.toLowerCase()}-core`;
-            const premId = `base-${industry.toLowerCase()}-prem`;
+            const industryKey = industry.toLowerCase().split(' ')[0]; // pharmacy, clinic, retail, stock
+            const coreId = `base-${industryKey}-core`;
+            const premId = `base-${industryKey}-prem`;
             const coreEl = document.getElementById(coreId);
             const premEl = document.getElementById(premId);
             
@@ -908,7 +920,13 @@ Renew now to avoid service interruption and feature locking.
                 if (newPrem !== null) {
                     coreEl.innerText = newCore;
                     premEl.innerText = newPrem;
-                    alert(`Baseline Architecture for ${industry} updated.`);
+                    
+                    // Save to localStorage
+                    let baselines = JSON.parse(localStorage.getItem("bobo_baselines") || "{}");
+                    baselines[industryKey] = { core: newCore, premium: newPrem };
+                    localStorage.setItem("bobo_baselines", JSON.stringify(baselines));
+                    
+                    alert(`Baseline Architecture for ${industry} updated and saved.`);
                 }
             }
          };
@@ -1040,9 +1058,9 @@ Feel free to reach out to our helpdesk if you need any setup assistance.
 
 – BoboAnalytics Onboarding Team`;
 
+        // Internal Integration: Sending WhatsApp
         if (document.getElementById("sendWaCheckbox").checked) {
-              messagesSent++;
-              const waText = encodeURIComponent(`*Welcome to BoboAnalytics, ${businessName}!*
+              const waText = `*Welcome to BoboAnalytics, ${businessName}!*
 
 Your dashboard is LIVE.
 
@@ -1052,27 +1070,50 @@ Pass: ${password}
 Link: ${customId}.boboanalytics.com/solutions/${industry}
 
 *SUPPORT:*
-+91 91564 84328 / support@boboanalytics.com`);
-              
-              const waUrl = `https://wa.me/${adminPhone.replace(/\D/g, '')}?text=${waText}`;
-              console.log("Triggering Live WhatsApp Send...");
-              window.open(waUrl, '_blank');
++91 91564 84328 / support@boboanalytics.com`;
+
+              fetch('/api/admin/notify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  type: 'whatsapp',
+                  to: adminPhone,
+                  message: waText,
+                  businessName: businessName
+                })
+              }).then(res => res.json()).then(data => {
+                if(data.success) {
+                  messagesSent++;
+                  localStorage.setItem("bobo_msgs", messagesSent.toString());
+                  document.getElementById("liveMsgCount").innerText = messagesSent;
+                  console.log("Internal WhatsApp dispatched successfully.");
+                }
+              });
         }
 
+        // Internal Integration: Sending Email
         if (document.getElementById("sendEmailCheckbox").checked) {
-              messagesSent++;
-              const mailSubject = encodeURIComponent(`Welcome to BoboAnalytics, ${businessName}!`);
-              const mailBody = encodeURIComponent(systemMessagePayload.replace("*** SYSTEM COMMUNICATION SIMULATION ***", ""));
-              const mailUrl = `mailto:${adminEmail}?subject=${mailSubject}&body=${mailBody}`;
-              
-              console.log("Triggering Live Email Send...");
-              // Small delay to prevent browser blocking multiple popups
-              setTimeout(() => window.open(mailUrl, '_blank'), 500);
+              fetch('/api/admin/notify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  type: 'email',
+                  to: adminEmail,
+                  subject: `Welcome to BoboAnalytics, ${businessName}!`,
+                  message: systemMessagePayload,
+                  businessName: businessName
+                })
+              }).then(res => res.json()).then(data => {
+                if(data.success) {
+                  messagesSent++;
+                  localStorage.setItem("bobo_msgs", messagesSent.toString());
+                  document.getElementById("liveMsgCount").innerText = messagesSent;
+                  console.log("Internal Email dispatched successfully.");
+                }
+              });
         }
 
-        localStorage.setItem("bobo_msgs", messagesSent.toString());
-        document.getElementById("liveMsgCount").innerText = messagesSent;
-        alert("Provisioning complete. Communication windows opened for WhatsApp and Email.");
+        alert("Infrastructure provisioned. Internal background notifications (WhatsApp & Email) have been queued.");
 
         setTimeout(() => {
           successMsg.style.display = "none";
