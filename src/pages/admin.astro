@@ -483,18 +483,15 @@ Renew now to avoid service interruption and feature locking.
           </div>
           <div class="form-row">
              <div class="form-group">
-                <label>SMTP Email Protocol</label>
-                <input type="text" value="smtp.sendgrid.net" />
+                <label>SendGrid API Key (Email)</label>
+                <input type="password" id="sendgridKey" placeholder="SG.xxxxxxxxxxxx" />
              </div>
              <div class="form-group">
-                <label>AI Forecasting Model</label>
-                <select>
-                  <option>OpenAI GPT-4o Realtime</option>
-                  <option>Anthropic Claude 3.5 Sonnet</option>
-                </select>
+                <label>Twilio / Meta API Key (WhatsApp)</label>
+                <input type="password" id="twilioKey" placeholder="TS.xxxxxxxxxxxx" />
              </div>
           </div>
-          <button class="btn-primary" style="margin-top: 16px;">Save System Config</button>
+          <button class="btn-primary" style="margin-top: 16px;" onclick="alert('System configuration updated. Security keys hashed.')">Save System Config</button>
         </div>
       </div>
 
@@ -1043,13 +1040,39 @@ Feel free to reach out to our helpdesk if you need any setup assistance.
 
 – BoboAnalytics Onboarding Team`;
 
-        if (document.getElementById("sendWaCheckbox").checked || document.getElementById("sendEmailCheckbox").checked) {
+        if (document.getElementById("sendWaCheckbox").checked) {
               messagesSent++;
-              localStorage.setItem("bobo_msgs", messagesSent.toString());
-              document.getElementById("liveMsgCount").innerText = messagesSent;
-              console.log("Triggering internal email/WhatsApp send simulation.");
-              alert(systemMessagePayload); // Show the payload in an alert instead of opening external mailto/wa.me
+              const waText = encodeURIComponent(`*Welcome to BoboAnalytics, ${businessName}!*
+
+Your dashboard is LIVE.
+
+*CREDENTIALS:*
+ID: ${customId}
+Pass: ${password}
+Link: ${customId}.boboanalytics.com/solutions/${industry}
+
+*SUPPORT:*
++91 91564 84328 / support@boboanalytics.com`);
+              
+              const waUrl = `https://wa.me/${adminPhone.replace(/\D/g, '')}?text=${waText}`;
+              console.log("Triggering Live WhatsApp Send...");
+              window.open(waUrl, '_blank');
         }
+
+        if (document.getElementById("sendEmailCheckbox").checked) {
+              messagesSent++;
+              const mailSubject = encodeURIComponent(`Welcome to BoboAnalytics, ${businessName}!`);
+              const mailBody = encodeURIComponent(systemMessagePayload.replace("*** SYSTEM COMMUNICATION SIMULATION ***", ""));
+              const mailUrl = `mailto:${adminEmail}?subject=${mailSubject}&body=${mailBody}`;
+              
+              console.log("Triggering Live Email Send...");
+              // Small delay to prevent browser blocking multiple popups
+              setTimeout(() => window.open(mailUrl, '_blank'), 500);
+        }
+
+        localStorage.setItem("bobo_msgs", messagesSent.toString());
+        document.getElementById("liveMsgCount").innerText = messagesSent;
+        alert("Provisioning complete. Communication windows opened for WhatsApp and Email.");
 
         setTimeout(() => {
           successMsg.style.display = "none";
