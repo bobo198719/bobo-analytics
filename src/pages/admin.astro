@@ -15,12 +15,12 @@ import MainLayout from "../layouts/MainLayout.astro";
       <nav class="sidebar-nav">
         <div class="nav-section">Core</div>
         <a href="#dashboard" class="active">Overview</a>
-        <a href="#industry">Industry Manager</a>
-        <a href="#tenants">Tenant Manager</a>
-        <a href="#features">Feature Manager</a>
+        <a href="#tenants">Create ID (Tenant Manager)</a>
+        <a href="#features">Create Plan (Feature Manager)</a>
+        <a href="#industry">Industry Vertical Manager</a>
         
         <div class="nav-section">Operations</div>
-        <a href="#users">User Monitoring</a>
+        <a href="#users">Monitor IDs (User Monitoring)</a>
         <a href="#billing">Payments & Subscriptions</a>
         
         <div class="nav-section">Marketing & Alerts</div>
@@ -186,35 +186,35 @@ import MainLayout from "../layouts/MainLayout.astro";
                   <input type="number" value="14" />
                 </div>
               </div>
-184: 
-185:               <div class="form-row">
-186:                 <div class="form-group">
-187:                   <label>Custom Rate / Offer Name</label>
-188:                   <input type="text" id="customRateName" placeholder="e.g. Festival Offer" />
-189:                 </div>
-190:                 <div class="form-group">
-191:                   <label>Annual Rate (₹)</label>
-192:                   <input type="number" id="customRateAmount" placeholder="e.g. 7500" />
-193:                 </div>
-194:                 <div class="form-group">
-195:                   <label>Special Discount (%)</label>
-196:                   <input type="number" id="specialDiscount" placeholder="0" />
-197:                 </div>
-198:               </div>
-199: 
-200:               <div class="form-group" style="margin-bottom: 24px;">
-201:                 <label>Provision Features (Customized Plan)</label>
-202:                 <div class="feature-checkboxes" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
-203:                   <label class="toggle-control"><input type="checkbox" name="feature" value="Inventory" checked> Inventory</label>
-204:                   <label class="toggle-control"><input type="checkbox" name="feature" value="Sales POS" checked> Sales POS</label>
-205:                   <label class="toggle-control"><input type="checkbox" name="feature" value="Purchases"> Purchases</label>
-206:                   <label class="toggle-control"><input type="checkbox" name="feature" value="Analytics" checked> Analytics</label>
-207:                   <label class="toggle-control"><input type="checkbox" name="feature" value="GST Assistant"> GST Assistant</label>
-208:                   <label class="toggle-control"><input type="checkbox" name="feature" value="WhatsApp"> WhatsApp</label>
-209:                   <label class="toggle-control"><input type="checkbox" name="feature" value="Loyalty CRM"> Loyalty CRM</label>
-210:                   <label class="toggle-control"><input type="checkbox" name="feature" value="Multi-branch"> Multi-branch</label>
-211:                 </div>
-212:               </div>
+ 
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Custom Rate / Offer Name</label>
+                  <input type="text" id="customRateName" placeholder="e.g. Festival Offer" />
+                </div>
+                <div class="form-group">
+                  <label>Annual Rate (₹)</label>
+                  <input type="number" id="customRateAmount" placeholder="e.g. 7500" />
+                </div>
+                <div class="form-group">
+                  <label>Special Discount (%)</label>
+                  <input type="number" id="specialDiscount" placeholder="0" />
+                </div>
+              </div>
+ 
+              <div class="form-group" style="margin-bottom: 24px;">
+                <label>Provision Features (Customized Plan)</label>
+                <div class="feature-checkboxes" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
+                  <label class="toggle-control"><input type="checkbox" name="feature" value="Inventory" checked> Inventory</label>
+                  <label class="toggle-control"><input type="checkbox" name="feature" value="Sales POS" checked> Sales POS</label>
+                  <label class="toggle-control"><input type="checkbox" name="feature" value="Purchases"> Purchases</label>
+                  <label class="toggle-control"><input type="checkbox" name="feature" value="Analytics" checked> Analytics</label>
+                  <label class="toggle-control"><input type="checkbox" name="feature" value="GST Assistant"> GST Assistant</label>
+                  <label class="toggle-control"><input type="checkbox" name="feature" value="WhatsApp"> WhatsApp</label>
+                  <label class="toggle-control"><input type="checkbox" name="feature" value="Loyalty CRM"> Loyalty CRM</label>
+                  <label class="toggle-control"><input type="checkbox" name="feature" value="Multi-branch"> Multi-branch</label>
+                </div>
+              </div>
 
               <div class="onboarding-toggles">
                  <label class="toggle-control"><input type="checkbox" id="sendEmailCheckbox" checked /> Send Welcome Email</label>
@@ -269,31 +269,31 @@ import MainLayout from "../layouts/MainLayout.astro";
               <tbody>
                 <tr>
                    <td><strong>Pharmacy</strong></td>
-                   <td>Inventory, Sales POS, Expiry</td>
-                   <td>AI Forecasting, GST Filing, WhatsApp</td>
+                   <td id="base-pharm-core">Inventory, Sales POS, Expiry</td>
+                   <td id="base-pharm-prem">AI Forecasting, GST Filing, WhatsApp</td>
                    <td>Professional (₹8,000)</td>
-                   <td><button class="btn-text">Edit Baseline</button></td>
+                   <td><button class="btn-text" onclick="editBaselineFeatures('Pharmacy')">Edit Baseline</button></td>
                 </tr>
                 <tr>
                    <td><strong>Clinic / Hospital</strong></td>
-                   <td>OPD, Patient Records, Prescription</td>
-                   <td>Lab Sync, Bed Management, Telehealth</td>
+                   <td id="base-clinic-core">OPD, Patient Records, Prescription</td>
+                   <td id="base-clinic-prem">Lab Sync, Bed Management, Telehealth</td>
                    <td>Enterprise (₹12,000)</td>
-                   <td><button class="btn-text">Edit Baseline</button></td>
+                   <td><button class="btn-text" onclick="editBaselineFeatures('Clinic')">Edit Baseline</button></td>
                 </tr>
                 <tr>
                    <td><strong>Retail / Groceries</strong></td>
-                   <td>Stock, Barcode, Multi-pay</td>
-                   <td>E-com Sync, Loyalty, Advanced Analytics</td>
+                   <td id="base-retail-core">Stock, Barcode, Multi-pay</td>
+                   <td id="base-retail-prem">E-com Sync, Loyalty, Advanced Analytics</td>
                    <td>Starter (₹5,000)</td>
-                   <td><button class="btn-text">Edit Baseline</button></td>
+                   <td><button class="btn-text" onclick="editBaselineFeatures('Retail')">Edit Baseline</button></td>
                 </tr>
                 <tr>
                    <td><strong>Stock Trading CRM</strong></td>
-                   <td>Client Portfolio, Trade Entry</td>
-                   <td>Algo Strategy, Risk Reports, Auto-Tax</td>
+                   <td id="base-stock-core">Client Portfolio, Trade Entry</td>
+                   <td id="base-stock-prem">Algo Strategy, Risk Reports, Auto-Tax</td>
                    <td>Professional (₹8,000)</td>
-                   <td><button class="btn-text">Edit Baseline</button></td>
+                   <td><button class="btn-text" onclick="editBaselineFeatures('Stock')">Edit Baseline</button></td>
                 </tr>
               </tbody>
            </table>
@@ -899,6 +899,23 @@ Renew now to avoid service interruption and feature locking.
             }
          };
 
+         window.editBaselineFeatures = function(industry) {
+            const coreId = `base-${industry.toLowerCase()}-core`;
+            const premId = `base-${industry.toLowerCase()}-prem`;
+            const coreEl = document.getElementById(coreId);
+            const premEl = document.getElementById(premId);
+            
+            const newCore = prompt(`Edit Core Features for ${industry}:`, coreEl.innerText);
+            if (newCore !== null) {
+                const newPrem = prompt(`Edit Premium Features for ${industry}:`, premEl.innerText);
+                if (newPrem !== null) {
+                    coreEl.innerText = newCore;
+                    premEl.innerText = newPrem;
+                    alert(`Baseline Architecture for ${industry} updated.`);
+                }
+            }
+         };
+
          if (tenants.length === 0) {
               uHtml = "<tr><td colspan='5' style='text-align:center;'>No users provisioned by tenants.</td></tr>";
          } else {
@@ -999,24 +1016,30 @@ Renew now to avoid service interruption and feature locking.
         let expDate = nextYear.toLocaleDateString("en-US", { day: '2-digit', month: 'short', year: 'numeric'});
 
         const systemMessagePayload = `*** SYSTEM COMMUNICATION SIMULATION ***
-From: support@boboanalytics.com
+From: tech-support@boboanalytics.com
 To: ${adminEmail} (And WhatsApp: ${adminPhone})
 Subject: Welcome to BoboAnalytics, ${businessName}!
 
-Your dashboard infrastructure has been provisioned.
+Your dashboard infrastructure has been provisioned and is now LIVE.
 
---- ACCOUNT DETAILS ---
-URL: ${customId}.boboanalytics.com/solutions/${industry} (or use Universal Login)
-User ID: ${customId}
+--- ACCOUNT CREDENTIALS ---
+Instance ID: ${customId}
 Password: ${password}
+Dashboard URL: ${customId}.boboanalytics.com/solutions/${industry}
 
 --- PLAN PROFILE ---
-Selected Plan: ${selectedPlan.toUpperCase()}
+Chosen Plan: ${selectedPlan.toUpperCase()}
+Custom Offer: ${newTenant.customRateName}
+Included Features: ${selectedFeatures.join(", ")}
 Start Date: ${new Date().toLocaleDateString()}
 Expiry Date: ${expDate}
-Benefits included: Inventory Management, Sales POS, Analytics Dashboard, and Support.
 
-Feel free to reply to this email (support@boboanalytics.com) or text us on WhatsApp at +91 91564 84328 if you need any setup assistance.
+--- TECH SUPPORT & CUSTOMER CARE ---
+Contact Number: +91 91564 84328
+Email: support@boboanalytics.com
+Support Hours: 10:00 AM - 7:00 PM (IST)
+
+Feel free to reach out to our helpdesk if you need any setup assistance.
 
 – BoboAnalytics Onboarding Team`;
 
