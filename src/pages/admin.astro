@@ -16,17 +16,14 @@ import MainLayout from "../layouts/MainLayout.astro";
       <div class="nav-center">
         <div class="search-wrapper">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          <input type="text" placeholder="Search businesses, invoices, or logs..." id="globalSearch" />
+          <input type="text" placeholder="Search businesses, users, or audit logs..." id="globalSearch" />
         </div>
       </div>
       
       <div class="nav-right">
-        <button class="nav-icon-btn" title="Notifications">
+        <button class="nav-icon-btn" title="System Notifications">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
             <span class="pulse-dot"></span>
-        </button>
-        <button class="nav-icon-btn" id="themeSwitcherBtn" title="Theme Settings">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
         </button>
         <div class="admin-profile">
             <div class="profile-info">
@@ -34,7 +31,7 @@ import MainLayout from "../layouts/MainLayout.astro";
                 <span class="admin-role">Super Admin</span>
             </div>
             <div class="admin-avatar">SM</div>
-            <button id="logoutBtn" style="background:transparent; border:none; cursor:pointer; color:inherit;">
+            <button id="logoutBtn" class="logout-btn-nav" title="Logout">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
             </button>
         </div>
@@ -52,19 +49,19 @@ import MainLayout from "../layouts/MainLayout.astro";
             </a>
           </div>
 
-          <div class="nav-label">Management</div>
+          <div class="nav-label">Core Provisioning</div>
           <div class="nav-group">
-            <a href="#businesses" class="nav-item" data-screen="businesses">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="9" height="7" x="4" y="4" rx="1"/><path d="M17 11v1"/><path d="M17 15v1"/><path d="M20 11v1"/><path d="M20 15v1"/></svg>
-              <span>Businesses</span>
+            <a href="#accounts" class="nav-item" data-screen="accounts">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <span>Account Provisioning</span>
             </a>
             <a href="#industries" class="nav-item" data-screen="industries">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V10z"/><path d="M6 4h12"/><path d="M10 2h4"/></svg>
-              <span>Industries</span>
+              <span>Industry Verticals</span>
             </a>
             <a href="#modules" class="nav-item" data-screen="modules">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
-              <span>Modules</span>
+              <span>Modular Plugins</span>
             </a>
           </div>
 
@@ -74,398 +71,403 @@ import MainLayout from "../layouts/MainLayout.astro";
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/></svg>
               <span>Subscription Plans</span>
             </a>
-            <a href="#metering" class="nav-item" data-screen="metering">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 15h2"/><path d="M15 15h2"/><path d="M7 15h2"/><path d="M3 19h18"/><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2Z"/><path d="M9 10a2 2 0 1 1 0-4 2 2 0 0 1 0 4Zm6 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z"/></svg>
-              <span>Usage Metering</span>
-            </a>
-            <a href="#analytics" class="nav-item" data-screen="analytics">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-7-7 7"/><path d="M12 14V3"/><path d="M5 8.6a4.5 4.5 0 1 0 14 0"/></svg>
-              <span>AI Analytics</span>
-            </a>
-          </div>
-
-          <div class="nav-label">Finance</div>
-          <div class="nav-group">
             <a href="#revenue" class="nav-item" data-screen="revenue">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg>
               <span>Revenue Tracking</span>
             </a>
           </div>
 
-          <div class="nav-label">Appearance</div>
+          <div class="nav-label">System</div>
           <div class="nav-group">
             <a href="#themes" class="nav-item" data-screen="themes">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.6 1.5-1.5 0-.4-.1-.8-.4-1.1-.3-.3-.4-.7-.4-1.1 0-.9.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-4.9-4.5-9-10-9Z"/></svg>
-              <span>Theme Store</span>
-            </a>
-            <a href="#whitelabel" class="nav-item" data-screen="whitelabel">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/><path d="m9 12 2 2 4-4"/></svg>
-              <span>White Label Branding</span>
-            </a>
-          </div>
-
-          <div class="nav-label">Infrastructure</div>
-          <div class="nav-group">
-            <a href="#integrations" class="nav-item" data-screen="integrations">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-              <span>Integrations</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v20"/><path d="M12 12 2.1 14.9"/><path d="M12 12 14.9 21.9"/><path d="M12 12 21.9 9.1"/><path d="M12 12 9.1 2.1"/></svg>
+              <span>Experience Center</span>
             </a>
             <a href="#security" class="nav-item" data-screen="security">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 22 10-4V6l-10-4-10 4v12l10 4Z"/><path d="m9 12 2 2 4-4"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
               <span>Security & Compliance</span>
             </a>
             <a href="#logs" class="nav-item" data-screen="logs">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"/><path d="M13 2v7h7"/><path d="M10 18h4"/><path d="M10 14h4"/><path d="M10 10h1"/></svg>
-              <span>Audit Logs</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <span>System Audit Logs</span>
             </a>
           </div>
         </nav>
       </aside>
 
-      <!-- 3. MAIN DASHBOARD CONTENT -->
+      <!-- 3. MAIN CONTENT AREA -->
       <main class="admin-main" id="mainContent">
         
         <!-- SCREEN: DASHBOARD OVERVIEW -->
         <div id="screen-dashboard" class="screen active">
           <div class="screen-header">
             <div>
-              <h1>SaaS Global Overview</h1>
-              <p>Real-time metrics across all industry verticals.</p>
+              <h1>SaaS Orchestration Dashboard</h1>
+              <p>Platform-wide health and business environment distribution.</p>
             </div>
             <div class="header-actions">
-              <button class="btn-outline" onclick="window.print()">Download Financial PDF</button>
-              <button class="btn-primary" onclick="switchScreen('businesses')">Provision New Tenant</button>
+              <button class="btn-primary" onclick="switchScreen('accounts')">Provision New Account</button>
             </div>
           </div>
 
-          <!-- WIDGETS -->
+          <!-- ENVIRONMENT STATS WIDGETS -->
           <div class="stats-grid">
-            <div class="stat-card">
-              <div class="card-icon blue"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+            <div class="stat-card live-border">
+              <div class="card-icon green"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
               <div class="card-data">
-                <span class="label">Total Businesses</span>
-                <span class="value" id="liveTenantCount">0</span>
-                <span class="trend up">+12% growth</span>
+                <span class="label">Live Environments</span>
+                <span class="value" id="statLive">0</span>
+                <span class="trend up">Revenue Paying</span>
+              </div>
+            </div>
+            <div class="stat-card trial-border">
+              <div class="card-icon orange"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+              <div class="card-data">
+                <span class="label">Trial Environments</span>
+                <span class="value" id="statTrial">0</span>
+                <span class="trend">Limited Window</span>
+              </div>
+            </div>
+            <div class="stat-card test-border">
+              <div class="card-icon blue"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+              <div class="card-data">
+                <span class="label">Test Environments</span>
+                <span class="value" id="statTest">0</span>
+                <span class="trend">Internal / Demo</span>
               </div>
             </div>
             <div class="stat-card">
-              <div class="card-icon green"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+              <div class="card-icon purple"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
               <div class="card-data">
-                <span class="label">Platform MRR</span>
-                <span class="value" id="liveTotalRev">₹0</span>
-                <span class="trend up">Target: 2.1 Cr</span>
-              </div>
-            </div>
-            <div class="stat-card">
-              <div class="card-icon purple"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-              <div class="card-data">
-                <span class="label">Active Users</span>
-                <span class="value" id="liveUserCount">0</span>
-                <span class="trend">98% uptime</span>
-              </div>
-            </div>
-            <div class="stat-card">
-              <div class="card-icon orange"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7"/><path d="M16 5V3"/><path d="M8 5V3"/><path d="M3 9h18"/><path d="M20 14v6"/><path d="M23 17h-6"/></svg></div>
-              <div class="card-data">
-                <span class="label">Notifications</span>
-                <span class="value" id="liveMsgCount">0</span>
-                <span class="trend">API Dispatched</span>
+                <span class="label">Total SaaS Rev</span>
+                <span class="value" id="totalMRR">₹0</span>
+                <span class="trend up">Platform Wide</span>
               </div>
             </div>
           </div>
 
-          <div class="charts-row">
-            <div class="chart-container large">
-               <div class="chart-header">
-                 <h3>Platform Revenue Orbit</h3>
-                 <div class="chart-legend">
-                   <span class="leg-item"><span class="dot blue"></span> Real-time Flow</span>
-                 </div>
-               </div>
-               <div class="mock-chart-visual">
-                  <div class="bar-chart-mock">
-                    <div class="bar" style="height: 40%"></div>
-                    <div class="bar" style="height: 55%"></div>
-                    <div class="bar" style="height: 48%"></div>
-                    <div class="bar" style="height: 70%"></div>
-                    <div class="bar" style="height: 85%"></div>
-                    <div class="bar" style="height: 100%"></div>
-                  </div>
-               </div>
-            </div>
-            <div class="chart-container small">
-               <div class="chart-header">
-                 <h3>Sector Distribution</h3>
-               </div>
-               <div class="pie-chart-mock"></div>
-               <ul class="pie-legend">
-                  <li><span class="dot blue"></span> Pharma (40%)</li>
-                  <li><span class="dot green"></span> Retail (25%)</li>
-                  <li><span class="dot purple"></span> Healthcare (20%)</li>
-                  <li><span class="dot orange"></span> Stock (15%)</li>
-               </ul>
-            </div>
+          <div class="data-card">
+              <div class="card-header">
+                  <h3>Recent Provisioning Events</h3>
+              </div>
+              <div class="log-console-mini" id="miniAuditLog">
+                  <!-- Recent logs -->
+              </div>
           </div>
         </div>
 
-        <!-- SCREEN: BUSINESS MANAGEMENT -->
-        <div id="screen-businesses" class="screen">
+        <!-- SCREEN: ACCOUNT PROVISIONING -->
+        <div id="screen-accounts" class="screen">
           <div class="screen-header">
-            <h1>Business Registry & Provisioning</h1>
-            <button class="btn-primary" onclick="document.getElementById('tenantModal').style.display='flex'">+ Deploy New Tenant</button>
+            <div>
+              <h1>Industry Account Provisioning</h1>
+              <p>Create and manage isolated business environments.</p>
+            </div>
+            <button class="btn-primary" onclick="openProvisionModal()">+ New Account</button>
           </div>
-          
-          <div class="data-card">
+
+          <!-- Account Table -->
+          <div class="filter-bar">
+              <div class="filter-group">
+                  <label>Industry</label>
+                  <select id="filterIndustry" onchange="filterAccounts()">
+                      <option value="all">All Industries</option>
+                      <option value="pharmacy">Pharmacy</option>
+                      <option value="healthcare">Healthcare</option>
+                      <option value="retail">Retail</option>
+                      <option value="bakers">Home Bakers</option>
+                  </select>
+              </div>
+              <div class="filter-group">
+                  <label>Environment</label>
+                  <select id="filterEnv" onchange="filterAccounts()">
+                      <option value="all">All Envs</option>
+                      <option value="live">Live only</option>
+                      <option value="trial">Trial only</option>
+                      <option value="test">Test only</option>
+                  </select>
+              </div>
+              <div class="filter-group">
+                  <label>Status</label>
+                  <select id="filterStatus" onchange="filterAccounts()">
+                      <option value="all">All Status</option>
+                      <option value="Active">Active</option>
+                      <option value="Suspended">Suspended</option>
+                      <option value="Archived">Archived</option>
+                  </select>
+              </div>
+          </div>
+
+          <div class="data-card overflow-x">
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Instance ID</th>
-                  <th>Business Name</th>
-                  <th>Sector</th>
-                  <th>Subscription</th>
+                  <th>Business / Owner</th>
+                  <th>Industry</th>
+                  <th>Username / Subdomain</th>
+                  <th>Env</th>
+                  <th>Plan</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody id="tenantTableBody">
-                <!-- Sync with localStorage -->
+              <tbody id="accountsTableBody">
+                <!-- Sync with localStorage: business_accounts -->
               </tbody>
             </table>
           </div>
-        </div>
 
-        <!-- SCREEN: INDUSTRIES -->
-        <div id="screen-industries" class="screen">
-          <div class="screen-header">
-             <h1>Industry Vertical Manager</h1>
-          </div>
-          <div class="data-card">
-            <table class="data-table">
-               <thead>
-                 <tr>
-                   <th>Industry</th>
-                   <th>Core Features</th>
-                   <th>Nodes</th>
-                   <th>Def. Plans</th>
-                   <th>Actions</th>
-                 </tr>
-               </thead>
-               <tbody id="baselineTableBody">
-                 <!-- Populated by script -->
-               </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- SCREEN: THEMES -->
-        <div id="screen-themes" class="screen">
-          <div class="screen-header">
-            <h1>Platform Aesthetics & Themes</h1>
-            <p>10 Professional enterprise skins available for deployment.</p>
-          </div>
-          <div class="themes-grid">
-            <div class="theme-card" data-theme="default">
-                <div class="theme-preview" style="background: #05081a;"><div class="preview-accent" style="background: #6366f1;"></div></div>
-                <h3>Standard Enterprise</h3>
-                <button class="btn-sm active">Apply</button>
-            </div>
-            <div class="theme-card" data-theme="emerald">
-                <div class="theme-preview" style="background: #064e3b;"><div class="preview-accent" style="background: #10b981;"></div></div>
-                <h3>Emerald Green</h3><button class="btn-sm">Apply</button>
-            </div>
-            <div class="theme-card" data-theme="purple">
-                <div class="theme-preview" style="background: #2e1065;"><div class="preview-accent" style="background: #a855f7;"></div></div>
-                <h3>Royal Purple</h3><button class="btn-sm">Apply</button>
-            </div>
-            <div class="theme-card" data-theme="ocean">
-                <div class="theme-preview" style="background: #0c4a6e;"><div class="preview-accent" style="background: #0ea5e9;"></div></div>
-                <h3>Ocean Blue</h3><button class="btn-sm">Apply</button>
-            </div>
-            <div class="theme-card" data-theme="sunset">
-                <div class="theme-preview" style="background: #7c2d12;"><div class="preview-accent" style="background: #f97316;"></div></div>
-                <h3>Sunset Orange</h3><button class="btn-sm">Apply</button>
-            </div>
-            <div class="theme-card" data-theme="midnight">
-                <div class="theme-preview" style="background: #000;"><div class="preview-accent" style="background: #38bdf8;"></div></div>
-                <h3>Midnight</h3><button class="btn-sm">Apply</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- SCREEN: REVENUE & BILLING -->
-        <div id="screen-revenue" class="screen">
-          <div class="screen-header"><h1>Revenue & Billing Control</h1></div>
-          <div class="data-card">
-              <table class="data-table">
-                  <thead>
-                    <tr>
-                      <th>Tenant</th>
-                      <th>Contract</th>
-                      <th>Status</th>
-                      <th>Expiry</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="billingTableBody"></tbody>
-              </table>
+          <!-- Account History Logs -->
+          <div class="history-section mt-30">
+              <div class="section-header">
+                  <h2>Provisioning History & Audit</h2>
+                  <p>Immutable log of account life-cycle actions.</p>
+              </div>
+              <div class="data-card">
+                  <table class="data-table small">
+                      <thead>
+                          <tr>
+                              <th>Timestamp</th>
+                              <th>Account ID</th>
+                              <th>Action</th>
+                              <th>Env</th>
+                              <th>Admin</th>
+                          </tr>
+                      </thead>
+                      <tbody id="historyTableBody">
+                          <!-- Sync with localStorage: account_history -->
+                      </tbody>
+                  </table>
+              </div>
           </div>
         </div>
 
         <!-- SCREEN: LOGS -->
         <div id="screen-logs" class="screen">
-          <div class="screen-header"><h1>Master Audit Logs</h1></div>
-          <div class="log-console" id="systemLog">[SYSTEM READY] Orchestration engine online...</div>
+          <div class="screen-header">
+            <h1>Platform Audit Engine</h1>
+          </div>
+          <div class="log-console" id="systemLog">[SYSTEM] Bobo SaaS Kernel initialized...</div>
         </div>
 
-        <!-- Generic Placeholders for requested screens -->
-        <div id="screen-modules" class="screen"><div class="screen-header"><h1>Module Management</h1></div><div class="data-card"><p>Plugin repository & architectural versioning.</p></div></div>
-        <div id="screen-plans" class="screen"><div class="screen-header"><h1>Tier Management</h1></div><div class="data-card"><p>Control subscription boundaries and resource quotas.</p></div></div>
-        <div id="screen-metering" class="screen"><div class="screen-header"><h1>Platform Usage</h1></div><div class="data-card"><p>Compute units & data bandwidth monitoring.</p></div></div>
-        <div id="screen-analytics" class="screen">
-            <div class="screen-header"><h1>AI Market Intelligence</h1></div>
-            <div class="insights-grid">
-               <div class="insight-card">🚀 <div><h4>Expansion Detected</h4><p>Retail sector in Asia-Pac showing high growth.</p></div></div>
-               <div class="insight-card">⚠️ <div><h4>Churn Alert</h4><p>3% of Starter plan users inactive for 14 days.</p></div></div>
-            </div>
-        </div>
-        <div id="screen-whitelabel" class="screen"><div class="screen-header"><h1>White Label</h1></div><div class="data-card"><p>Custom branding, logos and SSL certificates.</p></div></div>
-        <div id="screen-integrations" class="screen"><div class="screen-header"><h1>API Ecosystem</h1></div><div class="data-card"><p>Connectivity logs for WhatsApp, Twilio, and SendGrid.</p></div></div>
-        <div id="screen-security" class="screen">
-            <div class="screen-header"><h1>Enterprise Security</h1></div>
-            <div class="data-card">
-                <div class="setting-row"><span>Enable MFA Platform-wide</span><input type="checkbox" checked /></div>
-                <div class="setting-row"><span>IP Whitelisting Architecture</span><input type="checkbox" /></div>
-            </div>
-        </div>
+        <!-- STRETCH SCREENS -->
+        <div id="screen-industries" class="screen"><div class="screen-header"><h1>Industry Verticals</h1></div><div class="data-card"><p>Define baseline schemas for different industries.</p></div></div>
+        <div id="screen-modules" class="screen"><div class="screen-header"><h1>Modular Plugins</h1></div><div class="data-card"><p>Plugin registry and entitlement manager.</p></div></div>
+        <div id="screen-plans" class="screen"><div class="screen-header"><h1>Subscription Plans</h1></div><div class="data-card"><p>Pricing strategy and quota management.</p></div></div>
+        <div id="screen-revenue" class="screen"><div class="screen-header"><h1>Revenue Insights</h1></div><div class="data-card"><p>Advanced financial analytics.</p></div></div>
+        <div id="screen-themes" class="screen"><div class="screen-header"><h1>Experience Center</h1></div><div class="data-card"><p>Global UI/UX and brand consistency control.</p></div></div>
+        <div id="screen-security" class="screen"><div class="screen-header"><h1>Platform Security</h1></div><div class="data-card"><p>MFA, rate limiting, and encrypted storage settings.</p></div></div>
 
       </main>
     </div>
 
-    <!-- MODAL: TENANT CREATION -->
-    <div id="tenantModal" class="modal-overlay">
-       <div class="modal-content">
+    <!-- MODAL: ACCOUNT PROVISIONING -->
+    <div id="provisionModal" class="modal-overlay">
+       <div class="modal-content large">
           <div class="modal-header">
-            <h2>Provision New Business Instance</h2>
-            <button onclick="document.getElementById('tenantModal').style.display='none'">×</button>
+            <h2>Deploy Industry Business Environment</h2>
+            <button class="close-btn" onclick="closeProvisionModal()">×</button>
           </div>
-          <form class="tenant-form" id="createTenantForm">
-              <div class="form-grid">
-                <div class="form-group"><label>Industry Vertical</label>
-                  <select id="industrySelect" required>
-                    <option value="pharmacy">Pharmacy</option>
-                    <option value="healthcare">Healthcare</option>
-                    <option value="retail">Retail POS</option>
-                    <option value="groceries">Grocery OS</option>
-                    <option value="bakers">Home Bakers</option>
-                    <option value="stock-trading">TradeGuard AI</option>
-                  </select>
+          <form id="provisionForm" class="tenant-form">
+              <div class="form-grid-3">
+                <div class="form-group">
+                    <label>Industry Vertical</label>
+                    <select id="pIndustry" required>
+                        <option value="pharmacy">Pharmacy</option>
+                        <option value="healthcare">Healthcare</option>
+                        <option value="retail">Retail POS</option>
+                        <option value="bakers">Home Bakers</option>
+                        <option value="stock">TradeGuard AI</option>
+                    </select>
                 </div>
-                <div class="form-group"><label>Business Name</label><input type="text" id="businessName" placeholder="e.g. Apollo Pharma" required /></div>
-                <div class="form-group"><label>Instance Subdomain</label><input type="text" id="customId" placeholder="apollo" required /></div>
-                <div class="form-group"><label>Owner Email</label><input type="email" id="adminEmail" required /></div>
-                <div class="form-group"><label>Initial Password</label><input type="password" id="accountPassword" value="Pharma123" required /></div>
-                <div class="form-group"><label>Contract Tier</label>
-                  <select id="subscriptionPlan">
-                    <option value="starter">Starter</option>
-                    <option value="professional" selected>Professional</option>
-                    <option value="enterprise">Enterprise</option>
-                  </select>
+                <div class="form-group">
+                    <label>Business Name</label>
+                    <input type="text" id="pBusinessName" placeholder="e.g. LifeCare Pharmacy" required />
                 </div>
-              </div>
-              
-              <div class="onboarding-ops">
-                 <label><input type="checkbox" id="sendEmailCheckbox" checked /> Send Welcome Email</label>
-                 <label><input type="checkbox" id="sendWaCheckbox" checked /> Direct WhatsApp Welcome</label>
+                <div class="form-group">
+                    <label>Owner Full Name</label>
+                    <input type="text" id="pOwnerName" placeholder="e.g. John Doe" required />
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="pEmail" required />
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="text" id="pPhone" required />
+                </div>
+                <div class="form-group">
+                    <label>Desired Username</label>
+                    <input type="text" id="pUsername" placeholder="lifecare_adm" required />
+                </div>
+                <div class="form-group">
+                    <label>Account Password</label>
+                    <input type="password" id="pPassword" placeholder="Minimum 8 chars" required />
+                </div>
+                <div class="form-group">
+                    <label>Environment Type</label>
+                    <select id="pEnv" required class="env-selector">
+                        <option value="test">Test Environment</option>
+                        <option value="trial">Trial (14-Day)</option>
+                        <option value="live">Live Production</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Subscription Plan</label>
+                    <select id="pPlan">
+                        <option value="starter">Starter</option>
+                        <option value="professional" selected>Professional</option>
+                        <option value="enterprise">Enterprise</option>
+                    </select>
+                </div>
               </div>
 
-              <div id="successMsg" style="display:none; color:#10b981; margin-bottom:12px; font-weight:700;">✅ Instance architecture deployed successfully.</div>
-              <button type="submit" class="btn-primary full-width">Deploy Infrastructure</button>
+              <div class="form-group mt-20">
+                  <label>Module Entitlements (Initial)</label>
+                  <div class="checkbox-grid">
+                      <label><input type="checkbox" checked /> Inventory</label>
+                      <label><input type="checkbox" checked /> POS</label>
+                      <label><input type="checkbox" checked /> CRM</label>
+                      <label><input type="checkbox" /> AI Insights</label>
+                      <label><input type="checkbox" /> Multi-Branch</label>
+                  </div>
+              </div>
+
+              <div id="provisionStatus" style="display:none; color:var(--secondary); padding:10px; text-align:center; font-weight:700;">
+                  ✅ Provising Node... 
+              </div>
+
+              <button type="submit" class="btn-primary full-width mt-20">Deploy Environment Architecture</button>
           </form>
        </div>
     </div>
   </div>
 
   <style>
-    /* ENTERPRISE CRM STYLING */
+    /* SAAS PROVISIONING ENGINE STYLES */
     :root {
       --primary: #6366f1;
       --secondary: #10b981;
+      --test-color: #3b82f6;
+      --trial-color: #f59e0b;
+      --live-color: #10b981;
       --bg: #05081a;
       --sidebar-bg: #0f172a;
       --card-bg: #1e293b;
-      --card-border: rgba(255, 255, 255, 0.1);
+      --card-border: rgba(255,255,255,0.1);
       --text-main: #f8fafc;
-      --sidebar-width: 250px;
+      --text-muted: #94a3b8;
     }
 
     body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); height: 100vh; overflow: hidden; }
     .admin-crm-container { display: flex; flex-direction: column; height: 100%; }
 
-    /* Nav & Sidebar */
-    .admin-top-nav { height: 64px; background: rgba(15,23,42,0.8); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; border-bottom: 1px solid var(--card-border); z-index: 100;}
-    .crm-logo { display:flex; align-items:center; gap:10px; font-weight:800; font-size:1.1rem; }
-    .platform-badge { background: var(--primary); font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; }
+    /* Nav */
+    .admin-top-nav { height: 64px; background: rgba(15,23,42,0.8); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; border-bottom: 1px solid var(--card-border); z-index: 100; }
+    .crm-logo { display:flex; align-items:center; gap:10px; font-weight:800; font-size:1.2rem; }
+    .platform-badge { background: var(--primary); font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
+    .nav-center .search-wrapper { background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; padding: 6px 12px; width: 400px; display: flex; gap: 8px; }
+    .search-wrapper input { background: transparent; border: none; color: white; outline: none; width: 100%; }
     .admin-profile { display:flex; align-items:center; gap:12px; }
     .admin-avatar { width:32px; height:32px; background:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800;}
+    .logout-btn-nav { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 5px; }
+    .logout-btn-nav:hover { color: #ef4444; }
 
+    /* Layout */
     .admin-body { display: flex; flex: 1; overflow: hidden; }
-    .admin-sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); border-right: 1px solid var(--card-border); overflow-y: auto; padding: 20px 10px; }
-    .nav-label { font-size: 0.65rem; color: #64748b; text-transform: uppercase; font-weight: 700; margin: 15px 0 5px 10px; }
+    .admin-sidebar { width: 250px; background: var(--sidebar-bg); border-right: 1px solid var(--card-border); overflow-y: auto; padding: 20px 10px; }
+    .nav-label { font-size: 0.65rem; color: #64748b; text-transform: uppercase; font-weight: 700; margin: 20px 0 8px 12px; }
     .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 8px; color: #94a3b8; text-decoration: none; font-size: 0.9rem; transition: 0.2s; }
     .nav-item:hover, .nav-item.active { background: rgba(99,102,241,0.1); color: var(--primary); }
+    .admin-main { flex: 1; overflow-y: auto; padding: 32px; }
 
-    /* Content Area */
-    .admin-main { flex: 1; overflow-y: auto; padding: 30px; }
+    /* Screens */
     .screen { display: none; animation: fadeIn 0.3s; }
     .screen.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    .screen-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; }
+    .screen-header h1 { font-size: 1.75rem; font-weight: 800; margin: 0; }
+    .screen-header p { color: var(--text-muted); font-size: 0.9rem; margin-top: 5px; }
 
-    .screen-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; }
-    .screen-header h1 { font-size: 1.5rem; margin: 0; }
-
-    /* Stats Grid */
+    /* Stats Widgets */
     .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
-    .stat-card { background: var(--card-bg); border: 1px solid var(--card-border); padding: 20px; border-radius: 12px; display: flex; gap: 15px; }
-    .card-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); }
-    .card-icon.blue { color: #6366f1; } .card-icon.green { color: #10b981; }
-    .card-data .label { font-size: 0.75rem; color: #94a3b8; }
-    .card-data .value { display: block; font-size: 1.4rem; font-weight: 700; margin: 4px 0; }
-    .trend { font-size: 0.7rem; color: var(--secondary); font-weight: 600; }
+    .stat-card { background: var(--card-bg); border: 1px solid var(--card-border); padding: 20px; border-radius: 16px; display: flex; gap: 16px; transition: 0.2s; }
+    .stat-card:hover { transform: translateY(-4px); border-color: var(--primary); }
+    .live-border { border-left: 4px solid var(--live-color); }
+    .trial-border { border-left: 4px solid var(--trial-color); }
+    .test-border { border-left: 4px solid var(--test-color); }
+    .card-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); }
+    .card-data .label { font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+    .card-data .value { display: block; font-size: 1.6rem; font-weight: 800; margin: 4px 0; }
+    .trend { font-size: 0.75rem; color: var(--secondary); font-weight: 600; }
 
-    /* Tables */
-    .data-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; overflow: hidden; }
+    /* Data Tables */
+    .data-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; overflow: hidden; }
+    .overflow-x { overflow-x: auto; }
     .data-table { width: 100%; border-collapse: collapse; text-align: left; }
-    .data-table th { padding: 12px 20px; font-size: 0.75rem; color: #94a3b8; border-bottom: 1px solid var(--card-border); background:rgba(0,0,0,0.2); }
-    .data-table td { padding: 12px 20px; border-bottom: 1px solid var(--card-border); font-size: 0.85rem; }
-    .badge { padding: 4px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; }
-    .badge.success { background: rgba(16,185,129,0.1); color: var(--secondary); }
-    .btn-primary { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+    .data-table th { padding: 14px 20px; font-size: 0.75rem; color: var(--text-muted); border-bottom: 1px solid var(--card-border); background:rgba(0,0,0,0.2); text-transform: uppercase; font-weight: 700; }
+    .data-table td { padding: 14px 20px; border-bottom: 1px solid var(--card-border); font-size: 0.85rem; vertical-align: middle; }
+    .data-table tr:hover { background: rgba(255,255,255,0.02); }
+    .data-table.small td { padding: 10px 20px; font-size: 0.8rem; }
 
-    /* Modal */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1000; }
-    .modal-content { background: #0f172a; border: 1px solid var(--card-border); border-radius: 16px; width: 600px; padding: 30px; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .form-group label { display: block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 6px; }
-    .form-group input, .form-group select { width: 100%; background: #1e293b; border: 1px solid #334155; padding: 10px; border-radius: 8px; color: white; }
-    .full-width { width: 100%; margin-top: 20px; padding: 12px; }
+    /* Filter Bar */
+    .filter-bar { display: flex; gap: 20px; background: rgba(255,255,255,0.03); padding: 15px 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--card-border); }
+    .filter-group { display: flex; flex-direction: column; gap: 5px; }
+    .filter-group label { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); }
+    .filter-group select { background: #0f172a; border: 1px solid #334155; color: white; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; }
 
-    .log-console { background: #000; color: #10b981; font-family: monospace; padding: 15px; border-radius: 8px; height: 300px; overflow-y: auto; font-size: 0.8rem; line-height: 1.4; }
+    /* Badges */
+    .tag { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
+    .tag.live { background: rgba(16,185,129,0.1); color: var(--live-color); border: 1px solid rgba(16,185,129,0.2); }
+    .tag.trial { background: rgba(245,158,11,0.1); color: var(--trial-color); border: 1px solid rgba(245,158,11,0.2); }
+    .tag.test { background: rgba(59,130,246,0.1); color: var(--test-color); border: 1px solid rgba(59,130,246,0.2); }
+    
+    .status-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 600; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .status-Active .status-dot { background: var(--secondary); box-shadow: 0 0 10px var(--secondary); }
+    .status-Suspended .status-dot { background: #ef4444; }
+    .status-Archived .status-dot { background: #64748b; }
 
-    .themes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
-    .theme-card { background: #1e293b; padding: 10px; border-radius: 10px; text-align: center; font-size: 0.8rem; }
-    .theme-preview { height: 60px; border-radius: 6px; margin-bottom: 8px; position: relative; }
-    .preview-accent { position: absolute; top:0; left:0; width:10px; height:100%; border-radius: 6px 0 0 6px;}
+    /* Modal Styling */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-content { background: #0f172a; border: 1px solid var(--card-border); border-radius: 20px; width: 500px; padding: 32px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+    .modal-content.large { width: 800px; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .modal-header h2 { font-size: 1.25rem; margin:0; }
+    .close-btn { background: transparent; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
 
-    @media (max-width: 1000px) { .stats-grid { grid-template-columns: 1fr 1fr; } }
+    /* Forms */
+    .form-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .form-group label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
+    .form-group input, .form-group select { width: 100%; background: #1e293b; border: 1px solid #334155; padding: 10px 12px; border-radius: 8px; color: white; font-size: 0.9rem; transition: 0.2s; }
+    .form-group input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(99,102,241,0.2); }
+    .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 5px; }
+    .checkbox-grid label { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: white; cursor: pointer; }
+    
+    .btn-primary { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+    .btn-primary:hover { background: #4f46e5; transform: translateY(-1px); }
+    .btn-primary.full-width { width: 100%; }
+    .btn-action-sm { padding: 4px 8px; font-size: 0.75rem; border-radius: 6px; margin-right: 4px; }
+    
+    .mt-20 { margin-top: 20px; }
+    .mt-30 { margin-top: 30px; }
+
+    .log-console { background: #000; color: #10b981; font-family: 'Fira Code', monospace; padding: 15px; border-radius: 12px; height: 400px; overflow-y: auto; font-size: 0.8rem; line-height: 1.5; border: 1px solid #333; }
+    .log-console-mini { background: #000; color: #10b981; font-family: monospace; padding: 12px; border-radius: 8px; height: 150px; overflow-y: auto; font-size: 0.75rem; border: 1px solid #222; }
+
+    /* Environment Colors */
+    .env-selector option[value="test"] { color: var(--test-color); }
+    .env-selector option[value="trial"] { color: var(--trial-color); }
+    .env-selector option[value="live"] { color: var(--live-color); }
   </style>
 
   <script>
-    // CRM APP LOGIC
+    // SAAS PROVISIONING ARCHITECTURE
     document.addEventListener("DOMContentLoaded", () => {
-        const isAuth = localStorage.getItem("adminAuth");
-        if (!isAuth) window.location.href = "/admin-login";
+        // Auth Guard
+        if (!localStorage.getItem("adminAuth")) window.location.href = "/admin-login";
 
-        // Router
+        // Navigation Engine
         window.switchScreen = function(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -474,114 +476,184 @@ import MainLayout from "../layouts/MainLayout.astro";
         };
 
         document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', (e) => {
+            item.addEventListener('click', () => {
                 const screen = item.getAttribute('data-screen');
                 if(screen) switchScreen(screen);
             });
         });
 
-        // Initialize Stats
-        loadAppState();
+        // Modal Controls
+        window.openProvisionModal = () => document.getElementById('provisionModal').style.display='flex';
+        window.closeProvisionModal = () => document.getElementById('provisionModal').style.display='none';
+
+        // Load Platform State
+        refreshPlatform();
     });
 
-    function loadAppState() {
-        let tenants = JSON.parse(localStorage.getItem("bobo_tenants") || "[]");
-        let msgs = localStorage.getItem("bobo_msgs") || "0";
+    function refreshPlatform() {
+        const accounts = JSON.parse(localStorage.getItem('bobo_accounts') || '[]');
+        const history = JSON.parse(localStorage.getItem('bobo_history') || '[]');
         
-        document.getElementById("liveTenantCount").innerText = tenants.length;
-        document.getElementById("liveUserCount").innerText = tenants.length;
-        document.getElementById("liveMsgCount").innerText = msgs;
+        // Update Stats
+        const liveCount = accounts.filter(a => a.environment === 'live').length;
+        const trialCount = accounts.filter(a => a.environment === 'trial').length;
+        const testCount = accounts.filter(a => a.environment === 'test').length;
         
-        let rev = 0;
-        tenants.forEach(t => {
-            if(t.plan === 'starter') rev += 5000;
-            else if(t.plan === 'enterprise') rev += 12000;
-            else rev += 8000;
+        document.getElementById('statLive').innerText = liveCount;
+        document.getElementById('statTrial').innerText = trialCount;
+        document.getElementById('statTest').innerText = testCount;
+        
+        let mrr = 0;
+        accounts.filter(a => a.environment === 'live').forEach(a => {
+            if(a.plan === 'starter') mrr += 4999;
+            else if(a.plan === 'enterprise') mrr += 19999;
+            else mrr += 9999;
         });
-        document.getElementById("liveTotalRev").innerText = `₹${rev.toLocaleString('en-IN')}`;
+        document.getElementById('totalMRR').innerText = `₹${mrr.toLocaleString('en-IN')}`;
 
-        renderTenantTable(tenants);
-        renderBaselineTable();
-        renderBillingTable(tenants);
+        renderAccountsTable(accounts);
+        renderHistoryTable(history);
+        renderMiniLogs(history);
     }
 
-    function renderTenantTable(tenants) {
-        const tbody = document.getElementById("tenantTableBody");
+    function renderAccountsTable(accounts) {
+        const tbody = document.getElementById('accountsTableBody');
         if(!tbody) return;
-        tbody.innerHTML = tenants.map(t => `
+
+        const fInd = document.getElementById('filterIndustry')?.value || 'all';
+        const fEnv = document.getElementById('filterEnv')?.value || 'all';
+        const fStat = document.getElementById('filterStatus')?.value || 'all';
+
+        const filtered = accounts.filter(a => {
+            if(fInd !== 'all' && a.industry !== fInd) return false;
+            if(fEnv !== 'all' && a.environment !== fEnv) return false;
+            if(fStat !== 'all' && a.status !== fStat) return false;
+            return true;
+        });
+
+        tbody.innerHTML = filtered.map(a => `
             <tr>
-                <td><code>${t.pharmacyId}</code></td>
-                <td><strong>${t.pharmacy}</strong></td>
-                <td>${t.industry}</td>
-                <td>${t.plan}</td>
-                <td><span class="badge success">Active</span></td>
+                <td><strong>${a.businessName}</strong><br><span style="font-size:0.7rem; color:var(--text-muted)">${a.ownerName}</span></td>
+                <td><span style="text-transform:capitalize">${a.industry}</span></td>
+                <td><code>${a.username}</code><br><span style="font-size:0.7rem; color:var(--text-muted)">${a.username}.boboanalytics.com</span></td>
+                <td><span class="tag ${a.environment}">${a.environment}</span></td>
+                <td><span style="font-size:0.75rem; font-weight:700">${a.plan.toUpperCase()}</span></td>
                 <td>
-                    <button class="btn-primary" onclick="window.open('/dashboard', '_blank')" style="padding:4px 8px; font-size:10px;">Login</button>
-                    <button class="btn-primary" onclick="deleteTenant('${t.pharmacyId}')" style="background:#ef4444; padding:4px 8px; font-size:10px;">Suspend</button>
+                    <div class="status-badge status-${a.status}">
+                        <div class="status-dot"></div> ${a.status}
+                    </div>
                 </td>
+                <td>
+                    <button class="btn-primary btn-action-sm" onclick="manageAccount('${a.id}', 'reset')">Reset</button>
+                    ${a.status === 'Active' ? 
+                        `<button class="btn-primary btn-action-sm" style="background:#ef4444" onclick="manageAccount('${a.id}', 'Suspend')">Suspend</button>` :
+                        `<button class="btn-primary btn-action-sm" style="background:var(--secondary)" onclick="manageAccount('${a.id}', 'Active')">Activate</button>`
+                    }
+                    <button class="btn-primary btn-action-sm" style="background:#64748b" onclick="manageAccount('${a.id}', 'Archived')">Archive</button>
+                </td>
+            </tr>
+        `).join('') || '<tr><td colspan="7" style="text-align:center; padding:40px; color:var(--text-muted)">No accounts match these filters.</td></tr>';
+    }
+
+    function renderHistoryTable(history) {
+        const tbody = document.getElementById('historyTableBody');
+        if(!tbody) return;
+        tbody.innerHTML = [...history].reverse().slice(0, 15).map(h => `
+            <tr>
+                <td style="font-size:0.75rem">${new Date(h.timestamp).toLocaleString()}</td>
+                <td><code>${h.businessId}</code></td>
+                <td><strong>${h.action}</strong></td>
+                <td><span class="tag ${h.environment_type}">${h.environment_type}</span></td>
+                <td>${h.performed_by}</td>
             </tr>
         `).join('');
     }
 
-    function renderBaselineTable() {
-        const tbody = document.getElementById("baselineTableBody");
-        if(!tbody) return;
-        tbody.innerHTML = `
-            <tr><td>Pharmacy</td><td>Inventory, Sales, Expiry</td><td>Active</td><td>Pro</td><td><button class="btn-primary">Edit</button></td></tr>
-            <tr><td>Healthcare</td><td>OPD, Patients, Lab</td><td>Live</td><td>Pro</td><td><button class="btn-primary">Edit</button></td></tr>
-            <tr><td>Retail</td><td>POS, Stock, Rewards</td><td>Live</td><td>Standard</td><td><button class="btn-primary">Edit</button></td></tr>
-        `;
+    function renderMiniLogs(history) {
+        const logBox = document.getElementById('miniAuditLog');
+        if(!logBox) return;
+        logBox.innerHTML = history.slice(-10).reverse().map(h => `
+            <div style="margin-bottom:4px;">[${new Date(h.timestamp).toLocaleTimeString()}] ${h.performed_by} ${h.action} for ${h.businessId} (${h.environment_type})</div>
+        `).join('') || 'No recent activity.';
     }
 
-    function renderBillingTable(tenants) {
-        const tbody = document.getElementById("billingTableBody");
-        if(!tbody) return;
-        tbody.innerHTML = tenants.map(t => `
-            <tr>
-                <td>${t.pharmacy}</td>
-                <td>${t.plan.toUpperCase()} CONTRACT</td>
-                <td><span class="badge success">Paid</span></td>
-                <td>May 2025</td>
-                <td><button class="btn-primary">Invoice</button></td>
-            </tr>
-        `).join('') || '<tr><td colspan="5" style="text-align:center;">No billing history.</td></tr>';
-    }
+    window.filterAccounts = () => refreshPlatform();
 
-    // Provisioning Logic
-    const form = document.getElementById("createTenantForm");
-    form?.addEventListener("submit", async (e) => {
+    // PROVISIONING LOGIC
+    const provForm = document.getElementById('provisionForm');
+    provForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const success = document.getElementById("successMsg");
-        const data = {
-            industry: document.getElementById("industrySelect").value,
-            pharmacyId: document.getElementById("customId").value,
-            pharmacy: document.getElementById("businessName").value,
-            password: document.getElementById("accountPassword").value,
-            email: document.getElementById("adminEmail").value,
-            plan: document.getElementById("subscriptionPlan").value
+        const stat = document.getElementById('provisionStatus');
+        stat.style.display = 'block';
+
+        const newAcc = {
+            id: 'BIZ-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+            industry: document.getElementById('pIndustry').value,
+            businessName: document.getElementById('pBusinessName').value,
+            ownerName: document.getElementById('pOwnerName').value,
+            email: document.getElementById('pEmail').value,
+            phone: document.getElementById('pPhone').value,
+            username: document.getElementById('pUsername').value,
+            password_hash: 'SHA256_HIDDEN_' + btoa(document.getElementById('pPassword').value),
+            environment: document.getElementById('pEnv').value,
+            plan: document.getElementById('pPlan').value,
+            status: 'Active',
+            created_at: new Date().toISOString()
         };
 
-        let tenants = JSON.parse(localStorage.getItem("bobo_tenants") || "[]");
-        tenants.push(data);
-        localStorage.setItem("bobo_tenants", JSON.stringify(tenants));
+        // Simulated provision delay
+        await new Promise(r => setTimeout(r, 1500));
 
-        success.style.display = "block";
-        loadAppState();
-        setTimeout(() => {
-            success.style.display = "none";
-            document.getElementById('tenantModal').style.display = 'none';
-            form.reset();
-        }, 2000);
+        let accounts = JSON.parse(localStorage.getItem('bobo_accounts') || '[]');
+        accounts.push(newAcc);
+        localStorage.setItem('bobo_accounts', JSON.stringify(accounts));
+
+        // Registry History
+        logHistory(newAcc.id, 'Account Created', newAcc.environment);
+
+        stat.style.display = 'none';
+        closeProvisionModal();
+        provForm.reset();
+        refreshPlatform();
+        alert('Infrastructure provisioned successfully. Environment: ' + newAcc.environment.toUpperCase());
     });
 
-    window.deleteTenant = function(id) {
-        if(!confirm("Are you sure you want to suspend this node?")) return;
-        let tenants = JSON.parse(localStorage.getItem("bobo_tenants") || "[]");
-        localStorage.setItem("bobo_tenants", JSON.stringify(tenants.filter(t => t.pharmacyId !== id)));
-        loadAppState();
+    function logHistory(bizId, action, env) {
+        let history = JSON.parse(localStorage.getItem('bobo_history') || '[]');
+        history.push({
+            id: Date.now(),
+            businessId: bizId,
+            action: action,
+            environment_type: env,
+            performed_by: 'Super Admin',
+            timestamp: new Date().toISOString()
+        });
+        localStorage.setItem('bobo_history', JSON.stringify(history));
+    }
+
+    window.manageAccount = (id, action) => {
+        let accounts = JSON.parse(localStorage.getItem('bobo_accounts') || '[]');
+        const accIdx = accounts.findIndex(a => a.id === id);
+        if(accIdx === -1) return;
+
+        if(action === 'reset') {
+            const newPass = prompt("Enter new password for " + accounts[accIdx].username);
+            if(newPass) {
+                accounts[accIdx].password_hash = 'SHA256_HIDDEN_' + btoa(newPass);
+                logHistory(id, 'Password Reset', accounts[accIdx].environment);
+                alert("Password updated.");
+            }
+        } else {
+            const oldStatus = accounts[accIdx].status;
+            accounts[accIdx].status = action;
+            logHistory(id, `Status changed from ${oldStatus} to ${action}`, accounts[accIdx].environment);
+        }
+
+        localStorage.setItem('bobo_accounts', JSON.stringify(accounts));
+        refreshPlatform();
     };
 
-    document.getElementById("logoutBtn")?.addEventListener("click", () => {
+    document.getElementById('logoutBtn')?.addEventListener('click', () => {
         localStorage.removeItem("adminAuth");
         window.location.href = "/admin-login";
     });
