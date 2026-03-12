@@ -2,9 +2,9 @@
 import MainLayout from "../../layouts/MainLayout.astro";
 ---
 
-<MainLayout title="Bobo Platform Admin | Enterprise SaaS Control Center">
+<MainLayout title="Bobo Platform Admin | Enterprise SaaS Control Center" hideNav={true}>
   <div class="admin-crm-container" id="adminApp">
-    <!-- 1. TOP NAVIGATION BAR -->
+    <!-- 1. TOP NAVIGATION BAR (Admin Specific) -->
     <header class="admin-top-nav">
       <div class="nav-left">
         <div class="crm-logo">
@@ -57,6 +57,10 @@ import MainLayout from "../../layouts/MainLayout.astro";
             <a href="#accounts" class="nav-item" data-screen="accounts">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
               <span>Account Provisioning</span>
+            </a>
+            <a href="#leads" class="nav-item" data-screen="leads">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/></svg>
+              <span>Registration Queue</span>
             </a>
             <a href="#industries" class="nav-item" data-screen="industries">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V10z"/><path d="M6 4h12"/><path d="M10 2h4"/></svg>
@@ -172,38 +176,17 @@ import MainLayout from "../../layouts/MainLayout.astro";
                             <p>Fashion industry businesses increased 22% this quarter.</p>
                         </div>
                     </div>
-                    <div class="insight-item warning">
-                        <div class="insight-icon">⚠️</div>
-                        <div class="insight-body">
-                            <strong>Churn Risk Detected</strong>
-                            <p>3 retail accounts exhibit declining usage patterns.</p>
-                        </div>
-                    </div>
                 </div>
                 <button class="btn-secondary full-width mt-20" onclick="generateAIReport()">Download Growth Forecast</button>
             </div>
 
-            <!-- USAGE METERING -->
+            <!-- AUDIT & COMPLIANCE PREVIEW -->
             <div class="data-card">
                 <div class="card-header">
-                    <h3>Usage Metering (Edge Nodes)</h3>
+                    <h3>Compliance Audit Trail</h3>
                 </div>
-                <div class="usage-list">
-                    <div class="usage-item">
-                        <span>API Calls (Global)</span>
-                        <div class="progress-bar"><div class="fill" style="width: 65%;"></div></div>
-                        <span>1.2M / 2.0M</span>
-                    </div>
-                    <div class="usage-item">
-                        <span>Storage Occupancy</span>
-                        <div class="progress-bar"><div class="fill" style="width: 42%;"></div></div>
-                        <span>840GB / 2TB</span>
-                    </div>
-                    <div class="usage-item">
-                        <span>Transactions (24h)</span>
-                        <div class="progress-bar"><div class="fill" style="width: 88%;"></div></div>
-                        <span>45.2k</span>
-                    </div>
+                <div class="usage-list" id="miniAuditLog">
+                    <!-- Logs go here -->
                 </div>
             </div>
           </div>
@@ -272,11 +255,25 @@ import MainLayout from "../../layouts/MainLayout.astro";
           </div>
         </div>
 
+        <!-- SCREEN: REGISTRATION QUEUE (LEADS) -->
+        <div id="screen-leads" class="screen">
+            <div class="screen-header">
+                <h1>Registration Lead Hub</h1>
+                <p>Public signups awaiting verification or contact.</p>
+            </div>
+            <div class="data-card overflow-x">
+                <table class="data-table">
+                    <thead><tr><th>Lead / Business</th><th>Contact</th><th>Interest</th><th>Source</th><th>Actions</th></tr></thead>
+                    <tbody id="leadTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- SCREEN: INDUSTRIES -->
         <div id="screen-industries" class="screen">
           <div class="screen-header">
             <h1>Industry Verticals</h1>
-            <button class="btn-primary">+ Add New Vertical</button>
+            <button class="btn-primary" onclick="alert('Industry Engine Live')">+ Add New Vertical</button>
           </div>
           <div class="data-card overflow-x">
             <table class="data-table">
@@ -284,8 +281,10 @@ import MainLayout from "../../layouts/MainLayout.astro";
                     <tr><th>Vertical Name</th><th>Default Modules</th><th>Base Theme</th><th>Status</th><th>Action</th></tr>
                 </thead>
                 <tbody id="industryTableBody">
-                    <tr><td>Pharmacy</td><td>POS, Inventory, CRM</td><td>Emerald Green</td><td><span class="tag live">Active</span></td><td><button class="btn-secondary">Edit</button></td></tr>
-                    <tr><td>Home Bakers</td><td>Order Manager, Gallery</td><td>Rose Pink</td><td><span class="tag live">Active</span></td><td><button class="btn-secondary">Edit</button></td></tr>
+                    <tr><td>Pharmacy</td><td>POS, Inventory, CRM, GST</td><td>Emerald Green</td><td><span class="tag live">Active</span></td><td><button class="btn-secondary" onclick="editIndustry('pharmacy')">Edit Modules</button></td></tr>
+                    <tr><td>Healthcare</td><td>Patient CRM, Billing</td><td>Ocean Blue</td><td><span class="tag live">Active</span></td><td><button class="btn-secondary" onclick="editIndustry('healthcare')">Edit Modules</button></td></tr>
+                    <tr><td>Retail POS</td><td>Stock, Sales, Offers</td><td>Sunset Orange</td><td><span class="tag live">Active</span></td><td><button class="btn-secondary" onclick="editIndustry('retail')">Edit Modules</button></td></tr>
+                    <tr><td>Grocery OS</td><td>Inventory, Billing, Suppliers</td><td>Midnight Black</td><td><span class="tag live">Active</span></td><td><button class="btn-secondary" onclick="editIndustry('grocery')">Edit Modules</button></td></tr>
                 </tbody>
             </table>
           </div>
@@ -295,7 +294,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
         <div id="screen-plans" class="screen">
           <div class="screen-header">
             <h1>Subscription Plan Manager</h1>
-            <button class="btn-primary">+ Create Plan</button>
+            <button class="btn-primary" onclick="openPlanModal()">+ Create Plan</button>
           </div>
           <div class="plans-grid" id="plansGrid">
               <!-- Rendered by JS -->
@@ -313,18 +312,92 @@ import MainLayout from "../../layouts/MainLayout.astro";
                         <div class="gateway-info">
                             <strong>Razorpay</strong>
                             <p>Primary gateway for India (INR)</p>
+                            <div class="key-field mt-10">
+                                <label>API Key:</label>
+                                <input type="password" value="rzp_live_8Ambz8DneyktAE" id="razorKey" class="key-input" />
+                                <button class="btn-sm" onclick="toggleKey('razorKey')">Show</button>
+                            </div>
                         </div>
                         <div class="gateway-status"><span class="tag live">Enabled</span></div>
-                        <button class="btn-secondary">Configure API Keys</button>
+                        <button class="btn-secondary" onclick="saveGateway('Razorpay')">Save Changes</button>
                     </div>
                     <div class="gateway-item">
                         <div class="gateway-info">
                             <strong>Stripe</strong>
                             <p>Global card payments (USD/EURO)</p>
+                            <div class="key-field mt-10">
+                                <label>API Secret:</label>
+                                <input type="password" value="sk_live_9pSJ...mSJ" id="stripeKey" class="key-input" />
+                                <button class="btn-sm" onclick="toggleKey('stripeKey')">Show</button>
+                            </div>
                         </div>
                         <div class="gateway-status"><span class="tag live">Enabled</span></div>
-                        <button class="btn-secondary">Configure API Keys</button>
+                        <button class="btn-secondary" onclick="saveGateway('Stripe')">Save Changes</button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN: REVENUE -->
+        <div id="screen-revenue" class="screen">
+            <div class="screen-header">
+                <h1>Revenue Tracking & Forecast</h1>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="card-data">
+                        <span class="label">Total ARR</span>
+                        <span class="value" id="revARR">₹0</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="card-data">
+                        <span class="label">Subscription Growth</span>
+                        <span class="value">+18%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="data-card">
+                <div class="card-header"><h3>Recent Revenue Streams</h3></div>
+                <table class="data-table">
+                    <thead><tr><th>Date</th><th>Business</th><th>Plan</th><th>Amount</th><th>Status</th></tr></thead>
+                    <tbody id="revenueTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SCREEN: PLUGINS -->
+        <div id="screen-modules" class="screen">
+            <div class="screen-header">
+                <h1>Modular Plugins & Marketplace</h1>
+            </div>
+            <div class="plugins-grid" id="pluginsRegistry">
+                <div class="plugin-card">
+                    <div class="p-icon">📦</div>
+                    <div class="p-info">
+                        <strong>Inventory Core</strong>
+                        <p>Real-time stock tracking engine.</p>
+                        <span class="tag live">Standard</span>
+                    </div>
+                    <label class="switch"><input type="checkbox" checked /> <span class="slider"></span></label>
+                </div>
+                <div class="plugin-card">
+                    <div class="p-icon">📊</div>
+                    <div class="p-info">
+                        <strong>AI Forecast</strong>
+                        <p>Predictive sales and stock analysis.</p>
+                        <span class="tag trial">Premium</span>
+                    </div>
+                    <label class="switch"><input type="checkbox" /> <span class="slider"></span></label>
+                </div>
+                <div class="plugin-card">
+                    <div class="p-icon">💹</div>
+                    <div class="p-info">
+                        <strong>GST Assistant</strong>
+                        <p>Automated tax filing for India.</p>
+                        <span class="tag live">Standard</span>
+                    </div>
+                    <label class="switch"><input type="checkbox" checked /> <span class="slider"></span></label>
                 </div>
             </div>
         </div>
@@ -334,21 +407,46 @@ import MainLayout from "../../layouts/MainLayout.astro";
           <div class="screen-header">
             <h1>Platform Audit Logs</h1>
           </div>
-          <div class="log-console" id="systemLog">[BOOT] Platform Admin Core v11.2 initialized at Edge...</div>
+          <div class="log-console" id="systemLog">[BOOT] Platform Admin Core v11.3 initialized...</div>
         </div>
 
-        <!-- SCREEN: THEMES (EXPERIENCE CENTER) -->
-        <div id="screen-themes" class="screen">
+        <!-- SECURITY SCREEN -->
+        <div id="screen-security" class="screen">
             <div class="screen-header">
-                <h1>Experience Center</h1>
-                <p>Global theme management and brand consistent guidelines.</p>
+                <h1>Security & Infrastructure</h1>
             </div>
-            <div class="themes-grid" id="themesGrid">
-                <!-- JS Rendered -->
+            <div class="data-card p-30">
+                <div class="form-group">
+                    <label>Admin MFA Status</label>
+                    <span class="tag live">Enabled (Google Authenticator)</span>
+                </div>
+                <div class="form-group mt-20">
+                    <label>API Rate Limiting</label>
+                    <select class="key-input"><option>1000 req/min</option><option>5000 req/min</option></select>
+                </div>
+                <hr class="mt-20 opacity-1" />
+                <button class="btn-primary mt-20">Save Security Policy</button>
             </div>
         </div>
 
       </main>
+    </div>
+
+    <!-- SUCCESS MODAL (POST-PROVISIONING) -->
+    <div id="successModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🚀 Provisioning Successful</h2>
+            </div>
+            <div class="success-body" id="credView">
+                <!-- Creds go here -->
+            </div>
+            <div class="notification-actions mt-20">
+                <button class="btn-primary full-width" onclick="simulateNotify('email')">📧 Send Login via Email</button>
+                <button class="btn-secondary full-width mt-10" onclick="simulateNotify('whatsapp')">💬 Send via WhatsApp</button>
+                <button class="btn-secondary full-width mt-10" onclick="closeSuccess()">Close</button>
+            </div>
+        </div>
     </div>
 
     <!-- ONBOARDING WIZARD MODAL -->
@@ -419,7 +517,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
                     <h3>Step 5: Review & Provision</h3>
                     <div id="provisionSummary" class="provision-summary-box"></div>
                     <div id="wizardStatus" style="display:none; text-align:center; padding:20px; color:var(--secondary); font-weight:800;">
-                        Generating Tenant v11.2...
+                        Generating Tenant v11.3...
                     </div>
                 </div>
 
@@ -494,13 +592,13 @@ import MainLayout from "../../layouts/MainLayout.astro";
     .dashboard-grid-2 { display: grid; grid-template-columns: 3fr 2fr; gap: 24px; }
     .ai-insights-panel { background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%); border: 1px solid var(--primary); padding: 24px; border-radius: 20px; }
     .insight-item { display: flex; gap: 16px; padding: 16px; border-radius: 12px; background: rgba(255,255,255,0.03); margin-bottom: 12px; }
-    .insight-item.warning { border-left: 4px solid #ef4444; }
     .insight-icon { font-size: 1.5rem; }
     .insight-body strong { display: block; margin-bottom: 4px; }
     .insight-body p { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
 
     /* Tables */
     .data-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; overflow: hidden; }
+    .p-30 { padding: 30px; }
     .data-table { width: 100%; border-collapse: collapse; }
     .data-table th { padding: 16px 20px; text-align: left; background: rgba(0,0,0,0.2); font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase; }
     .data-table td { padding: 16px 20px; border-bottom: 1px solid var(--card-border); font-size: 0.9rem; }
@@ -523,6 +621,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
     
     .btn-primary { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; }
     .btn-secondary { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--card-border); padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; }
+    .btn-sm { background: rgba(255,255,255,0.1); border:none; color:white; padding:4px 8px; border-radius:4px; font-size:0.7rem; cursor:pointer;}
     .full-width { width: 100%; }
 
     .tag { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
@@ -530,13 +629,37 @@ import MainLayout from "../../layouts/MainLayout.astro";
     .tag.trial { background: #451a03; color: #f59e0b; }
     .tag.test { background: #172554; color: #60a5fa; }
     
-    .log-console { height: 500px; background: #000; color: #10b981; font-family: 'Fira Code', monospace; padding: 20px; border-radius: 16px; font-size: 0.8rem; overflow-y:auto;}
+    .key-input { background: rgba(0,0,0,0.3); border: 1px solid var(--card-border); color: white; padding: 6px 12px; border-radius: 4px; font-family: monospace; }
+    .gateway-item { display:flex; justify-content:space-between; align-items:center; padding:24px; border-bottom:1px solid var(--card-border);}
 
-    /* Themes Grid */
-    .themes-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
-    .theme-preview { border: 1px solid var(--card-border); padding: 16px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
-    .theme-preview:hover { border-color: var(--primary); }
-    .swatch { height: 40px; border-radius: 8px; margin-bottom: 8px; }
+    /* Plugin Grid */
+    .plugins-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:20px;}
+    .plugin-card { background: var(--card-bg); border: 1px solid var(--card-border); padding:20px; border-radius:16px; display:flex; align-items:center; gap:16px;}
+    .p-icon { font-size:2rem; }
+    .p-info { flex:1; }
+    .p-info strong { display:block; }
+    .p-info p { font-size:0.8rem; color:var(--text-muted); margin:4px 0;}
+
+    /* Success Card */
+    .success-body { background: rgba(16,185,129,0.05); padding:24px; border-radius:16px; border:1px solid var(--secondary); margin-top:16px;}
+    .cred-item { display:flex; justify-content:space-between; margin-bottom:12px; font-family:monospace; font-size:1.1rem;}
+    .cred-item label { color:var(--text-muted); font-size:0.8rem; text-transform:uppercase;}
+
+    .mt-10 { margin-top: 10px; }
+    .mt-20 { margin-top: 20px; }
+    .mt-30 { margin-top: 30px; }
+
+    .log-console { height: 500px; background: #000; color: #10b981; font-family: 'Fira Code', monospace; padding: 20px; border-radius: 16px; font-size: 0.8rem; overflow-y:auto;}
+    .usage-list { padding: 20px; }
+    .audit-entry { font-size:0.75rem; margin-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;}
+
+    /* Custom UI Elements */
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; inset: 0; background-color: #334155; transition: .4s; border-radius: 24px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: var(--primary); }
+    input:checked + .slider:before { transform: translateX(20px); }
   </style>
 
   <script>
@@ -548,6 +671,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
             document.getElementById('screen-' + id)?.classList.add('active');
             document.querySelector(`[data-screen="${id}"]`)?.classList.add('active');
             window.location.hash = id;
+            logAudit(`Navigated to section: ${id.toUpperCase()}`);
         };
 
         document.querySelectorAll('.nav-item').forEach(item => {
@@ -597,7 +721,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
                     <p><strong>Subscription:</strong> ${plan.toUpperCase()} Plan</p>
                     <p><strong>Environment:</strong> <span class="tag ${env}">${env.toUpperCase()}</span></p>
                     <hr style="opacity:0.1; margin:16px 0;">
-                    <p style="font-size:0.8rem; color:var(--text-muted)">A unique workspace URL <strong>${biz.toLowerCase().replace(/\s+/g, '')}.boboanalytics.com</strong> will be provisioned instantly.</p>
+                    <p style="font-size:0.8rem; color:var(--text-muted)">Workspace URL: <strong>${biz.toLowerCase().replace(/\s+/g, '')}.boboanalytics.com</strong></p>
                 </div>
             `;
         }
@@ -607,16 +731,21 @@ import MainLayout from "../../layouts/MainLayout.astro";
             const statusBox = document.getElementById('wizardStatus');
             statusBox.style.display = 'block';
             
+            const pass = 'BOBO_' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            const username = document.getElementById('wBizName').value.toLowerCase().replace(/\s+/g, '_') + '_admin';
+
             const newAcc = {
                 id: 'T-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
                 businessName: document.getElementById('wBizName').value,
                 ownerName: document.getElementById('wOwner').value,
                 email: document.getElementById('wEmail').value,
+                phone: document.getElementById('wPhone').value,
                 city: document.getElementById('wCity').value,
                 industry: document.querySelector('input[name="wInd"]:checked').value,
                 plan: document.querySelector('input[name="wPlan"]:checked').value,
                 environment: document.querySelector('input[name="wEnv"]:checked').value,
-                username: document.getElementById('wBizName').value.toLowerCase().replace(/\s+/g, '_') + '_admin',
+                username: username,
+                password: pass,
                 status: 'Active',
                 created: new Date().toISOString()
             };
@@ -627,44 +756,68 @@ import MainLayout from "../../layouts/MainLayout.astro";
             accounts.push(newAcc);
             localStorage.setItem('bobo_accounts', JSON.stringify(accounts));
             
-            logAudit(`Business Onboarded: ${newAcc.businessName} [${newAcc.environment}]`);
+            logAudit(`COMPLIANCE: Admin provisioned new tenant ${newAcc.businessName} [Plan: ${newAcc.plan}]`);
             
             statusBox.style.display = 'none';
             closeWizard();
+            showSuccess(newAcc);
             refreshState();
-            alert(`Provisioning Complete! Subdomain: ${newAcc.businessName.toLowerCase().replace(/\s+/g, '')}.boboanalytics.com`);
         });
 
-        // Theme Registry
-        const themes = [
-            { name: "Default Light", color: "#f8fafc" },
-            { name: "Dark Mode", color: "#0f172a" },
-            { name: "Ocean Blue", color: "#0ea5e9" },
-            { name: "Emerald Green", color: "#10b981" },
-            { name: "Sunset Orange", color: "#f59e0b" },
-            { name: "Midnight Black", color: "#020617" },
-            { name: "Royal Purple", color: "#7c3aed" },
-            { name: "Rose Pink", color: "#f472b6" },
-            { name: "Steel Grey", color: "#64748b" },
-            { name: "Neon Tech", color: "#c026d3" }
-        ];
-
-        const themesGrid = document.getElementById('themesGrid');
-        if(themesGrid) {
-            themesGrid.innerHTML = themes.map(t => `
-                <div class="theme-preview">
-                    <div class="swatch" style="background: ${t.color}"></div>
-                    <strong>${t.name}</strong>
+        window.showSuccess = (acc) => {
+            const isLive = acc.environment === 'live';
+            document.getElementById('credView').innerHTML = `
+                <div style="text-align:center; margin-bottom:15px;">
+                    <span class="tag ${acc.environment}">${acc.environment.toUpperCase()} ENVIRONMENT</span>
                 </div>
-            `).join('');
-        }
+                <div class="cred-item"><label>Workspace</label> <span>${acc.businessName.toLowerCase().replace(/\s+/g,'')}.boboanalytics.com</span></div>
+                <div class="cred-item"><label>Admin Username</label> <span>${acc.username}</span></div>
+                <div class="cred-item"><label>Secret Key</label> <span>${acc.password}</span></div>
+                <div class="cred-item"><label>Welcome Msg</label> <span>${isLive ? '🚀 Production Ready' : '⏳ 14-Day Sandbox'}</span></div>
+                <p style="font-size:0.75rem; color:var(--text-muted); margin-top:10px; border:1px dashed var(--card-border); padding:10px; border-radius:8px;">
+                    <strong>Note:</strong> ${isLive ? 'Live customers receive production server credentials.' : 'Trial users receive standard access with upgrade prompts.'}
+                </p>
+            `;
+            document.getElementById('successModal').style.display = 'flex';
+        };
+
+        window.closeSuccess = () => document.getElementById('successModal').style.display = 'none';
+
+        window.simulateNotify = (type) => {
+            const accs = JSON.parse(localStorage.getItem('bobo_accounts') || '[]');
+            const last = accs[accs.length - 1];
+            alert(`NOTIFY: Sent welcome kit to ${last.ownerName} via ${type.toUpperCase()}.\nEmail: ${last.email}\nPhone: ${last.phone}`);
+            logAudit(`NOTIFY: Credentials shared via ${type} to ${last.businessName}`);
+        };
+
+        window.toggleKey = (id) => {
+            const input = document.getElementById(id);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        };
 
         function logAudit(msg) {
-            const logEl = document.getElementById('systemLog');
-            if(logEl) {
-                const time = new Date().toLocaleTimeString();
-                logEl.innerHTML += `<div>[${time}] ${msg}</div>`;
-                logEl.scrollTop = logEl.scrollHeight;
+            const auditLog = JSON.parse(localStorage.getItem('bobo_audit') || '[]');
+            const entry = { time: new Date().toISOString(), msg: msg };
+            auditLog.push(entry);
+            localStorage.setItem('bobo_audit', JSON.stringify(auditLog.slice(-100)));
+            renderAudit();
+        }
+
+        function renderAudit() {
+            const logs = JSON.parse(localStorage.getItem('bobo_audit') || '[]');
+            const logPanel = document.getElementById('miniAuditLog');
+            const logGlobal = document.getElementById('systemLog');
+            
+            if(logPanel) {
+                logPanel.innerHTML = logs.slice(-10).reverse().map(l => `
+                    <div class="audit-entry">
+                        <span style="color:var(--primary)">[${new Date(l.time).toLocaleTimeString()}]</span> ${l.msg}
+                    </div>
+                `).join('');
+            }
+
+            if(logGlobal) {
+                logGlobal.innerHTML = logs.map(l => `<div>[${new Date(l.time).toLocaleString()}] ${l.msg}</div>`).join('');
             }
         }
 
@@ -681,11 +834,52 @@ import MainLayout from "../../layouts/MainLayout.astro";
                 else mrr += 19999;
             });
             document.getElementById('totalMRR').innerText = '₹' + mrr.toLocaleString();
+            document.getElementById('revARR').innerText = '₹' + (mrr * 12).toLocaleString();
 
             renderAccounts(accounts);
+            renderRevenue(accounts);
+            renderLeads(accounts);
         }
 
-        window.filterAccounts = () => refreshState();
+        function renderLeads(accounts) {
+            const tbody = document.getElementById('leadTableBody');
+            if(!tbody) return;
+            // Only show organic leads awaiting provisioning
+            const leads = accounts.filter(a => a.type === 'Lead');
+            tbody.innerHTML = leads.map(a => `
+                <tr>
+                    <td><strong>${a.businessName}</strong><br><small>${a.ownerName}</small></td>
+                    <td>${a.email}<br>${a.phone}</td>
+                    <td><span class="tag test">${a.industry.toUpperCase()}</span></td>
+                    <td><span class="tag live">${a.source || 'Direct'}</span></td>
+                    <td>
+                        <button class="btn-sm" onclick="viewLeadInfo('${a.id}')">Review Hub</button>
+                        <button class="btn-sm" style="background:var(--primary)" onclick="switchScreen('accounts')">Provision</button>
+                    </td>
+                </tr>
+            `).join('') || '<tr><td colspan="5" style="text-align:center">No active leads in queue.</td></tr>';
+        }
+
+        window.viewLeadInfo = (id) => {
+            const accs = JSON.parse(localStorage.getItem('bobo_accounts') || '[]');
+            const a = accs.find(x => x.id === id);
+            alert(`LEAD DATA:\n\nBusiness: ${a.businessName}\nOwner: ${a.ownerName}\nEmail: ${a.email}\nPhone: ${a.phone}\nPlan Interest: ${a.plan.toUpperCase()}\nStatus: ${a.status}`);
+        };
+
+        function renderRevenue(accounts) {
+            const tbody = document.getElementById('revenueTableBody');
+            if(!tbody) return;
+            const liveOnly = accounts.filter(a => a.environment === 'live');
+            tbody.innerHTML = liveOnly.map(a => `
+                <tr>
+                    <td>${new Date(a.created).toLocaleDateString()}</td>
+                    <td>${a.businessName}</td>
+                    <td>${a.plan.toUpperCase()}</td>
+                    <td>₹${a.plan === 'starter' ? '4,999' : a.plan === 'professional' ? '9,999' : '19,999'}</td>
+                    <td><span class="tag live">Paid</span></td>
+                </tr>
+            `).join('') || '<tr><td colspan="5" style="text-align:center">No revenue records.</td></tr>';
+        }
 
         function renderAccounts(accounts) {
             const tbody = document.getElementById('accountsTableBody');
@@ -709,16 +903,30 @@ import MainLayout from "../../layouts/MainLayout.astro";
                     <td><code>${a.businessName.toLowerCase().replace(/\s+/g,'')}.boboanalytics.com</code></td>
                     <td><span class="tag ${a.environment}">${a.environment}</span></td>
                     <td><strong>${a.plan.toUpperCase()}</strong></td>
-                    <td><span class="status-badge">🟢 ${a.status}</span></td>
+                    <td><span class="tag live">🟢 ${a.status}</span></td>
                     <td>
-                        <button class="btn-secondary" onclick="action('${a.id}','suspend')">Suspend</button>
+                        <button class="btn-sm" onclick="viewProvisionInfo('${a.id}')">Details</button>
+                        <button class="btn-sm" style="background:#ef4444" onclick="logAudit('Admin suspended ${a.businessName}')">Suspend</button>
                     </td>
                 </tr>
             `).join('') || '<tr><td colspan="7" style="text-align:center; padding:40px; color:var(--text-muted)">No tenants found.</td></tr>';
         }
 
-        window.action = (id, act) => { alert(act + ' triggered for ' + id); };
+        window.viewProvisionInfo = (id) => {
+            const accs = JSON.parse(localStorage.getItem('bobo_accounts') || '[]');
+            const a = accs.find(x => x.id === id);
+            alert(`Registration Info:\n\nBusiness: ${a.businessName}\nOwner: ${a.ownerName}\nEmail: ${a.email}\nPhone: ${a.phone}\nJoin Date: ${new Date(a.created).toLocaleString()}`);
+        };
 
+        window.saveGateway = (name) => {
+            alert(`COMPLIANCE: Saved configuration for ${name} Gateway.`);
+            logAudit(`Admin updated ${name} API configuration.`);
+        };
+
+        window.openPlanModal = () => alert('Plan Editor Active: Set Quotas, Limits & Pricing');
+        window.editIndustry = (name) => alert(`Editing Modules for ${name.toUpperCase()}: Inventory, POS, Analytics enabled.`);
+
+        renderAudit();
         refreshState();
     });
   </script>

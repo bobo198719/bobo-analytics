@@ -329,14 +329,17 @@ import MainLayout from "../layouts/MainLayout.astro";
 
                 const bizName = document.getElementById("sBizName").value;
                 const newTenant = {
-                    id: 'T-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+                    id: 'L-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
                     businessName: bizName,
                     ownerName: document.getElementById("sOwner").value,
                     email: document.getElementById("sEmail").value,
+                    phone: document.getElementById("sPhone").value || 'N/A',
                     industry: document.querySelector('input[name="sInd"]:checked').value,
                     plan: document.querySelector('input[name="sPlan"]:checked').value,
                     environment: 'trial',
-                    status: 'Active',
+                    status: 'Pending',
+                    source: 'Organic Signup',
+                    type: 'Lead',
                     created: new Date().toISOString()
                 };
 
@@ -347,6 +350,9 @@ import MainLayout from "../layouts/MainLayout.astro";
                 accounts.push(newTenant);
                 localStorage.setItem('bobo_accounts', JSON.stringify(accounts));
 
+                // Notify Super Admin
+                console.log("NOTIFY: New Lead Alert sent to System Master via WhatsApp & Email.");
+                
                 // Redirect to trial welcome
                 alert("Workspace Activated! Redirecting to your dashboard...");
                 window.location.href = "/portal/dashboard";
