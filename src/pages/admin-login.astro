@@ -165,7 +165,7 @@ import MainLayout from "../layouts/MainLayout.astro";
       // Mock authentication for the admin login
       if (adminId === "admin" && pwd === "bobo2026") {
         localStorage.setItem("adminAuth", "true");
-        window.location.href = "/admin";
+        window.location.href = "/admin/control-panel";
       } else {
         errorEl.innerText = "Access denied. Invalid credentials.";
       }

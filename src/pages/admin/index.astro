@@ -18,7 +18,10 @@ import MainLayout from "../../layouts/MainLayout.astro";
             <div class="admin-card action">
                 <h2>Management</h2>
                 <p>Access the core SaaS provisioning engine to manage accounts, environments, and subscriptions.</p>
-                <a href="/admin/control-panel" class="btn-primary-link">Open Control Panel</a>
+                <a href="/admin/control-panel" class="btn-primary-link">
+                    <span>Open Control Panel</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+                </a>
             </div>
         </div>
     </section>
@@ -46,17 +49,25 @@ import MainLayout from "../../layouts/MainLayout.astro";
         .admin-card p { color: #888; font-size: 0.9rem; margin-bottom: 20px; line-height: 1.6; }
         
         .btn-primary-link { 
-            display: inline-block;
-            padding: 12px 24px; 
-            background: #4f46e5; 
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px; 
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); 
             color: white; 
             text-decoration: none;
-            border-radius: 8px; 
+            border-radius: 12px; 
             font-weight: 700; 
-            transition: 0.2s;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
         }
-        .btn-primary-link:hover { background: #4338ca; transform: translateY(-2px); }
-
+        .btn-primary-link:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.5);
+            filter: brightness(1.1);
+        }
+        .btn-primary-link svg { transition: transform 0.3s; }
+        .btn-primary-link:hover svg { transform: translateX(5px); }
         .stats-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .s-item { background: #0b0b0b; padding: 20px; border-radius: 10px; text-align: center; }
         .s-item span { display: block; color: #888; font-size: 0.8rem; margin-bottom: 5px; }

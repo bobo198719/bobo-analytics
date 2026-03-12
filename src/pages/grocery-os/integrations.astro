@@ -13,10 +13,13 @@ const integrations = [
 <GroceryOSLayout title="Integrations | Bobo Grocery OS">
   <div class="int-header">
       <div>
-          <h1>External Integrations</h1>
-          <p style="color: var(--text-muted);">Connect your grocery OS to the world's leading APIs and hardware.</p>
+          <h1 style="font-size: 2.5rem; font-weight: 800; font-family: 'Outfit'; letter-spacing: -0.02em;">Connected <span class="gradient-text">Ecosystem</span></h1>
+          <p style="color: var(--text-muted); font-size: 1.1rem;">Bridge your grocery operations with 50+ global logistics, payment, and marketing providers.</p>
       </div>
-      <button class="add-int-btn">+ Browse Marketplace</button>
+      <div class="search-ints">
+          <input type="text" placeholder="Search marketplace..." class="int-search" />
+          <button class="add-int-btn">Explore Directory</button>
+      </div>
   </div>
 
   <div class="integration-grid">
@@ -54,37 +57,46 @@ const integrations = [
   </div>
 
   <style>
-      .int-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-      .add-int-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+      .gradient-text { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .int-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 48px; }
+      .search-ints { display: flex; gap: 12px; }
+      .int-search { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 12px 20px; border-radius: 12px; width: 250px; outline: none; transition: 0.3s; }
+      .int-search:focus { border-color: var(--primary); background: rgba(255,255,255,0.08); }
+      .add-int-btn { background: var(--primary); border: none; color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; font-family: 'Outfit'; }
 
-      .integration-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; margin-bottom: 48px; }
-      .int-card { padding: 32px; display: flex; flex-direction: column; gap: 20px; transition: 0.3s; }
-      .int-card:hover { border-color: var(--primary); transform: translateY(-8px); }
+      .integration-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 32px; margin-bottom: 64px; }
+      .int-card { padding: 40px; display: flex; flex-direction: column; gap: 24px; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid var(--border); overflow: hidden; position: relative; }
+      .int-card::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, var(--primary) 0%, transparent 70%); opacity: 0; transition: 0.6s; pointer-events: none; }
+      .int-card:hover { border-color: var(--primary); transform: translateY(-10px); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5); }
+      .int-card:hover::after { opacity: 0.05; }
       
-      .int-top { display: flex; justify-content: space-between; align-items: center; }
-      .int-icon { font-size: 2rem; width: 60px; height: 60px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; border-radius: 16px; }
+      .int-top { display: flex; justify-content: space-between; align-items: flex-start; }
+      .int-icon { font-size: 2.2rem; width: 72px; height: 72px; background: rgba(255,255,255,0.03); display: flex; align-items: center; justify-content: center; border-radius: 20px; border: 1px solid var(--border); }
       
-      .int-status-badge { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 30px; letter-spacing: 0.05em; }
-      .int-status-badge.connected { background: rgba(16, 185, 129, 0.1); color: var(--success); }
-      .int-status-badge.configuration-needed { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
-      .int-status-badge.inactive { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); }
+      .int-status-badge { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 6px 12px; border-radius: 30px; letter-spacing: 0.05em; border: 1px solid transparent; }
+      .int-status-badge.connected { background: rgba(16, 185, 129, 0.1); color: var(--success); border-color: rgba(16, 185, 129, 0.2); }
+      .int-status-badge.configuration-needed { background: rgba(245, 158, 11, 0.1); color: var(--warning); border-color: rgba(245, 158, 11, 0.2); }
+      .int-status-badge.inactive { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); border-color: var(--border); }
 
-      .int-content h3 { font-family: 'Outfit'; font-size: 1.25rem; margin-bottom: 4px; }
-      .provider { font-size: 0.8rem; color: var(--primary); font-weight: 700; text-transform: uppercase; margin-bottom: 12px; }
-      .desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
+      .int-content h3 { font-family: 'Outfit'; font-size: 1.4rem; margin-bottom: 6px; letter-spacing: -0.01em; }
+      .provider { font-size: 0.75rem; color: var(--primary); font-weight: 800; text-transform: uppercase; margin-bottom: 16px; letter-spacing: 0.05em; }
+      .desc { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; }
 
       .int-actions { display: flex; gap: 12px; margin-top: auto; }
-      .configure-btn { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 10px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; }
-      .bot-btn { background: #25D366; border: none; color: white; padding: 10px 16px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; }
+      .configure-btn { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
+      .configure-btn:hover { background: rgba(255,255,255,0.1); border-color: white; }
+      .bot-btn { background: #25D366; border: none; color: white; padding: 12px 20px; border-radius: 12px; font-weight: 700; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.2); }
 
-      .webhook-section { padding: 40px; }
-      .panel-header h3 { font-family: 'Outfit'; font-size: 1.5rem; margin-bottom: 8px; }
-      .panel-header p { color: var(--text-muted); margin-bottom: 32px; }
+      .webhook-section { padding: 48px; border-radius: 32px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(99, 102, 241, 0.05) 100%); border: 1px solid rgba(16, 185, 129, 0.1); }
+      .panel-header h3 { font-family: 'Outfit'; font-size: 1.8rem; margin-bottom: 12px; letter-spacing: -0.02em; }
+      .panel-header p { color: var(--text-muted); margin-bottom: 40px; font-size: 1.1rem; }
       
-      .api-key-box { max-width: 500px; }
-      .api-key-box label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 12px; }
+      .api-key-box { max-width: 600px; display: grid; gap: 24px; }
+      .key-group { }
+      .key-group label { display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.05em; }
       .key-input { display: flex; gap: 12px; }
-      .key-input input { flex: 1; background: #000; border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: var(--primary); font-family: monospace; }
-      .copy-btn { background: var(--border); border: none; color: white; padding: 0 20px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+      .key-input input { flex: 1; background: #000; border: 1px solid var(--border); padding: 16px; border-radius: 14px; color: var(--primary); font-family: 'Fira Code', monospace; font-size: 0.9rem; }
+      .copy-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 0 24px; border-radius: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+      .copy-btn:hover { background: white; color: black; }
   </style>
 </GroceryOSLayout>

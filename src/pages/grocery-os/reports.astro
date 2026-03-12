@@ -12,8 +12,8 @@ const reports = [
 <GroceryOSLayout title="Advanced Reports | Bobo Grocery OS">
   <div class="rep-header">
       <div>
-          <h1>Retail Intelligence Reports</h1>
-          <p style="color: var(--text-muted);">In-depth analytics and statutory reports for your supermarket branch.</p>
+          <h1 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em;">Grocery Intelligence <span class="gradient-text">Reports</span></h1>
+          <p style="color: var(--text-muted); font-size: 1.1rem;">In-depth analytics, statutory tax exports, and real-time inventory aging reports.</p>
       </div>
       <div class="rep-actions">
           <button class="export-btn">📊 Custom Report Builder</button>
@@ -113,27 +113,31 @@ const reports = [
   </div>
 
   <style>
-      .rep-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-      .export-btn { background: var(--primary); border: none; color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+      .gradient-text { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .rep-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 48px; }
+      .export-btn { background: var(--primary); border: none; color: white; padding: 14px 28px; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2); transition: 0.3s; }
+      .export-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3); }
 
       .reports-grid { display: grid; grid-template-columns: 1fr 380px; gap: 32px; }
       
-      .main-stats-panel { padding: 40px; }
+      .main-stats-panel { padding: 40px; position: relative; overflow: hidden; }
+      .main-stats-panel::before { content: ''; position: absolute; top: 0; right: 0; width: 300px; height: 300px; background: radial-gradient(circle, var(--primary) 0%, transparent 70%); opacity: 0.05; pointer-events: none; }
+      
       .rep-summary-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-bottom: 48px; border-bottom: 1px solid var(--border); padding-bottom: 40px; }
       .rs-box { display: flex; flex-direction: column; gap: 4px; }
-      .rs-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
-      .rs-val { font-size: 2.2rem; font-weight: 800; font-family: 'Outfit'; }
-      .rs-trend { font-size: 0.75rem; font-weight: 700; }
+      .rs-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+      .rs-val { font-size: 2.4rem; font-weight: 800; font-family: 'Outfit'; letter-spacing: -0.02em; }
+      .rs-trend { font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 4px; }
       .rs-trend.pos { color: var(--success); }
       .rs-trend.neg { color: var(--error); }
 
-      .rep-table-wrap h3 { font-family: 'Outfit'; margin-bottom: 24px; }
+      .rep-table-wrap h3 { font-family: 'Outfit'; margin-bottom: 24px; font-size: 1.25rem; }
       .rep-table { width: 100%; border-collapse: collapse; }
-      .rep-table th { text-align: left; padding: 12px; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
+      .rep-table th { text-align: left; padding: 16px 12px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border); font-weight: 700; }
       .rep-table td { padding: 20px 12px; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
       
-      .r-title { font-weight: 700; }
-      .r-type { font-size: 0.75rem; color: var(--primary); font-weight: 800; background: rgba(16, 185, 129, 0.1); padding: 4px 10px; border-radius: 6px; }
+      .r-title { font-weight: 700; color: white; }
+      .r-type { font-size: 0.7rem; color: var(--primary); font-weight: 800; background: rgba(16, 185, 129, 0.1); padding: 4px 10px; border-radius: 6px; text-transform: uppercase; }
       
       .r-status { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 30px; }
       .r-status.generated { background: rgba(16, 185, 129, 0.1); color: var(--success); }
@@ -141,24 +145,26 @@ const reports = [
       .r-status.in-progress { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
       .r-status.scheduled { background: rgba(255,255,255,0.05); color: var(--text-muted); }
 
-      .dl-btn { background: transparent; border: 1px solid var(--border); color: white; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; margin-right: 8px; }
-      .v-btn { background: rgba(255,255,255,0.05); border: none; color: white; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; }
+      .dl-btn { background: transparent; border: 1px solid var(--border); color: white; padding: 8px 16px; border-radius: 10px; font-size: 0.8rem; cursor: pointer; margin-right: 8px; font-weight: 600; transition: 0.2s; }
+      .dl-btn:hover { background: rgba(255,255,255,0.05); border-color: white; }
+      .v-btn { background: rgba(255,255,255,0.05); border: none; color: white; padding: 8px 16px; border-radius: 10px; font-size: 0.8rem; cursor: pointer; font-weight: 600; }
 
       .visual-insights-panel { display: flex; flex-direction: column; gap: 24px; }
-      .stat-viz, .audit-log { padding: 24px; }
-      .stat-viz h3, .audit-log h3 { font-size: 1.1rem; margin-bottom: 24px; }
+      .stat-viz, .audit-log { padding: 32px; }
+      .stat-viz h3, .audit-log h3 { font-size: 1.15rem; margin-bottom: 24px; font-family: 'Outfit'; }
       
-      .horiz-bars { display: flex; flex-direction: column; gap: 16px; }
-      .h-bar-row { display: grid; grid-template-columns: 80px 1fr 60px; align-items: center; gap: 12px; }
-      .h-bar-row span { font-size: 0.8rem; font-weight: 600; }
-      .h-bar-bg { height: 8px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
-      .h-bar-fill { height: 100%; background: var(--primary); }
-      .h-val { text-align: right; color: var(--primary); }
+      .horiz-bars { display: flex; flex-direction: column; gap: 20px; }
+      .h-bar-row { display: grid; grid-template-columns: 80px 1fr 60px; align-items: center; gap: 16px; }
+      .h-bar-row span { font-size: 0.85rem; font-weight: 600; }
+      .h-bar-bg { height: 10px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
+      .h-bar-fill { height: 100%; background: linear-gradient(to right, var(--primary), var(--secondary)); border-radius: 10px; }
+      .h-val { text-align: right; color: var(--primary); font-weight: 700; }
 
-      .log-stack { display: flex; flex-direction: column; gap: 16px; }
-      .log-item { border-left: 2px solid var(--border); padding-left: 16px; position: relative; }
-      .log-item::before { content: ''; width: 8px; height: 8px; background: var(--border); border-radius: 50%; position: absolute; left: -5px; top: 0; }
-      .log-time { font-size: 0.7rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; }
-      .log-item p { font-size: 0.85rem; margin-top: 4px; }
+      .log-stack { display: flex; flex-direction: column; gap: 20px; }
+      .log-item { border-left: 2px solid var(--border); padding-left: 20px; position: relative; }
+      .log-item::before { content: ''; width: 10px; height: 10px; background: var(--bg-dark); border: 2px solid var(--primary); border-radius: 50%; position: absolute; left: -7px; top: 0; }
+      .log-time { font-size: 0.7rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+      .log-item p { font-size: 0.85rem; margin-top: 6px; line-height: 1.5; color: rgba(255,255,255,0.8); }
+      .log-item strong { color: white; }
   </style>
 </GroceryOSLayout>
