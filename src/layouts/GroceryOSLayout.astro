@@ -16,7 +16,7 @@ const { title = "Bobo Grocery OS" } = Astro.props;
             --sidebar-width: 280px;
             --bg-dark: #020617;
             --bg-card: rgba(30, 41, 59, 0.5);
-            --primary: #10b981; /* Grocery Green */
+            --primary: #10b981;
             --secondary: #3b82f6;
             --accent: #f59e0b;
             --text-main: #f8fafc;
@@ -25,16 +25,102 @@ const { title = "Bobo Grocery OS" } = Astro.props;
             --success: #10b981;
             --error: #ef4444;
             --warning: #f59e0b;
+            --sidebar-bg: rgba(15, 23, 42, 0.95);
+        }
+
+        /* 10 Instant Themes */
+        [data-theme="midnight"] {
+            --bg-dark: #010409;
+            --bg-card: rgba(13, 17, 23, 0.8);
+            --primary: #58a6ff;
+            --sidebar-bg: #0d1117;
+            --accent: #bc8cff;
+        }
+
+        [data-theme="emerald"] {
+            --bg-dark: #022c22;
+            --primary: #10b981;
+            --bg-card: rgba(6, 78, 59, 0.4);
+            --sidebar-bg: #064e3b;
+        }
+
+        [data-theme="ocean"] {
+            --bg-dark: #082f49;
+            --primary: #0ea5e9;
+            --bg-card: rgba(12, 74, 110, 0.5);
+            --sidebar-bg: #0c4a6e;
+        }
+
+        [data-theme="sunrise"] {
+            --bg-dark: #451a03;
+            --primary: #f97316;
+            --bg-card: rgba(124, 45, 18, 0.5);
+            --sidebar-bg: #7c2d12;
+            --text-main: #fff7ed;
+        }
+
+        [data-theme="minimal"] {
+            --bg-dark: #ffffff;
+            --bg-card: #f8fafc;
+            --primary: #0f172a;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --sidebar-bg: #f1f5f9;
+        }
+
+        [data-theme="luxury"] {
+            --bg-dark: #1c1917;
+            --primary: #d4af37;
+            --bg-card: rgba(41, 37, 36, 0.8);
+            --sidebar-bg: #292524;
+            --accent: #ffffff;
+            --font-main: 'Playfair Display', serif;
+        }
+
+        [data-theme="pure"] {
+            --bg-dark: #fcfcfc;
+            --primary: #3b82f6;
+            --bg-card: #ffffff;
+            --text-main: #111827;
+            --sidebar-bg: #ffffff;
+            --border: #f3f4f6;
+        }
+
+        [data-theme="modern"] {
+            --bg-dark: #000000;
+            --primary: #ffffff;
+            --bg-card: rgba(255, 255, 255, 0.05);
+            --sidebar-bg: #111111;
+            --accent: #3d3d3d;
+        }
+
+        [data-theme="neon"] {
+            --bg-dark: #050510;
+            --primary: #ff00ff;
+            --accent: #00ffff;
+            --bg-card: rgba(20, 20, 45, 0.6);
+            --sidebar-bg: #0a0a20;
+            --text-main: #f0f0ff;
+        }
+
+        [data-theme="classic"] {
+            --bg-dark: #2d3436;
+            --primary: #0984e3;
+            --bg-card: #dfe6e9;
+            --text-main: #2d3436;
+            --sidebar-bg: #636e72;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: var(--font-main, 'Inter'), sans-serif;
             background: var(--bg-dark);
             color: var(--text-main);
             display: flex;
@@ -45,48 +131,47 @@ const { title = "Bobo Grocery OS" } = Astro.props;
         /* Sidebar Navigation */
         aside.sidebar {
             width: var(--sidebar-width);
-            background: rgba(15, 23, 42, 0.95);
+            background: var(--sidebar-bg);
             backdrop-filter: blur(20px);
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            padding: 32px 24px;
+            padding: 24px 16px;
             z-index: 100;
+            overflow-y: auto;
         }
 
         .logo-area {
             display: flex;
             align-items: center;
-            gap: 16px;
-            margin-bottom: 48px;
+            gap: 12px;
+            margin-bottom: 32px;
             text-decoration: none;
-            color: white;
+            color: var(--text-main);
+            padding: 0 12px;
         }
 
         .logo-orb {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, var(--primary), #059669);
-            border-radius: 12px;
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+            font-size: 1.2rem;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
         }
 
         .logo-area span {
             font-family: 'Outfit', sans-serif;
             font-weight: 700;
-            font-size: 1.4rem;
-            letter-spacing: -0.02em;
+            font-size: 1.25rem;
+            letter-spacing: -0.01em;
         }
 
-        .nav-section {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            margin-bottom: 32px;
+        .nav-group {
+            margin-bottom: 24px;
         }
 
         .nav-label {
@@ -257,7 +342,7 @@ const { title = "Bobo Grocery OS" } = Astro.props;
             <span>Grocery OS</span>
         </a>
 
-        <div class="nav-section">
+        <div class="nav-group">
             <span class="nav-label">Core Business</span>
             <a href="/grocery-os" class="nav-link" data-nav="/grocery-os">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
@@ -267,33 +352,65 @@ const { title = "Bobo Grocery OS" } = Astro.props;
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
                 <span>POS Billing</span>
             </a>
+            <a href="/grocery-os/orders" class="nav-link" data-nav="/grocery-os/orders">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V4a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v16l4-4h12a2 2 0 0 0 2-2z"/></svg>
+                <span>Orders</span>
+            </a>
         </div>
 
-        <div class="nav-section">
+        <div class="nav-group">
             <span class="nav-label">Management</span>
-            <a href="/grocery-os/inventory" class="nav-link" data-nav="/grocery-os/inventory">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
-                <span>Inventory</span>
-            </a>
             <a href="/grocery-os/products" class="nav-link" data-nav="/grocery-os/products">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 <span>Products</span>
             </a>
-            <a href="/grocery-os/crm" class="nav-link" data-nav="/grocery-os/crm">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                <span>Customers</span>
+            <a href="/grocery-os/inventory" class="nav-link" data-nav="/grocery-os/inventory">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                <span>Inventory</span>
             </a>
-            <a href="/grocery-os/marketing" class="nav-link" data-nav="/grocery-os/marketing">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13.5 13 4 4L22 12l-4.5-4.5L13 12"/><path d="m16 5 2 2"/><path d="m19 8 2 2"/><path d="m21 11 2 2"/></svg>
-                <span>Marketing</span>
+            <a href="/grocery-os/suppliers" class="nav-link" data-nav="/grocery-os/suppliers">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span>Suppliers</span>
+            </a>
+            <a href="/grocery-os/delivery" class="nav-link" data-nav="/grocery-os/delivery">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polyline points="16 8 20 8 23 11 23 16 16 16"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                <span>Delivery</span>
             </a>
         </div>
 
-        <div class="nav-section">
-            <span class="nav-label">Global Control</span>
+        <div class="nav-group">
+            <span class="nav-label">Growth & AI</span>
+            <a href="/grocery-os/crm" class="nav-link" data-nav="/grocery-os/crm">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                <span>Customers</span>
+            </a>
+            <a href="/grocery-os/marketing" class="nav-link" data-nav="/grocery-os/marketing">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                <span>Marketing</span>
+            </a>
+            <a href="/grocery-os/online-store" class="nav-link" data-nav="/grocery-os/online-store">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                <span>Online Store</span>
+            </a>
+            <a href="/grocery-os/ai-insights" class="nav-link" data-nav="/grocery-os/ai-insights">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M12 2a10 10 0 0 1 10 10h-10V2z"/></svg>
+                <span>AI Insights</span>
+            </a>
+        </div>
+
+        <div class="nav-group">
+            <span class="nav-label">Admin Control</span>
             <a href="/grocery-os/reports" class="nav-link" data-nav="/grocery-os/reports">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
                 <span>Reports</span>
+            </a>
+            <a href="/grocery-os/staff" class="nav-link" data-nav="/grocery-os/staff">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span>Staff Control</span>
+            </a>
+            <a href="/grocery-os/integrations" class="nav-link" data-nav="/grocery-os/integrations">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                <span>Integrations</span>
             </a>
             <a href="/grocery-os/settings" class="nav-link" data-nav="/grocery-os/settings">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -301,11 +418,42 @@ const { title = "Bobo Grocery OS" } = Astro.props;
             </a>
         </div>
 
+        <!-- AI Autopilot Widget -->
+        <div class="autopilot-teaser">
+            <div class="ai-header">
+                <span class="pulse"></span>
+                <span>AI Autopilot</span>
+            </div>
+            <p>Predicting 15% stock surge for weekend.</p>
+            <button class="teaser-btn">Manage Shop</button>
+        </div>
+
+        <style>
+            .autopilot-teaser {
+                margin-top: auto;
+                background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1));
+                border: 1px solid var(--border);
+                border-radius: 16px;
+                padding: 16px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .ai-header { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.8rem; color: var(--primary); }
+            .pulse { width: 8px; height: 8px; background: var(--primary); border-radius: 50%; animation: pulse 2s infinite; }
+            @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
+            .autopilot-teaser p { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; }
+            .teaser-btn { background: var(--primary); color: white; border: none; padding: 6px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+        </style>
+
         <script is:inline>
+            // Theme Initialization
+            const savedTheme = localStorage.getItem('bobo_grocery_theme') || 'emerald';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+
             // Auth Check
-            if (!localStorage.getItem('grocery_os_auth')) {
-                // For demo purposes, we will redirect to a login later
-                // window.location.href = '/grocery-login';
+            if (!localStorage.getItem('grocery_os_auth') && !window.location.pathname.includes('login')) {
+                 window.location.href = '/grocery-login';
             }
 
             // Highlighting active nav link

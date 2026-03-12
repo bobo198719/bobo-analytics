@@ -1,0 +1,153 @@
+---
+import GroceryOSLayout from "../../layouts/GroceryOSLayout.astro";
+
+const orders = [
+  { id: "#G-8812", customer: "Walk-in", channel: "POS", items: 4, total: "₹2,450", status: "Completed", time: "10 mins ago" },
+  { id: "#G-8815", customer: "Rahul Sharma", channel: "Online Store", items: 12, total: "₹5,200", status: "In Transit", time: "25 mins ago" },
+  { id: "#G-8818", customer: "Anita Kapoor", channel: "WhatsApp Bot", items: 6, total: "₹1,850", status: "Preparing", time: "45 mins ago" },
+  { id: "#G-8820", customer: "David Miller", channel: "Online Store", items: 2, total: "₹840", status: "Refunded", time: "1h ago" }
+];
+---
+
+<GroceryOSLayout title="Order Center | Bobo Grocery OS">
+  <div class="header-flex">
+      <div>
+          <h1>Unified Order Center</h1>
+          <p style="color: var(--text-muted);">Manage multi-channel orders (POS, Web, WhatsApp, App).</p>
+      </div>
+      <div class="channel-stats">
+          <div class="c-stat"><div class="dot pos"></div> <span>POS: 65%</span></div>
+          <div class="c-stat"><div class="dot web"></div> <span>Web: 22%</span></div>
+          <div class="c-stat"><div class="dot wa"></div> <span>Bot: 13%</span></div>
+      </div>
+  </div>
+
+  <div class="orders-display glass-card">
+      <div class="table-actions">
+          <div class="order-search">
+              <input type="text" placeholder="Search orders, customers, or terminals..." />
+          </div>
+          <div class="filters">
+              <button class="f-btn active">All Orders</button>
+              <button class="f-btn">Pending</button>
+              <button class="f-btn">Refunds</button>
+          </div>
+      </div>
+
+      <table class="order-table">
+          <thead>
+              <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Channel</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Time</th>
+                  <th>Status</th>
+                  <th>Action</th>
+              </tr>
+          </thead>
+          <tbody>
+              {orders.map(o => (
+                  <tr>
+                      <td><strong>{o.id}</strong></td>
+                      <td>{o.customer}</td>
+                      <td>
+                          <div class="channel-cell">
+                              <span class={`ch-icon ${o.channel.toLowerCase().replace(' ', '-')}`}>
+                                  {o.channel === 'POS' ? '🛒' : (o.channel === 'WhatsApp Bot' ? '💬' : '🌐')}
+                              </span>
+                              {o.channel}
+                          </div>
+                      </td>
+                      <td>{o.items} items</td>
+                      <td style="font-weight: 800; font-family: 'Outfit';">{o.total}</td>
+                      <td style="color: var(--text-muted); font-size: 0.85rem;">{o.time}</td>
+                      <td><span class={`status-badge ${o.status.toLowerCase().replace(' ', '-')}`}>{o.status}</span></td>
+                      <td><button class="detail-btn">Invoice</button></td>
+                  </tr>
+              ))}
+          </tbody>
+      </table>
+  </div>
+
+  <div class="whatsapp-bot-preview glass-card">
+      <div class="bot-header">
+          <div class="bot-info">
+              <div class="bot-icon">💬</div>
+              <div>
+                  <h3>WhatsApp Bot Sessions</h3>
+                  <p>AI agent currently chatting with 4 customers.</p>
+              </div>
+          </div>
+          <button class="config-bot">Bot Settings</button>
+      </div>
+      <div class="bot-chats">
+          <div class="chat-row">
+              <div class="chat-avatar">S</div>
+              <div class="chat-main">
+                  <span class="chat-un">Sanya Gupta</span>
+                  <p class="chat-txt">"Adding 2 packs of Milk to my cart..."</p>
+              </div>
+              <span class="chat-time">Just Now</span>
+          </div>
+          <div class="chat-row">
+              <div class="chat-avatar">V</div>
+              <div class="chat-main">
+                  <span class="chat-un">Vikram Singh</span>
+                  <p class="chat-txt">"Order received. Generating invoice..."</p>
+              </div>
+              <span class="chat-time">2m ago</span>
+          </div>
+      </div>
+  </div>
+
+  <style>
+      .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+      .channel-stats { display: flex; gap: 24px; background: rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 30px; border: 1px solid var(--border); }
+      .c-stat { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 700; }
+      .dot { width: 8px; height: 8px; border-radius: 50%; }
+      .dot.pos { background: var(--primary); }
+      .dot.web { background: var(--secondary); }
+      .dot.wa { background: #25d366; }
+
+      .orders-display { padding: 32px; margin-bottom: 32px; }
+      .table-actions { display: flex; justify-content: space-between; margin-bottom: 32px; }
+      .order-search input { width: 320px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 12px; border-radius: 12px; color: white; }
+      .filters { display: flex; gap: 8px; }
+      .f-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 8px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+      .f-btn.active { border-color: var(--primary); color: var(--primary); background: rgba(16, 185, 129, 0.1); }
+
+      .order-table { width: 100%; border-collapse: collapse; }
+      .order-table th { text-align: left; padding: 16px; font-size: 0.8rem; color: var(--text-muted); border-bottom: 1px solid var(--border); text-transform: uppercase; }
+      .order-table td { padding: 20px 16px; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+
+      .channel-cell { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+      .ch-icon { width: 32px; height: 32px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+      .ch-icon.whatsapp-bot { color: #25d366; background: rgba(37, 211, 102, 0.1); }
+
+      .status-badge { font-size: 0.75rem; font-weight: 800; padding: 4px 12px; border-radius: 30px; text-transform: uppercase; }
+      .status-badge.completed { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+      .status-badge.in-transit { background: rgba(59, 130, 246, 0.1); color: var(--secondary); }
+      .status-badge.preparing { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+      .status-badge.refunded { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+
+      .detail-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 6px 14px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; }
+
+      .whatsapp-bot-preview { padding: 32px; }
+      .bot-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; }
+      .bot-info { display: flex; gap: 16px; align-items: center; }
+      .bot-icon { width: 54px; height: 54px; background: rgba(37, 211, 102, 0.1); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: #25d366; }
+      .bot-info h3 { font-family: 'Outfit'; font-size: 1.4rem; }
+      .config-bot { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 10px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+
+      .bot-chats { display: flex; flex-direction: column; gap: 16px; }
+      .chat-row { display: flex; align-items: center; gap: 16px; padding: 16px; background: rgba(255,255,255,0.02); border-radius: 16px; transition: 0.2s; }
+      .chat-row:hover { background: rgba(255,255,255,0.05); }
+      .chat-avatar { width: 44px; height: 44px; background: rgba(168, 85, 247, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #a855f7; }
+      .chat-main { flex: 1; }
+      .chat-un { display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 2px; }
+      .chat-txt { font-size: 0.85rem; color: var(--text-muted); }
+      .chat-time { font-size: 0.75rem; color: var(--text-muted); }
+  </style>
+</GroceryOSLayout>

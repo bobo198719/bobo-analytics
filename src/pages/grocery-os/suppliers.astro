@@ -1,0 +1,139 @@
+---
+import GroceryOSLayout from "../../layouts/GroceryOSLayout.astro";
+
+const suppliers = [
+  { name: "Global Grains Ltd", category: "Grains & Rice", rating: 4.8, active_pos: 12, balance: "₹1,24,000", status: "Verified" },
+  { name: "Amul Dairy Corp", category: "Dairy & Cheese", rating: 4.9, active_pos: 4, balance: "₹45,200", status: "Preferred" },
+  { name: "Healthy Farm Poultry", category: "Meat & Eggs", rating: 4.5, active_pos: 8, balance: "₹12,800", status: "Verified" }
+];
+---
+
+<GroceryOSLayout title="Supplier Management | Bobo Grocery OS">
+  <div class="header-flex">
+      <div>
+          <h1>Supply Chain Hub</h1>
+          <p style="color: var(--text-muted);">Manage global vendors and compare purchase prices.</p>
+      </div>
+      <div class="supplier-actions">
+          <button class="compare-btn">🔍 Multi-Price Compare</button>
+          <button class="add-btn">+ Onboard Supplier</button>
+      </div>
+  </div>
+
+  <div class="supplier-grid">
+      {suppliers.map(s => (
+          <div class="s-card glass-card">
+              <div class="s-top">
+                  <div class="s-logo-box">{s.name[0]}</div>
+                  <span class={`status-tag ${s.status.toLowerCase()}`}>{s.status}</span>
+              </div>
+              <div class="s-main">
+                  <h3>{s.name}</h3>
+                  <span class="s-cat">{s.category}</span>
+                  <div class="s-rating">{"⭐".repeat(Math.floor(s.rating))} <span class="r-num">({s.rating})</span></div>
+              </div>
+              <div class="s-stats">
+                  <div class="ss-box">
+                      <span class="ssl">Active POs</span>
+                      <span class="ssv">{s.active_pos}</span>
+                  </div>
+                  <div class="ss-box">
+                      <span class="ssl">Ledger Bal.</span>
+                      <span class="ssv">{s.balance}</span>
+                  </div>
+              </div>
+              <div class="s-footer">
+                  <button class="po-btn">New Purchase Order</button>
+                  <button class="ledger-btn">View Ledger</button>
+              </div>
+          </div>
+      ))}
+  </div>
+
+  <div class="market-comparison glass-card">
+      <div class="panel-header">
+          <h3>Market Price Pulse (AI-Driven)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Comparing current purchase costs against national market averages.</p>
+      </div>
+      <div class="price-table-wrap">
+          <table class="price-table">
+              <thead>
+                  <tr>
+                      <th>Product SKU</th>
+                      <th>Current Cost</th>
+                      <th>Market Avg.</th>
+                      <th>Difference</th>
+                      <th>Strategy</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr>
+                      <td>Basmati Rice (5kg)</td>
+                      <td>₹480</td>
+                      <td>₹455</td>
+                      <td class="bad">+5.4%</td>
+                      <td><span class="strat-badge">Switch Supplier</span></td>
+                  </tr>
+                  <tr>
+                      <td>Full Cream Milk (1L/case)</td>
+                      <td>₹680</td>
+                      <td>₹710</td>
+                      <td class="good">-4.2%</td>
+                      <td><span class="strat-badge good">Maintain PO</span></td>
+                  </tr>
+                  <tr>
+                      <td>Organic Eggs (Box)</td>
+                      <td>₹1,120</td>
+                      <td>₹1,140</td>
+                      <td class="good">-1.7%</td>
+                      <td><span class="strat-badge good">Bulk Buy Rec.</span></td>
+                  </tr>
+              </tbody>
+          </table>
+      </div>
+  </div>
+
+  <style>
+      .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+      .supplier-actions { display: flex; gap: 16px; }
+      .compare-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+      .add-btn { background: var(--primary); border: none; color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+
+      .supplier-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 40px; }
+      .s-card { padding: 32px; display: flex; flex-direction: column; gap: 24px; transition: 0.3s; }
+      .s-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+      
+      .s-top { display: flex; justify-content: space-between; align-items: flex-start; }
+      .s-logo-box { width: 48px; height: 48px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+      .status-tag { font-size: 0.7rem; font-weight: 800; padding: 4px 10px; border-radius: 30px; text-transform: uppercase; }
+      .status-tag.verified { background: rgba(59, 130, 246, 0.1); color: var(--secondary); }
+      .status-tag.preferred { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+
+      .s-main h3 { font-family: 'Outfit'; font-size: 1.4rem; margin-bottom: 4px; }
+      .s-cat { font-size: 0.85rem; color: var(--text-muted); }
+      .s-rating { font-size: 0.8rem; margin-top: 12px; }
+      .r-num { color: var(--text-muted); font-weight: 700; }
+
+      .s-stats { display: flex; gap: 24px; background: rgba(255,255,255,0.02); padding: 16px; border-radius: 14px; }
+      .ss-box { display: flex; flex-direction: column; gap: 4px; }
+      .ssl { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+      .ssv { font-weight: 800; font-family: 'Outfit'; font-size: 1.1rem; }
+
+      .s-footer { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .po-btn { background: var(--primary); color: white; border: none; padding: 10px; border-radius: 10px; font-weight: 700; font-size: 0.8rem; cursor: pointer; }
+      .ledger-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 10px; border-radius: 10px; font-weight: 700; font-size: 0.8rem; cursor: pointer; }
+
+      .market-comparison { padding: 32px; }
+      .panel-header { margin-bottom: 32px; }
+      .price-table-wrap { overflow-x: auto; }
+      .price-table { width: 100%; border-collapse: collapse; }
+      .price-table th { text-align: left; padding: 16px; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
+      .price-table td { padding: 20px 16px; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+
+      .good { color: var(--success); font-weight: 700; }
+      .bad { color: var(--error); font-weight: 700; }
+
+      .strat-badge { font-size: 0.75rem; font-weight: 800; background: rgba(59, 130, 246, 0.1); color: var(--secondary); padding: 4px 12px; border-radius: 30px; }
+      .strat-badge.good { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+  </style>
+</GroceryOSLayout>

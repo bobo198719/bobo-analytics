@@ -53,12 +53,40 @@ import GroceryOSLayout from "../../layouts/GroceryOSLayout.astro";
           </div>
 
           <div class="s-section">
-              <h3>Appearance</h3>
-              <div class="theme-toggle">
-                  <div class="theme-btn active">Dark Mode</div>
-                  <div class="theme-btn">Light Mode</div>
+              <h3>Theme Customization</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">Instantly switch between 10 high-fidelity dashboard themes.</p>
+              <div class="theme-grid" id="themeGrid">
+                  <div class="theme-option" data-t="emerald"><span class="t-dot" style="background: #10b981"></span> Emerald Market</div>
+                  <div class="theme-option" data-t="midnight"><span class="t-dot" style="background: #58a6ff"></span> Midnight Commerce</div>
+                  <div class="theme-option" data-t="ocean"><span class="t-dot" style="background: #0ea5e9"></span> Ocean POS</div>
+                  <div class="theme-option" data-t="sunrise"><span class="t-dot" style="background: #f97316"></span> Sunrise Store</div>
+                  <div class="theme-option" data-t="minimal"><span class="t-dot" style="background: #0f172a"></span> Minimal POS</div>
+                  <div class="theme-option" data-t="luxury"><span class="t-dot" style="background: #d4af37"></span> Luxury Commerce</div>
+                  <div class="theme-option" data-t="pure"><span class="t-dot" style="background: #3b82f6"></span> Pure Retail</div>
+                  <div class="theme-option" data-t="modern"><span class="t-dot" style="background: #ffffff"></span> Modern Business</div>
+                  <div class="theme-option" data-t="neon"><span class="t-dot" style="background: #ff00ff"></span> Neon Retail</div>
+                  <div class="theme-option" data-t="classic"><span class="t-dot" style="background: #636e72"></span> Classic ERP</div>
               </div>
           </div>
+
+          <script is:inline>
+              const currentTheme = localStorage.getItem('bobo_grocery_theme') || 'emerald';
+              const options = document.querySelectorAll('.theme-option');
+              
+              options.forEach(opt => {
+                  if(opt.dataset.t === currentTheme) opt.classList.add('active');
+                  
+                  opt.addEventListener('click', () => {
+                      const t = opt.dataset.t;
+                      document.documentElement.setAttribute('data-theme', t);
+                      localStorage.setItem('bobo_grocery_theme', t);
+                      
+                      options.forEach(o => o.classList.remove('active'));
+                      opt.classList.add('active');
+                  });
+              });
+          </script>
+
       </div>
   </div>
 
@@ -81,8 +109,10 @@ import GroceryOSLayout from "../../layouts/GroceryOSLayout.astro";
 
       .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 480px; }
 
-      .theme-toggle { display: flex; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 10px; width: fit-content; }
-      .theme-btn { padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; color: var(--text-muted); }
-      .theme-btn.active { background: white; color: black; }
+      .theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+      .theme-option { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 12px 16px; border-radius: 12px; font-size: 0.85rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+      .theme-option:hover { border-color: var(--primary); background: rgba(255,255,255,0.08); }
+      .theme-option.active { border-color: var(--primary); background: rgba(16, 185, 129, 0.1); color: var(--primary); }
+      .t-dot { width: 10px; height: 10px; border-radius: 50%; }
   </style>
 </GroceryOSLayout>

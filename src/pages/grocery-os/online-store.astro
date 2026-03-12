@@ -1,0 +1,164 @@
+---
+import GroceryOSLayout from "../../layouts/GroceryOSLayout.astro";
+
+const templates = [
+  { id: 1, name: "Fresh Mart", type: "Classic", preview: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=300&q=80" },
+  { id: 2, name: "Organic Root", type: "Modern", preview: "https://images.unsplash.com/photo-1574321024216-652637827848?auto=format&fit=crop&w=300&q=80" },
+  { id: 3, name: "Quick Basket", type: "Dark", preview: "https://images.unsplash.com/photo-1604719312563-8912e9223c6a?auto=format&fit=crop&w=300&q=80" }
+];
+---
+
+<GroceryOSLayout title="Online Store Builder | Bobo Grocery OS">
+  <div class="store-builder-header">
+      <div>
+          <h1>Site Engine</h1>
+          <p style="color: var(--text-muted);">Configure your automated grocery storefront and domain.</p>
+      </div>
+      <div class="builder-actions">
+          <button class="preview-btn">View Live Site ↗</button>
+          <button class="publish-btn">Publish to Web</button>
+      </div>
+  </div>
+
+  <div class="builder-grid">
+      <!-- Left: Editor Controls -->
+      <div class="editor-panel glass-card">
+          <div class="editor-section">
+              <h3>Domain & Branding</h3>
+              <div class="field-wrap">
+                  <label>Store Subdomain</label>
+                  <div class="domain-input">
+                      <input type="text" value="bobo-fresh" />
+                      <span>.boboanalytics.com</span>
+                  </div>
+              </div>
+              <div class="field-wrap">
+                  <label>Custom Domain (Pro)</label>
+                  <input type="text" placeholder="e.g. www.yoursupermarket.com" />
+              </div>
+          </div>
+
+          <div class="editor-section">
+              <h3>Theme Selection</h3>
+              <div class="template-grid">
+                  {templates.map(t => (
+                      <div class="t-card">
+                          <img src={t.preview} alt={t.name} />
+                          <div class="t-info">
+                              <span>{t.name}</span>
+                              <span class="type">{t.type}</span>
+                          </div>
+                          <button class="select-t">Use Template</button>
+                      </div>
+                  ))}
+              </div>
+          </div>
+
+          <div class="editor-section">
+              <h3>Store Features</h3>
+              <div class="toggle-list">
+                  <div class="toggle-row">
+                      <span>Instant Delivery (30 min)</span>
+                      <div class="toggle active"></div>
+                  </div>
+                  <div class="toggle-row">
+                      <span>Click & Collect (Pickup)</span>
+                      <div class="toggle active"></div>
+                  </div>
+                  <div class="toggle-row">
+                      <span>Online Card Payments</span>
+                      <div class="toggle active"></div>
+                  </div>
+                  <div class="toggle-row">
+                      <span>Loyalty Card Auth</span>
+                      <div class="toggle"></div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Right: Desktop Preview -->
+      <div class="preview-panel">
+          <div class="browser-frame glass-card">
+              <div class="browser-top">
+                  <div class="dots"><span></span><span></span><span></span></div>
+                  <div class="url-bar">bobo-fresh.boboanalytics.com</div>
+              </div>
+              <div class="mock-content">
+                  <div class="mock-nav">
+                      <span class="m-logo">🍎 Bobo Fresh</span>
+                      <div class="m-links"><span>Bakery</span><span>Fruit</span><span>Meat</span></div>
+                      <span class="m-cart">🛒 0</span>
+                  </div>
+                  <div class="mock-hero">
+                      <h2>Order Fresh. Delivered Fast.</h2>
+                      <p>Experience the best grocery shopping in town.</p>
+                      <button>Start Shopping</button>
+                  </div>
+                  <div class="mock-products">
+                      <h3>Seasonal Picks</h3>
+                      <div class="m-p-grid">
+                          <div class="m-p-item"></div>
+                          <div class="m-p-item"></div>
+                          <div class="m-p-item"></div>
+                          <div class="m-p-item"></div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <style>
+      .store-builder-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+      .builder-actions { display: flex; gap: 16px; }
+      .preview-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+      .publish-btn { background: var(--secondary); border: none; color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+
+      .builder-grid { display: grid; grid-template-columns: 460px 1fr; gap: 32px; height: calc(100vh - 240px); }
+      .editor-panel { padding: 32px; display: flex; flex-direction: column; gap: 32px; overflow-y: auto; }
+      .editor-section h3 { font-family: 'Outfit'; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+
+      .field-wrap { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+      .field-wrap label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+      .domain-input { display: flex; align-items: center; gap: 8px; }
+      .domain-input input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white; }
+      .domain-input span { font-size: 0.85rem; color: var(--text-muted); font-weight: 700; }
+      
+      .field-wrap > input { background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white; }
+
+      .template-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      .t-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 16px; padding: 8px; text-align: center; overflow: hidden; }
+      .t-card img { width: 100%; height: 100px; object-fit: cover; border-radius: 10px; margin-bottom: 12px; }
+      .t-info { display: flex; justify-content: space-between; padding: 0 8px; font-size: 0.8rem; font-weight: 700; margin-bottom: 12px; }
+      .t-info .type { color: var(--primary); }
+      .select-t { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 6px; width: 100%; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+
+      .toggle-list { display: flex; flex-direction: column; gap: 16px; }
+      .toggle-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-weight: 600; }
+      .toggle { width: 44px; height: 22px; background: rgba(255,255,255,0.1); border-radius: 30px; position: relative; cursor: pointer; }
+      .toggle::after { content: ''; position: absolute; left: 4px; top: 3px; width: 16px; height: 16px; background: #64748b; border-radius: 50%; transition: 0.3s; }
+      .toggle.active { background: var(--success); }
+      .toggle.active::after { left: 24px; background: white; }
+
+      .browser-frame { height: 100%; display: flex; flex-direction: column; overflow: hidden; background: white; }
+      .browser-top { background: #f1f5f9; padding: 12px 20px; display: flex; align-items: center; gap: 20px; border-bottom: 1px solid #e2e8f0; }
+      .dots { display: flex; gap: 6px; }
+      .dots span { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; }
+      .url-bar { flex: 1; background: white; padding: 6px 16px; border-radius: 8px; font-size: 0.8rem; color: #64748b; border: 1px solid #e2e8f0; }
+
+      .mock-content { flex: 1; color: #0f172a; padding: 40px; }
+      .mock-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 60px; }
+      .m-logo { font-weight: 800; font-size: 1.2rem; }
+      .m-links { display: flex; gap: 24px; font-size: 0.9rem; font-weight: 600; color: #64748b; }
+      
+      .mock-hero { text-align: center; margin-bottom: 80px; }
+      .mock-hero h2 { font-size: 2.5rem; font-weight: 900; margin-bottom: 12px; }
+      .mock-hero p { color: #64748b; font-size: 1.1rem; margin-bottom: 32px; }
+      .mock-hero button { background: #0f172a; color: white; border: none; padding: 14px 32px; border-radius: 12px; font-weight: 700; }
+
+      .mock-products h3 { margin-bottom: 24px; font-size: 1.25rem; }
+      .m-p-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+      .m-p-item { aspect-ratio: 1; background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 16px; }
+  </style>
+</GroceryOSLayout>

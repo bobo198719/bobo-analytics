@@ -1,0 +1,172 @@
+---
+import GroceryOSLayout from "../../layouts/GroceryOSLayout.astro";
+
+// Mock delivery data
+const activeDeliveries = [
+  { id: "DLV-001", order: "#ORD-G8812", agent: "Amit Kumar", address: "Sector 14, Gurgaon", eta: "12 mins", status: "In Transit", priority: "High" },
+  { id: "DLV-002", order: "#ORD-G8815", agent: "Sumit Singh", address: "Palam Vihar, EX-A", eta: "8 mins", status: "Picking Up", priority: "Normal" },
+  { id: "DLV-003", order: "#ORD-G8818", agent: "Unassigned", address: "DLF Phase 3", eta: "TBD", status: "Pending", priority: "Instant" }
+];
+
+const agents = [
+  { id: 1, name: "Amit Kumar", status: "Busy", battery: "84%", vehicle: "Electric Bike" },
+  { id: 2, name: "Sumit Singh", status: "Busy", battery: "12%", vehicle: "Bicycle" },
+  { id: 3, name: "Ravi Teja", status: "Online", battery: "95%", vehicle: "Electric Bike" }
+];
+---
+
+<GroceryOSLayout title="Delivery Management | Bobo Grocery OS">
+  <div class="delivery-header">
+      <div>
+          <h1>Delivery Dispatch</h1>
+          <p style="color: var(--text-muted);">Real-time tracking and fleet assignment (Instamart Scale).</p>
+      </div>
+      <div class="fleet-stats">
+          <div class="f-stat"><span class="v">12</span> <span class="l">Active Agents</span></div>
+          <div class="f-stat"><span class="v">9.2m</span> <span class="l">Avg. Delivery Time</span></div>
+      </div>
+  </div>
+
+  <div class="delivery-grid">
+      <!-- Left: Active Logistics -->
+      <div class="logistics-panel">
+          <div class="panel-card glass-card">
+              <div class="panel-header">
+                  <h3>Active Shipments</h3>
+                  <div class="status-filters">
+                      <button class="s-pill active">All</button>
+                      <button class="s-pill">Pending</button>
+                      <button class="s-pill">Transit</button>
+                  </div>
+              </div>
+              <div class="delivery-list">
+                  {activeDeliveries.map(d => (
+                      <div class="d-item glass-card">
+                          <div class="d-info">
+                              <span class="d-id">{d.id}</span>
+                              <span class="d-order">{d.order}</span>
+                              <p class="d-address">{d.address}</p>
+                          </div>
+                          <div class="d-meta">
+                              <span class={`priority-tag ${d.priority.toLowerCase()}`}>{d.priority}</span>
+                              <span class="eta">ETA: {d.eta}</span>
+                          </div>
+                          <div class="d-status">
+                              <span class={`status-dot ${d.status.toLowerCase().replace(' ', '-')}`}></span>
+                              {d.status}
+                          </div>
+                          <div class="d-agent">
+                              <span class="agent-label">Agent</span>
+                              <span class="agent-val">{d.agent}</span>
+                          </div>
+                          <button class="track-btn">Live Track</button>
+                      </div>
+                  ))}
+              </div>
+          </div>
+      </div>
+
+      <!-- Right: Map & Fleet -->
+      <div class="fleet-panel">
+          <div class="map-mockup glass-card">
+              <div class="map-placeholder">
+                  <div class="map-overlay">
+                      <span class="pulse-marker store"></span>
+                      <span class="pulse-marker agent-1"></span>
+                      <span class="pulse-marker agent-2"></span>
+                  </div>
+                  <p>Interactive Delivery Heatmap</p>
+              </div>
+          </div>
+
+          <div class="agents-card glass-card">
+              <div class="panel-header">
+                  <h3>Fleet Status</h3>
+                  <button class="add-agent-btn">+ Add Agent</button>
+              </div>
+              <div class="agent-stack">
+                  {agents.map(a => (
+                      <div class="a-row">
+                          <div class="a-avatar">👤</div>
+                          <div class="a-info">
+                              <span class="a-name">{a.name}</span>
+                              <span class="a-vh">{a.vehicle}</span>
+                          </div>
+                          <div class="a-bat">
+                              <span class="bat-icon">🔋</span> {a.battery}
+                          </div>
+                          <div class={`a-status ${a.status.toLowerCase()}`}>{a.status}</div>
+                          <button class="assign-btn">Assign</button>
+                      </div>
+                  ))}
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <style>
+      .delivery-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+      .fleet-stats { display: flex; gap: 32px; }
+      .f-stat { display: flex; flex-direction: column; text-align: right; }
+      .f-stat .v { font-size: 1.75rem; font-weight: 800; color: var(--primary); font-family: 'Outfit'; }
+      .f-stat .l { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; }
+
+      .delivery-grid { display: grid; grid-template-columns: 1fr 480px; gap: 24px; }
+      .logistics-panel { display: flex; flex-direction: column; gap: 24px; }
+      .panel-card { padding: 32px; flex: 1; }
+      .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+      .status-filters { display: flex; gap: 8px; }
+      .s-pill { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-muted); padding: 4px 12px; border-radius: 30px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+      .s-pill.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+      .delivery-list { display: flex; flex-direction: column; gap: 16px; }
+      .d-item { padding: 20px; display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr 100px; align-items: center; gap: 20px; transition: 0.2s; }
+      .d-item:hover { border-color: var(--primary); transform: translateX(8px); }
+
+      .d-id { display: block; font-size: 0.75rem; color: var(--text-muted); font-weight: 700; }
+      .d-order { font-weight: 800; font-size: 1.1rem; font-family: 'Outfit'; }
+      .d-address { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
+
+      .priority-tag { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; }
+      .priority-tag.high { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+      .priority-tag.instant { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+      .priority-tag.normal { background: rgba(59, 130, 246, 0.1); color: var(--secondary); }
+
+      .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+      .status-dot.in-transit { background: var(--secondary); box-shadow: 0 0 10px var(--secondary); }
+      .status-dot.picking-up { background: var(--warning); }
+      .status-dot.pending { background: var(--text-muted); }
+
+      .agent-label { display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
+      .agent-val { font-weight: 700; font-size: 0.9rem; }
+
+      .track-btn { background: var(--primary); border: none; color: white; padding: 10px; border-radius: 10px; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
+
+      .map-mockup { height: 320px; margin-bottom: 24px; position: relative; overflow: hidden; background: #0f172a; }
+      .map-placeholder { height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.9rem; font-weight: 600; }
+      .map-overlay { position: absolute; inset: 0; background: url('https://www.google.com/maps/about/images/mymaps/mymaps-desktop-16x9.png') center/cover; opacity: 0.3; }
+      
+      .pulse-marker { position: absolute; width: 12px; height: 12px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 0 rgba(16, 185, 129, 0.4); animation: map-pulse 2s infinite; }
+      .pulse-marker.store { top: 50%; left: 50%; background: white; transform: translate(-50%, -50%); width: 16px; height: 16px; }
+      .pulse-marker.agent-1 { top: 30%; left: 40%; }
+      .pulse-marker.agent-2 { top: 60%; left: 70%; background: var(--secondary); }
+
+      @keyframes map-pulse { 
+          0% { box-shadow: 0 0 0 0px rgba(16, 185, 129, 0.7); } 
+          100% { box-shadow: 0 0 0 20px rgba(16, 185, 129, 0); } 
+      }
+
+      .agents-card { padding: 32px; }
+      .agent-stack { display: flex; flex-direction: column; gap: 16px; }
+      .a-row { display: flex; align-items: center; gap: 16px; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.02); }
+      .a-avatar { font-size: 1.5rem; }
+      .a-info { flex: 1; }
+      .a-name { display: block; font-weight: 700; font-size: 0.95rem; }
+      .a-vh { font-size: 0.75rem; color: var(--text-muted); }
+      .a-bat { font-size: 0.85rem; font-weight: 700; }
+      .a-status { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 30px; }
+      .a-status.online { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+      .a-status.busy { background: rgba(59, 130, 246, 0.1); color: var(--secondary); }
+      .assign-btn { background: transparent; border: 1px solid var(--border); color: white; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
+  </style>
+</GroceryOSLayout>
