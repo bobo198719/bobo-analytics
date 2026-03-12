@@ -113,6 +113,13 @@ import MainLayout from "../layouts/MainLayout.astro";
                <td contenteditable="true">Standard, Advanced</td>
                <td><button class="btn-text">Save edits</button></td>
              </tr>
+             <tr>
+               <td contenteditable="true"><strong>Small to Big Business</strong></td>
+               <td contenteditable="true">Scaling AI, Enterprise CRM, Global Supply</td>
+               <td>Live</td>
+               <td contenteditable="true">Startup, Scaleup, Enterprise</td>
+               <td><button class="btn-text">Save edits</button></td>
+             </tr>
            </tbody>
         </table>
       </div>
@@ -139,6 +146,7 @@ import MainLayout from "../layouts/MainLayout.astro";
                     <option value="groceries">Grocery & Fresh Produce</option>
                     <option value="clothing-store">Fashion & Apparel</option>
                     <option value="stock-trading">Stock Trading CRM</option>
+                    <option value="bakers">Small to Big Business</option>
                   </select>
                 </div>
                 <div class="form-group">
@@ -295,6 +303,13 @@ import MainLayout from "../layouts/MainLayout.astro";
                    <td id="base-stock-prem">Algo Strategy, Risk Reports, Auto-Tax</td>
                    <td>Professional (₹8,000)</td>
                    <td><button class="btn-text" onclick="editBaselineFeatures('Stock')">Edit Baseline</button></td>
+                </tr>
+                <tr>
+                   <td><strong>Small to Big Business</strong></td>
+                   <td id="base-bakers-core">Operations, Basic CRM</td>
+                   <td id="base-bakers-prem">Scalable AI, Enterprise ERP, Global Analytics</td>
+                   <td>Scaleup (₹15,000)</td>
+                   <td><button class="btn-text" onclick="editBaselineFeatures('Small to Big Business')">Edit Baseline</button></td>
                 </tr>
               </tbody>
            </table>
