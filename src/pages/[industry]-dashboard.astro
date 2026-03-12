@@ -10,6 +10,7 @@ export function getStaticPaths() {
     { params: { industry: 'groceries' } },
     { params: { industry: 'clothing-store' } },
     { params: { industry: 'stock-trading' } },
+    { params: { industry: 'bakers' } },
   ];
 }
 
@@ -116,7 +117,7 @@ const title = `${industry.charAt(0).toUpperCase() + industry.slice(1)} Dashboard
                     datasets: [{
                         label: 'Activity',
                         data: [65, 59, 80, 81, 56, 55, 40],
-                        borderColor: '#00ff96',
+                        borderColor: industry === 'bakers' ? '#ec4899' : (industry === 'healthcare' ? '#00c3ff' : (industry === 'retail' ? '#ff9f43' : (industry === 'groceries' ? '#10b981' : '#00ff96'))),
                         tension: 0.4
                     }]
                 },

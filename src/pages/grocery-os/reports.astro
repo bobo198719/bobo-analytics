@@ -2,60 +2,163 @@
 import GroceryOSLayout from "../../layouts/GroceryOSLayout.astro";
 
 const reports = [
-  { title: "Daily Sales Report", desc: "Detailed breakdown of all transactions today.", icon: "📊" },
-  { title: "Profit & Loss", desc: "Monthly financial summary including margins.", icon: "💰" },
-  { title: "Inventory Aging", desc: "Identify slow moving products and expiring stock.", icon: "⏰" },
-  { title: "GST Filing Data", desc: "Export-ready data for tax compliance (Excel/JSON).", icon: "📑" },
-  { title: "Customer Lifetime Value", desc: "Rank customers by long-term revenue contribution.", icon: "💎" },
-  { title: "Staff Shift Logs", desc: "Tracking hours and sales performance per cashier.", icon: "👤" }
+  { id: 1, title: "Monthly Sales Analysis", type: "Financial", period: "Feb 2026", status: "Generated" },
+  { id: 2, title: "Inventory Aging Report", type: "Stock", period: "As of Today", status: "In Progress" },
+  { id: 3, title: "Supplier Performance Scorecard", type: "Logistics", period: "Q1 2026", status: "Scheduled" },
+  { id: 4, title: "GST-1 & GST-3B Export", type: "Tax", period: "Jan 2026", status: "Ready" }
 ];
 ---
 
-<GroceryOSLayout title="Business Reports | Bobo Grocery OS">
-  <div class="header-flex">
+<GroceryOSLayout title="Advanced Reports | Bobo Grocery OS">
+  <div class="rep-header">
       <div>
-          <h1>Reporting Engine</h1>
-          <p style="color: var(--text-muted);">Unified business intelligence and financial exports.</p>
+          <h1>Retail Intelligence Reports</h1>
+          <p style="color: var(--text-muted);">In-depth analytics and statutory reports for your supermarket branch.</p>
       </div>
-      <div class="date-picker">
-          <span>March 2026</span>
-          <button class="picker-btn">📅 Change Period</button>
+      <div class="rep-actions">
+          <button class="export-btn">📊 Custom Report Builder</button>
       </div>
   </div>
 
-  <div class="report-grid">
-      {reports.map(r => (
-          <div class="report-card glass-card">
-              <div class="r-top">
-                  <div class="r-icon">{r.icon}</div>
-                  <div class="r-actions">
-                      <button class="export-ic">💾 PDF</button>
-                      <button class="export-ic">📗 XLS</button>
+  <div class="reports-grid">
+      <div class="main-stats-panel glass-card">
+          <div class="rep-summary-row">
+              <div class="rs-box">
+                  <span class="rs-label">Total Revenue</span>
+                  <span class="rs-val">₹14.2M</span>
+                  <span class="rs-trend pos">+8% vs Prev Month</span>
+              </div>
+              <div class="rs-box">
+                  <span class="rs-label">Avg. Order Value</span>
+                  <span class="rs-val">₹842</span>
+                  <span class="rs-trend pos">+2%</span>
+              </div>
+              <div class="rs-box">
+                  <span class="rs-label">Gross Margin</span>
+                  <span class="rs-val">24.5%</span>
+                  <span class="rs-trend neg">-0.5%</span>
+              </div>
+          </div>
+          
+          <div class="rep-table-wrap">
+              <h3>Recent Automated Reports</h3>
+              <table class="rep-table">
+                  <thead>
+                      <tr>
+                          <th>Report Title</th>
+                          <th>Category</th>
+                          <th>Period</th>
+                          <th>Status</th>
+                          <th>Actions</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {reports.map(r => (
+                          <tr>
+                              <td class="r-title">{r.title}</td>
+                              <td><span class="r-type">{r.type}</span></td>
+                              <td>{r.period}</td>
+                              <td><span class={`r-status ${r.status.toLowerCase().replace(' ', '-')}`}>{r.status}</span></td>
+                              <td>
+                                  <button class="dl-btn">Download PDF</button>
+                                  <button class="v-btn">View</button>
+                              </td>
+                          </tr>
+                      ))}
+                  </tbody>
+              </table>
+          </div>
+      </div>
+
+      <div class="visual-insights-panel">
+          <div class="glass-card stat-viz">
+              <h3>Sales by Category</h3>
+              <div class="horiz-bars">
+                  <div class="h-bar-row">
+                      <span>Dairy</span>
+                      <div class="h-bar-bg"><div class="h-bar-fill" style="width: 85%"></div></div>
+                      <span class="h-val">₹4.2L</span>
+                  </div>
+                  <div class="h-bar-row">
+                      <span>Grains</span>
+                      <div class="h-bar-bg"><div class="h-bar-fill" style="width: 60%"></div></div>
+                      <span class="h-val">₹2.8L</span>
+                  </div>
+                  <div class="h-bar-row">
+                      <span>Beverages</span>
+                      <div class="h-bar-bg"><div class="h-bar-fill" style="width: 45%"></div></div>
+                      <span class="h-val">₹1.5L</span>
                   </div>
               </div>
-              <h3>{r.title}</h3>
-              <p>{r.desc}</p>
-              <button class="generate-btn">Generate Now →</button>
           </div>
-      ))}
+
+          <div class="glass-card audit-log">
+              <h3>System Activity Log</h3>
+              <div class="log-stack">
+                  <div class="log-item">
+                      <span class="log-time">10:45 AM</span>
+                      <p><strong>Admin</strong> modified product price for "Fresh Milk".</p>
+                  </div>
+                  <div class="log-item">
+                      <span class="log-time">09:12 AM</span>
+                      <p><strong>POS-01</strong> shift started by Vikram M.</p>
+                  </div>
+                  <div class="log-item">
+                      <span class="log-time">Yesterday</span>
+                      <p><strong>Bot</strong> handled reorder for 12 items.</p>
+                  </div>
+              </div>
+          </div>
+      </div>
   </div>
 
   <style>
-      .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-      .date-picker { display: flex; align-items: center; gap: 16px; background: rgba(255,255,255,0.05); padding: 8px 16px; border-radius: 12px; border: 1px solid var(--border); }
-      .picker-btn { background: transparent; border: none; color: var(--primary); font-weight: 700; cursor: pointer; }
+      .rep-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+      .export-btn { background: var(--primary); border: none; color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; }
 
-      .report-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-      .report-card { padding: 32px; display: flex; flex-direction: column; gap: 12px; transition: 0.3s; }
-      .report-card:hover { border-color: var(--primary); transform: scale(1.02); }
+      .reports-grid { display: grid; grid-template-columns: 1fr 380px; gap: 32px; }
+      
+      .main-stats-panel { padding: 40px; }
+      .rep-summary-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-bottom: 48px; border-bottom: 1px solid var(--border); padding-bottom: 40px; }
+      .rs-box { display: flex; flex-direction: column; gap: 4px; }
+      .rs-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+      .rs-val { font-size: 2.2rem; font-weight: 800; font-family: 'Outfit'; }
+      .rs-trend { font-size: 0.75rem; font-weight: 700; }
+      .rs-trend.pos { color: var(--success); }
+      .rs-trend.neg { color: var(--error); }
 
-      .r-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-      .r-icon { font-size: 2.2rem; }
-      .r-actions { display: flex; gap: 8px; }
-      .export-ic { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-muted); font-size: 0.7rem; font-weight: 800; padding: 4px 8px; border-radius: 6px; cursor: pointer; }
+      .rep-table-wrap h3 { font-family: 'Outfit'; margin-bottom: 24px; }
+      .rep-table { width: 100%; border-collapse: collapse; }
+      .rep-table th { text-align: left; padding: 12px; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
+      .rep-table td { padding: 20px 12px; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+      
+      .r-title { font-weight: 700; }
+      .r-type { font-size: 0.75rem; color: var(--primary); font-weight: 800; background: rgba(16, 185, 129, 0.1); padding: 4px 10px; border-radius: 6px; }
+      
+      .r-status { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 30px; }
+      .r-status.generated { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+      .r-status.ready { background: rgba(59, 130, 246, 0.1); color: var(--secondary); }
+      .r-status.in-progress { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+      .r-status.scheduled { background: rgba(255,255,255,0.05); color: var(--text-muted); }
 
-      .report-card h3 { font-family: 'Outfit'; font-size: 1.25rem; }
-      .report-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; min-height: 3.2rem; }
-      .generate-btn { background: transparent; border: none; color: var(--primary); font-weight: 700; font-size: 0.9rem; text-align: left; padding: 0; cursor: pointer; margin-top: 8px; }
+      .dl-btn { background: transparent; border: 1px solid var(--border); color: white; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; margin-right: 8px; }
+      .v-btn { background: rgba(255,255,255,0.05); border: none; color: white; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; }
+
+      .visual-insights-panel { display: flex; flex-direction: column; gap: 24px; }
+      .stat-viz, .audit-log { padding: 24px; }
+      .stat-viz h3, .audit-log h3 { font-size: 1.1rem; margin-bottom: 24px; }
+      
+      .horiz-bars { display: flex; flex-direction: column; gap: 16px; }
+      .h-bar-row { display: grid; grid-template-columns: 80px 1fr 60px; align-items: center; gap: 12px; }
+      .h-bar-row span { font-size: 0.8rem; font-weight: 600; }
+      .h-bar-bg { height: 8px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
+      .h-bar-fill { height: 100%; background: var(--primary); }
+      .h-val { text-align: right; color: var(--primary); }
+
+      .log-stack { display: flex; flex-direction: column; gap: 16px; }
+      .log-item { border-left: 2px solid var(--border); padding-left: 16px; position: relative; }
+      .log-item::before { content: ''; width: 8px; height: 8px; background: var(--border); border-radius: 50%; position: absolute; left: -5px; top: 0; }
+      .log-time { font-size: 0.7rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; }
+      .log-item p { font-size: 0.85rem; margin-top: 4px; }
   </style>
 </GroceryOSLayout>

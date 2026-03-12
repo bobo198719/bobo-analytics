@@ -1,0 +1,86 @@
+---
+import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
+import BakersSubNav from "../../components/BakersSubNav.astro";
+---
+
+<BakersOSLayout title="Baker Settings | Home Bakers OS">
+  <BakersSubNav active="settings" />
+  
+  <div class="settings-wrapper">
+      <div class="settings-header">
+          <h1>Store Settings</h1>
+          <p style="color: var(--text-muted);">Manage your patisserie's digital configuration and preferences.</p>
+      </div>
+
+      <div class="settings-sections">
+          <div class="settings-card glass-card">
+              <h3>General Configuration</h3>
+              <div class="form-grid">
+                  <div class="input-group">
+                      <label>Patisserie Name</label>
+                      <input type="text" value="Sarah's Patisserie" />
+                  </div>
+                  <div class="input-group">
+                      <label>Currency</label>
+                      <select>
+                          <option>INR (₹)</option>
+                          <option>USD ($)</option>
+                          <option>GBP (£)</option>
+                      </select>
+                  </div>
+              </div>
+          </div>
+
+          <div class="settings-card glass-card">
+              <h3>Notification Preferences</h3>
+              <div class="toggle-list">
+                  <div class="toggle-item">
+                      <div class="info">
+                          <span class="t-title">Order Alerts</span>
+                          <span class="t-desc">Receive notifications for new orders on WhatsApp.</span>
+                      </div>
+                      <div class="switch active"></div>
+                  </div>
+                  <div class="toggle-item">
+                      <div class="info">
+                          <span class="t-title">Stock Reminders</span>
+                          <span class="t-desc">Alert when ingredients are running low.</span>
+                      </div>
+                      <div class="switch"></div>
+                  </div>
+              </div>
+          </div>
+
+          <div class="danger-zone">
+              <button class="delete-btn">Deactivate Baker Account</button>
+          </div>
+      </div>
+  </div>
+
+  <style>
+      .settings-wrapper { max-width: 800px; }
+      .settings-header { margin-bottom: 40px; }
+      .settings-sections { display: flex; flex-direction: column; gap: 32px; }
+      .settings-card { padding: 32px; }
+      .settings-card h3 { margin-bottom: 24px; font-family: 'Outfit'; }
+      
+      .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+      .input-group { display: flex; flex-direction: column; gap: 8px; }
+      .input-group label { font-size: 0.8rem; font-weight: 700; color: var(--primary); text-transform: uppercase; }
+      .input-group input, .input-group select { background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white; }
+
+      .toggle-list { display: flex; flex-direction: column; gap: 24px; }
+      .toggle-item { display: flex; justify-content: space-between; align-items: center; }
+      .t-title { display: block; font-weight: 700; }
+      .t-desc { font-size: 0.85rem; color: var(--text-muted); }
+
+      .switch { width: 44px; height: 24px; background: rgba(255,255,255,0.1); border-radius: 30px; position: relative; cursor: pointer; }
+      .switch.active { background: var(--primary); }
+      .switch::after { content: ""; position: absolute; left: 4px; top: 4px; width: 16px; height: 16px; background: white; border-radius: 50%; transition: 0.3s; }
+      .switch.active::after { left: 24px; }
+
+      .danger-zone { margin-top: 40px; border-top: 1px solid var(--border); padding-top: 40px; }
+      .delete-btn { background: transparent; border: 1px solid #ef4444; color: #ef4444; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+      .delete-btn:hover { background: rgba(239, 68, 68, 0.1); }
+  </style>
+</BakersOSLayout>

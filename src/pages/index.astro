@@ -5,7 +5,7 @@ import MainLayout from "../layouts/MainLayout.astro";
 <MainLayout title="Bobo Analytics | HOME BAKERS OS LAUNCHED">
   <section class="hero">
     <div class="hero-content">
-      <h1>AI Analytics Platform for <span class="gradient-text">Every Industry</span></h1>
+      <h1>AI Analytics Platform for <span class="gradient-text">Home Bakers</span> & More</h1>
       <p>Powerful, industry-specific software designed to transform your data into actionable intelligence. Optimized for pharmacy, healthcare, retail, and more.</p>
       <div class="hero-buttons">
         <a href="/login" class="btn-primary">Login to CRM</a>
@@ -43,43 +43,57 @@ import MainLayout from "../layouts/MainLayout.astro";
       <h2>Solutions for Every Industry</h2>
       <p>Choose your sector to see how Bobo Analytics can revolutionize your workflow.</p>
     </div>
-    <div class="industry-grid">
+    <div class="industry-container-alt">
+      <!-- 1. HOME BAKERS IS NOW FIRST -->
+      <a href="/solutions/bakers" class="industry-card pink-glow">
+        <div class="card-icon">🧁 <span class="badge-new">NEW</span></div>
+        <h3>Home Bakers OS</h3>
+        <p>Cakes, desserts, and confectionery CRM for artisanal home bakers.</p>
+      </a>
+
+      <!-- 2. HEALTHCARE -->
       <a href="/solutions/healthcare" class="industry-card">
         <div class="card-icon">🏥</div>
-        <h3>Healthcare</h3>
+        <h3>Healthcare & Med</h3>
         <p>Patient data analytics and management.</p>
       </a>
+
+      <!-- 3. PHARMACY -->
       <a href="/solutions/pharmacy" class="industry-card">
         <div class="card-icon">💊</div>
         <h3>Pharmacy</h3>
         <p>Inventory and prescription tracking.</p>
       </a>
+
+      <!-- 4. RETAIL -->
       <a href="/solutions/retail" class="industry-card">
         <div class="card-icon">🛒</div>
-        <h3>Retail</h3>
+        <h3>Retail Intelligence</h3>
         <p>Consumer behavior and sales insights.</p>
       </a>
+
+      <!-- 5. FINANCE -->
       <a href="/solutions/finance" class="industry-card">
         <div class="card-icon">📈</div>
         <h3>Finance</h3>
         <p>Market analysis and risk assessment.</p>
       </a>
+
+      <!-- 6. GROCERY -->
       <a href="/grocery-login" class="industry-card">
         <div class="card-icon">🍎</div>
         <h3>Grocery OS</h3>
-        <p>Supply chain, stock optimization, and AI-driven POS for supermarkets.</p>
+        <p>Supply chain, stock optimization, and AI-driven POS.</p>
       </a>
+
+      <!-- 7. BOBO RETAIL -->
       <a href="/retail-os-login" class="industry-card">
         <div class="card-icon">👗</div>
         <h3>Bobo Retail OS</h3>
-        <p>Omnichannel fashion SaaS with AI analytics and advanced POS.</p>
+        <p>Omnichannel fashion SaaS with AI analytics.</p>
       </a>
-      <a href="/bakers-login" class="industry-card featured-card">
-        <div class="card-icon">🧁 <span class="new-badge">LIVE NEW</span></div>
-        <h3>Home Bakers OS</h3>
-        <p>Cakes, desserts, and confectionery CRM for artisanal home bakers.</p>
-        <span class="launch-label">Newly Launched Platform</span>
-      </a>
+
+      <!-- 8. STOCK TRADING -->
       <a href="/solutions/stock-trading" class="industry-card">
         <div class="card-icon">📊</div>
         <h3>Stock Trading</h3>
@@ -240,10 +254,26 @@ import MainLayout from "../layouts/MainLayout.astro";
     font-size: 1.1rem;
   }
 
-  .industry-grid {
+  .industry-container-alt {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 24px;
+    margin-top: 40px;
+  }
+
+  .pink-glow {
+    border-color: #f472b6 !important;
+    background: rgba(244, 114, 182, 0.05) !important;
+    box-shadow: 0 0 20px rgba(244, 114, 182, 0.2);
+  }
+
+  .badge-new {
+    background: #f472b6;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 900;
   }
 
   .industry-card {

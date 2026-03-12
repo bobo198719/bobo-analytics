@@ -1,0 +1,145 @@
+---
+import GroceryOSLayout from "../../layouts/GroceryOSLayout.astro";
+
+const staff = [
+  { id: "STF-001", name: "Ananya Sharma", role: "Store Manager", status: "Active", shift: "Morning", access: "Full Admin" },
+  { id: "STF-002", name: "Vikram Malhotra", role: "POS Lead", status: "Active", shift: "Evening", access: "Billing Only" },
+  { id: "STF-003", name: "Rahul Deshmukh", role: "Inventory Clerk", status: "On Leave", shift: "Morning", access: "Stock Only" },
+  { id: "STF-004", name: "Priya Patel", role: "Support Staff", status: "Active", shift: "Flexible", access: "View Only" }
+];
+
+const roles = [
+  { name: "Owner", users: 1, permissions: "All" },
+  { name: "Manager", users: 2, permissions: "Most" },
+  { name: "Cashier", users: 5, permissions: "POS" },
+  { name: "Inventory", users: 3, permissions: "Stock" }
+];
+---
+
+<GroceryOSLayout title="Staff Control | Bobo Grocery OS">
+  <div class="staff-header">
+      <div>
+          <h1>Team & Permissions</h1>
+          <p style="color: var(--text-muted);">Manage your grocery workforce and assign granular access levels.</p>
+      </div>
+      <button class="add-staff-btn">+ Add Team Member</button>
+  </div>
+
+  <div class="staff-grid">
+      <div class="staff-table-panel glass-card">
+          <div class="panel-header">
+              <h3>Staff Directory</h3>
+              <div class="search-staff">
+                  <input type="text" placeholder="Search staff..." />
+              </div>
+          </div>
+          <table class="staff-table">
+              <thead>
+                  <tr>
+                      <th>Staff ID</th>
+                      <th>Full Name</th>
+                      <th>Designation</th>
+                      <th>Shift</th>
+                      <th>Access Level</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {staff.map(s => (
+                      <tr>
+                          <td class="id-col">{s.id}</td>
+                          <td>
+                              <div class="name-box">
+                                  <div class="s-avatar">{s.name.charAt(0)}</div>
+                                  <span>{s.name}</span>
+                              </div>
+                          </td>
+                          <td>{s.role}</td>
+                          <td>{s.shift}</td>
+                          <td><span class="access-pill">{s.access}</span></td>
+                          <td><span class={`status-pill ${s.status.toLowerCase().replace(' ', '-')}`}>{s.status}</span></td>
+                          <td><button class="edit-btn">Edit</button></td>
+                      </tr>
+                  ))}
+              </tbody>
+          </table>
+      </div>
+
+      <div class="roles-panel">
+          <div class="glass-card role-card-wrap">
+              <div class="panel-header">
+                  <h3>Role Access Control</h3>
+              </div>
+              <div class="role-list">
+                  {roles.map(r => (
+                      <div class="role-item">
+                          <div class="role-info">
+                              <span class="r-name">{r.name}</span>
+                              <span class="r-count">{r.users} assigned</span>
+                          </div>
+                          <button class="manage-btn">Setup Permissions</button>
+                      </div>
+                  ))}
+              </div>
+          </div>
+
+          <div class="glass-card shift-card">
+              <h3>Shift Schedule</h3>
+              <div class="shift-timeline">
+                  <div class="s-block">
+                      <span class="s-time">08:00 AM - 04:00 PM</span>
+                      <span class="s-label">Morning Shift (4 Staff)</span>
+                  </div>
+                  <div class="s-block">
+                      <span class="s-time">04:00 PM - 12:00 AM</span>
+                      <span class="s-label">Evening Shift (6 Staff)</span>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <style>
+      .staff-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+      .add-staff-btn { background: var(--primary); border: none; color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+
+      .staff-grid { display: grid; grid-template-columns: 1fr 340px; gap: 24px; }
+      .staff-table-panel { padding: 32px; }
+      .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+      .search-staff input { background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 8px 16px; border-radius: 10px; color: white; font-size: 0.85rem; }
+
+      .staff-table { width: 100%; border-collapse: collapse; }
+      .staff-table th { text-align: left; padding: 12px; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
+      .staff-table td { padding: 16px 12px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+      
+      .name-box { display: flex; align-items: center; gap: 12px; }
+      .s-avatar { width: 32px; height: 32px; background: rgba(16, 185, 129, 0.1); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; }
+      
+      .id-col { font-family: 'Monaco', monospace; font-size: 0.75rem; color: var(--text-muted); }
+      .access-pill { background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
+      
+      .status-pill { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 4px 8px; border-radius: 30px; }
+      .status-pill.active { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+      .status-pill.on-leave { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+
+      .edit-btn { background: transparent; border: 1px solid var(--border); color: white; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; }
+
+      .roles-panel { display: flex; flex-direction: column; gap: 24px; }
+      .role-card-wrap { padding: 24px; }
+      .role-list { display: flex; flex-direction: column; gap: 16px; }
+      .role-item { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+      .role-item:last-child { border: none; }
+      .role-info { display: flex; flex-direction: column; }
+      .r-name { font-weight: 700; font-size: 0.95rem; }
+      .r-count { font-size: 0.75rem; color: var(--text-muted); }
+      .manage-btn { font-size: 0.75rem; font-weight: 700; color: var(--primary); background: transparent; border: none; cursor: pointer; }
+
+      .shift-card { padding: 24px; }
+      .shift-card h3 { font-size: 1.1rem; margin-bottom: 20px; }
+      .shift-timeline { display: flex; flex-direction: column; gap: 16px; }
+      .s-block { border-left: 2px solid var(--primary); padding-left: 16px; display: flex; flex-direction: column; gap: 4px; }
+      .s-time { font-weight: 700; font-size: 0.9rem; }
+      .s-label { font-size: 0.75rem; color: var(--text-muted); }
+  </style>
+</GroceryOSLayout>

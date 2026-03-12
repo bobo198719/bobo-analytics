@@ -1,0 +1,90 @@
+---
+import GroceryOSLayout from "../../layouts/GroceryOSLayout.astro";
+
+const integrations = [
+  { id: "wa", name: "WhatsApp Business API", provider: "Meta/Geni", status: "Connected", icon: "💬", desc: "Automated ordering, invoices, and customer support bot." },
+  { id: "pg", name: "Razorpay / Stripe", provider: "Payments", status: "Configuration Needed", icon: "💳", desc: "Accept online payments for web orders and deliveries." },
+  { id: "sms", name: "Twilio SMS", provider: "Twilio", status: "Inactive", icon: "📱", desc: "Send order updates and promotional alerts via SMS." },
+  { id: "mail", name: "SendGrid", provider: "Email", status: "Connected", icon: "📧", desc: "Professional invoices and marketing campaign delivery." },
+  { id: "pos", name: "Thermal Printer SDK", provider: "Hardware", status: "Local Link Active", icon: "🖨️", desc: "Direct printing from browser to POS thermal printer." }
+];
+---
+
+<GroceryOSLayout title="Integrations | Bobo Grocery OS">
+  <div class="int-header">
+      <div>
+          <h1>External Integrations</h1>
+          <p style="color: var(--text-muted);">Connect your grocery OS to the world's leading APIs and hardware.</p>
+      </div>
+      <button class="add-int-btn">+ Browse Marketplace</button>
+  </div>
+
+  <div class="integration-grid">
+      {integrations.map(int => (
+          <div class="int-card glass-card">
+              <div class="int-top">
+                  <div class="int-icon">{int.icon}</div>
+                  <div class={`int-status-badge ${int.status.toLowerCase().replace(' ', '-')}`}>{int.status}</div>
+              </div>
+              <div class="int-content">
+                  <h3>{int.name}</h3>
+                  <p class="provider">{int.provider}</p>
+                  <p class="desc">{int.desc}</p>
+              </div>
+              <div class="int-actions">
+                  <button class="configure-btn">Configure API</button>
+                  {int.id === 'wa' && <button class="bot-btn">Manage Bot</button>}
+              </div>
+          </div>
+      ))}
+  </div>
+
+  <div class="webhook-section glass-card">
+      <div class="panel-header">
+          <h3>Webhooks & Developer API</h3>
+          <p>Sync your store data with 3rd party apps using secure endpoints.</p>
+      </div>
+      <div class="api-key-box">
+          <label>Secret API Key</label>
+          <div class="key-input">
+              <input type="password" value="sk_live_51Mxxxxxxxxxxxxxxxxxx" readonly />
+              <button class="copy-btn">Copy</button>
+          </div>
+      </div>
+  </div>
+
+  <style>
+      .int-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+      .add-int-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+
+      .integration-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; margin-bottom: 48px; }
+      .int-card { padding: 32px; display: flex; flex-direction: column; gap: 20px; transition: 0.3s; }
+      .int-card:hover { border-color: var(--primary); transform: translateY(-8px); }
+      
+      .int-top { display: flex; justify-content: space-between; align-items: center; }
+      .int-icon { font-size: 2rem; width: 60px; height: 60px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; border-radius: 16px; }
+      
+      .int-status-badge { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 30px; letter-spacing: 0.05em; }
+      .int-status-badge.connected { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+      .int-status-badge.configuration-needed { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+      .int-status-badge.inactive { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); }
+
+      .int-content h3 { font-family: 'Outfit'; font-size: 1.25rem; margin-bottom: 4px; }
+      .provider { font-size: 0.8rem; color: var(--primary); font-weight: 700; text-transform: uppercase; margin-bottom: 12px; }
+      .desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
+
+      .int-actions { display: flex; gap: 12px; margin-top: auto; }
+      .configure-btn { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 10px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; }
+      .bot-btn { background: #25D366; border: none; color: white; padding: 10px 16px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; }
+
+      .webhook-section { padding: 40px; }
+      .panel-header h3 { font-family: 'Outfit'; font-size: 1.5rem; margin-bottom: 8px; }
+      .panel-header p { color: var(--text-muted); margin-bottom: 32px; }
+      
+      .api-key-box { max-width: 500px; }
+      .api-key-box label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 12px; }
+      .key-input { display: flex; gap: 12px; }
+      .key-input input { flex: 1; background: #000; border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: var(--primary); font-family: monospace; }
+      .copy-btn { background: var(--border); border: none; color: white; padding: 0 20px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+  </style>
+</GroceryOSLayout>

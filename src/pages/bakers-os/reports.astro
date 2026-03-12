@@ -1,0 +1,86 @@
+---
+import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
+import BakersSubNav from "../../components/BakersSubNav.astro";
+
+const recentSummaries = [
+  { period: "This Week", revenue: "₹45,200", orders: 28, avgOrder: "₹1,614" },
+  { period: "Last Week", revenue: "₹38,500", orders: 22, avgOrder: "₹1,750" },
+  { period: "This Month", revenue: "₹1,85,000", orders: 112, avgOrder: "₹1,651" }
+];
+---
+
+<BakersOSLayout title="Bakers Reports | Home Bakers OS">
+  <BakersSubNav active="reports" />
+  
+  <div class="header-flex">
+      <div>
+          <h1>Baker Performance Reports</h1>
+          <p style="color: var(--text-muted);">Deep dive into your bakery's sales and performance metrics.</p>
+      </div>
+      <div class="actions">
+          <button class="export-btn">Download PDF</button>
+          <button class="export-btn primary">Generate AI Insights</button>
+      </div>
+  </div>
+
+  <div class="reports-grid">
+      <div class="main-report glass-card">
+          <div class="chart-header">
+              <h3>Revenue Growth</h3>
+              <div class="timeframe">
+                  <span>Last 30 Days</span>
+              </div>
+          </div>
+          <div class="chart-visual">
+              <div class="line-mock">
+                  <svg viewBox="0 0 500 150" preserveAspectRatio="none">
+                      <path d="M0,120 Q125,100 250,80 T500,30" fill="none" stroke="#f472b6" stroke-width="4" />
+                  </svg>
+              </div>
+              <div class="chart-labels">
+                  <span>Week 1</span><span>Week 2</span><span>Week 3</span><span>Week 4</span>
+              </div>
+          </div>
+      </div>
+
+      <div class="summary-list">
+          {recentSummaries.map(s => (
+              <div class="summary-card glass-card">
+                  <span class="period">{s.period}</span>
+                  <div class="metrics">
+                      <div class="metric">
+                          <span class="label">Revenue</span>
+                          <span class="val">{s.revenue}</span>
+                      </div>
+                      <div class="metric">
+                          <span class="label">Orders</span>
+                          <span class="val">{s.orders}</span>
+                      </div>
+                  </div>
+              </div>
+          ))}
+      </div>
+  </div>
+
+  <style>
+      .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+      .actions { display: flex; gap: 12px; }
+      .export-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 700; }
+      .export-btn.primary { background: var(--primary); border: none; }
+
+      .reports-grid { display: grid; grid-template-columns: 1fr 300px; gap: 32px; }
+      .main-report { padding: 32px; height: 400px; display: flex; flex-direction: column; }
+      .chart-header { display: flex; justify-content: space-between; margin-bottom: 32px; }
+      .chart-visual { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; }
+      .line-mock { height: 150px; position: relative; }
+      .chart-labels { display: flex; justify-content: space-between; margin-top: 24px; color: var(--text-muted); font-size: 0.8rem; }
+
+      .summary-list { display: flex; flex-direction: column; gap: 16px; }
+      .summary-card { padding: 20px; }
+      .period { font-size: 0.75rem; color: var(--primary); font-weight: 800; text-transform: uppercase; margin-bottom: 12px; display: block; }
+      .metrics { display: flex; gap: 24px; }
+      .metric { display: flex; flex-direction: column; }
+      .metric .label { font-size: 0.7rem; color: var(--text-muted); }
+      .metric .val { font-size: 1.1rem; font-weight: 800; }
+  </style>
+</BakersOSLayout>

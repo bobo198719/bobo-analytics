@@ -12,10 +12,10 @@ const stats = [
 ];
 
 const topProducts = [
-  { name: "Fresh Full Cream Milk (1L)", sales: 142, stock: "Optimal", img: "milk_grocery_item" },
-  { name: "Sourdough Bread Loaf", sales: 88, stock: "Low", img: "bread_grocery_item" },
-  { name: "Organic Brown Eggs (12pk)", sales: 74, stock: "Critical", img: "eggs_grocery_item" },
-  { name: "Masala Potato Chips", sales: 65, stock: "High", img: "chips_grocery_item" }
+  { name: "Fresh Full Cream Milk (1L)", sales: 142, stock: "Optimal", img: "/milk_grocery_item_1773286627780.png" },
+  { name: "Sourdough Bread Loaf", sales: 88, stock: "Low", img: "/bread_grocery_item_1773286648879.png" },
+  { name: "Organic Brown Eggs (12pk)", sales: 74, stock: "Critical", img: "/eggs_grocery_item_1773286672462.png" },
+  { name: "Masala Potato Chips", sales: 65, stock: "High", img: "/chips_grocery_item_1773286688650.png" }
 ];
 ---
 
@@ -130,8 +130,7 @@ const topProducts = [
               {topProducts.map(product => (
                   <div class="product-row">
                       <div class="product-thumb-box">
-                          {/* We'll assume the image paths are generated/mapped */}
-                          <div class="thumb-placeholder">{product.name[0]}</div>
+                          <img src={product.img} alt={product.name} style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;" />
                       </div>
                       <div class="product-info-cell">
                           <span class="p-name">{product.name}</span>

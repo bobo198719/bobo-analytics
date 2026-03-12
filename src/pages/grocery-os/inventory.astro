@@ -3,12 +3,10 @@ import GroceryOSLayout from "../../layouts/GroceryOSLayout.astro";
 
 // Mock data for Grocery Inventory
 const inventory = [
-  { id: 1, img: "🥛", name: "Fresh Milk (1L)", category: "Dairy", barcode: "8901234001", stock: 42, min_stock: 50, mrp: 70, expiry: "2026-03-15", status: "Critical" },
-  { id: 2, img: "🍞", name: "Brown Bread", category: "Grains", barcode: "8901234002", stock: 12, min_stock: 15, mrp: 45, expiry: "2026-03-14", status: "Expiring" },
-  { id: 3, img: "🥚", name: "Organic Eggs (12pk)", category: "Dairy", barcode: "8901234003", stock: 8, min_stock: 20, mrp: 120, expiry: "2026-03-20", status: "Low Stock" },
-  { id: 4, img: "🍚", name: "Basmati Rice (5kg)", category: "Grains", barcode: "8901234004", stock: 100, min_stock: 30, mrp: 550, expiry: "2027-01-10", status: "Optimal" },
-  { id: 5, img: "🍫", name: "Milk Chocolate", category: "Snacks", barcode: "8901234005", stock: 45, min_stock: 20, mrp: 99, expiry: "2026-08-15", status: "Optimal" },
-  { id: 6, img: "🧴", name: "Detergent Liquid", category: "Household", barcode: "8901234006", stock: 15, min_stock: 10, mrp: 350, expiry: "2028-12-30", status: "Optimal" }
+  { id: 1, img: "/milk_grocery_item_1773286627780.png", name: "Fresh Milk (1L)", category: "Dairy", barcode: "8901234001", stock: 42, min_stock: 50, mrp: 70, expiry: "2026-03-15", status: "Critical" },
+  { id: 2, img: "/bread_grocery_item_1773286648879.png", name: "Brown Bread", category: "Grains", barcode: "8901234002", stock: 12, min_stock: 15, mrp: 45, expiry: "2026-03-14", status: "Expiring" },
+  { id: 3, img: "/eggs_grocery_item_1773286672462.png", name: "Organic Eggs (12pk)", category: "Dairy", barcode: "8901234003", stock: 8, min_stock: 20, mrp: 120, expiry: "2026-03-20", status: "Low Stock" },
+  { id: 4, img: "/chips_grocery_item_1773286688650.png", name: "Potato Chips", category: "Snacks", barcode: "8901234004", stock: 100, min_stock: 30, mrp: 20, expiry: "2027-01-10", status: "Optimal" }
 ];
 ---
 
@@ -89,7 +87,9 @@ const inventory = [
                   <tr class={item.status.toLowerCase().replace(' ', '-')}>
                       <td>
                           <div class="p-cell">
-                              <div class="p-img">{item.img}</div>
+                              <div class="p-img">
+                                  <img src={item.img} alt={item.name} style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;" />
+                              </div>
                               <span class="p-name">{item.name}</span>
                           </div>
                       </td>

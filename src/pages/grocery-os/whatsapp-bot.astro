@@ -1,0 +1,133 @@
+---
+import GroceryOSLayout from "../../layouts/GroceryOSLayout.astro";
+
+const mockMessages = [
+  { sender: "Customer", text: "Hi, I want to order some groceries.", time: "10:05 AM" },
+  { sender: "Bot", text: "Welcome to Bobo Fresh! 🍎\nHere is our catalog: [Link]\nPlease send the item names or photos of your list.", time: "10:05 AM" },
+  { sender: "Customer", text: "I need 2L Milk and 1 pack of Brown Bread.", time: "10:06 AM" },
+  { sender: "Bot", text: "Got it! ✅\n1. Fresh Milk (1L) x 2 = ₹126\n2. Brown Bread x 1 = ₹42\nTotal: ₹168\n\nConfirm order? (Yes/No)", time: "10:06 AM" },
+  { sender: "Customer", text: "Yes", time: "10:07 AM" },
+  { sender: "Bot", text: "Order Confirmed! 🚀\nOrder ID: #WA-9921\nYour invoice is being generated...", time: "10:07 AM" }
+];
+---
+
+<GroceryOSLayout title="WhatsApp Bot | Bobo Grocery OS">
+  <div class="bot-header">
+      <div>
+          <h1>WhatsApp AI Bot</h1>
+          <p style="color: var(--text-muted);">Monitor and train your automated WhatsApp ordering assistant.</p>
+      </div>
+      <div class="bot-status">
+          <span class="status-indicator online"></span>
+          <span>Bot Status: <strong>Operational</strong></span>
+      </div>
+  </div>
+
+  <div class="bot-grid">
+      <div class="chat-preview glass-card">
+          <div class="chat-header">
+              <div class="wa-logo">💬</div>
+              <div class="chat-info">
+                  <span class="c-phone">+91 98765 43210</span>
+                  <span class="c-status">Automated Ordering Service</span>
+              </div>
+          </div>
+          <div class="chat-body">
+              {mockMessages.map(m => (
+                  <div class={`msg-wrap ${m.sender.toLowerCase()}`}>
+                      <div class="msg">
+                          <p>{m.text.split('\n').map(line => <>{line}<br/></>)}</p>
+                          <span class="m-time">{m.time}</span>
+                      </div>
+                  </div>
+              ))}
+          </div>
+          <div class="chat-input-mock">
+              <span>Type a message...</span>
+              <button>Send</button>
+          </div>
+      </div>
+
+      <div class="bot-settings-panel">
+          <div class="glass-card b-stat-card">
+              <h3>Bot Performance</h3>
+              <div class="b-stats">
+                  <div class="bs-item">
+                      <span class="bs-val">142</span>
+                      <span class="bs-label">Orders Today</span>
+                  </div>
+                  <div class="bs-item">
+                      <span class="bs-val">98%</span>
+                      <span class="bs-label">Success Rate</span>
+                  </div>
+                  <div class="bs-item">
+                      <span class="bs-val">1.2s</span>
+                      <span class="bs-label">Avg. Response</span>
+                  </div>
+              </div>
+          </div>
+
+          <div class="glass-card b-config-card">
+              <h3>AI Training & Flow</h3>
+              <div class="config-list">
+                  <div class="c-row">
+                      <span>Enable Auto-Invoicing</span>
+                      <div class="toggle active"></div>
+                  </div>
+                  <div class="c-row">
+                      <span>Natural Language Processing</span>
+                      <div class="toggle active"></div>
+                  </div>
+                  <div class="c-row">
+                      <span>Image Recognition (Lists)</span>
+                      <div class="toggle"></div>
+                  </div>
+              </div>
+              <button class="train-btn">Update Knowledge Base</button>
+          </div>
+      </div>
+  </div>
+
+  <style>
+      .bot-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+      .bot-status { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.05); padding: 8px 16px; border-radius: 30px; font-size: 0.9rem; }
+      .status-indicator { width: 10px; height: 10px; border-radius: 50%; }
+      .status-indicator.online { background: #25D366; box-shadow: 0 0 10px #25D366; }
+
+      .bot-grid { display: grid; grid-template-columns: 1fr 400px; gap: 32px; height: calc(100vh - 240px); }
+      
+      .chat-preview { display: flex; flex-direction: column; background: #0b141a; border: none; overflow: hidden; }
+      .chat-header { background: #202c33; padding: 12px 24px; display: flex; align-items: center; gap: 16px; }
+      .wa-logo { width: 40px; height: 40px; background: #25D366; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+      .chat-info { display: flex; flex-direction: column; }
+      .c-phone { font-weight: 700; color: #e9edef; }
+      .c-status { font-size: 0.75rem; color: #8696a0; }
+
+      .chat-body { flex: 1; padding: 24px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; background: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-blend-mode: overlay; background-color: #0b141a; }
+      .msg-wrap { display: flex; width: 100%; }
+      .msg-wrap.customer { justify-content: flex-end; }
+      .msg { max-width: 70%; padding: 8px 12px; border-radius: 8px; position: relative; font-size: 0.9rem; line-height: 1.4; color: #e9edef; }
+      .customer .msg { background: #005c4b; border-top-right-radius: 0; }
+      .bot .msg { background: #202c33; border-top-left-radius: 0; }
+      .m-time { font-size: 0.65rem; color: rgba(255,255,255,0.5); float: right; margin-top: 4px; }
+
+      .chat-input-mock { background: #202c33; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; color: #8696a0; font-size: 0.9rem; }
+      .chat-input-mock button { background: transparent; border: none; color: #005c4b; font-weight: 800; }
+
+      .bot-settings-panel { display: flex; flex-direction: column; gap: 24px; }
+      .b-stat-card, .b-config-card { padding: 32px; }
+      .b-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 24px; }
+      .bs-item { display: flex; flex-direction: column; background: rgba(255,255,255,0.03); padding: 16px; border-radius: 12px; }
+      .bs-val { font-size: 1.5rem; font-weight: 800; color: var(--primary); font-family: 'Outfit'; }
+      .bs-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+
+      .config-list { display: flex; flex-direction: column; gap: 16px; margin: 24px 0; }
+      .c-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-weight: 600; }
+      .toggle { width: 40px; height: 20px; background: rgba(255,255,255,0.1); border-radius: 30px; position: relative; }
+      .toggle::after { content: ''; position: absolute; left: 4px; top: 3px; width: 14px; height: 14px; background: white; border-radius: 50%; transition: 0.3s; }
+      .toggle.active { background: #25D366; }
+      .toggle.active::after { left: 22px; }
+
+      .train-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+  </style>
+</GroceryOSLayout>

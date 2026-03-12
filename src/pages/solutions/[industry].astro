@@ -90,6 +90,7 @@ export function getStaticPaths() {
         features: [
           { title: "Freshness Tracking", desc: "Monitor perishables effectively." },
           { title: "Loyalty Programs", desc: "Engage customers with rewards." },
+          { title: "Home Bakers Module", desc: "Manage custom orders and artisanal bakes directly." },
           { title: "Quick Billing", desc: "Reduce checkout wait times." }
         ],
         loginTitle: "Grocery CRM Login",
@@ -145,6 +146,30 @@ export function getStaticPaths() {
           gradientFrom: "#001b2b",
           gradientTo: "#00364d",
           accent: "#00e5ff"
+        }
+      }
+    },
+    {
+      industry: "bakers",
+      data: {
+        title: "Home Bakers OS",
+        subtitle: "The ultimate CRM and management suite for artisanal home bakers.",
+        stats: [
+          { value: "500+", label: "Active Bakers" },
+          { value: "10k+", label: "Cakes Delivered" },
+          { value: "99%", label: "Satisfaction" },
+          { value: "AI", label: "Smart Pricing" }
+        ],
+        features: [
+          { title: "Order Management", desc: "Track custom cake orders from inquiry to delivery." },
+          { title: "Bake Catalog", desc: "Showcase your portfolio with stunning visuals." },
+          { title: "AI Costing", desc: "Automatically calculate ingredient costs and margins." }
+        ],
+        loginTitle: "Home Bakers Login",
+        theme: {
+          gradientFrom: "#1e1b4b",
+          gradientTo: "#020617",
+          accent: "#f472b6"
         }
       }
     }

@@ -1,12 +1,12 @@
 ---
 import GroceryOSLayout from "../../layouts/GroceryOSLayout.astro";
 
-// Mock data for Grocery Products
+// Mock data for Grocery Products with Image support
 const products = [
-  { id: 1, name: "Fresh Milk (1L)", category: "Dairy", brand: "Amul", mrp: 65, cost: 58, sell: 63, gst: 5, stock: 42, expiry: "2026-03-15", supplier: "Amul Dairy Corp" },
-  { id: 2, name: "Brown Bread", category: "Grains", brand: "Harvest Gold", mrp: 45, cost: 38, sell: 42, gst: 5, stock: 12, expiry: "2026-03-14", supplier: "Harvest Gold Pvt Ltd" },
-  { id: 3, name: "Organic Eggs (12pk)", category: "Dairy", brand: "Healthy Farm", mrp: 120, cost: 95, sell: 110, gst: 5, stock: 8, expiry: "2026-03-20", supplier: "Global Poultry" },
-  { id: 4, name: "Basmati Rice (5kg)", category: "Grains", brand: "India Gate", mrp: 550, cost: 480, sell: 520, gst: 5, stock: 100, expiry: "2027-01-10", supplier: "India Gate Mills" }
+  { id: 1, name: "Fresh Milk (1L)", category: "Dairy", brand: "Amul", mrp: 65, cost: 58, sell: 63, gst: 5, stock: 42, expiry: "2026-03-15", supplier: "Amul Dairy Corp", image: "/milk_grocery_item_1773286627780.png" },
+  { id: 2, name: "Brown Bread", category: "Grains", brand: "Harvest Gold", mrp: 45, cost: 38, sell: 42, gst: 5, stock: 12, expiry: "2026-03-14", supplier: "Harvest Gold Pvt Ltd", image: "/bread_grocery_item_1773286648879.png" },
+  { id: 3, name: "Organic Eggs (12pk)", category: "Dairy", brand: "Healthy Farm", mrp: 120, cost: 95, sell: 110, gst: 5, stock: 8, expiry: "2026-03-20", supplier: "Global Poultry", image: "/eggs_grocery_item_1773286672462.png" },
+  { id: 4, name: "Basmati Rice (5kg)", category: "Grains", brand: "India Gate", mrp: 550, cost: 480, sell: 520, gst: 5, stock: 100, expiry: "2027-01-10", supplier: "India Gate Mills", image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=100&q=80" }
 ];
 ---
 
@@ -53,7 +53,9 @@ const products = [
                   <tr>
                       <td>
                           <div class="p-info">
-                              <div class="p-img-box">{p.name[0]}</div>
+                              <div class="p-img-box">
+                                  <img src={p.image} alt={p.name} style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;" />
+                              </div>
                               <div class="p-text">
                                   <span class="name">{p.name}</span>
                                   <span class="sku">ID: #G-{p.id}</span>

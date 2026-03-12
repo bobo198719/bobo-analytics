@@ -1,0 +1,81 @@
+---
+import GroceryOSLayout from "../../layouts/GroceryOSLayout.astro";
+
+const tableGroups = [
+  {
+    name: "Core SaaS",
+    tables: ["users", "roles", "permissions", "stores", "store_settings", "themes", "subscriptions", "plans", "payments", "activity_logs"]
+  },
+  {
+    name: "Products & Inventory",
+    tables: ["products", "product_categories", "product_brands", "product_images", "product_variants", "product_batches", "product_barcodes", "product_expiry", "product_prices", "inventory", "inventory_movements", "inventory_alerts", "stock_adjustments", "warehouse_locations"]
+  },
+  {
+    name: "Sales & CRM",
+    tables: ["orders", "order_items", "order_payments", "order_discounts", "invoices", "refunds", "customers", "customer_addresses", "customer_loyalty", "customer_wallet", "customer_segments"]
+  },
+  {
+    name: "Logistics & Supply",
+    tables: ["suppliers", "supplier_products", "supplier_price_history", "purchase_orders", "purchase_order_items", "delivery_orders", "delivery_agents", "delivery_tracking", "delivery_routes"]
+  },
+  {
+    name: "Marketing & AI",
+    tables: ["campaigns", "coupons", "discount_rules", "marketing_messages", "email_campaigns", "sms_campaigns", "ai_predictions", "demand_forecasts", "sales_forecasts", "customer_insights"]
+  },
+  {
+    name: "Ecommerce & API",
+    tables: ["ecommerce_stores", "ecommerce_products", "ecommerce_orders", "ecommerce_carts", "api_keys", "webhooks", "payment_integrations", "whatsapp_integrations", "sms_integrations"]
+  }
+];
+---
+
+<GroceryOSLayout title="SaaS Infrastructure | Bobo Grocery OS">
+  <div class="infra-header">
+      <div>
+          <h1>Global Schema & Database</h1>
+          <p style="color: var(--text-muted);">Comprehensive view of the 50+ tables powering your Grocery SaaS ecosystem.</p>
+      </div>
+      <div class="infra-stats">
+          <div class="i-stat"><span>54</span> Tables</div>
+          <div class="i-stat"><span>12M+</span> Rows / Month</div>
+      </div>
+  </div>
+
+  <div class="schema-grid">
+      {tableGroups.map(group => (
+          <div class="group-card glass-card">
+              <div class="group-header">
+                  <div class="group-icon">🗄️</div>
+                  <h3>{group.name}</h3>
+              </div>
+              <div class="table-list">
+                  {group.tables.map(table => (
+                      <div class="table-tag">
+                          <span class="t-name">{table}</span>
+                          <span class="t-status">Active</span>
+                      </div>
+                  ))}
+              </div>
+          </div>
+      ))}
+  </div>
+
+  <style>
+      .infra-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+      .infra-stats { display: flex; gap: 24px; }
+      .i-stat { background: rgba(16, 185, 129, 0.1); color: var(--primary); padding: 8px 16px; border-radius: 12px; font-weight: 700; font-size: 0.9rem; }
+      .i-stat span { font-size: 1.2rem; margin-right: 4px; }
+
+      .schema-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+      .group-card { padding: 32px; display: flex; flex-direction: column; gap: 24px; }
+      .group-header { display: flex; align-items: center; gap: 12px; }
+      .group-icon { font-size: 1.5rem; width: 40px; height: 40px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; border-radius: 10px; }
+      .group-header h3 { font-family: 'Outfit'; font-size: 1.25rem; }
+
+      .table-list { display: flex; flex-wrap: wrap; gap: 8px; }
+      .table-tag { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+      .table-tag:hover { background: rgba(255,255,255,0.08); border-color: var(--primary); cursor: pointer; }
+      .t-name { font-family: 'Monaco', 'Consolas', monospace; color: var(--text-main); }
+      .t-status { font-size: 0.6rem; text-transform: uppercase; color: var(--primary); font-weight: 800; opacity: 0.6; }
+  </style>
+</GroceryOSLayout>
