@@ -364,7 +364,21 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
     /* Nav */
     .admin-top-nav { height: 64px; background: rgba(15,23,42,0.8); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; border-bottom: 1px solid var(--card-border); z-index: 100; }
-    .crm-logo { display:flex; align-items:center; gap:10px; font-weight:800; font-size:1.2rem; }
+    .crm-logo { display:flex; align-items:center; gap:12px; font-weight:800; font-size:1.3rem; letter-spacing: -0.5px; }
+    .crm-logo img { 
+        height: 42px; 
+        width: auto; 
+        border-radius: 8px; 
+        transition: transform 0.3s ease;
+        filter: drop-shadow(0 0 8px var(--primary));
+        animation: logoGlow 2s infinite alternate ease-in-out;
+    }
+    .crm-logo img:hover { transform: scale(1.05); }
+
+    @keyframes logoGlow {
+        from { filter: drop-shadow(0 0 5px var(--primary)); brightness: 1; }
+        to { filter: drop-shadow(0 0 15px var(--primary)); brightness: 1.2; }
+    }
     .platform-badge { background: var(--primary); font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
     .nav-center .search-wrapper { background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; padding: 6px 12px; width: 400px; display: flex; gap: 8px; }
     .search-wrapper input { background: transparent; border: none; color: white; outline: none; width: 100%; }
