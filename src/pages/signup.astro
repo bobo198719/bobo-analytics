@@ -2,162 +2,355 @@
 import MainLayout from "../layouts/MainLayout.astro";
 ---
 
-<MainLayout title="Create Your Account | Bobo Analytics">
-  <section class="auth-wrapper">
-    <div class="auth-container">
-      <div class="auth-header">
-        <div class="icon-circle">✨</div>
-        <h1>Create Your Account</h1>
-        <p>Start your 14-day free trial. No credit card required.</p>
-      </div>
+<MainLayout title="Join Bobo Analytics | Activate Your Workspace">
+    <div class="signup-container">
+        <div class="signup-glass">
+            <div id="signup-wizard">
+                <!-- PROGRESS BAR -->
+                <div class="progress-bar-container">
+                    <div class="progress-steps">
+                        <div class="p-step active" data-step="1">Details</div>
+                        <div class="p-step" data-step="2">Industry</div>
+                        <div class="p-step" data-step="3">Plan</div>
+                        <div class="p-step" data-step="4">Activate</div>
+                    </div>
+                    <div class="progress-line"><div class="line-fill" id="progressFill"></div></div>
+                </div>
 
-      <form class="auth-form">
-        <div class="form-group">
-          <label>Full Name</label>
-          <input type="text" placeholder="John Doe" required />
+                <form id="publicSignupForm">
+                    <!-- STEP 1: Account -->
+                    <div class="signup-step active" data-step="1">
+                        <h1>Create Your Account</h1>
+                        <p>Let's start with the basics of your business.</p>
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label>Business Name</label>
+                                <input type="text" id="sBizName" placeholder="e.g. Apollo Pharmacy" required />
+                            </div>
+                            <div class="input-group">
+                                <label>Owner Name</label>
+                                <input type="text" id="sOwner" placeholder="Your full name" required />
+                            </div>
+                            <div class="input-group">
+                                <label>Business Email</label>
+                                <input type="email" id="sEmail" placeholder="name@business.com" required />
+                            </div>
+                            <div class="input-group">
+                                <label>Phone Number</label>
+                                <input type="text" id="sPhone" placeholder="+91..." required />
+                            </div>
+                            <div class="input-group full">
+                                <label>Password</label>
+                                <input type="password" id="sPass" placeholder="Create a secure password" required />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: Industry -->
+                    <div class="signup-step" data-step="2">
+                        <h1>Select Your Industry</h1>
+                        <p>We'll pre-configure your OS with industry-specific modules.</p>
+                        <div class="industry-grid">
+                            <label class="ind-card">
+                                <input type="radio" name="sInd" value="pharmacy" checked />
+                                <div class="card-inner">
+                                    <span class="icon">💊</span>
+                                    <strong>Pharmacy</strong>
+                                    <small>Medicine, Stock, GST</small>
+                                </div>
+                            </label>
+                            <label class="ind-card">
+                                <input type="radio" name="sInd" value="retail" />
+                                <div class="card-inner">
+                                    <span class="icon">🛒</span>
+                                    <strong>Retail</strong>
+                                    <small>Billing, Inventory, CRM</small>
+                                </div>
+                            </label>
+                            <label class="ind-card">
+                                <input type="radio" name="sInd" value="bakers" />
+                                <div class="card-inner">
+                                    <span class="icon">🧁</span>
+                                    <strong>Home Bakers</strong>
+                                    <small>Orders, Gallery, Payments</small>
+                                </div>
+                            </label>
+                            <label class="ind-card">
+                                <input type="radio" name="sInd" value="grocery" />
+                                <div class="card-inner">
+                                    <span class="icon">🍎</span>
+                                    <strong>Grocery</strong>
+                                    <small>Stock, POS, Barcode</small>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: Plan -->
+                    <div class="signup-step" data-step="3">
+                        <h1>Select a Scaling Plan</h1>
+                        <p>Start free for 14 days. No credit card required.</p>
+                        <div class="plan-grid">
+                            <label class="p-card">
+                                <input type="radio" name="sPlan" value="starter" />
+                                <div class="p-card-inner">
+                                    <h3>Starter</h3>
+                                    <div class="price">₹4,999<span>/mo</span></div>
+                                    <ul>
+                                        <li>3 Team Members</li>
+                                        <li>5GB Storage</li>
+                                        <li>Core Analytics</li>
+                                    </ul>
+                                </div>
+                            </label>
+                            <label class="p-card">
+                                <input type="radio" name="sPlan" value="professional" checked />
+                                <div class="p-card-inner highlight">
+                                    <span class="pop">POPULAR</span>
+                                    <h3>Professional</h3>
+                                    <div class="price">₹9,999<span>/mo</span></div>
+                                    <ul>
+                                        <li>10 Team Members</li>
+                                        <li>50GB Storage</li>
+                                        <li>Advanced AI Insights</li>
+                                    </ul>
+                                </div>
+                            </label>
+                            <label class="p-card">
+                                <input type="radio" name="sPlan" value="enterprise" />
+                                <div class="p-card-inner">
+                                    <h3>Enterprise</h3>
+                                    <div class="price">₹19,999<span>/mo</span></div>
+                                    <ul>
+                                        <li>Unlimited Members</li>
+                                        <li>Custom Storage</li>
+                                        <li>24/7 Dedicated Support</li>
+                                    </ul>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- STEP 4: Checkout -->
+                    <div class="signup-step" data-step="4">
+                        <h1>Activate Workspace</h1>
+                        <div class="activation-summary">
+                            <div class="summary-item"><span>Workspace:</span> <strong id="sumDomain">...</strong></div>
+                            <div class="summary-item"><span>Selected Plan:</span> <strong id="sumPlan">...</strong></div>
+                            <div class="summary-item"><span>Status:</span> <span class="tag trial">14-DAY FREE TRIAL</span></div>
+                        </div>
+                        <div class="checkout-footer">
+                            <p>By clicking active, your isolated environment will be deployed instantly.</p>
+                        </div>
+                    </div>
+
+                    <div class="signup-nav">
+                        <button type="button" id="btnPrev" class="btn-secondary" style="display:none">Back</button>
+                        <button type="button" id="btnNext" class="btn-primary">Continue</button>
+                        <button type="submit" id="btnSubmit" class="btn-primary" style="display:none">Activate My OS</button>
+                    </div>
+                </form>
+
+                <div id="activationLoader" class="loader-overlay" style="display:none">
+                    <div class="loader-content">
+                        <div class="spinner"></div>
+                        <h2>Provisioning Your Tenant...</h2>
+                        <p>Setting up database, storage, and industry modules at the edge.</p>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div class="form-group">
-          <label>Email Address</label>
-          <input type="email" placeholder="john@example.com" required />
-        </div>
-
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" placeholder="••••••••" required />
-        </div>
-
-        <button type="submit" class="btn-primary">Create Account</button>
-      </form>
-
-      <div class="auth-footer">
-        <p>Already have an account? <a href="/login">Log In</a></p>
-      </div>
     </div>
-  </section>
 
-  <style>
-    .auth-wrapper {
-      min-height: 80vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 60px 24px;
-      background: radial-gradient(circle at center, rgba(168, 85, 247, 0.05) 0%, transparent 70%);
-    }
+    <style>
+        .signup-container {
+            min-height: 100vh;
+            background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #05081a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
 
-    .auth-container {
-      width: 100%;
-      max-width: 440px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 24px;
-      padding: 40px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-    }
+        .signup-glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            max-width: 900px;
+            border-radius: 32px;
+            padding: 60px;
+            position: relative;
+            overflow: hidden;
+        }
 
-    .auth-header {
-      text-align: center;
-      margin-bottom: 32px;
-    }
+        .progress-bar-container { margin-bottom: 50px; }
+        .progress-steps { display: flex; justify-content: space-between; margin-bottom: 12px; }
+        .p-step { font-size: 0.8rem; font-weight: 700; color: rgba(255,255,255,0.3); text-transform: uppercase; }
+        .p-step.active { color: #6366f1; }
+        .progress-line { height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; }
+        .line-fill { height: 100%; width: 25%; background: #6366f1; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px rgba(99,102,241,0.5); }
 
-    .icon-circle {
-      width: 64px;
-      height: 64px;
-      background: rgba(168, 85, 247, 0.1);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      margin: 0 auto 20px;
-      border: 1px solid rgba(168, 85, 247, 0.2);
-    }
+        h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 8px; }
+        p { color: rgba(255,255,255,0.6); margin-bottom: 32px; }
 
-    .auth-header h1 {
-      font-size: 2rem;
-      margin-bottom: 8px;
-    }
+        .signup-step { display: none; animation: fadeIn 0.4s ease; }
+        .signup-step.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    .auth-header p {
-      color: rgba(255, 255, 255, 0.5);
-      font-size: 0.95rem;
-    }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .input-group { display: flex; flex-direction: column; gap: 8px; }
+        .input-group.full { grid-column: span 2; }
+        .input-group label { font-size: 0.85rem; font-weight: 600; color: rgba(255,255,255,0.8); }
+        .input-group input { 
+            background: rgba(255,255,255,0.03); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            padding: 14px 18px; 
+            border-radius: 12px; 
+            color: white; 
+            outline: none; 
+            transition: 0.2s;
+        }
+        .input-group input:focus { border-color: #6366f1; background: rgba(99,102,241,0.05); }
 
-    .auth-form {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
+        .industry-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        .ind-card input { display: none; }
+        .card-inner { 
+            background: rgba(255,255,255,0.03); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            padding: 24px 16px; 
+            border-radius: 20px; 
+            text-align: center; 
+            cursor: pointer; 
+            transition: 0.3s;
+        }
+        .ind-card:hover .card-inner { background: rgba(255,255,255,0.06); transform: translateY(-4px); }
+        .ind-card input:checked + .card-inner { border-color: #6366f1; background: rgba(99,102,241,0.1); box-shadow: 0 10px 30px rgba(99,102,241,0.2); }
+        .ind-card .icon { font-size: 2.5rem; display: block; margin-bottom: 12px; }
+        .ind-card strong { display: block; margin-bottom: 4px; }
+        .ind-card small { font-size: 0.7rem; color: rgba(255,255,255,0.5); }
 
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
+        .plan-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .p-card input { display: none; }
+        .p-card-inner { 
+            background: rgba(255,255,255,0.03); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            padding: 30px; 
+            border-radius: 24px; 
+            position: relative; 
+            text-align: center; 
+            cursor: pointer;
+            height: 100%;
+        }
+        .p-card-inner.highlight { border-color: #6366f1; background: rgba(99,102,241,0.05); }
+        .pop { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #6366f1; font-size: 0.65rem; font-weight: 800; padding: 4px 12px; border-radius: 20px; letter-spacing: 1px; }
+        .price { font-size: 2rem; font-weight: 800; margin: 16px 0; }
+        .price span { font-size: 1rem; color: rgba(255,255,255,0.5); font-weight: 500; }
+        .p-card-inner ul { list-style: none; padding: 0; text-align: left; font-size: 0.85rem; color: rgba(255,255,255,0.7); }
+        .p-card-inner li { margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .p-card-inner li::before { content: "✓"; color: #10b981; font-weight: 800; }
+        .p-card input:checked + .p-card-inner { border-color: #6366f1; box-shadow: 0 10px 40px rgba(99,102,241,0.25); }
 
-    .form-group label {
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: rgba(255, 255, 255, 0.8);
-    }
+        .signup-nav { margin-top: 50px; display: flex; justify-content: flex-end; gap: 16px; }
+        .btn-primary { 
+            background: #6366f1; 
+            color: white; 
+            border: none; 
+            padding: 16px 40px; 
+            border-radius: 14px; 
+            font-weight: 700; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            transition: 0.3s;
+            box-shadow: 0 4px 20px rgba(99,102,241,0.3);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(99,102,241,0.5); }
+        .btn-secondary { background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 16px 40px; border-radius: 14px; font-weight: 600; cursor: pointer; }
 
-    .form-group input {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 12px 16px;
-      border-radius: 10px;
-      color: white;
-      font-size: 1rem;
-      transition: all 0.2s ease;
-    }
+        .loader-overlay { position: absolute; inset: 0; background: #05081a; z-index: 100; display: flex; align-items: center; justify-content: center; text-align: center; }
+        .spinner { width: 60px; height: 60px; border: 4px solid rgba(99,102,241,0.1); border-top-color: #6366f1; border-radius: 50%; animation: spin 1s infinite linear; margin: 0 auto 24px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-    .form-group input:focus {
-      outline: none;
-      border-color: #a855f7;
-      background: rgba(255, 255, 255, 0.08);
-      box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.1);
-    }
+        .activation-summary { background: rgba(255,255,255,0.05); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 24px; }
+        .summary-item { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 1.1rem; }
+        .summary-item span { color: rgba(255,255,255,0.5); }
+        .tag.trial { background: #451a03; color: #f59e0b; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; }
+    </style>
 
-    .btn-primary {
-      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-      color: white;
-      padding: 14px;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: all 0.2s ease;
-    }
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            let currentStep = 1;
+            const steps = document.querySelectorAll(".signup-step");
+            const fill = document.getElementById("progressFill");
 
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 20px rgba(168, 85, 247, 0.3);
-    }
+            function updateUI() {
+                steps.forEach(s => s.classList.remove("active"));
+                document.querySelector(`.signup-step[data-step="${currentStep}"]`).classList.add("active");
+                
+                document.querySelectorAll(".p-step").forEach(ps => {
+                    if(parseInt(ps.dataset.step) <= currentStep) ps.classList.add("active");
+                    else ps.classList.remove("active");
+                });
 
-    .auth-footer {
-      margin-top: 32px;
-      text-align: center;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      padding-top: 24px;
-    }
+                fill.style.width = (currentStep * 25) + "%";
 
-    .auth-footer p {
-      color: rgba(255, 255, 255, 0.5);
-      font-size: 0.9rem;
-    }
+                document.getElementById("btnPrev").style.display = currentStep === 1 ? "none" : "block";
+                document.getElementById("btnNext").style.display = currentStep === 4 ? "none" : "block";
+                document.getElementById("btnSubmit").style.display = currentStep === 4 ? "block" : "none";
 
-    .auth-footer a {
-      color: #a855f7;
-      text-decoration: none;
-      font-weight: 500;
-    }
+                if(currentStep === 4) {
+                    const biz = document.getElementById("sBizName").value;
+                    const plan = document.querySelector('input[name="sPlan"]:checked').value;
+                    document.getElementById("sumDomain").innerText = biz.toLowerCase().replace(/\s+/g,'') + ".boboanalytics.com";
+                    document.getElementById("sumPlan").innerText = plan.charAt(0).toUpperCase() + plan.slice(1);
+                }
+            }
 
-    .auth-footer a:hover {
-      text-decoration: underline;
-    }
-  </style>
+            document.getElementById("btnNext").addEventListener("click", () => {
+                // Basic validation for Step 1
+                if(currentStep === 1) {
+                    if(!document.getElementById('sBizName').value || !document.getElementById('sEmail').value) {
+                        alert("Please fill in your business details.");
+                        return;
+                    }
+                }
+                currentStep++;
+                updateUI();
+            });
+
+            document.getElementById("btnPrev").addEventListener("click", () => {
+                currentStep--;
+                updateUI();
+            });
+
+            document.getElementById("publicSignupForm").addEventListener("submit", async (e) => {
+                e.preventDefault();
+                document.getElementById("activationLoader").style.display = "flex";
+
+                const bizName = document.getElementById("sBizName").value;
+                const newTenant = {
+                    id: 'T-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+                    businessName: bizName,
+                    ownerName: document.getElementById("sOwner").value,
+                    email: document.getElementById("sEmail").value,
+                    industry: document.querySelector('input[name="sInd"]:checked').value,
+                    plan: document.querySelector('input[name="sPlan"]:checked').value,
+                    environment: 'trial',
+                    status: 'Active',
+                    created: new Date().toISOString()
+                };
+
+                // Simulate deployment
+                await new Promise(r => setTimeout(r, 4000));
+
+                let accounts = JSON.parse(localStorage.getItem('bobo_accounts') || '[]');
+                accounts.push(newTenant);
+                localStorage.setItem('bobo_accounts', JSON.stringify(accounts));
+
+                // Redirect to trial welcome
+                alert("Workspace Activated! Redirecting to your dashboard...");
+                window.location.href = "/portal/dashboard";
+            });
+        });
+    </script>
 </MainLayout>

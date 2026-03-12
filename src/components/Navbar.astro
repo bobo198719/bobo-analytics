@@ -10,6 +10,7 @@
 
     <div class="nav-links">
       <a href="/pricing" class="nav-link">Pricing</a>
+      
       <div class="dropdown">
         <button class="dropbtn">
           Solutions 
@@ -39,18 +40,19 @@
           </a>
         </div>
       </div>
+
       <div class="dropdown">
         <button class="dropbtn">
           Login 
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
         </button>
         <div class="dropdown-content">
-          <a href="/pharmacy-login">
-            <span class="icon">💊</span> Pharmacy Login
+          <a href="/admin/control-panel">
+            <span class="icon">🛠️</span> Admin CRM
           </a>
           <hr />
-          <a href="/solutions/healthcare#login">
-            <span class="icon">🏥</span> Healthcare Login
+          <a href="/pharmacy-login">
+            <span class="icon">💊</span> Pharmacy Login
           </a>
           <a href="/grocery-login">
             <span class="icon">🍎</span> Grocery OS Login
@@ -58,163 +60,167 @@
           <a href="/retail-os-login">
             <span class="icon">👗</span> Bobo Retail OS
           </a>
-          <a href="/bakers-login">
-            <span class="icon">🧁</span> Home Bakers OS
-          </a>
-          <hr />
-          <a href="/login">
-            <span class="icon">🔑</span> All Logins
+          <a href="/signup">
+            <span class="icon">🚀</span> Client Portal
           </a>
         </div>
       </div>
-      <a href="/signup" class="btn-signup">Start Free Trial</a>
+
+      <a href="/signup" class="btn-signup">Register Now</a>
     </div>
   </div>
 </nav>
 
 <style>
-.navbar {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background: rgba(5, 8, 26, 0.85);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 12px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-decoration: none;
-  color: white;
-  font-size: 1.25rem;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-}
-
-.logo img {
-  height: 38px;
-  width: auto;
-  max-width: 160px;
-  object-fit: contain;
-  border-radius: 6px;
-  filter: drop-shadow(0 0 10px rgba(99,102,241,0.3));
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.nav-link {
-  color: rgba(255, 255, 255, 0.8);
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
-
-.nav-link:hover {
-  color: white;
-}
-
-.dropdown {
-  position: relative;
-}
-
-.dropbtn {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 8px 16px;
-  border-radius: 8px;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.2s ease;
-}
-
-.dropbtn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.4);
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  right: 0;
-  top: calc(100% + 8px);
-  background: #0b112d;
-  min-width: 220px;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 8px 0;
-}
-
-.dropdown-content a {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  color: rgba(255, 255, 255, 0.8);
-  text-decoration: none;
-  font-size: 0.95rem;
-  transition: all 0.2s ease;
-}
-
-.dropdown-content a:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: white;
-}
-
-.dropdown-content hr {
-  margin: 8px 0;
-  border: 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.dropdown:hover .dropdown-content {
-  display: block;
-}
-
-.btn-signup {
-  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-  padding: 8px 20px;
-  border-radius: 8px;
-  color: white;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.95rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.btn-signup:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-}
-
-.icon {
-  font-size: 1.1rem;
-}
-
-@media (max-width: 640px) {
-  .logo span {
-    display: none;
+  .navbar {
+    height: 80px;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: sticky;
+    top: 41px; /* Below deployment banner */
+    z-index: 1000;
   }
-}
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
+  .logo img {
+    height: 38px;
+    width: auto;
+    max-width: 160px;
+    object-fit: contain;
+    border-radius: 6px;
+    filter: drop-shadow(0 0 10px rgba(99,102,241,0.3));
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .nav-link {
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: 0.2s;
+  }
+
+  .nav-link:hover {
+    color: white;
+  }
+
+  .btn-signup {
+    background: #6366f1;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    transition: 0.3s;
+  }
+
+  .btn-signup:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+  }
+
+  /* Dropdown Styles */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .dropbtn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: inherit;
+  }
+
+  .dropdown:hover .dropbtn {
+    color: white;
+  }
+
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0f172a;
+    min-width: 260px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 12px;
+    margin-top: 12px;
+    z-index: 1001;
+  }
+
+  .dropdown:hover .dropdown-content {
+    display: block;
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+
+  .dropdown-content a {
+    color: rgba(255,255,255,0.7);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: 0.2s;
+  }
+
+  .dropdown-content a:hover {
+    background: rgba(255,255,255,0.05);
+    color: white;
+  }
+
+  .dropdown-content .icon {
+    font-size: 1.2rem;
+  }
+
+  .dropdown-content hr {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    margin: 8px 0;
+  }
 </style>
