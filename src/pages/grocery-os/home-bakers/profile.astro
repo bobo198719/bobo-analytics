@@ -1,0 +1,200 @@
+---
+import GroceryOSLayout from "../../../layouts/GroceryOSLayout.astro";
+import BakerSubNav from "../../../components/BakerSubNav.astro";
+
+// Mock baker profile data
+const baker = {
+  name: "Sarah Jenkins",
+  business: "Jenkin's Gourmet Cakes",
+  phone: "+91 98765 43210",
+  whatsapp: "+91 98765 43210",
+  address: "123 Baker St, Green Meadows",
+  city: "Gurgaon",
+  rating: 4.9,
+  reviewsCount: 124,
+  specialties: ["Cakes", "Cupcakes", "Cookies"],
+  about: "Home-based baker specializing in Belgian Chocolate and custom celebration cakes. Using only premium ingredients and a lot of love.",
+  joined: "March 2024"
+};
+
+const reviews = [
+  { user: "Priya M.", rating: 5, comment: "The red velvet cake was absolutely divine! Perfectly moist and not too sweet.", date: "2 days ago" },
+  { user: "Rohan D.", rating: 5, comment: "Best brownies in the city. High quality ingredients.", date: "1 week ago" },
+  { user: "Amit S.", rating: 4, comment: "Great taste, delivery was slightly late but worth the wait.", date: "2 weeks ago" }
+];
+---
+
+<GroceryOSLayout title="Baker Profile | Bobo OS">
+  <BakerSubNav active="profile" />
+  <div class="profile-container">
+      <!-- Cover Header -->
+      <div class="cover-hero glass-card">
+          <div class="cover-img"></div>
+          <div class="profile-meta">
+              <div class="avatar-box">
+                  <div class="avatar">SJ</div>
+                  <button class="edit-avatar">📷</button>
+              </div>
+              <div class="meta-content">
+                  <div class="title-row">
+                      <h1>{baker.business}</h1>
+                      <div class="badge-row">
+                          <span class="verified-badge">Verified Baker</span>
+                          <span class="location-badge">📍 {baker.city}</span>
+                      </div>
+                  </div>
+                  <div class="stats-row">
+                      <div class="p-stat"><strong>{baker.rating}</strong> ⭐ Rating</div>
+                      <div class="p-stat"><strong>{baker.reviewsCount}</strong> Reviews</div>
+                      <div class="p-stat"><strong>500+</strong> Orders</div>
+                  </div>
+              </div>
+              <div class="header-actions">
+                  <button class="hb-btn secondary">Edit Profile</button>
+                  <button class="hb-btn share">Share Page</button>
+              </div>
+          </div>
+      </div>
+
+      <div class="profile-grid">
+          <!-- Left: Detailed Info -->
+          <div class="info-column">
+              <div class="card-section glass-card">
+                  <h3>About the Baker</h3>
+                  <p class="about-text">{baker.about}</p>
+                  <div class="specialties-row">
+                      {baker.specialties.map(s => <span class="spec-tag">{s}</span>)}
+                  </div>
+              </div>
+
+              <div class="card-section glass-card">
+                  <h3>Contact Channels</h3>
+                  <div class="contact-list">
+                      <div class="contact-item">
+                          <span class="c-label">Phone</span>
+                          <span class="c-val">{baker.phone}</span>
+                      </div>
+                      <div class="contact-item">
+                          <span class="c-label">WhatsApp</span>
+                          <span class="c-val" style="color: #25d366;">{baker.whatsapp}</span>
+                      </div>
+                      <div class="contact-item">
+                          <span class="c-label">Operating Address</span>
+                          <span class="c-val">{baker.address}</span>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="card-section glass-card">
+                  <h3>Recent Reviews</h3>
+                  <div class="reviews-list">
+                      {reviews.map(r => (
+                          <div class="review-item">
+                              <div class="r-top">
+                                  <strong>{r.user}</strong>
+                                  <span class="r-date">{r.date}</span>
+                              </div>
+                              <div class="r-rating">{"⭐".repeat(r.rating)}</div>
+                              <p class="r-comment">"{r.comment}"</p>
+                          </div>
+                      ))}
+                      <button class="view-all-reviews">Read All 124 Reviews →</button>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Right: Business Settings -->
+          <div class="settings-column">
+              <div class="card-section glass-card">
+                  <h3>Quick Settings</h3>
+                  <div class="toggle-list">
+                      <div class="toggle-row">
+                          <span>Accepting Orders</span>
+                          <div class="toggle active"></div>
+                      </div>
+                      <div class="toggle-row">
+                          <span>Custom Consultations</span>
+                          <div class="toggle active"></div>
+                      </div>
+                      <div class="toggle-row">
+                          <span>Fast Track Delivery</span>
+                          <div class="toggle"></div>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="card-section glass-card">
+                  <h3>Portfolio Highlights</h3>
+                  <div class="mini-gallery">
+                      <div class="mg-item"></div>
+                      <div class="mg-item"></div>
+                      <div class="mg-item"></div>
+                      <div class="mg-item"></div>
+                  </div>
+                  <a href="/grocery-os/home-bakers/gallery" class="gallery-link">Manage Portfolio Gallery →</a>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <style>
+      .profile-container { display: flex; flex-direction: column; gap: 32px; }
+      
+      .cover-hero { position: relative; padding: 0; overflow: hidden; height: 380px; display: flex; flex-direction: column; }
+      .cover-img { height: 200px; background: linear-gradient(135deg, #f472b6, #fb923c); opacity: 0.3; }
+      .profile-meta { flex: 1; padding: 0 40px; display: flex; align-items: flex-end; gap: 32px; position: relative; top: -40px; }
+      
+      .avatar-box { position: relative; width: 140px; height: 140px; }
+      .avatar { width: 100%; height: 100%; border-radius: 24px; background: #ec4899; display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: 800; border: 4px solid var(--bg-dark); }
+      .edit-avatar { position: absolute; bottom: -10px; right: -10px; background: white; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+      .meta-content { flex: 1; padding-bottom: 12px; }
+      .title-row { display: flex; align-items: center; gap: 20px; margin-bottom: 12px; }
+      .title-row h1 { font-family: 'Outfit'; font-size: 2.2rem; }
+      .badge-row { display: flex; gap: 10px; }
+      .verified-badge { background: rgba(16, 185, 129, 0.1); color: #10b981; font-size: 0.75rem; font-weight: 800; padding: 4px 12px; border-radius: 30px; }
+      .location-badge { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; }
+
+      .stats-row { display: flex; gap: 24px; }
+      .p-stat { font-size: 0.9rem; color: var(--text-muted); }
+      .p-stat strong { color: white; }
+
+      .header-actions { display: flex; gap: 12px; padding-bottom: 12px; }
+
+      .profile-grid { display: grid; grid-template-columns: 1fr 360px; gap: 32px; }
+      .info-column { display: flex; flex-direction: column; gap: 32px; }
+      .card-section { padding: 32px; }
+      .card-section h3 { font-family: 'Outfit'; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+      
+      .about-text { line-height: 1.6; color: rgba(255,255,255,0.8); margin-bottom: 24px; }
+      .specialties-row { display: flex; gap: 10px; }
+      .spec-tag { background: rgba(244, 114, 182, 0.1); color: #f472b6; padding: 6px 16px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; }
+
+      .contact-list { display: flex; flex-direction: column; gap: 20px; }
+      .contact-item { display: flex; flex-direction: column; gap: 4px; }
+      .c-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; }
+      .c-val { font-size: 1rem; font-weight: 600; }
+
+      .reviews-list { display: flex; flex-direction: column; gap: 24px; }
+      .review-item { padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+      .r-top { display: flex; justify-content: space-between; margin-bottom: 8px; }
+      .r-date { font-size: 0.75rem; color: var(--text-muted); }
+      .r-rating { color: #fbbf24; margin-bottom: 8px; font-size: 0.8rem; }
+      .r-comment { font-size: 0.9rem; font-style: italic; color: rgba(255,255,255,0.7); }
+      .view-all-reviews { background: transparent; border: none; color: #f472b6; font-weight: 700; cursor: pointer; margin-top: 12px; }
+
+      .toggle-list { display: flex; flex-direction: column; gap: 20px; }
+      .toggle-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-weight: 600; }
+      .toggle { width: 44px; height: 22px; background: rgba(255,255,255,0.1); border-radius: 30px; position: relative; cursor: pointer; }
+      .toggle::after { content: ''; position: absolute; left: 4px; top: 3px; width: 16px; height: 16px; background: #64748b; border-radius: 50%; transition: 0.3s; }
+      .toggle.active { background: #f472b6; }
+      .toggle.active::after { left: 24px; background: white; }
+
+      .mini-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+      .mg-item { aspect-ratio: 1; background: rgba(255,255,255,0.05); border-radius: 12px; }
+      .gallery-link { font-size: 0.85rem; color: #f472b6; font-weight: 700; text-decoration: none; }
+
+      .hb-btn { padding: 8px 16px; border-radius: 10px; font-weight: 700; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: white; cursor: pointer; }
+      .hb-btn.secondary { background: white; color: black; border: none; }
+  </style>
+</GroceryOSLayout>

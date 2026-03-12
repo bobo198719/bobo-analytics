@@ -1,0 +1,117 @@
+---
+import GroceryOSLayout from "../../../layouts/GroceryOSLayout.astro";
+import BakerSubNav from "../../../components/BakerSubNav.astro";
+
+// Mock cake products
+const cakes = [
+  { id: 1, name: "Belgian Chocolate Truffle", category: "Cakes", flavor: "Chocolate", price: "₹1,200", weight: "1kg", prep: "24h", status: "Active" },
+  { id: 2, name: "Vanilla Funfetti Cupcakes", category: "Cupcakes", flavor: "Vanilla", price: "₹600", weight: "Box of 6", prep: "12h", status: "Active" },
+  { id: 3, name: "Sea Salt Dark Brownies", category: "Brownies", flavor: "Dark Chocolate", price: "₹850", weight: "6 pcs", prep: "6h", status: "Out of Stock" },
+  { id: 4, name: "Red Velvet Jar Cake", category: "Dessert Boxes", flavor: "Red Velvet", price: "₹250", weight: "200g", prep: "Instant", status: "Active" }
+];
+
+const categories = ["Cakes", "Cupcakes", "Cookies", "Brownies", "Chocolates", "Pastries", "Dessert Boxes"];
+---
+
+<GroceryOSLayout title="Bakers Product Catalog | Bobo OS">
+  <BakerSubNav active="products" />
+  <div class="header-flex">
+      <div>
+          <h1>Bake Catalog</h1>
+          <p style="color: var(--text-muted);">Manage your visual menu and recipe availability.</p>
+      </div>
+      <div class="action-row">
+          <button class="export-btn">Print Shelf Tags</button>
+          <button class="add-btn">+ Add New Bake</button>
+      </div>
+  </div>
+
+  <div class="product-tabs glass-card">
+      {categories.map((c, i) => (
+          <button class={`tab ${i === 0 ? 'active' : ''}`}>{c}</button>
+      ))}
+  </div>
+
+  <div class="catalog-grid">
+      {cakes.map(c => (
+          <div class="cake-card glass-card">
+              <div class="cake-img-box">
+                  <div class="img-placeholder">🎂</div>
+                  <span class={`stock-tag ${c.status === 'Active' ? 'in' : 'out'}`}>{c.status}</span>
+                  <div class="img-overlay">
+                      <button class="edit-ic">✏️</button>
+                  </div>
+              </div>
+              <div class="cake-details">
+                  <div class="c-top">
+                      <span class="c-cat">{c.category}</span>
+                      <span class="c-price">{c.price}</span>
+                  </div>
+                  <h3>{c.name}</h3>
+                  <div class="c-meta">
+                      <span>{c.flavor}</span>
+                      <span>•</span>
+                      <span>{c.weight}</span>
+                  </div>
+                  <div class="c-prep">
+                      <span class="prep-ic">⏱️</span> Ready in {c.prep}
+                  </div>
+              </div>
+              <div class="cake-footer">
+                  <button class="footer-btn">Recipe Detail</button>
+                  <button class="footer-btn promo">Create Promo</button>
+              </div>
+          </div>
+      ))}
+
+      <!-- Add New Card -->
+      <div class="add-cake-card glass-card">
+          <div class="add-icon">+</div>
+          <p>Add New Product</p>
+          <span>Cakes, Cookies, Brownies etc.</span>
+      </div>
+  </div>
+
+  <style>
+      .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+      .action-row { display: flex; gap: 12px; }
+      .export-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+      .add-btn { background: #f472b6; border: none; color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+
+      .product-tabs { display: flex; gap: 8px; padding: 12px; margin-bottom: 32px; overflow-x: auto; }
+      .tab { background: transparent; border: none; color: var(--text-muted); padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.9rem; white-space: nowrap; }
+      .tab.active { background: #f472b6; color: white; }
+
+      .catalog-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+      .cake-card { padding: 0; overflow: hidden; display: flex; flex-direction: column; transition: 0.3s; }
+      .cake-card:hover { transform: translateY(-8px); border-color: #f472b6; }
+      
+      .cake-img-box { height: 200px; background: rgba(244, 114, 182, 0.05); position: relative; display: flex; align-items: center; justify-content: center; font-size: 4rem; }
+      .stock-tag { position: absolute; top: 12px; right: 12px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 30px; }
+      .stock-tag.in { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+      .stock-tag.out { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+      .img-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); opacity: 0; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+      .cake-card:hover .img-overlay { opacity: 1; }
+      .edit-ic { background: white; border: none; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+
+      .cake-details { padding: 24px; flex: 1; }
+      .c-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+      .c-cat { font-size: 0.75rem; color: #f472b6; font-weight: 800; text-transform: uppercase; }
+      .c-price { font-weight: 800; font-size: 1.1rem; font-family: 'Outfit'; }
+      .cake-details h3 { font-family: 'Outfit'; margin-bottom: 8px; font-size: 1.2rem; }
+      .c-meta { font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 8px; margin-bottom: 16px; }
+      .c-prep { font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+
+      .cake-footer { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--border); }
+      .footer-btn { background: transparent; border: none; padding: 12px; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); cursor: pointer; transition: 0.2s; }
+      .footer-btn:hover { background: rgba(255,255,255,0.05); color: white; }
+      .footer-btn.promo { border-left: 1px solid var(--border); color: #fb923c; }
+
+      .add-cake-card { border: 2px dashed var(--border); background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; cursor: pointer; transition: 0.3s; }
+      .add-cake-card:hover { border-color: #f472b6; background: rgba(244, 114, 182, 0.05); }
+      .add-icon { width: 60px; height: 60px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+      .add-cake-card p { font-weight: 700; margin-top: 8px; }
+      .add-cake-card span { font-size: 0.75rem; color: var(--text-muted); }
+  </style>
+</GroceryOSLayout>
