@@ -1,0 +1,95 @@
+---
+import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
+import BakersSubNav from "../../components/BakersSubNav.astro";
+
+// Mock data
+const stats = [
+  { label: "Total Orders", value: "1,248", change: "+12%", icon: "📦" },
+  { label: "Orders Today", value: "18", change: "+5%", icon: "🔥" },
+  { label: "Pending Orders", value: "42", change: "-2%", icon: "⏳" },
+  { label: "Completed Orders", value: "1,188", change: "+15%", icon: "✅" },
+  { label: "Monthly Revenue", value: "₹2,45,000", change: "+22%", icon: "💰" },
+  { label: "Avg. Rating", value: "4.9", icon: "⭐" }
+];
+
+const topCakes = [
+  { name: "Belgium Chocolate Truffle", sold: "245", revenue: "₹1,47,000", trend: "up" },
+  { name: "Red Velvet Cheesecake", sold: "182", revenue: "₹91,000", trend: "up" },
+  { name: "Blueberry Cupcake Box", sold: "156", revenue: "₹23,400", trend: "stable" }
+];
+---
+
+<BakersOSLayout title="Baker Intelligence Dashboard | Bobo OS">
+  <BakersSubNav active="dashboard" />
+  
+  <div class="hb-header">
+      <div>
+          <h1>Baker Intelligence Dashboard</h1>
+          <p style="color: var(--text-muted);">Manage your home-based bakery business with AI-driven insights.</p>
+      </div>
+      <div class="hb-actions">
+          <button class="hb-btn primary">+ New Order</button>
+      </div>
+  </div>
+
+  <div class="stats-grid">
+      {stats.map(s => (
+          <div class="stat-card glass-card">
+              <div class="stat-icon">{s.icon}</div>
+              <div class="stat-info">
+                  <span class="stat-label">{s.label}</span>
+                  <span class="stat-value">{s.value}</span>
+              </div>
+          </div>
+      ))}
+  </div>
+
+  <div class="dashboard-content">
+      <div class="charts-column">
+          <div class="chart-card glass-card">
+              <h3>Sales Trend (Last 7 Days)</h3>
+              <div class="chart-mock">
+                  <div class="bars">
+                      {Array(7).fill(0).map((_, i) => <div class="bar" style={`height: ${Math.random() * 70 + 30}%`}></div>)}
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <div class="activity-column">
+          <div class="ranking-card glass-card">
+              <h3>Top Selling Items</h3>
+              <div class="ranking-list">
+                  {topCakes.map(c => (
+                      <div class="rank-item">
+                          <span>{c.name}</span>
+                          <strong>{c.revenue}</strong>
+                      </div>
+                  ))}
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <style>
+      .hb-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+      .hb-actions { display: flex; gap: 12px; }
+      .hb-btn { padding: 10px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; background: var(--primary); color: white; }
+
+      .stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 32px; }
+      .stat-card { padding: 20px; display: flex; align-items: center; gap: 16px; }
+      .stat-icon { font-size: 1.5rem; }
+      .stat-info { display: flex; flex-direction: column; }
+      .stat-label { font-size: 0.75rem; color: var(--text-muted); }
+      .stat-value { font-size: 1.1rem; font-weight: 800; }
+
+      .dashboard-content { display: grid; grid-template-columns: 1fr 350px; gap: 32px; }
+      .chart-card { padding: 32px; height: 300px; }
+      .chart-mock { height: 100%; display: flex; align-items: flex-end; gap: 8px; }
+      .bar { flex: 1; background: var(--primary); opacity: 0.6; border-radius: 4px 4px 0 0; }
+
+      .ranking-card { padding: 32px; }
+      .ranking-list { display: flex; flex-direction: column; gap: 16px; margin-top: 20px; }
+      .rank-item { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+  </style>
+</BakersOSLayout>

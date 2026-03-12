@@ -1,0 +1,67 @@
+---
+import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
+import BakersSubNav from "../../components/BakersSubNav.astro";
+
+const orders = [
+  { id: "#HB-1024", customer: "Rahul Khanna", product: "Custom Birthday Cake (2kg)", date: "15 Mar", status: "Preparing", payment: "Paid" },
+  { id: "#HB-1025", customer: "Sneha Kapur", product: "Vanilla Funfetti (Box of 6)", date: "12 Mar", status: "Ready", payment: "Pending" }
+];
+---
+
+<BakersOSLayout title="Live Orders | Home Bakers OS">
+  <BakersSubNav active="orders" />
+  
+  <div class="header-flex">
+      <h1>Live Orders</h1>
+      <div class="tabs">
+          <button class="active">Current</button>
+          <button>Upcoming</button>
+          <button>Past</button>
+      </div>
+  </div>
+
+  <div class="glass-card table-container">
+      <table class="baker-table">
+          <thead>
+              <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Product</th>
+                  <th>Delivery</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+              </tr>
+          </thead>
+          <tbody>
+              {orders.map(o => (
+                  <tr>
+                      <td style="color: var(--primary); font-weight: 800;">{o.id}</td>
+                      <td>{o.customer}</td>
+                      <td>{o.product}</td>
+                      <td>{o.date}</td>
+                      <td><span class={`status-tag ${o.status.toLowerCase()}`}>{o.status}</span></td>
+                      <td><button class="action-btn">View</button></td>
+                  </tr>
+              ))}
+          </tbody>
+      </table>
+  </div>
+
+  <style>
+      .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+      .tabs { display: flex; gap: 8px; background: rgba(0,0,0,0.2); padding: 4px; border-radius: 10px; }
+      .tabs button { background: transparent; border: none; color: var(--text-muted); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; }
+      .tabs button.active { background: var(--primary); color: white; }
+
+      .table-container { padding: 32px; }
+      .baker-table { width: 100%; border-collapse: collapse; }
+      .baker-table th { text-align: left; padding: 12px; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+      .baker-table td { padding: 20px 12px; border-bottom: 1px solid var(--border); }
+
+      .status-tag { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; }
+      .status-tag.preparing { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+      .status-tag.ready { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+
+      .action-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
+  </style>
+</BakersOSLayout>

@@ -1,0 +1,183 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Bakers OS Login | Bobo Analytics">
+    <div class="login-wrapper">
+        <div class="login-container glass-card">
+            <div class="login-header">
+                <div class="logo">🧁</div>
+                <h1>Home Bakers OS</h1>
+                <p>Digital dashboard for artisanal home bakers</p>
+            </div>
+
+            <form class="login-form">
+                <div class="input-group">
+                    <label>Baker Store ID</label>
+                    <input type="text" placeholder="e.g. jenkins-cakes" />
+                </div>
+                <div class="input-group">
+                    <label>Operator Key</label>
+                    <input type="password" placeholder="••••••••" />
+                </div>
+
+                <div class="form-options">
+                    <label><input type="checkbox" /> Remember Store</label>
+                    <a href="#">Forgot Key?</a>
+                </div>
+
+                <button type="button" id="loginBtn" class="login-btn">Access Dashboard</button>
+            </form>
+
+            <div class="login-footer">
+                <span>New Baker?</span>
+                <a href="#">Register your Patisserie</a>
+            </div>
+        </div>
+    </div>
+
+    <script is:inline>
+        document.getElementById('loginBtn')?.addEventListener('click', () => {
+            // Demo auth
+            localStorage.setItem('baker_os_auth', 'true');
+            window.location.href = '/bakers-os';
+        });
+    </script>
+
+    <style>
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #020617;
+            background: radial-gradient(circle at center, #1e1b4b 0%, #020617 100%);
+            padding: 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 440px;
+            padding: 50px;
+            text-align: center;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(244, 114, 182, 0.1);
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 24px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        .login-header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            color: white;
+            margin-bottom: 12px;
+        }
+
+        .login-header p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            margin-bottom: 40px;
+        }
+
+        .login-form {
+            text-align: left;
+            margin-bottom: 32px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #f472b6;
+            margin-bottom: 8px;
+            letter-spacing: 0.05em;
+        }
+
+        .input-group input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 14px 18px;
+            border-radius: 14px;
+            color: white;
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #f472b6;
+            background: rgba(244, 114, 182, 0.05);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 32px;
+        }
+
+        .form-options label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .form-options a {
+            color: #f472b6;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(244, 114, 182, 0.2);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(244, 114, 182, 0.3);
+        }
+
+        .login-footer {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        .login-footer a {
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+    </style>
+</Layout>

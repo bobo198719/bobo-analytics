@@ -1,0 +1,72 @@
+---
+import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
+import BakersSubNav from "../../components/BakersSubNav.astro";
+
+const categories = ["Cakes", "Cupcakes", "Cookies", "Brownies"];
+const items = [
+  { id: 1, name: "Belgian Chocolate Truffle", price: "₹1,200", weight: "1kg", status: "Active" },
+  { id: 2, name: "Sea Salt Dark Brownies", price: "₹850", weight: "6 pcs", status: "Out of Stock" }
+];
+---
+
+<BakersOSLayout title="Bake Catalog | Home Bakers OS">
+  <BakersSubNav active="products" />
+  
+  <div class="header-flex">
+      <h1>Bake Catalog</h1>
+      <button class="add-btn">+ Add Bake</button>
+  </div>
+
+  <div class="cat-tabs glass-card">
+      {categories.map(c => <button class="cat-tab">{c}</button>)}
+  </div>
+
+  <div class="product-grid">
+      {items.map(i => (
+          <div class="product-card glass-card">
+              <div class="img-thumb">🧁</div>
+              <div class="p-info">
+                  <div class="p-top">
+                      <h3>{i.name}</h3>
+                      <span class={`status-badge ${i.status.toLowerCase()}`}>{i.status}</span>
+                  </div>
+                  <div class="p-meta">
+                      <span class="price">{i.price}</span>
+                      <span class="weight">{i.weight}</span>
+                  </div>
+              </div>
+          </div>
+      ))}
+      <div class="add-card glass-card">
+          <div class="add-ic">+</div>
+          <p>Add New Cake</p>
+      </div>
+  </div>
+
+  <style>
+      .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+      .add-btn { background: var(--primary); border: none; color: white; padding: 12px 24px; border-radius: 12px; cursor: pointer; font-weight: 700; }
+
+      .cat-tabs { display: flex; gap: 8px; padding: 12px; margin-bottom: 32px; }
+      .cat-tab { background: transparent; border: none; color: var(--text-muted); padding: 8px 16px; font-weight: 800; cursor: pointer; }
+
+      .product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+      .product-card { overflow: hidden; display: flex; flex-direction: column; transition: 0.3s; }
+      .product-card:hover { transform: translateY(-8px); border-color: var(--primary); }
+      
+      .img-thumb { height: 180px; background: rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+      .p-info { padding: 20px; }
+      .p-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+      .p-top h3 { font-family: 'Outfit'; font-size: 1.1rem; }
+      
+      .status-badge { font-size: 0.65rem; padding: 2px 8px; border-radius: 10px; font-weight: 800; }
+      .status-badge.active { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+      .status-badge.out { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+      .p-meta { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.9rem; }
+      .price { color: white; font-weight: 800; }
+
+      .add-card { border: 2px dashed var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; cursor: pointer; background: transparent; }
+      .add-ic { font-size: 2rem; }
+  </style>
+</BakersOSLayout>

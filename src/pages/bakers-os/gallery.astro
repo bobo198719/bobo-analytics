@@ -1,0 +1,68 @@
+---
+import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
+import BakersSubNav from "../../components/BakersSubNav.astro";
+
+const gallery = [
+  { id: 1, name: "Celestial Wedding Cake", category: "Cakes", desc: "4-tier vanilla bean cake with gold leaf finish." },
+  { id: 2, name: "Panda Themed Birthday", category: "Cakes", desc: "Cute fondant panda cake for kids." },
+  { id: 3, name: "Galaxy Cupcake Set", category: "Cupcakes", desc: "Deep space colored buttercream with edible glitter." }
+];
+---
+
+<BakersOSLayout title="Baker Gallery | Home Bakers OS">
+  <BakersSubNav active="gallery" />
+  
+  <div class="header-flex">
+      <div>
+          <h1>Baker Gallery</h1>
+          <p style="color: var(--text-muted);">Showcase your best creations to potential clients.</p>
+      </div>
+      <button class="add-btn">+ Upload New Work</button>
+  </div>
+
+  <div class="gallery-grid">
+      {gallery.map(g => (
+          <div class="gallery-card glass-card">
+              <div class="g-img">🎂</div>
+              <div class="g-info">
+                  <div class="g-top">
+                      <h3>{g.name}</h3>
+                      <span class="tag">{g.category}</span>
+                  </div>
+                  <p>{g.desc}</p>
+                  <div class="g-actions">
+                      <button>Delete</button>
+                      <button class="view">View Large</button>
+                  </div>
+              </div>
+          </div>
+      ))}
+      <div class="add-gallery-card glass-card">
+          <div class="add-ic">+</div>
+          <p>Add to Portfolio</p>
+      </div>
+  </div>
+
+  <style>
+      .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+      .add-btn { background: var(--primary); border: none; color: white; padding: 12px 24px; border-radius: 12px; cursor: pointer; font-weight: 700; }
+
+      .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+      .gallery-card { overflow: hidden; display: flex; flex-direction: column; transition: 0.3s; }
+      .gallery-card:hover { transform: translateY(-8px); border-color: var(--primary); }
+      
+      .g-img { height: 260px; background: rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; font-size: 4rem; }
+      .g-info { padding: 24px; display: flex; flex-direction: column; gap: 12px; }
+      .g-top { display: flex; justify-content: space-between; align-items: center; }
+      .g-top h3 { font-family: 'Outfit'; font-size: 1.25rem; }
+      .tag { background: rgba(244, 114, 182, 0.1); color: var(--primary); font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 30px; }
+      .g-info p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
+
+      .g-actions { display: flex; gap: 12px; margin-top: 12px; }
+      .g-actions button { flex: 1; background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 8px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+      .g-actions button.view { background: var(--primary); color: white; border: none; }
+
+      .add-gallery-card { border: 2px dashed var(--border); background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; cursor: pointer; }
+      .add-ic { font-size: 2.5rem; }
+  </style>
+</BakersOSLayout>
