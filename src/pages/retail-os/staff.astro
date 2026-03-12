@@ -1,0 +1,204 @@
+---
+import RetailOSLayout from "../../layouts/RetailOSLayout.astro";
+
+// Mock data for staff members
+const staff = [
+  { id: 1, name: "Jane Doe", role: "Store Manager", email: "jane.d@boboretail.com", store: "South City Mall", joined: "Jan 2024", performance: "Exceeding" },
+  { id: 2, name: "Arjun Mehta", role: "Sales Associate", email: "arjun.m@boboretail.com", store: "South City Mall", joined: "Mar 2024", performance: "Meeting" },
+  { id: 3, name: "Priya Singh", role: "Inventory Lead", email: "priya.s@boboretail.com", store: "South City Mall", joined: "Feb 2024", performance: "Outstanding" },
+  { id: 4, name: "Karan Johar", role: "Cashier", email: "karan.j@boboretail.com", store: "South City Mall", joined: "May 2024", performance: "Meeting" }
+];
+---
+
+<RetailOSLayout title="Staff Control | Bobo Retail OS">
+  <div class="header-section">
+      <div>
+          <h1 style="font-size: 2rem; margin-bottom: 8px;">Staff Control</h1>
+          <p style="color: var(--text-muted);">Manage your retail workforce and track performance metrics.</p>
+      </div>
+      <div class="action-buttons">
+          <button class="btn secondary">Roster Planner</button>
+          <button class="btn primary">+ Hire New Staff</button>
+      </div>
+  </div>
+
+  <div class="staff-grid">
+      {staff.map(person => (
+          <div class="staff-card">
+              <div class="staff-header">
+                  <div class="staff-avatar">{person.name.split(' ').map(n=>n[0]).join('')}</div>
+                  <div class="staff-status-dot active"></div>
+              </div>
+              <div class="staff-body">
+                  <h3 class="staff-name">{person.name}</h3>
+                  <span class="staff-role">{person.role}</span>
+                  <div class="staff-meta">
+                      <div class="meta-row">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                          <span>ID: BR-00{person.id}</span>
+                      </div>
+                      <div class="meta-row">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                          <span>Joined: {person.joined}</span>
+                      </div>
+                  </div>
+              </div>
+              <div class="staff-footer">
+                  <div class="performance-indicator">
+                      <span class="label">Performance</span>
+                      <span class={`value ${person.performance.toLowerCase()}`}>{person.performance}</span>
+                  </div>
+                  <button class="manage-btn">Manage</button>
+              </div>
+          </div>
+      ))}
+  </div>
+
+  <style>
+      .header-section {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 32px;
+      }
+
+      .btn {
+          padding: 12px 24px;
+          border-radius: 12px;
+          font-weight: 700;
+          cursor: pointer;
+          border: none;
+          transition: 0.2s;
+      }
+
+      .btn.primary { background: var(--primary); color: white; }
+      .btn.secondary { background: var(--bg-glass); color: white; border: 1px solid var(--border); }
+
+      .staff-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          gap: 24px;
+      }
+
+      .staff-card {
+          background: var(--bg-glass);
+          border: 1px solid var(--border);
+          border-radius: 20px;
+          padding: 24px;
+          backdrop-filter: blur(10px);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .staff-card:hover {
+          transform: translateY(-8px);
+          border-color: var(--primary);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      .staff-header {
+          position: relative;
+          width: fit-content;
+          margin-bottom: 20px;
+      }
+
+      .staff-avatar {
+          width: 64px;
+          height: 64px;
+          background: linear-gradient(135deg, #6366f1, #a855f7);
+          border-radius: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.5rem;
+          font-weight: 800;
+          color: white;
+          border: 2px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .staff-status-dot {
+          position: absolute;
+          bottom: -4px;
+          right: -4px;
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          background: var(--success);
+          border: 2px solid var(--bg-dark);
+          box-shadow: 0 0 8px var(--success);
+      }
+
+      .staff-name {
+          font-size: 1.1rem;
+          font-weight: 700;
+          margin-bottom: 4px;
+      }
+
+      .staff-role {
+          font-size: 0.85rem;
+          color: var(--primary);
+          font-weight: 600;
+          display: block;
+          margin-bottom: 16px;
+      }
+
+      .staff-meta {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          margin-bottom: 24px;
+      }
+
+      .meta-row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 0.8rem;
+          color: var(--text-muted);
+      }
+
+      .staff-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-top: 20px;
+          border-top: 1px solid var(--border);
+      }
+
+      .performance-indicator {
+          display: flex;
+          flex-direction: column;
+      }
+
+      .performance-indicator .label {
+          font-size: 0.7rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: var(--text-muted);
+      }
+
+      .performance-indicator .value {
+          font-size: 0.85rem;
+          font-weight: 700;
+      }
+
+      .value.outstanding { color: #10b981; }
+      .value.exceeding { color: #818cf8; }
+      .value.meeting { color: #f59e0b; }
+
+      .manage-btn {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid var(--border);
+          color: white;
+          padding: 6px 12px;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 0.8rem;
+          transition: 0.2s;
+      }
+
+      .manage-btn:hover {
+          background: var(--primary);
+          border-color: var(--primary);
+      }
+  </style>
+</RetailOSLayout>
