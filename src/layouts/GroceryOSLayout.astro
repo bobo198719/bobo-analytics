@@ -312,8 +312,10 @@ const { title = "Bobo Grocery OS" } = Astro.props;
             const currentPath = window.location.pathname;
             document.querySelectorAll('.nav-link').forEach(link => {
                 const navPath = link.getAttribute('data-nav');
-                if (currentPath === navPath || (currentPath === '/grocery-os/' && navPath === '/grocery-os')) {
+                if (currentPath === navPath || (currentPath === navPath + '/') || (currentPath === '/grocery-os/' && navPath === '/grocery-os')) {
                     link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
                 }
             });
         </script>

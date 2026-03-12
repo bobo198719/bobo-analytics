@@ -1,0 +1,88 @@
+---
+import GroceryOSLayout from "../../layouts/GroceryOSLayout.astro";
+---
+
+<GroceryOSLayout title="System Settings | Bobo Grocery OS">
+  <div class="header-flex">
+      <div>
+          <h1>Global Settings</h1>
+          <p style="color: var(--text-muted);">Configure your store terminals, tax rates, and API integrations.</p>
+      </div>
+      <button class="save-btn">Save Changes</button>
+  </div>
+
+  <div class="settings-grid">
+      <div class="settings-sidebar glass-card">
+          <button class="s-link active">General Info</button>
+          <button class="s-link">Taxes & Billing</button>
+          <button class="s-link">Terminals & POS</button>
+          <button class="s-link">WhatsApp API</button>
+          <button class="s-link">Employee Roles</button>
+          <button class="s-link">Security</button>
+      </div>
+
+      <div class="settings-content glass-card">
+          <div class="s-section">
+              <h3>Store Information</h3>
+              <div class="field-group">
+                  <label>Legal Business Name</label>
+                  <input type="text" value="Bobo Supermarket & Fresh" />
+              </div>
+              <div class="field-group">
+                  <label>GSTIN Number</label>
+                  <input type="text" value="27AAACBCA1234Z5" />
+              </div>
+              <div class="field-group">
+                  <label>Primary Phone (for WhatsApp)</label>
+                  <input type="text" value="+91 98765 43210" />
+              </div>
+          </div>
+
+          <div class="s-section">
+              <h3>Regional & Currency</h3>
+              <div class="field-row">
+                  <div class="field-group">
+                      <label>Base Currency</label>
+                      <select><option>INR (₹)</option></select>
+                  </div>
+                  <div class="field-group">
+                      <label>Timezone</label>
+                      <select><option>(GMT+05:30) India</option></select>
+                  </div>
+              </div>
+          </div>
+
+          <div class="s-section">
+              <h3>Appearance</h3>
+              <div class="theme-toggle">
+                  <div class="theme-btn active">Dark Mode</div>
+                  <div class="theme-btn">Light Mode</div>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <style>
+      .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+      .save-btn { background: var(--primary); border: none; color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+
+      .settings-grid { display: grid; grid-template-columns: 280px 1fr; gap: 24px; }
+      .settings-sidebar { padding: 16px; display: flex; flex-direction: column; gap: 4px; height: fit-content; }
+      .s-link { background: transparent; border: none; color: var(--text-muted); text-align: left; padding: 12px 16px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+      .s-link:hover { background: rgba(255,255,255,0.05); color: white; }
+      .s-link.active { background: rgba(16, 185, 129, 0.1); color: var(--primary); }
+
+      .settings-content { padding: 40px; display: flex; flex-direction: column; gap: 40px; }
+      .s-section h3 { font-family: 'Outfit'; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+      
+      .field-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+      .field-group label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+      .field-group input, .field-group select { background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white; width: 100%; max-width: 480px; }
+
+      .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 480px; }
+
+      .theme-toggle { display: flex; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 10px; width: fit-content; }
+      .theme-btn { padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; color: var(--text-muted); }
+      .theme-btn.active { background: white; color: black; }
+  </style>
+</GroceryOSLayout>

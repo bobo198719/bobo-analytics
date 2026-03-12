@@ -1,0 +1,61 @@
+---
+import GroceryOSLayout from "../../layouts/GroceryOSLayout.astro";
+
+const reports = [
+  { title: "Daily Sales Report", desc: "Detailed breakdown of all transactions today.", icon: "📊" },
+  { title: "Profit & Loss", desc: "Monthly financial summary including margins.", icon: "💰" },
+  { title: "Inventory Aging", desc: "Identify slow moving products and expiring stock.", icon: "⏰" },
+  { title: "GST Filing Data", desc: "Export-ready data for tax compliance (Excel/JSON).", icon: "📑" },
+  { title: "Customer Lifetime Value", desc: "Rank customers by long-term revenue contribution.", icon: "💎" },
+  { title: "Staff Shift Logs", desc: "Tracking hours and sales performance per cashier.", icon: "👤" }
+];
+---
+
+<GroceryOSLayout title="Business Reports | Bobo Grocery OS">
+  <div class="header-flex">
+      <div>
+          <h1>Reporting Engine</h1>
+          <p style="color: var(--text-muted);">Unified business intelligence and financial exports.</p>
+      </div>
+      <div class="date-picker">
+          <span>March 2026</span>
+          <button class="picker-btn">📅 Change Period</button>
+      </div>
+  </div>
+
+  <div class="report-grid">
+      {reports.map(r => (
+          <div class="report-card glass-card">
+              <div class="r-top">
+                  <div class="r-icon">{r.icon}</div>
+                  <div class="r-actions">
+                      <button class="export-ic">💾 PDF</button>
+                      <button class="export-ic">📗 XLS</button>
+                  </div>
+              </div>
+              <h3>{r.title}</h3>
+              <p>{r.desc}</p>
+              <button class="generate-btn">Generate Now →</button>
+          </div>
+      ))}
+  </div>
+
+  <style>
+      .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+      .date-picker { display: flex; align-items: center; gap: 16px; background: rgba(255,255,255,0.05); padding: 8px 16px; border-radius: 12px; border: 1px solid var(--border); }
+      .picker-btn { background: transparent; border: none; color: var(--primary); font-weight: 700; cursor: pointer; }
+
+      .report-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+      .report-card { padding: 32px; display: flex; flex-direction: column; gap: 12px; transition: 0.3s; }
+      .report-card:hover { border-color: var(--primary); transform: scale(1.02); }
+
+      .r-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+      .r-icon { font-size: 2.2rem; }
+      .r-actions { display: flex; gap: 8px; }
+      .export-ic { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-muted); font-size: 0.7rem; font-weight: 800; padding: 4px 8px; border-radius: 6px; cursor: pointer; }
+
+      .report-card h3 { font-family: 'Outfit'; font-size: 1.25rem; }
+      .report-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; min-height: 3.2rem; }
+      .generate-btn { background: transparent; border: none; color: var(--primary); font-weight: 700; font-size: 0.9rem; text-align: left; padding: 0; cursor: pointer; margin-top: 8px; }
+  </style>
+</GroceryOSLayout>

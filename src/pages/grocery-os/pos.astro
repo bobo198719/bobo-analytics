@@ -4,15 +4,15 @@ import GroceryOSLayout from "../../layouts/GroceryOSLayout.astro";
 // Mock data for Grocery Products in POS
 const categories = ["All", "Dairy", "Grains", "Snacks", "Beverages", "Household", "Baby", "Fresh"];
 const products = [
-  { id: 101, name: "Fresh Milk (1L)", price: 65, stock: 42, category: "Dairy", img: "milk" },
-  { id: 102, name: "Brown Bread", price: 45, stock: 12, category: "Grains", img: "bread" },
-  { id: 103, name: "Organic Eggs", price: 120, stock: 8, category: "Dairy", img: "eggs" },
-  { id: 104, name: "Potato Chips", price: 20, stock: 85, category: "Snacks", img: "chips" },
-  { id: 105, name: "Cola Soda", price: 40, stock: 56, category: "Beverages", img: "beverages" },
-  { id: 106, name: "Detergent", price: 350, stock: 15, category: "Household", img: "detergent" },
-  { id: 107, name: "Baby Diapers", price: 999, stock: 10, category: "Baby", img: "baby" },
-  { id: 108, name: "Apple (1kg)", price: 180, stock: 25, category: "Fresh", img: "fruits" },
-  { id: 109, name: "Basmati Rice", price: 110, stock: 100, category: "Grains", img: "grains" }
+  { id: 101, name: "Fresh Milk (1L)", price: 65, stock: 42, category: "Dairy", img: "/milk_grocery_item_1773286627780.png" },
+  { id: 102, name: "Brown Bread", price: 45, stock: 12, category: "Grains", img: "/bread_grocery_item_1773286648879.png" },
+  { id: 103, name: "Organic Eggs", price: 120, stock: 8, category: "Dairy", img: "/eggs_grocery_item_1773286672462.png" },
+  { id: 104, name: "Potato Chips", price: 20, stock: 85, category: "Snacks", img: "/chips_grocery_item_1773286688650.png" },
+  { id: 105, name: "Detergent", price: 350, stock: 15, category: "Household", img: "/detergent_grocery_item_1773286705195.png" },
+  { id: 106, name: "Cola Soda", price: 40, stock: 56, category: "Beverages", img: "placeholder" },
+  { id: 107, name: "Baby Diapers", price: 999, stock: 10, category: "Baby", img: "placeholder" },
+  { id: 108, name: "Apple (1kg)", price: 180, stock: 25, category: "Fresh", img: "placeholder" },
+  { id: 109, name: "Basmati Rice", price: 110, stock: 100, category: "Grains", img: "placeholder" }
 ];
 ---
 
@@ -36,7 +36,11 @@ const products = [
         {products.map(p => (
             <div class={`product-tile glass-card ${p.stock < 10 ? 'low-stock' : ''}`} data-id={p.id} data-name={p.name} data-price={p.price}>
                 <div class="tile-img-box">
-                    <div class="tile-placeholder">{p.name[0]}</div>
+                    {p.img !== 'placeholder' ? (
+                        <img src={p.img} alt={p.name} class="tile-img" />
+                    ) : (
+                        <div class="tile-placeholder">{p.name[0]}</div>
+                    )}
                     {p.stock < 10 && <span class="stock-warn">Low</span>}
                 </div>
                 <div class="tile-info">
@@ -226,6 +230,12 @@ const products = [
         display: flex;
         align-items: center;
         justify-content: center;
+    }
+
+    .tile-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
     .tile-placeholder {

@@ -1,0 +1,117 @@
+---
+import GroceryOSLayout from "../../layouts/GroceryOSLayout.astro";
+
+// Mock data for Grocery Products
+const products = [
+  { id: 1, name: "Fresh Milk (1L)", category: "Dairy", brand: "Amul", mrp: 65, cost: 58, sell: 63, gst: 5, stock: 42, expiry: "2026-03-15", supplier: "Amul Dairy Corp" },
+  { id: 2, name: "Brown Bread", category: "Grains", brand: "Harvest Gold", mrp: 45, cost: 38, sell: 42, gst: 5, stock: 12, expiry: "2026-03-14", supplier: "Harvest Gold Pvt Ltd" },
+  { id: 3, name: "Organic Eggs (12pk)", category: "Dairy", brand: "Healthy Farm", mrp: 120, cost: 95, sell: 110, gst: 5, stock: 8, expiry: "2026-03-20", supplier: "Global Poultry" },
+  { id: 4, name: "Basmati Rice (5kg)", category: "Grains", brand: "India Gate", mrp: 550, cost: 480, sell: 520, gst: 5, stock: 100, expiry: "2027-01-10", supplier: "India Gate Mills" }
+];
+---
+
+<GroceryOSLayout title="Product Management | Bobo Grocery OS">
+  <div class="header-flex">
+      <div>
+          <h1>Product Catalog</h1>
+          <p style="color: var(--text-muted);">Manage your global product database and pricing.</p>
+      </div>
+      <div class="actions">
+          <button class="bulk-btn">📤 Bulk Import</button>
+          <button class="add-btn">+ Create Product</button>
+      </div>
+  </div>
+
+  <div class="table-card glass-card">
+      <div class="table-header">
+          <div class="search-box">
+              <input type="text" placeholder="Search products, SKUs, or barcodes..." />
+          </div>
+          <div class="categories">
+              <button class="cat-chip active">All</button>
+              <button class="cat-chip">Dairy</button>
+              <button class="cat-chip">Grains</button>
+              <button class="cat-chip">Fruits</button>
+          </div>
+      </div>
+
+      <table class="data-table">
+          <thead>
+              <tr>
+                  <th>Product Details</th>
+                  <th>Brand</th>
+                  <th>Pricing (Cost / Sell)</th>
+                  <th>GST %</th>
+                  <th>Stock</th>
+                  <th>Expiry</th>
+                  <th>Supplier</th>
+                  <th>Actions</th>
+              </tr>
+          </thead>
+          <tbody>
+              {products.map(p => (
+                  <tr>
+                      <td>
+                          <div class="p-info">
+                              <div class="p-img-box">{p.name[0]}</div>
+                              <div class="p-text">
+                                  <span class="name">{p.name}</span>
+                                  <span class="sku">ID: #G-{p.id}</span>
+                              </div>
+                          </div>
+                      </td>
+                      <td>{p.brand}</td>
+                      <td>
+                          <div class="price-stack">
+                              <span class="cost">₹{p.cost}</span>
+                              <span class="sell">₹{p.sell}</span>
+                          </div>
+                      </td>
+                      <td>{p.gst}%</td>
+                      <td>
+                          <span class={`stock-val ${p.stock < 20 ? 'low' : ''}`}>{p.stock} Units</span>
+                      </td>
+                      <td>{p.expiry}</td>
+                      <td>{p.supplier}</td>
+                      <td>
+                          <div class="btn-group">
+                              <button class="edit-btn">Edit</button>
+                          </div>
+                      </td>
+                  </tr>
+              ))}
+          </tbody>
+      </table>
+  </div>
+
+  <style>
+      .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+      .actions { display: flex; gap: 16px; }
+      .bulk-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 12px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+      .add-btn { background: var(--primary); border: none; color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+
+      .table-card { padding: 32px; }
+      .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+      .search-box input { width: 320px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 12px 16px; border-radius: 12px; color: white; }
+      .categories { display: flex; gap: 10px; }
+      .cat-chip { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-muted); padding: 8px 16px; border-radius: 30px; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+      .cat-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+      .data-table { width: 100%; border-collapse: collapse; }
+      .data-table th { text-align: left; padding: 16px; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
+      .data-table td { padding: 16px; border-bottom: 1px solid var(--border); }
+
+      .p-info { display: flex; align-items: center; gap: 14px; }
+      .p-img-box { width: 44px; height: 44px; background: rgba(255,255,255,0.05); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--primary); border: 1px solid var(--border); }
+      .p-text { display: flex; flex-direction: column; }
+      .name { font-weight: 700; }
+      .sku { font-size: 0.75rem; color: var(--text-muted); }
+
+      .price-stack { display: flex; flex-direction: column; }
+      .cost { font-size: 0.75rem; color: var(--text-muted); text-decoration: line-through; }
+      .sell { font-weight: 700; color: var(--primary); }
+
+      .stock-val.low { color: var(--error); font-weight: 700; }
+      .edit-btn { background: transparent; border: 1px solid var(--border); color: white; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
+  </style>
+</GroceryOSLayout>
