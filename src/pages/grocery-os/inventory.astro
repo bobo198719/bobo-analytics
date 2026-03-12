@@ -1,0 +1,321 @@
+---
+import GroceryOSLayout from "../../layouts/GroceryOSLayout.astro";
+
+// Mock data for Grocery Inventory
+const inventory = [
+  { id: 1, img: "🥛", name: "Fresh Milk (1L)", category: "Dairy", barcode: "8901234001", stock: 42, min_stock: 50, mrp: 70, expiry: "2026-03-15", status: "Critical" },
+  { id: 2, img: "🍞", name: "Brown Bread", category: "Grains", barcode: "8901234002", stock: 12, min_stock: 15, mrp: 45, expiry: "2026-03-14", status: "Expiring" },
+  { id: 3, img: "🥚", name: "Organic Eggs (12pk)", category: "Dairy", barcode: "8901234003", stock: 8, min_stock: 20, mrp: 120, expiry: "2026-03-20", status: "Low Stock" },
+  { id: 4, img: "🍚", name: "Basmati Rice (5kg)", category: "Grains", barcode: "8901234004", stock: 100, min_stock: 30, mrp: 550, expiry: "2027-01-10", status: "Optimal" },
+  { id: 5, img: "🍫", name: "Milk Chocolate", category: "Snacks", barcode: "8901234005", stock: 45, min_stock: 20, mrp: 99, expiry: "2026-08-15", status: "Optimal" },
+  { id: 6, img: "🧴", name: "Detergent Liquid", category: "Household", barcode: "8901234006", stock: 15, min_stock: 10, mrp: 350, expiry: "2028-12-30", status: "Optimal" }
+];
+---
+
+<GroceryOSLayout title="Inventory | Bobo Grocery OS">
+  <div class="inventory-header">
+      <div>
+          <h1>Inventory Intelligence</h1>
+          <p style="color: var(--text-muted);">Manage 1,240 SKUs across 8 categories.</p>
+      </div>
+      <div class="inventory-actions">
+          <button class="ocr-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v8"/><path d="m16 6-4 4-4-4"/><rect x="2" y="12" width="20" height="8" rx="2" ry="2"/><line x1="12" y1="15" x2="12" y2="15"/></svg>
+              OCR Invoice Scan
+          </button>
+          <button class="add-stock-btn">Add New Item</button>
+      </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="inv-summary-grid">
+      <div class="inv-card glass-card critical">
+          <span class="l">Critical Low Stock</span>
+          <span class="v">12</span>
+          <span class="d">Requires Immediate Reorder</span>
+      </div>
+      <div class="inv-card glass-card warning">
+          <span class="l">Expiring (Next 48h)</span>
+          <span class="v">8</span>
+          <span class="d">Stock to be liquidated</span>
+      </div>
+      <div class="inv-card glass-card info">
+          <span class="l">Total Inventory Value</span>
+          <span class="v">₹12.4L</span>
+          <span class="d">Estimated at MRP</span>
+      </div>
+      <div class="inv-card glass-card success">
+          <span class="l">Daily Fill Rate</span>
+          <span class="v">94%</span>
+          <span class="d">Branch Average</span>
+      </div>
+  </div>
+
+  <!-- Inventory Table -->
+  <div class="table-container glass-card">
+      <div class="table-filters">
+          <div class="search-box">
+              <input type="text" placeholder="Filter by Name, Barcode, or Category..." />
+          </div>
+          <div class="filter-groups">
+              <select>
+                  <option>All Categories</option>
+                  <option>Dairy</option>
+                  <option>Grains</option>
+              </select>
+              <select>
+                  <option>All Statuses</option>
+                  <option>Critical</option>
+                  <option>Optimal</option>
+              </select>
+          </div>
+      </div>
+
+      <table class="inventory-table">
+          <thead>
+              <tr>
+                  <th>Product</th>
+                  <th>Barcode</th>
+                  <th>Category</th>
+                  <th>Stock</th>
+                  <th>MRP</th>
+                  <th>Expiry</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+              </tr>
+          </thead>
+          <tbody>
+              {inventory.map(item => (
+                  <tr class={item.status.toLowerCase().replace(' ', '-')}>
+                      <td>
+                          <div class="p-cell">
+                              <div class="p-img">{item.img}</div>
+                              <span class="p-name">{item.name}</span>
+                          </div>
+                      </td>
+                      <td><code>{item.barcode}</code></td>
+                      <td><span class="cat-tag">{item.category}</span></td>
+                      <td>
+                          <div class="stock-progress-cell">
+                              <span class="stock-num">{item.stock} / {item.min_stock}</span>
+                              <div class="p-bar">
+                                  <div class="p-fill" style={`width: ${Math.min((item.stock/item.min_stock)*100, 100)}%`}></div>
+                              </div>
+                          </div>
+                      </td>
+                      <td>₹{item.mrp}</td>
+                      <td>{item.expiry}</td>
+                      <td><span class={`status-badge ${item.status.toLowerCase().replace(' ', '-')}`}>{item.status}</span></td>
+                      <td>
+                          <div class="actions-flex">
+                              <button class="ic-btn">📝</button>
+                              <button class="ic-btn reorder">🛒</button>
+                          </div>
+                      </td>
+                  </tr>
+              ))}
+          </tbody>
+      </table>
+  </div>
+
+  <style>
+      .inventory-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 40px;
+      }
+
+      .inventory-actions {
+          display: flex;
+          gap: 16px;
+      }
+
+      .ocr-btn {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid var(--border);
+          color: white;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 12px 24px;
+          border-radius: 12px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: 0.2s;
+      }
+
+      .ocr-btn:hover { background: rgba(255, 255, 255, 0.1); }
+
+      .add-stock-btn {
+          background: var(--primary);
+          border: none;
+          color: white;
+          padding: 12px 24px;
+          border-radius: 12px;
+          font-weight: 700;
+          cursor: pointer;
+          box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);
+      }
+
+      .inv-summary-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 20px;
+          margin-bottom: 40px;
+      }
+
+      .inv-card {
+          padding: 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          border-left: 4px solid transparent;
+      }
+
+      .inv-card .l { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+      .inv-card .v { font-size: 1.75rem; font-weight: 800; font-family: 'Outfit'; }
+      .inv-card .d { font-size: 0.8rem; color: var(--text-muted); }
+
+      .inv-card.critical { border-left-color: var(--error); }
+      .inv-card.warning { border-left-color: var(--warning); }
+      .inv-card.info { border-left-color: var(--secondary); }
+      .inv-card.success { border-left-color: var(--success); }
+
+      .table-container {
+          padding: 32px;
+      }
+
+      .table-filters {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 32px;
+      }
+
+      .search-box input {
+          width: 380px;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid var(--border);
+          padding: 12px 18px;
+          border-radius: 12px;
+          color: white;
+      }
+
+      .filter-groups {
+          display: flex;
+          gap: 12px;
+      }
+
+      .filter-groups select {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid var(--border);
+          color: white;
+          padding: 8px 16px;
+          border-radius: 10px;
+      }
+
+      .inventory-table {
+          width: 100%;
+          border-collapse: collapse;
+      }
+
+      .inventory-table th {
+          text-align: left;
+          padding: 16px;
+          font-size: 0.85rem;
+          color: var(--text-muted);
+          border-bottom: 1px solid var(--border);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+      }
+
+      .inventory-table td {
+          padding: 20px 16px;
+          border-bottom: 1px solid var(--border);
+          font-size: 0.95rem;
+      }
+
+      .p-cell {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+      }
+
+      .p-img {
+          width: 44px;
+          height: 44px;
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.5rem;
+      }
+
+      .p-name { font-weight: 700; }
+
+      code {
+          background: rgba(255, 255, 255, 0.05);
+          padding: 4px 8px;
+          border-radius: 6px;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 0.8rem;
+      }
+
+      .cat-tag {
+          font-size: 0.8rem;
+          color: var(--text-muted);
+          background: rgba(255, 255, 255, 0.05);
+          padding: 4px 10px;
+          border-radius: 6px;
+      }
+
+      .stock-progress-cell {
+          width: 140px;
+      }
+
+      .stock-num {
+          display: block;
+          font-size: 0.8rem;
+          margin-bottom: 6px;
+          font-weight: 600;
+      }
+
+      .p-bar {
+          height: 6px;
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 10px;
+          overflow: hidden;
+      }
+
+      .p-fill {
+          height: 100%;
+          background: var(--primary);
+      }
+
+      .status-badge {
+          font-size: 0.75rem;
+          font-weight: 800;
+          padding: 4px 12px;
+          border-radius: 30px;
+          text-transform: uppercase;
+      }
+
+      .status-badge.optimal { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+      .status-badge.low-stock { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+      .status-badge.expiring { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+      .status-badge.critical { background: rgba(239, 68, 68, 0.2); color: var(--error); }
+
+      .actions-flex { display: flex; gap: 8px; }
+      .ic-btn {
+          background: rgba(255, 255, 255, 0.05);
+          border: none;
+          width: 34px;
+          height: 34px;
+          border-radius: 8px;
+          cursor: pointer;
+      }
+
+      .ic-btn.reorder { background: rgba(16, 185, 129, 0.1); color: var(--primary); font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.2); }
+  </style>
+</GroceryOSLayout>

@@ -1,0 +1,350 @@
+---
+const { title = "Bobo Grocery OS" } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-width: 280px;
+            --bg-dark: #020617;
+            --bg-card: rgba(30, 41, 59, 0.5);
+            --primary: #10b981; /* Grocery Green */
+            --secondary: #3b82f6;
+            --accent: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Navigation */
+        aside.sidebar {
+            width: var(--sidebar-width);
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 32px 24px;
+            z-index: 100;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 48px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .logo-orb {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--primary), #059669);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .logo-area span {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.4rem;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-section {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 32px;
+        }
+
+        .nav-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            padding-left: 12px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(4px);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.15), transparent);
+            color: var(--primary);
+            border-left: 3px solid var(--primary);
+        }
+
+        .nav-link svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Main Content Wrapper */
+        main.content-wrapper {
+            flex: 1;
+            height: 100vh;
+            overflow-y: auto;
+            background: radial-gradient(circle at 100% 0%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+        }
+
+        header.top-bar {
+            height: 80px;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(2, 6, 23, 0.5);
+            backdrop-filter: blur(8px);
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .search-container {
+            position: relative;
+            width: 400px;
+        }
+
+        .search-container input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            padding: 12px 16px 12px 48px;
+            border-radius: 14px;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .search-container svg {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .notification-btn {
+            position: relative;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .notif-dot {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            background: var(--error);
+            border-radius: 50%;
+            border: 2px solid var(--bg-dark);
+        }
+
+        .profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-card);
+            padding: 6px 16px 6px 6px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+        }
+
+        .avatar-box {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        .page-content {
+            padding: 40px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Utility Classes */
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            aside.sidebar {
+                width: 80px;
+                padding: 24px 12px;
+            }
+            .logo-area span, .nav-label, .nav-link span, .profile-name {
+                display: none;
+            }
+            .nav-link {
+                justify-content: center;
+            }
+            .search-container {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <a href="/grocery-os" class="logo-area">
+            <div class="logo-orb">🍎</div>
+            <span>Grocery OS</span>
+        </a>
+
+        <div class="nav-section">
+            <span class="nav-label">Core Business</span>
+            <a href="/grocery-os" class="nav-link" data-nav="/grocery-os">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="/grocery-os/pos" class="nav-link" data-nav="/grocery-os/pos">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                <span>POS Billing</span>
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <span class="nav-label">Management</span>
+            <a href="/grocery-os/inventory" class="nav-link" data-nav="/grocery-os/inventory">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                <span>Inventory</span>
+            </a>
+            <a href="/grocery-os/products" class="nav-link" data-nav="/grocery-os/products">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <span>Products</span>
+            </a>
+            <a href="/grocery-os/crm" class="nav-link" data-nav="/grocery-os/crm">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span>Customers</span>
+            </a>
+            <a href="/grocery-os/marketing" class="nav-link" data-nav="/grocery-os/marketing">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13.5 13 4 4L22 12l-4.5-4.5L13 12"/><path d="m16 5 2 2"/><path d="m19 8 2 2"/><path d="m21 11 2 2"/></svg>
+                <span>Marketing</span>
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <span class="nav-label">Global Control</span>
+            <a href="/grocery-os/reports" class="nav-link" data-nav="/grocery-os/reports">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+                <span>Reports</span>
+            </a>
+            <a href="/grocery-os/settings" class="nav-link" data-nav="/grocery-os/settings">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                <span>Settings</span>
+            </a>
+        </div>
+
+        <script is:inline>
+            // Auth Check
+            if (!localStorage.getItem('grocery_os_auth')) {
+                // For demo purposes, we will redirect to a login later
+                // window.location.href = '/grocery-login';
+            }
+
+            // Highlighting active nav link
+            const currentPath = window.location.pathname;
+            document.querySelectorAll('.nav-link').forEach(link => {
+                const navPath = link.getAttribute('data-nav');
+                if (currentPath === navPath || (currentPath === '/grocery-os/' && navPath === '/grocery-os')) {
+                    link.classList.add('active');
+                }
+            });
+        </script>
+    </aside>
+
+    <main class="content-wrapper">
+        <header class="top-bar">
+            <div class="search-container">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input type="text" placeholder="Search orders, products, or customers..." />
+            </div>
+
+            <div class="user-actions">
+                <div class="notification-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <div class="notif-dot"></div>
+                </div>
+
+                <div class="profile-btn">
+                    <div class="avatar-box">AD</div>
+                    <div class="profile-name">
+                        <span style="font-size: 0.85rem; font-weight: 600;">Admin User</span>
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">Main Branch</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="page-content">
+            <slot />
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,242 @@
+---
+import GroceryOSLayout from "../../layouts/GroceryOSLayout.astro";
+
+// Mock data for Grocery CRM
+const customers = [
+  { id: 1, name: "Rahul Sharma", phone: "9876543210", email: "rahul@email.com", points: 1240, visits: 14, total_spent: "₹24,850", segment: "VIP" },
+  { id: 2, name: "Anita Kapoor", phone: "9822110044", email: "anita.k@email.com", points: 850, visits: 8, total_spent: "₹12,420", segment: "Repeat" },
+  { id: 3, name: "David Miller", phone: "7001122334", email: "david.m@email.com", points: 45, visits: 1, total_spent: "₹2,100", segment: "New" },
+  { id: 4, name: "Sanya Gupta", phone: "9122334455", email: "sanya@email.com", points: 3400, visits: 32, total_spent: "₹64,200", segment: "Elite" },
+  { id: 5, name: "Vikram Singh", phone: "8877665544", email: "vikram@email.com", points: 120, visits: 3, total_spent: "₹4,500", segment: "Regular" }
+];
+---
+
+<GroceryOSLayout title="Customer CRM | Bobo Grocery OS">
+  <div class="crm-header">
+      <div>
+          <h1>Customer Intelligence</h1>
+          <p style="color: var(--text-muted);">Loyalty program management and behavior targeting.</p>
+      </div>
+      <div class="crm-actions">
+          <button class="export-btn">📊 Export CRM Data</button>
+          <button class="add-cust-btn">+ New Customer</button>
+      </div>
+  </div>
+
+  <div class="loyalty-stats">
+      <div class="l-card glass-card">
+          <h3>Total Enrolled</h3>
+          <span class="v">1,420</span>
+          <span class="s">Active Card Holders</span>
+      </div>
+      <div class="l-card glass-card">
+          <h3>Loyalty Liability</h3>
+          <span class="v">₹48,200</span>
+          <span class="s">Points value in system</span>
+      </div>
+      <div class="l-card glass-card">
+          <h3>Repeat Rate</h3>
+          <span class="v">64.5%</span>
+          <span class="s">Return within 15 days</span>
+      </div>
+  </div>
+
+  <div class="table-container glass-card">
+      <div class="table-top">
+          <h3>Active Customer Database</h3>
+          <div class="search-wrap">
+              <input type="text" placeholder="Search by name, phone or email..." />
+          </div>
+      </div>
+
+      <table class="crm-table">
+          <thead>
+              <tr>
+                  <th>Customer</th>
+                  <th>Contact Info</th>
+                  <th>Loyalty Points</th>
+                  <th>Visits</th>
+                  <th>Total Revenue</th>
+                  <th>Segment</th>
+                  <th>Actions</th>
+              </tr>
+          </thead>
+          <tbody>
+              {customers.map(c => (
+                  <tr>
+                      <td>
+                          <div class="cust-cell">
+                              <div class="avatar">{c.name[0]}</div>
+                              <span class="name">{c.name}</span>
+                          </div>
+                      </td>
+                      <td>
+                          <div class="contact-stack">
+                              <span class="phone">{c.phone}</span>
+                              <span class="email">{c.email}</span>
+                          </div>
+                      </td>
+                      <td>
+                          <div class="points-badge">
+                              ✨ {c.points}
+                          </div>
+                      </td>
+                      <td style="font-weight: 700;">{c.visits}</td>
+                      <td style="font-family: 'Outfit'; font-weight: 800;">{c.total_spent}</td>
+                      <td>
+                          <span class={`segment-badge ${c.segment.toLowerCase()}`}>{c.segment}</span>
+                      </td>
+                      <td>
+                          <button class="view-btn">History →</button>
+                      </td>
+                  </tr>
+              ))}
+          </tbody>
+      </table>
+  </div>
+
+  <style>
+      .crm-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 40px;
+      }
+
+      .crm-actions { display: flex; gap: 16px; }
+
+      .export-btn {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid var(--border);
+          color: white;
+          padding: 12px 24px;
+          border-radius: 12px;
+          font-weight: 700;
+          cursor: pointer;
+      }
+
+      .add-cust-btn {
+          background: var(--secondary);
+          border: none;
+          color: white;
+          padding: 12px 24px;
+          border-radius: 12px;
+          font-weight: 700;
+          cursor: pointer;
+          box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2);
+      }
+
+      .loyalty-stats {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 24px;
+          margin-bottom: 40px;
+      }
+
+      .l-card {
+          padding: 32px;
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+      }
+
+      .l-card h3 { font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+      .l-card .v { font-size: 2.5rem; font-weight: 800; color: white; }
+      .l-card .s { font-size: 0.9rem; color: var(--text-muted); }
+
+      .table-container { padding: 32px; }
+
+      .table-top {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 32px;
+      }
+
+      .search-wrap input {
+          width: 320px;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid var(--border);
+          padding: 12px 16px;
+          border-radius: 12px;
+          color: white;
+      }
+
+      .crm-table {
+          width: 100%;
+          border-collapse: collapse;
+      }
+
+      .crm-table th {
+          text-align: left;
+          padding: 16px;
+          font-size: 0.8rem;
+          color: var(--text-muted);
+          border-bottom: 1px solid var(--border);
+          text-transform: uppercase;
+      }
+
+      .crm-table td {
+          padding: 20px 16px;
+          border-bottom: 1px solid var(--border);
+      }
+
+      .cust-cell { display: flex; align-items: center; gap: 14px; }
+      .avatar {
+          width: 40px;
+          height: 40px;
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 800;
+          color: var(--primary);
+          border: 1px solid var(--border);
+      }
+
+      .name { font-weight: 700; color: white; }
+
+      .contact-stack { display: flex; flex-direction: column; }
+      .phone { font-size: 0.95rem; font-weight: 600; }
+      .email { font-size: 0.8rem; color: var(--text-muted); }
+
+      .points-badge {
+          display: inline-flex;
+          align-items: center;
+          padding: 4px 12px;
+          background: rgba(245, 158, 11, 0.1);
+          color: #f59e0b;
+          border-radius: 30px;
+          font-weight: 700;
+          font-size: 0.85rem;
+      }
+
+      .segment-badge {
+          font-size: 0.75rem;
+          font-weight: 800;
+          padding: 4px 12px;
+          border-radius: 30px;
+          text-transform: uppercase;
+      }
+
+      .segment-badge.elite { background: rgba(168, 85, 247, 0.1); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.2); }
+      .segment-badge.vip { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+      .segment-badge.repeat { background: rgba(59, 130, 246, 0.1); color: var(--secondary); }
+      .segment-badge.new { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); }
+
+      .view-btn {
+          background: transparent;
+          border: 1px solid var(--border);
+          color: white;
+          padding: 6px 12px;
+          border-radius: 8px;
+          font-size: 0.8rem;
+          cursor: pointer;
+          transition: 0.2s;
+      }
+
+      .view-btn:hover { background: white; color: black; }
+  </style>
+</GroceryOSLayout>

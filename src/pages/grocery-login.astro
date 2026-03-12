@@ -1,0 +1,161 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+---
+
+<MainLayout title="Grocery OS Login | Bobo Analytics">
+  <div class="auth-page">
+    <div class="login-card">
+      <div class="brand">
+        <div class="logo-orb">🍎</div>
+        <h1>Bobo Grocery OS</h1>
+        <p>SaaS Supermarket Management</p>
+      </div>
+
+      <div class="auth-status" id="auth-status"></div>
+
+      <form class="auth-form" id="loginForm">
+        <div class="input-group">
+          <label>Store ID / Terminal ID</label>
+          <input type="text" id="storeId" placeholder="e.g. MAIN-STREET-01" required />
+        </div>
+        <div class="input-group">
+          <label>Operator Key</label>
+          <input type="password" id="password" placeholder="••••••••" required />
+        </div>
+
+        <button type="submit" class="auth-btn">
+          Launch Grocery OS
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+      </form>
+
+      <div class="auth-footer">
+          <div class="support-links">
+            <a href="#">Operator Support</a>
+            <span class="sep">•</span>
+            <a href="/signup">Setup New Store</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .auth-page {
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top left, rgba(16, 185, 129, 0.1), transparent),
+                  radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.1), transparent);
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 32px;
+      padding: 48px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .logo-orb {
+      width: 72px;
+      height: 72px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      margin: 0 auto 24px;
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+    }
+
+    .brand h1 { font-size: 1.75rem; font-weight: 800; }
+    .brand p { color: rgba(255, 255, 255, 0.5); font-size: 0.9rem; margin-top: 4px; }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .input-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .input-group input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 14px 18px;
+      border-radius: 14px;
+      color: white;
+    }
+
+    .auth-btn {
+      background: #10b981;
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .auth-footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 0.85rem;
+    }
+
+    .support-links a { color: #10b981; text-decoration: none; }
+    .sep { color: rgba(255, 255, 255, 0.1); margin: 0 8px; }
+
+    .error-msg {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      margin-bottom: 24px;
+    }
+  </style>
+
+  <script is:inline>
+    const loginForm = document.getElementById('loginForm');
+    const authStatus = document.getElementById('auth-status');
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const storeId = document.getElementById('storeId').value;
+      const pass = document.getElementById('password').value;
+
+      // Demo creds: grocery / bobo123
+      if (storeId === 'grocery' && pass === 'bobo123') {
+        localStorage.setItem('grocery_os_auth', 'true');
+        window.location.href = '/grocery-os';
+      } else {
+        authStatus.innerHTML = '<div class="error-msg">Invalid Terminal ID or Key.</div>';
+      }
+    });
+  </script>
+</MainLayout>

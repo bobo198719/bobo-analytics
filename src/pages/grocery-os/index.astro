@@ -1,0 +1,608 @@
+---
+import GroceryOSLayout from "../../layouts/GroceryOSLayout.astro";
+
+// Mock stats for Grocery Dashboard
+const stats = [
+  { label: "Today's Sales", value: "₹42,850", trend: "+14.2%", icon: "💰", color: "var(--primary)" },
+  { label: "Orders Today", value: "156", trend: "+8.5%", icon: "📦", color: "var(--secondary)" },
+  { label: "Net Profit", value: "₹8,420", trend: "+12.1%", icon: "📈", color: "#fbaf24" },
+  { label: "Stock Alerts", value: "12 Items", trend: "Critical", icon: "⚠️", color: "#ef4444" },
+  { label: "Expiring Soon", value: "24 Units", trend: "48h", icon: "⏰", color: "#f59e0b" },
+  { label: "New Members", value: "18", trend: "+5.2%", icon: "👥", color: "#ec4899" }
+];
+
+const topProducts = [
+  { name: "Fresh Full Cream Milk (1L)", sales: 142, stock: "Optimal", img: "milk_grocery_item" },
+  { name: "Sourdough Bread Loaf", sales: 88, stock: "Low", img: "bread_grocery_item" },
+  { name: "Organic Brown Eggs (12pk)", sales: 74, stock: "Critical", img: "eggs_grocery_item" },
+  { name: "Masala Potato Chips", sales: 65, stock: "High", img: "chips_grocery_item" }
+];
+---
+
+<GroceryOSLayout title="Dashboard | Bobo Grocery OS">
+  <div class="dashboard-header-flex">
+      <div>
+          <h1 style="font-size: 2.2rem; margin-bottom: 8px;">Supermarket Intelligence</h1>
+          <p style="color: var(--text-muted);">Real-time performance metrics for <span style="color: white; font-weight: 600;">Main Street Branch</span>.</p>
+      </div>
+      <div class="time-range-picker">
+          <button class="range-btn active">Today</button>
+          <button class="range-btn">Weekly</button>
+          <button class="range-btn">Monthly</button>
+          <button class="range-btn calendar-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </button>
+      </div>
+  </div>
+
+  <div class="stats-grid">
+      {stats.map(stat => (
+          <div class="stat-card glass-card">
+              <div class="stat-top">
+                  <div class="stat-icon-box" style={`background: ${stat.color}15; color: ${stat.color}`}>
+                      {stat.icon}
+                  </div>
+                  <span class={`stat-trend ${stat.trend === 'Critical' ? 'critical' : (stat.trend.startsWith('+') ? 'positive' : '')}`}>
+                      {stat.trend}
+                  </span>
+              </div>
+              <div class="stat-main">
+                  <span class="stat-label">{stat.label}</span>
+                  <span class="stat-value">{stat.value}</span>
+              </div>
+              <div class="stat-footer-chart">
+                  <div class="spark-bar" style="height: 40%"></div>
+                  <div class="spark-bar" style="height: 60%"></div>
+                  <div class="spark-bar" style="height: 35%"></div>
+                  <div class="spark-bar active" style={`height: 80%; background: ${stat.color}`}></div>
+                  <div class="spark-bar" style="height: 45%"></div>
+              </div>
+          </div>
+      ))}
+  </div>
+
+  <div class="main-visual-grid">
+      <!-- Sales Trend Chart -->
+      <div class="chart-panel glass-card">
+          <div class="panel-header">
+              <h3>Hourly Sales Velocity</h3>
+              <div class="chart-controls">
+                  <span class="legend-dot" style="background: var(--primary)"></span>
+                  <span style="font-size: 0.8rem; color: var(--text-muted);">Current Segment</span>
+              </div>
+          </div>
+          <div class="bar-chart-container">
+              {Array.from({length: 12}).map((_, i) => (
+                  <div class="bar-wrapper">
+                      <div class="bar-fill" style={`height: ${Math.floor(Math.random() * 80) + 20}%`}>
+                          <div class="bar-tooltip">₹{Math.floor(Math.random() * 5000) + 1000}</div>
+                      </div>
+                      <span class="bar-label">{8 + i}am</span>
+                  </div>
+              ))}
+          </div>
+      </div>
+
+      <!-- Category Performance -->
+      <div class="category-panel glass-card">
+          <div class="panel-header">
+              <h3>Category Mix</h3>
+          </div>
+          <div class="category-ring">
+              <svg width="180" height="180">
+                  <circle cx="90" cy="90" r="70" class="ring-bg" />
+                  <circle cx="90" cy="90" r="70" class="ring-fill dairy" />
+                  <circle cx="90" cy="90" r="70" class="ring-fill grains" />
+              </svg>
+              <div class="ring-center">
+                  <span class="center-value">68%</span>
+                  <span class="center-label">Dairy & Fresh</span>
+              </div>
+          </div>
+          <div class="category-legend">
+              <div class="legend-row">
+                  <span class="dot dairy"></span>
+                  <span>Dairy</span>
+                  <span class="val">42%</span>
+              </div>
+              <div class="legend-row">
+                  <span class="dot grains"></span>
+                  <span>Grains</span>
+                  <span class="val">26%</span>
+              </div>
+              <div class="legend-row">
+                  <span class="dot snacks"></span>
+                  <span>Snacks</span>
+                  <span class="val">18%</span>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <div class="secondary-grid">
+      <!-- Best Sellers -->
+      <div class="best-sellers-panel glass-card">
+          <div class="panel-header">
+              <h3>Fastest Moving Items</h3>
+              <button class="view-all-btn">View Inventory</button>
+          </div>
+          <div class="product-table">
+              {topProducts.map(product => (
+                  <div class="product-row">
+                      <div class="product-thumb-box">
+                          {/* We'll assume the image paths are generated/mapped */}
+                          <div class="thumb-placeholder">{product.name[0]}</div>
+                      </div>
+                      <div class="product-info-cell">
+                          <span class="p-name">{product.name}</span>
+                          <span class="p-sales">{product.sales} units sold today</span>
+                      </div>
+                      <div class="product-stock-cell">
+                          <span class={`stock-badge ${product.stock.toLowerCase()}`}>{product.stock}</span>
+                      </div>
+                      <div class="product-action-cell">
+                          <button class="order-btn">Reorder</button>
+                      </div>
+                  </div>
+              ))}
+          </div>
+      </div>
+
+      <!-- AI Insights -->
+      <div class="ai-insights-panel glass-card">
+          <div class="panel-header" style="color: var(--primary);">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                  <span class="ai-spark">✨</span>
+                  <h3>AI Demand Forecaster</h3>
+              </div>
+          </div>
+          <div class="insights-stack">
+              <div class="insight-card">
+                  <div class="insight-icon">🥛</div>
+                  <div class="insight-text">
+                      <strong>Milk & Grains</strong> demand predicted to increase by 24% this weekend due to local festival.
+                  </div>
+              </div>
+              <div class="insight-card warn">
+                  <div class="insight-icon">⚠️</div>
+                  <div class="insight-text">
+                      <strong>Detergents</strong> stock aging detected. Suggest 15% discount for "Flash Sale" to clear inventory.
+                  </div>
+              </div>
+              <div class="insight-card success">
+                  <div class="insight-icon">💎</div>
+                  <div class="insight-text">
+                      <strong>New Customer Segment</strong> detected. High frequency visitors from "South Street" prefer Organic Dairy.
+                  </div>
+              </div>
+          </div>
+          <button class="ai-deep-btn">Deep Dive Analytics</button>
+      </div>
+  </div>
+
+  <style>
+      .dashboard-header-flex {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 40px;
+      }
+
+      .time-range-picker {
+          display: flex;
+          background: rgba(255, 255, 255, 0.05);
+          padding: 4px;
+          border-radius: 12px;
+          border: 1px solid var(--border);
+      }
+
+      .range-btn {
+          background: transparent;
+          border: none;
+          color: var(--text-muted);
+          padding: 8px 16px;
+          border-radius: 8px;
+          font-size: 0.85rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: 0.2s;
+      }
+
+      .range-btn.active {
+          background: var(--primary);
+          color: white;
+      }
+
+      .calendar-btn {
+          padding: 8px 12px;
+      }
+
+      .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(6, 1fr);
+          gap: 20px;
+          margin-bottom: 32px;
+      }
+
+      .stat-card {
+          padding: 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .stat-card:hover {
+          transform: translateY(-5px);
+          border-color: var(--primary);
+      }
+
+      .stat-top {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+      }
+
+      .stat-icon-box {
+          width: 44px;
+          height: 44px;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.25rem;
+      }
+
+      .stat-trend {
+          font-size: 0.75rem;
+          font-weight: 700;
+          padding: 2px 8px;
+          border-radius: 20px;
+          background: rgba(255, 255, 255, 0.05);
+          color: var(--text-muted);
+      }
+
+      .stat-trend.positive { color: var(--success); }
+      .stat-trend.critical { color: var(--error); background: rgba(239, 68, 68, 0.1); }
+
+      .stat-main {
+          display: flex;
+          flex-direction: column;
+      }
+
+      .stat-label {
+          font-size: 0.8rem;
+          color: var(--text-muted);
+          font-weight: 500;
+          margin-bottom: 4px;
+      }
+
+      .stat-value {
+          font-size: 1.5rem;
+          font-weight: 800;
+          font-family: 'Outfit', sans-serif;
+      }
+
+      .stat-footer-chart {
+          display: flex;
+          align-items: flex-end;
+          gap: 4px;
+          height: 24px;
+      }
+
+      .spark-bar {
+          flex: 1;
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 2px;
+      }
+
+      .main-visual-grid {
+          display: grid;
+          grid-template-columns: 1fr 320px;
+          gap: 24px;
+          margin-bottom: 32px;
+      }
+
+      .chart-panel {
+          padding: 32px;
+      }
+
+      .panel-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 32px;
+      }
+
+      .bar-chart-container {
+          height: 240px;
+          display: flex;
+          align-items: flex-end;
+          gap: 12px;
+          padding: 0 10px;
+      }
+
+      .bar-wrapper {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 12px;
+          height: 100%;
+      }
+
+      .bar-fill {
+          width: 100%;
+          background: linear-gradient(to top, var(--primary), #34d399);
+          border-radius: 8px 8px 0 0;
+          position: relative;
+          cursor: pointer;
+          transition: 0.3s;
+      }
+
+      .bar-fill:hover {
+          filter: brightness(1.2);
+          box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+      }
+
+      .bar-tooltip {
+          position: absolute;
+          top: -36px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: white;
+          color: black;
+          padding: 4px 8px;
+          border-radius: 6px;
+          font-size: 0.75rem;
+          font-weight: 700;
+          opacity: 0;
+          transition: 0.2s;
+          pointer-events: none;
+          white-space: nowrap;
+      }
+
+      .bar-fill:hover .bar-tooltip {
+          opacity: 1;
+          transform: translateX(-50%) translateY(-5px);
+      }
+
+      .bar-label {
+          font-size: 0.7rem;
+          color: var(--text-muted);
+          font-weight: 600;
+      }
+
+      .category-panel {
+          padding: 32px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+      }
+
+      .category-ring {
+          position: relative;
+          margin-bottom: 24px;
+      }
+
+      .ring-bg {
+          fill: none;
+          stroke: rgba(255, 255, 255, 0.05);
+          stroke-width: 12;
+      }
+
+      .ring-fill {
+          fill: none;
+          stroke-width: 12;
+          stroke-linecap: round;
+          transform: rotate(-90deg);
+          transform-origin: 50% 50%;
+      }
+
+      .ring-fill.dairy {
+          stroke: var(--primary);
+          stroke-dasharray: 440;
+          stroke-dashoffset: 150;
+      }
+
+      .ring-fill.grains {
+          stroke: var(--secondary);
+          stroke-dasharray: 440;
+          stroke-dashoffset: 320;
+      }
+
+      .ring-center {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+      }
+
+      .center-value {
+          font-size: 1.75rem;
+          font-weight: 800;
+          color: white;
+      }
+
+      .center-label {
+          font-size: 0.7rem;
+          color: var(--text-muted);
+          text-transform: uppercase;
+      }
+
+      .category-legend {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+      }
+
+      .legend-row {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-size: 0.85rem;
+      }
+
+      .dot {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+      }
+
+      .dot.dairy { background: var(--primary); }
+      .dot.grains { background: var(--secondary); }
+      .dot.snacks { background: var(--accent); }
+
+      .legend-row .val {
+          margin-left: auto;
+          font-weight: 700;
+          color: white;
+      }
+
+      .secondary-grid {
+          display: grid;
+          grid-template-columns: 1fr 400px;
+          gap: 24px;
+      }
+
+      .best-sellers-panel {
+          padding: 32px;
+      }
+
+      .product-table {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+      }
+
+      .product-row {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+          padding: 16px;
+          background: rgba(255, 255, 255, 0.02);
+          border-radius: 16px;
+          border: 1px solid transparent;
+          transition: 0.2s;
+      }
+
+      .product-row:hover {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .product-thumb-box {
+          width: 54px;
+          height: 54px;
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+      }
+
+      .p-name {
+          display: block;
+          font-size: 0.95rem;
+          font-weight: 700;
+          margin-bottom: 4px;
+      }
+
+      .p-sales {
+          font-size: 0.8rem;
+          color: var(--text-muted);
+      }
+
+      .stock-badge {
+          font-size: 0.75rem;
+          font-weight: 700;
+          padding: 4px 12px;
+          border-radius: 30px;
+          text-transform: uppercase;
+      }
+
+      .stock-badge.optimal { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+      .stock-badge.low { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+      .stock-badge.critical { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+      .stock-badge.high { background: rgba(59, 130, 246, 0.1); color: var(--secondary); }
+
+      .order-btn {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid var(--border);
+          color: white;
+          padding: 6px 16px;
+          border-radius: 8px;
+          font-size: 0.8rem;
+          font-weight: 600;
+          cursor: pointer;
+      }
+
+      .ai-insights-panel {
+          padding: 32px;
+      }
+
+      .insights-stack {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          margin-bottom: 24px;
+      }
+
+      .insight-card {
+          display: flex;
+          gap: 16px;
+          padding: 16px;
+          background: rgba(16, 185, 129, 0.05);
+          border-left: 4px solid var(--primary);
+          border-radius: 0 12px 12px 0;
+      }
+
+      .insight-card.warn {
+          background: rgba(245, 158, 11, 0.05);
+          border-left-color: var(--warning);
+      }
+
+      .insight-card.success {
+          background: rgba(59, 130, 246, 0.05);
+          border-left-color: var(--secondary);
+      }
+
+      .insight-icon {
+          font-size: 1.5rem;
+      }
+
+      .insight-text {
+          font-size: 0.85rem;
+          line-height: 1.5;
+          color: rgba(255, 255, 255, 0.8);
+      }
+
+      .ai-deep-btn {
+          width: 100%;
+          background: var(--primary);
+          color: white;
+          border: none;
+          padding: 14px;
+          border-radius: 12px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: 0.3s;
+      }
+
+      .ai-deep-btn:hover {
+          filter: brightness(1.1);
+          box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+      }
+
+      @media (max-width: 1400px) {
+          .stats-grid {
+              grid-template-columns: repeat(3, 1fr);
+          }
+      }
+  </style>
+</RetailOSLayout>
