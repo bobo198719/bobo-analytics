@@ -249,6 +249,11 @@ const { title = "Bobo Retail OS" } = Astro.props;
         </div>
 
         <script is:inline>
+            // --- AUTH GUARD ---
+            if (!localStorage.getItem('retail_os_auth')) {
+                window.location.href = '/retail-os-login';
+            }
+
             // Highlight active navigation link
             const currentPath = window.location.pathname;
             const navLinks = document.querySelectorAll('.nav-link');
@@ -260,6 +265,13 @@ const { title = "Bobo Retail OS" } = Astro.props;
                     link.classList.remove('active');
                 }
             });
+
+            // Handle Logout
+            document.getElementById('logout-btn')?.addEventListener('click', () => {
+                localStorage.removeItem('retail_os_auth');
+                localStorage.removeItem('retail_os_user');
+                window.location.href = '/retail-os-login';
+            });
         </script>
 
         <div class="branch-selector">
@@ -267,6 +279,7 @@ const { title = "Bobo Retail OS" } = Astro.props;
                 <span>Active Store</span>
                 <span class="branch-name">South City Mall</span>
             </div>
+            <button id="logout-btn" style="width: 100%; margin-top: 12px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; padding: 8px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">Sign Out</button>
         </div>
     </aside>
 

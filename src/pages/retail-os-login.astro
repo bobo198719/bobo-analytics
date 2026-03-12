@@ -1,0 +1,225 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+---
+
+<MainLayout title="Retail OS Login | Bobo Analytics">
+  <div class="auth-page">
+    <div class="login-card">
+      <div class="brand">
+        <div class="logo-orb">👗</div>
+        <h1>Bobo Retail OS</h1>
+        <p>Omnichannel Fashion SaaS</p>
+      </div>
+
+      <div class="auth-status" id="auth-status"></div>
+
+      <form class="auth-form" id="loginForm">
+        <div class="input-group">
+          <label>Store ID / Mobile</label>
+          <input type="text" id="storeId" placeholder="e.g. SOUTH-CITY-POS" required />
+        </div>
+        <div class="input-group">
+          <label>Passphrase</label>
+          <input type="password" id="password" placeholder="••••••••" required />
+        </div>
+
+        <button type="submit" class="auth-btn">
+          Access Dashboard
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p>Tenant System: <span class="v-badge">v2.4.0</span></p>
+        <div class="support-links">
+            <a href="#">Forgot Passphrase?</a>
+            <span class="sep">•</span>
+            <a href="/signup">Request Access</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .auth-page {
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.1), transparent),
+                  radial-gradient(circle at bottom left, rgba(168, 85, 247, 0.1), transparent);
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 32px;
+      padding: 48px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .logo-orb {
+      width: 72px;
+      height: 72px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      margin: 0 auto 24px;
+      box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .brand h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .brand p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .input-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    .input-group input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 14px 18px;
+      border-radius: 14px;
+      color: white;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+
+    .auth-btn {
+      margin-top: 12px;
+      background: white;
+      color: #05081a;
+      border: none;
+      padding: 16px;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 1.05rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .auth-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
+    }
+
+    .auth-footer {
+      margin-top: 40px;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 32px;
+    }
+
+    .auth-footer p {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      margin-bottom: 12px;
+    }
+
+    .v-badge {
+      font-family: monospace;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: white;
+    }
+
+    .support-links {
+      font-size: 0.85rem;
+    }
+
+    .support-links a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .sep { color: rgba(255, 255, 255, 0.2); margin: 0 8px; }
+
+    .error-msg {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      margin-bottom: 24px;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+  </style>
+
+  <script is:inline>
+    const loginForm = document.getElementById('loginForm');
+    const authStatus = document.getElementById('auth-status');
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const storeId = document.getElementById('storeId').value;
+      const pass = document.getElementById('password').value;
+
+      // Simple demo credentials: bobo / retailos
+      if ((storeId === 'bobo' || storeId === 'SOUTH-CITY-POS') && (pass === 'retailos' || pass === 'bobo123')) {
+        authStatus.innerHTML = '<div style="color: #10b981; margin-bottom: 20px;">Access Granted. Loading OS...</div>';
+        
+        localStorage.setItem('retail_os_auth', 'true');
+        localStorage.setItem('retail_os_user', JSON.stringify({
+          storeId: storeId,
+          name: 'Jane Doe',
+          role: 'Store Manager'
+        }));
+        
+        setTimeout(() => {
+          window.location.href = '/retail-os';
+        }, 800);
+      } else {
+        authStatus.innerHTML = '<div class="error-msg">❌ Invalid Store ID or Passphrase.</div>';
+      }
+    });
+  </script>
+</MainLayout>
