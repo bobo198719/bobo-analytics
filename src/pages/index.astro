@@ -74,10 +74,11 @@ import MainLayout from "../layouts/MainLayout.astro";
         <h3>Bobo Retail OS</h3>
         <p>Omnichannel fashion SaaS with AI analytics and advanced POS.</p>
       </a>
-      <a href="/bakers-login" class="industry-card">
-        <div class="card-icon">🧁 <span class="new-badge">NEW</span></div>
+      <a href="/bakers-login" class="industry-card featured-card">
+        <div class="card-icon">🧁 <span class="new-badge">LIVE NEW</span></div>
         <h3>Home Bakers OS</h3>
         <p>Cakes, desserts, and confectionery CRM for artisanal home bakers.</p>
+        <span class="launch-label">Newly Launched Platform</span>
       </a>
       <a href="/solutions/stock-trading" class="industry-card">
         <div class="card-icon">📊</div>
@@ -278,10 +279,25 @@ import MainLayout from "../layouts/MainLayout.astro";
     color: white;
     font-size: 0.65rem;
     font-weight: 900;
-    padding: 4px 8px;
-    border-radius: 4px;
+    padding: 2px 10px;
+    border-radius: 20px;
     letter-spacing: 0.1em;
-    animation: pulse 2s infinite;
+    animation: pulse 1.5s infinite;
+    box-shadow: 0 0 10px rgba(244, 114, 182, 0.5);
+  }
+
+  .featured-card {
+    border-color: #f472b6 !important;
+    background: rgba(244, 114, 182, 0.05) !important;
+    box-shadow: 0 0 30px rgba(244, 114, 182, 0.15);
+  }
+
+  .launch-label {
+    font-size: 0.75rem;
+    color: #f472b6;
+    font-weight: 800;
+    margin-top: auto;
+    text-transform: uppercase;
   }
 
   @keyframes pulse {
