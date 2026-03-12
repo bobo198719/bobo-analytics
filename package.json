@@ -3,13 +3,11 @@
   "type": "module",
   "version": "1.0.3",
   "scripts": {
-    "dev": "astro dev --host 0.0.0.0 --port 4321",
+    "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "clean": "npx rimraf node_modules package-lock.json",
-    "reinstall": "npm run clean && npm install --legacy-peer-deps",
-    "rebuild": "npm run reinstall && npm run build",
-    "vercel-build": "npm run build"
+    "clean": "node -e \"const fs = require('fs'); ['dist', '.astro', 'node_modules'].forEach(p => fs.rmSync(p, {recursive: true, force: true}))\"",
+    "reinstall": "npm run clean && npm install"
   },
   "engines": {
     "node": "20.x"
