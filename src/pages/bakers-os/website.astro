@@ -71,7 +71,7 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             </div>
 
             <div class="menu-grid" id="menu-container">
-                <!-- Products injected via JS -->
+                <!-- Grid controlled by CSS: 3 columns desktop, 2 tablet, 1 mobile -->
             </div>
         </section>
 
@@ -137,12 +137,21 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
 
             if (products.length === 0) {
                 products = [
-                    { id: 'p1', name: 'Belgium Truffle Cake', cat: 'Chocolate Cakes', image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800', price: 1200, prep: '4h', desc: 'Premium dark chocolate delight with silky ganache.' },
-                    { id: 'p2', name: 'Strawberry Cheesecake', cat: 'Fruit Cakes', image: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=800', price: 1500, prep: '6h', desc: 'Fresh farm strawberries on a creamy cheese base.' },
-                    { id: 'p3', name: 'Red Velvet Cupcakes', cat: 'Cupcakes', image: 'https://images.unsplash.com/photo-1550617931-e17a7b70dce2?w=800', price: 120, prep: '2h', desc: 'Classic red velvet with cream cheese frosting.' }
+                    { id: 'p1', name: 'Belgium Truffle Cake', cat: 'Chocolate Cakes', image_url: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=1000', thumbnail_url: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400', price: 1200, prep: '4h', desc: 'Dense chocolate sponge with 70% dark Belgian chocolate.', status: 'approved' },
+                    { id: 'p2', name: 'Biscoff Cheesecake', cat: 'Vanilla Cakes', image_url: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=1000', thumbnail_url: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=400', price: 1500, prep: '6h', desc: 'Baked New York style cheesecake with Lotus spread.', status: 'approved' },
+                    { id: 'p3', name: 'Red Velvet Box', cat: 'Cupcakes', image_url: 'https://images.unsplash.com/photo-1550617931-e17a7b70dce2?w=1000', thumbnail_url: 'https://images.unsplash.com/photo-1550617931-e17a7b70dce2?w=400', price: 850, prep: '3h', desc: 'Box of 6 premium red velvet cupcakes with cream cheese.', status: 'approved' },
+                    { id: 'p4', name: 'Strawberry Dream', cat: 'Fruit Cakes', image_url: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=1000', thumbnail_url: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400', price: 1350, prep: '5h', desc: 'Fresh strawberry layer cake with whipped cream frosting.', status: 'approved' }
                 ];
                 localStorage.setItem('bobo_products', JSON.stringify(products));
             }
+
+            // Fix legacy data
+            products = products.map(p => ({
+                ...p,
+                status: p.status || 'approved',
+                image_url: p.image_url || p.image,
+                thumbnail_url: p.thumbnail_url || p.image
+            }));
 
             if (webData) {
                 if (webData.heroTitle) document.querySelector('.hero-content h1').innerHTML = webData.heroTitle.replace(/\{(.*?)\}/g, '<span class="accent">$1</span>');
@@ -155,10 +164,10 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                 if (webData.contactPhone) document.querySelector('.f-contact p:last-of-type').innerText = `📞 Order via WhatsApp: ${webData.contactPhone}`;
             }
 
-            // MENU LOGIC
-            const categories = [...new Set(products.map(p => p.cat))];
+            // MENU LOGIC - Filter Approved Only
+            const approvedProducts = products.filter(p => p.status === 'approved');
+            const categories = [...new Set(approvedProducts.map(p => p.cat))];
             const menuTabs = document.getElementById('menu-tabs');
-            const menuContainer = document.getElementById('menu-container');
 
             if (categories.length > 0) {
                 menuTabs.innerHTML = `
@@ -167,7 +176,7 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                 `;
             }
 
-            renderMenu(products);
+            renderMenu(approvedProducts);
             updateCartUI();
         });
 
@@ -175,7 +184,7 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             const menuContainer = document.getElementById('menu-container');
             menuContainer.innerHTML = items.map((p, i) => `
                 <div class="product-card-website">
-                    <div class="pw-image" style="background-image: url('${p.image || ''}')">
+                    <div class="pw-image" style="background-image: url('${p.thumbnail_url || p.image_url || p.image || ''}')">
                         <span class="pw-tag">${p.cat}</span>
                     </div>
                     <div class="pw-content">
@@ -191,7 +200,7 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         }
 
         window.filterMenu = (category) => {
-            const products = JSON.parse(localStorage.getItem('bobo_products') || "[]");
+            const products = JSON.parse(localStorage.getItem('bobo_products') || "[]").filter(p => p.status === 'approved');
             const btns = document.querySelectorAll('.tab-btn');
             btns.forEach(b => b.classList.remove('active'));
             if (window.event) window.event.target.classList.add('active');
@@ -235,7 +244,7 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             
             itemsContainer.innerHTML = cart.map((item, i) => `
                 <div class="cart-item">
-                    <div class="ci-image" style="background-image: url('${item.image}')"></div>
+                    <div class="ci-image" style="background-image: url('${item.thumbnail_url || item.image_url || item.image}')"></div>
                     <div class="ci-info">
                         <h4>${item.name}</h4>
                         <p>₹${item.price} x ${item.qty}</p>
@@ -255,7 +264,7 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         };
     </script>
 
-    <style>
+    <style is:inline>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
 
         :root {
@@ -308,11 +317,31 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         .tab-btn { background: white; border: 1.5px solid #eee; padding: 10px 24px; border-radius: 50px; cursor: pointer; font-weight: 600; transition: 0.3s; }
         .tab-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
 
-        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+        .menu-grid { 
+            display: grid !important; 
+            grid-template-columns: repeat(3, 1fr) !important; 
+            gap: 30px !important; 
+        }
+
+        @media (max-width: 1024px) {
+            .menu-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+
+        @media (max-width: 640px) {
+            .menu-grid { grid-template-columns: 1fr !important; }
+        }
         .product-card-website { background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid #f0f0f0; transition: 0.3s; }
         .product-card-website:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(244, 114, 182, 0.1); }
         
-        .pw-image { aspect-ratio: 1/1; background-size: cover; background-position: center; position: relative; }
+        .pw-image { 
+            width: 100% !important; 
+            height: 300px !important; 
+            background-size: cover !important; 
+            background-position: center !important; 
+            position: relative; 
+            background-color: #f9f9f9; 
+            display: block !important;
+        }
         .pw-tag { position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.9); padding: 4px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 800; color: var(--primary-dark); }
         
         .pw-content { padding: 24px; }

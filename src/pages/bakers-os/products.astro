@@ -20,6 +20,18 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         </div>
     </div>
 
+    <!-- Status Tabs -->
+    <div class="status-tabs-container">
+        <div class="status-tabs" id="status-tabs">
+            <button class="s-tab active" onclick="filterByStatus('all')">All Products (<span id="count-all">0</span>)</button>
+            <button class="s-tab" onclick="filterByStatus('pending')">Review Gallery (<span id="count-pending">0</span>)</button>
+            <button class="s-tab" onclick="filterByStatus('approved')">Live on Site (<span id="count-approved">0</span>)</button>
+        </div>
+        <div id="bulk-actions" style="display: none;">
+            <button class="btn btn-primary" onclick="bulkApprove()">👌 Publish All Pending</button>
+        </div>
+    </div>
+
     <!-- Product Grid -->
     <div class="product-grid" id="product-list">
         <!-- Data via JS -->
@@ -89,7 +101,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         </div>
     </div>
 
-    <style>
+    <style is:inline>
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
         .btn-primary { background: var(--primary); color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; transition: 0.3s; }
         .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
@@ -109,7 +121,15 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         }
         .product-card:hover { transform: translateY(-8px); border-color: var(--primary); }
         
-        .p-image { aspect-ratio: 1/1; background-size: cover; background-position: center; position: relative; background-color: white; }
+        .p-image { 
+            width: 100% !important; 
+            height: 260px !important; 
+            background-size: cover !important; 
+            background-position: center !important; 
+            position: relative; 
+            background-color: #1a1a1a; 
+            display: block !important;
+        }
         .p-body { padding: 20px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
 
         .p-top { display: flex; justify-content: space-between; align-items: flex-start; }
@@ -122,8 +142,24 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         .p-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 16px; border-top: 1px dashed var(--border); }
         .p-price { font-size: 1.2rem; font-weight: 900; color: white; }
         
-        .p-actions { display: flex; gap: 8px; }
-        .p-btn { border: 1px solid var(--border); background: none; color: white; padding: 8px; border-radius: 8px; cursor: pointer; }
+        .p-actions { display: flex; gap: 8px; width: 100%; }
+        .p-btn { border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: white; padding: 10px; border-radius: 12px; cursor: pointer; flex: 1; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: 0.2s; }
+        .p-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--primary); }
+        .p-btn.approve { background: var(--primary); color: white; border: none; font-weight: 800; }
+        .p-btn.approve:hover { filter: brightness(1.1); }
+
+        .status-tabs-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; border-bottom: 1px solid var(--border); }
+        .status-tabs { display: flex; gap: 24px; }
+        .s-tab { background: none; border: none; color: var(--text-muted); font-weight: 700; cursor: pointer; padding: 16px 0; position: relative; font-size: 0.95rem; }
+        .s-tab.active { color: var(--primary); }
+        .s-tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 3px; background: var(--primary); border-radius: 10px; }
+        .s-tab span { font-size: 0.8rem; opacity: 0.7; }
+
+        .pending-review-card { border: 2px solid #fb923c; background: rgba(251, 146, 60, 0.05); }
+
+        .image-status-badge { position: absolute; top: 12px; right: 12px; padding: 4px 12px; border-radius: 50px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; z-index: 5; }
+        .status-pending { background: #fb923c; color: white; }
+        .status-approved { background: #4ade80; color: white; }
 
         /* Modal */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
@@ -165,6 +201,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         let products = JSON.parse(localStorage.getItem('bobo_products') || "[]");
         let currentUploadedImage = null;
         let editingIndex = null;
+        let currentFilter = 'all';
 
         const templates = [
             "Freshly baked premium {name} made with high quality ingredients, soft texture, rich flavor, and beautifully crafted decoration. Perfect for celebrations and special occasions.",
@@ -173,39 +210,92 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             "A bakery classic with a gourmet twist. Each {name} is meticulously prepared by our head baker to deliver a professional high-end studio quality dessert."
         ];
 
+        // Ensure legacy data has status
+        products = products.map(p => ({
+            ...p,
+            status: p.status || 'approved',
+            image_url: p.image_url || p.image,
+            thumbnail_url: p.thumbnail_url || p.image
+        }));
+
         if (products.length === 0) {
             products = [
-                { id: 1, name: 'Belgium Truffle Cake', cat: 'Chocolate Cakes', image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800', price: 1200, prep: '4h', desc: 'Dense chocolate sponge with 70% dark Belgian chocolate.' },
-                { id: 2, name: 'Biscoff Cheesecake', cat: 'Vanilla Cakes', image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=800', price: 1500, prep: '6h', desc: 'Baked New York style cheesecake with Lotus spread.' }
+                { id: 'p1', name: 'Belgium Truffle Cake', cat: 'Chocolate Cakes', image_url: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=1000', thumbnail_url: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400', price: 1200, prep: '4h', desc: 'Dense chocolate sponge with 70% dark Belgian chocolate.', status: 'approved' },
+                { id: 'p2', name: 'Biscoff Cheesecake', cat: 'Vanilla Cakes', image_url: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=1000', thumbnail_url: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=400', price: 1500, prep: '6h', desc: 'Baked New York style cheesecake with Lotus spread.', status: 'approved' },
+                { id: 'p3', name: 'Red Velvet Box', cat: 'Cupcakes', image_url: 'https://images.unsplash.com/photo-1550617931-e17a7b70dce2?w=1000', thumbnail_url: 'https://images.unsplash.com/photo-1550617931-e17a7b70dce2?w=400', price: 850, prep: '3h', desc: 'Box of 6 premium red velvet cupcakes with cream cheese.', status: 'approved' },
+                { id: 'p4', name: 'Strawberry Dream', cat: 'Fruit Cakes', image_url: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=1000', thumbnail_url: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400', price: 1350, prep: '5h', desc: 'Fresh strawberry layer cake with whipped cream frosting.', status: 'approved' }
             ];
             localStorage.setItem('bobo_products', JSON.stringify(products));
         }
 
         function renderProducts() {
             const list = document.getElementById('product-list');
-            list.innerHTML = products.map((p, index) => `
-                <div class="product-card">
-                    <div class="p-image" style="background-image: url('${p.image || ''}')"></div>
+            const filtered = currentFilter === 'all' ? products : products.filter(p => p.status === currentFilter);
+            
+            // Update Counts
+            document.getElementById('count-all').innerText = products.length;
+            document.getElementById('count-pending').innerText = products.filter(p => p.status === 'pending').length;
+            document.getElementById('count-approved').innerText = products.filter(p => p.status === 'approved').length;
+
+            // Show bulk actions if in review gallery
+            document.getElementById('bulk-actions').style.display = (currentFilter === 'pending' && products.some(p => p.status === 'pending')) ? 'block' : 'none';
+
+            if (filtered.length === 0) {
+                list.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 80px; background: rgba(255,255,255,0.02); border-radius: 20px; border: 2px dashed var(--border);">
+                    <p style="font-size: 1.2rem; color: var(--text-muted);">No products found in this section.</p>
+                </div>`;
+                return;
+            }
+
+            list.innerHTML = filtered.map((p, index) => {
+                const globalIndex = products.findIndex(x => x.id === p.id);
+                const isPending = p.status === 'pending';
+                return `
+                <div class="product-card ${isPending ? 'pending-review-card' : ''}">
+                    <div class="p-image" style="background-image: url('${p.thumbnail_url || p.image_url}')">
+                        <span class="image-status-badge status-${p.status}">${p.status === 'pending' ? '⏳ Review' : '🌎 Live'}</span>
+                    </div>
                     <div class="p-body">
                         <div class="p-top">
                             <span class="p-cat">${p.cat}</span>
                             <span class="p-prep">⏱️ ${p.prep}</span>
                         </div>
                         <div class="p-info">
-                            <h3>${p.name}</h3>
+                            <h3 title="Previewing image_url">${p.name}</h3>
                             <p>${p.desc}</p>
                         </div>
                         <div class="p-footer">
                             <div class="p-price">₹${p.price}</div>
                             <div class="p-actions">
-                                <button class="p-btn" onclick="openProductModal(${index})">✏️</button>
-                                <button class="p-btn" onclick="del(${index})">🗑️</button>
+                                ${isPending ? `<button class="p-btn approve" onclick="approveProduct(${globalIndex})">👌 Publish</button>` : ''}
+                                <button class="p-btn" onclick="openProductModal(${globalIndex})">✏️ Edit</button>
+                                <button class="p-btn" onclick="del(${globalIndex})">🗑️</button>
                             </div>
                         </div>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
+
+        window.filterByStatus = (status) => {
+            currentFilter = status;
+            document.querySelectorAll('.s-tab').forEach(t => t.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            renderProducts();
+        };
+
+        window.approveProduct = (index) => {
+            products[index].status = 'approved';
+            localStorage.setItem('bobo_products', JSON.stringify(products));
+            renderProducts();
+        };
+
+        window.bulkApprove = () => {
+            products.forEach(p => { if (p.status === 'pending') p.status = 'approved'; });
+            localStorage.setItem('bobo_products', JSON.stringify(products));
+            renderProducts();
+            alert('All pending products have been published to the website!');
+        };
 
         async function processImage(file) {
             return new Promise((resolve) => {
@@ -213,18 +303,33 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 reader.onload = (e) => {
                     const img = new Image();
                     img.onload = () => {
+                        const results = { full: '', medium: '', thumb: '' };
                         const canvas = document.createElement('canvas');
-                        const size = 1080;
-                        canvas.width = size; canvas.height = size;
                         const ctx = canvas.getContext('2d');
-                        ctx.fillStyle = "white";
-                        ctx.fillRect(0, 0, size, size);
-                        const scale = Math.min(size / img.width, size / img.height);
-                        const x = (size / 2) - (img.width / 2) * scale;
-                        const y = (size / 2) - (img.height / 2) * scale;
-                        ctx.filter = 'brightness(1.05) contrast(1.05) saturate(1.1)';
-                        ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-                        resolve(canvas.toDataURL('image/webp', 0.8));
+                        
+                        const sizes = [
+                            { name: 'full', val: 1080 },
+                            { name: 'medium', val: 600 },
+                            { name: 'thumb', val: 300 }
+                        ];
+
+                        sizes.forEach(s => {
+                            canvas.width = s.val; canvas.height = s.val;
+                            ctx.fillStyle = "white";
+                            ctx.fillRect(0, 0, s.val, s.val);
+                            const scale = Math.min(s.val / img.width, s.val / img.height);
+                            const x = (s.val / 2) - (img.width / 2) * scale;
+                            const y = (s.val / 2) - (img.height / 2) * scale;
+                            
+                            // High end enhancement
+                            ctx.filter = 'brightness(1.05) contrast(1.08) saturate(1.12)';
+                            ctx.shadowBlur = 40; ctx.shadowColor = 'rgba(0,0,0,0.05)';
+                            
+                            ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+                            results[s.name] = canvas.toDataURL('image/webp', 0.85);
+                        });
+                        
+                        resolve(results);
                     };
                     img.src = e.target.result;
                 };
@@ -256,9 +361,9 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 document.getElementById('p-cat').value = p.cat;
                 document.getElementById('p-prep').value = p.prep;
                 const preview = document.getElementById('p-image-preview');
-                preview.style.backgroundImage = `url('${p.image}')`;
+                preview.style.backgroundImage = `url('${p.image_url}')`;
                 preview.style.display = 'block';
-                currentUploadedImage = p.image;
+                currentUploadedImage = p.image_url;
             } else {
                 document.getElementById('modal-title').innerText = 'New Signature Bake';
                 document.getElementById('p-name').value = '';
@@ -283,9 +388,9 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
 
             document.getElementById('processing-overlay').style.display = 'flex';
 
-            let finalImage = currentUploadedImage;
+            let finalImageResults = null;
             if (fileInput.files.length > 0) {
-                finalImage = await processImage(fileInput.files[0]);
+                finalImageResults = await processImage(fileInput.files[0]);
             }
 
             const productData = {
@@ -294,7 +399,10 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 desc: document.getElementById('p-desc').value || templates[0].replace('{name}', name),
                 cat: document.getElementById('p-cat').value,
                 prep: document.getElementById('p-prep').value || '4h',
-                image: finalImage
+                image_url: finalImageResults ? finalImageResults.full : currentUploadedImage,
+                medium_url: finalImageResults ? finalImageResults.medium : (products[editingIndex]?.medium_url || currentUploadedImage),
+                thumbnail_url: finalImageResults ? finalImageResults.thumb : (products[editingIndex]?.thumbnail_url || currentUploadedImage),
+                status: editingIndex !== null ? products[editingIndex].status : 'pending' 
             };
 
             if (editingIndex !== null) products[editingIndex] = productData;
@@ -316,16 +424,32 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             for (let i = 0; i < files.length; i++) {
                 status.innerText = `${i + 1} / ${files.length} processed`;
                 progress.style.width = `${((i + 1) / files.length) * 100}%`;
-                const processedImage = await processImage(files[i]);
+                const processedImages = await processImage(files[i]);
                 const fileName = files[i].name.split('.')[0].replace(/[-_]/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
                 const randomDesc = templates[Math.floor(Math.random() * templates.length)].replace('{name}', fileName);
+                
                 products.unshift({
                     id: Date.now() + Math.random(),
-                    name: fileName, price: 1500, desc: randomDesc, cat: 'Chocolate Cakes', prep: '4h', image: processedImage
+                    name: fileName, 
+                    price: 1500, 
+                    desc: randomDesc, 
+                    cat: 'Chocolate Cakes', 
+                    prep: '4h', 
+                    image_url: processedImages.full,
+                    medium_url: processedImages.medium,
+                    thumbnail_url: processedImages.thumb,
+                    status: 'pending' 
                 });
             }
             localStorage.setItem('bobo_products', JSON.stringify(products));
-            setTimeout(() => { overlay.style.display = 'none'; renderProducts(); input.value = ''; }, 500);
+            setTimeout(() => { 
+                overlay.style.display = 'none'; 
+                currentFilter = 'pending'; // Switch to review gallery
+                document.querySelectorAll('.s-tab').forEach(t => t.classList.remove('active'));
+                document.querySelector('button[onclick*="pending"]').classList.add('active');
+                renderProducts(); 
+                input.value = ''; 
+            }, 500);
         };
 
         window.del = (index) => {
