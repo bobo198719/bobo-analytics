@@ -140,7 +140,7 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         .p-footer { text-align: center; margin-top: 80px; padding-bottom: 40px; color: #8d5d46; opacity: 0.5; font-size: 0.8rem; }
     </style>
 
-    <script is:inline>
+    <script define:vars={{ dynamicName }}>
         let products = [
             { id: 1, name: 'Belgium Truffle Cake', price: 1200, desc: 'Signature dark chocolate indulgence.' },
             { id: 2, name: 'Biscoff Cheesecake', price: 1500, desc: 'The original Lotus biscoff crunch.' },
@@ -149,7 +149,7 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
 
         let currentOrder = {};
 
-        function renderMenu() {
+        window.renderMenu = function() {
             const grid = document.getElementById('p-public-list');
             grid.innerHTML = products.map(p => `
                 <div class="p-item" onclick="selectBake(${p.id})">
@@ -188,7 +188,6 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         }
 
         window.simulatePayment = (method) => {
-            // Simulated Success - Save to Database
             currentOrder.id = Math.floor(Math.random() * 900) + 100;
             currentOrder.status = 'pending';
             currentOrder.payment = method === 'COD' ? 'Pending' : 'Paid';
@@ -209,12 +208,10 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            const serverDynamicName = "{dynamicName || ''}";
             const accounts = JSON.parse(localStorage.getItem('bobo_accounts') || '[]');
             const client = accounts[accounts.length - 1] || { businessName: "Our Patisserie" };
             
-            // Priority: Subdomain Name > Account Name > Default
-            const finalTitle = serverDynamicName || client.businessName || "Our Patisserie";
+            const finalTitle = dynamicName || client.businessName || "Our Patisserie";
             document.getElementById('biz-title').innerText = finalTitle;
             renderMenu();
         });
