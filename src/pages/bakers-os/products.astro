@@ -54,42 +54,66 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
     </style>
 
     <script is:inline>
-        let products = [
-            { id: 1, name: 'Belgium Truffle Cake', cat: 'Signature Cakes', flavor: 'Dark Ganache', price: 1200, prep: '4h', desc: 'Dense chocolate sponge with 70% dark Belgian chocolate.' },
-            { id: 2, name: 'Biscoff Cheesecake', cat: 'Cheesecakes', flavor: 'Lotus Biscoff', price: 1500, prep: '6h', desc: 'Baked New York style cheesecake with Lotus spread.' },
-            { id: 3, name: 'Red Velvet Box (6)', cat: 'Cupcakes', flavor: 'Classic Velvet', price: 450, prep: '2h', desc: 'Classic red velvet with cream cheese frosting.' }
-        ];
+        let products = JSON.parse(localStorage.getItem('bobo_products') || "[]");
+
+        // Initial default data if empty
+        if (products.length === 0) {
+            products = [
+                { id: 1, name: 'Belgium Truffle Cake', cat: 'Signature Cakes', flavor: 'Dark Ganache', price: 1200, prep: '4h', desc: 'Dense chocolate sponge with 70% dark Belgian chocolate.' },
+                { id: 2, name: 'Biscoff Cheesecake', cat: 'Cheesecakes', flavor: 'Lotus Biscoff', price: 1500, prep: '6h', desc: 'Baked New York style cheesecake with Lotus spread.' },
+                { id: 3, name: 'Red Velvet Box (6)', cat: 'Cupcakes', flavor: 'Classic Velvet', price: 450, prep: '2h', desc: 'Classic red velvet with cream cheese frosting.' }
+            ];
+            localStorage.setItem('bobo_products', JSON.stringify(products));
+        }
 
         function renderProducts() {
             const list = document.getElementById('product-list');
-            list.innerHTML = products.map(p => `
+            list.innerHTML = products.map((p, index) => `
                 <div class="product-card">
                     <div class="p-top">
-                        <span class="p-cat">${p.cat}</span>
-                        <span class="p-prep">⏱️ ${p.prep}</span>
+                        <span class="p-cat">${p.cat || 'General'}</span>
+                        <span class="p-prep">⏱️ ${p.prep || '2h'}</span>
                     </div>
                     <div class="p-info">
                         <h3>${p.name}</h3>
-                        <p>${p.desc}</p>
+                        <p>${p.desc || 'No description provided.'}</p>
                     </div>
-                    <div class="p-flavor">${p.flavor}</div>
                     <div class="p-footer">
                         <div class="p-price">₹${p.price}</div>
                         <div class="p-actions">
-                            <button class="p-btn" onclick="edit(${p.id})">✏️</button>
-                            <button class="p-btn" onclick="del(${p.id})">🗑️</button>
+                            <button class="p-btn" onclick="del(${index})">🗑️</button>
                         </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        window.del = (id) => {
-            products = products.filter(x => x.id != id);
+        window.del = (index) => {
+            if(!confirm('Delete this product from your catalogue?')) return;
+            products.splice(index, 1);
+            localStorage.setItem('bobo_products', JSON.stringify(products));
             renderProducts();
         };
 
-        window.openProductModal = () => alert('Product Entry: Name, Category, Flavor, Price, Image, Prep Time.');
+        window.openProductModal = () => {
+            const name = prompt("Bake Name:");
+            if(!name) return;
+            const price = prompt("Price (₹):");
+            const desc = prompt("Short Description:");
+            
+            const newProd = {
+                id: Date.now(),
+                name,
+                price: parseFloat(price) || 0,
+                desc,
+                cat: 'Custom',
+                prep: '4h'
+            };
+            
+            products.unshift(newProd);
+            localStorage.setItem('bobo_products', JSON.stringify(products));
+            renderProducts();
+        };
 
         document.addEventListener('DOMContentLoaded', renderProducts);
     </script>

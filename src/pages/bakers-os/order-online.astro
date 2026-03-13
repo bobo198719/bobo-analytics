@@ -141,11 +141,16 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
     </style>
 
     <script define:vars={{ dynamicName }}>
-        let products = [
-            { id: 1, name: 'Belgium Truffle Cake', price: 1200, desc: 'Signature dark chocolate indulgence.' },
-            { id: 2, name: 'Biscoff Cheesecake', price: 1500, desc: 'The original Lotus biscoff crunch.' },
-            { id: 3, name: 'Red Velvet Box (6)', price: 450, desc: 'Fluffy cupcakes with cream cheese.' }
-        ];
+        let products = JSON.parse(localStorage.getItem('bobo_products') || "[]");
+        const webData = JSON.parse(localStorage.getItem('bobo_website_data') || "{}");
+
+        if (products.length === 0) {
+            products = [
+                { id: 1, name: 'Belgium Truffle Cake', price: 1200, desc: 'Signature dark chocolate indulgence.' },
+                { id: 2, name: 'Biscoff Cheesecake', price: 1500, desc: 'The original Lotus biscoff crunch.' },
+                { id: 3, name: 'Red Velvet Box (6)', price: 450, desc: 'Fluffy cupcakes with cream cheese.' }
+            ];
+        }
 
         let currentOrder = {};
 
@@ -211,8 +216,13 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             const accounts = JSON.parse(localStorage.getItem('bobo_accounts') || '[]');
             const client = accounts[accounts.length - 1] || { businessName: "Our Patisserie" };
             
-            const finalTitle = dynamicName || client.businessName || "Our Patisserie";
+            const finalTitle = dynamicName || webData.businessName || client.businessName || "Our Patisserie";
             document.getElementById('biz-title').innerText = finalTitle;
+            
+            if (webData.heroSubtitle) {
+                document.querySelector('.p-header p').innerText = webData.heroSubtitle;
+            }
+
             renderMenu();
         });
     </script>

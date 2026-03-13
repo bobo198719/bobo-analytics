@@ -1,0 +1,162 @@
+---
+import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
+---
+
+<BakersOSLayout title="Website Editor | Home Bakers OS">
+    <div class="editor-header">
+        <div class="title-area">
+            <h1>Website Customizer</h1>
+            <p>Edit your public website's text, photos, and prices in real-time.</p>
+        </div>
+        <div class="actions">
+            <a href="/bakers-os/website" target="_blank" class="btn btn-secondary">View Live Site ↗</a>
+            <button class="btn btn-primary" onclick="saveWebsiteData()">Save Changes</button>
+        </div>
+    </div>
+
+    <div class="editor-grid">
+        <!-- FORM SIDE -->
+        <div class="editor-form glass-card">
+            <section class="form-section">
+                <h3>1. Hero Section</h3>
+                <div class="input-group">
+                    <label>Main Headline</label>
+                    <input type="text" id="hero-title" placeholder="e.g. Crafting Sweet Memories" />
+                </div>
+                <div class="input-group">
+                    <label>Sub-headline</label>
+                    <textarea id="hero-subtitle" rows="3"></textarea>
+                </div>
+                <div class="input-group">
+                    <label>Hero Background Image (URL)</label>
+                    <input type="text" id="hero-bg" placeholder="Paste image URL here" />
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h3>2. About Your Business</h3>
+                <div class="input-group">
+                    <label>About Title</label>
+                    <input type="text" id="about-title" />
+                </div>
+                <div class="input-group">
+                    <label>Description Paragraph 1</label>
+                    <textarea id="about-p1" rows="4"></textarea>
+                </div>
+                <div class="input-group">
+                    <label>Featured Image (URL)</label>
+                    <input type="text" id="about-img" />
+                </div>
+            </section>
+
+             <section class="form-section">
+                <h3>3. Contact Details</h3>
+                <div class="input-group">
+                    <label>WhatsApp Number (with country code)</label>
+                    <input type="text" id="contact-phone" placeholder="+91..." />
+                </div>
+                <div class="input-group">
+                    <label>Business Address / Location</label>
+                    <input type="text" id="contact-address" />
+                </div>
+            </section>
+        </div>
+
+        <!-- PREVIEW/TIPS SIDE -->
+        <div class="editor-sidebar">
+            <div class="glass-card tip-card">
+                <h4>✨ Pro Tips</h4>
+                <ul>
+                    <li>Use high-resolution images for the Hero background (at least 1920px wide).</li>
+                    <li>Keep your headline short and punchy.</li>
+                    <li>Ensure your WhatsApp number is correct so customers can reach you.</li>
+                </ul>
+            </div>
+
+            <div class="glass-card sync-card">
+                <h4>📦 Product Sync</h4>
+                <p>Prices and items are managed in the <a href="/bakers-os/products">Product Catalogue</a>. They update automatically on your website's ordering portal.</p>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .editor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+        .btn { padding: 12px 24px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; text-decoration: none; display: inline-block; font-family: 'Outfit'; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-secondary { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); margin-right: 12px; }
+
+        .editor-grid { display: grid; grid-template-columns: 1fr 350px; gap: 32px; }
+        
+        .form-section { margin-bottom: 40px; padding-bottom: 40px; border-bottom: 1px solid var(--border); }
+        .form-section:last-child { border-bottom: none; }
+        .form-section h3 { margin-bottom: 24px; color: var(--primary); }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; }
+        .input-group input, .input-group textarea {
+            width: 100%;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            color: white;
+            font-family: 'Outfit';
+            font-size: 1rem;
+        }
+        .input-group input:focus, .input-group textarea:focus { border-color: var(--primary); outline: none; background: rgba(0,0,0,0.3); }
+
+        .editor-sidebar { display: flex; flex-direction: column; gap: 24px; }
+        .tip-card { border-left: 4px solid var(--primary); }
+        .tip-card h4 { margin-bottom: 12px; }
+        .tip-card ul { padding-left: 20px; color: var(--text-muted); font-size: 0.9rem; }
+        .tip-card li { margin-bottom: 8px; }
+
+        .sync-card a { color: var(--primary); text-decoration: none; font-weight: 700; }
+    </style>
+
+    <script is:inline>
+        const DEFAULT_DATA = {
+            heroTitle: "Crafting Sweet Memories with Every Bite",
+            heroSubtitle: "Artisanal cakes, handcrafted pastries, and custom treats made with love and the finest ingredients.",
+            heroBg: "https://images.unsplash.com/photo-1540331547168-8b63109225b7?auto=format&fit=crop&w=1920&q=80",
+            aboutTitle: "Meet Your Baker",
+            aboutP1: "What started as a childhood hobby in a small kitchen has grown into a mission to bring joy to our community through the art of baking.",
+            aboutImg: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=800&q=80",
+            contactPhone: "+91 73870 21958",
+            contactAddress: "Available for collection & delivery"
+        };
+
+        function loadData() {
+            const data = JSON.parse(localStorage.getItem('bobo_website_data') || JSON.stringify(DEFAULT_DATA));
+            
+            document.getElementById('hero-title').value = data.heroTitle;
+            document.getElementById('hero-subtitle').value = data.heroSubtitle;
+            document.getElementById('hero-bg').value = data.heroBg;
+            document.getElementById('about-title').value = data.aboutTitle;
+            document.getElementById('about-p1').value = data.aboutP1;
+            document.getElementById('about-img').value = data.aboutImg;
+            document.getElementById('contact-phone').value = data.contactPhone;
+            document.getElementById('contact-address').value = data.contactAddress;
+        }
+
+        window.saveWebsiteData = () => {
+            const data = {
+                heroTitle: document.getElementById('hero-title').value,
+                heroSubtitle: document.getElementById('hero-subtitle').value,
+                heroBg: document.getElementById('hero-bg').value,
+                aboutTitle: document.getElementById('about-title').value,
+                aboutP1: document.getElementById('about-p1').value,
+                aboutImg: document.getElementById('about-img').value,
+                contactPhone: document.getElementById('contact-phone').value,
+                contactAddress: document.getElementById('contact-address').value
+            };
+
+            localStorage.setItem('bobo_website_data', JSON.stringify(data));
+            alert('Website updated successfully! Redirecting to preview...');
+            window.location.href = '/bakers-os/website';
+        };
+
+        document.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</BakersOSLayout>

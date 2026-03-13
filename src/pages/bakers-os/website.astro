@@ -113,10 +113,33 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         </footer>
     </div>
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+    <script is:inline>
+        document.addEventListener('DOMContentLoaded', () => {
+            const webData = JSON.parse(localStorage.getItem('bobo_website_data'));
+            const products = JSON.parse(localStorage.getItem('bobo_products') || "[]");
 
-        :root {
+            if (webData) {
+                // Update Hero
+                if (webData.heroTitle) document.querySelector('.hero-content h1').innerHTML = webData.heroTitle.replace(/\{(.*?)\}/g, '<span class="accent">$1</span>');
+                if (webData.heroSubtitle) document.querySelector('.hero-content p').innerText = webData.heroSubtitle;
+                if (webData.heroBg) document.querySelector('.hero').style.backgroundImage = `url('${webData.heroBg}')`;
+
+                // Update About
+                if (webData.aboutTitle) document.querySelector('.about-text h2').innerText = webData.aboutTitle;
+                if (webData.aboutP1) document.querySelector('.about-text p').innerText = webData.aboutP1;
+                if (webData.aboutImg) document.querySelector('.about-image img').src = webData.aboutImg;
+
+                // Update Footer/Contact
+                if (webData.contactAddress) document.querySelector('.f-contact p:first-of-type').innerText = `📍 ${webData.contactAddress}`;
+                if (webData.contactPhone) {
+                    document.querySelector('.f-contact p:last-of-type').innerText = `📞 Order via WhatsApp: ${webData.contactPhone}`;
+                }
+            }
+
+            // Optional: Inject some real products into the gallery or a new section if desired
+            // For now, these are the primary customizations requested.
+        });
+    </script>
             --primary: #f472b6;
             --primary-dark: #db2777;
             --surface: #fffafd;
