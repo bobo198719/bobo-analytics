@@ -1,0 +1,262 @@
+---
+import TriviaLayout from "../../layouts/TriviaLayout.astro";
+---
+
+<TriviaLayout title="Dashboard | Trivia Bakes CRM">
+    <div class="header">
+        <div class="page-title">
+            <h1>Bakery Command Center</h1>
+            <p>Welcome back, Trista. Here's your business at a glance.</p>
+        </div>
+        <div class="header-actions">
+            <a href="/trivia-bakes/order-online" class="btn btn-outline">Preview Order Link</a>
+            <button class="btn btn-primary" onclick="window.location.href='/trivia-bakes/orders'">View Today's Bake List</button>
+        </div>
+    </div>
+
+    <!-- Metrics Grid -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-icon pink"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+            <div class="metric-info">
+                <h3>Today's Orders</h3>
+                <div class="value" id="count-orders">12</div>
+                <div class="trend up">+2 from yesterday</div>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polyline points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
+            <div class="metric-info">
+                <h3>Pending Deliveries</h3>
+                <div class="value" id="count-delivery">5</div>
+                <div class="trend">Next: 4:30 PM</div>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon brown"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <div class="metric-info">
+                <h3>Revenue Today</h3>
+                <div class="value">₹4,250</div>
+                <div class="trend up">Peak: 11 AM - 1 PM</div>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <div class="metric-info">
+                <h3>Month-to-Date</h3>
+                <div class="value">₹1,24,800</div>
+                <div class="trend up">+18% vs last month</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-grid">
+        <div class="card chart-container large">
+            <h3>Daily Revenue Trends</h3>
+            <div class="bar-chart-mock">
+                <div class="bar" style="height: 40%"><span>Mon</span></div>
+                <div class="bar" style="height: 60%"><span>Tue</span></div>
+                <div class="bar" style="height: 35%"><span>Wed</span></div>
+                <div class="bar active" style="height: 90%"><span>Thu</span></div>
+                <div class="bar" style="height: 50%"><span>Fri</span></div>
+                <div class="bar" style="height: 75%"><span>Sat</span></div>
+                <div class="bar" style="height: 85%"><span>Sun</span></div>
+            </div>
+        </div>
+
+        <div class="side-charts">
+            <div class="card chart-container">
+                <h3>Category Distribution</h3>
+                <div class="pie-chart-mock">
+                    <div class="pie-slice cakes"></div>
+                    <div class="pie-slice cupcakes"></div>
+                    <div class="pie-slice pastries"></div>
+                </div>
+                <div class="chart-legend">
+                    <div class="legend-item"><span class="dot cakes"></span> Cakes (65%)</div>
+                    <div class="legend-item"><span class="dot cupcakes"></span> Cupcakes (20%)</div>
+                    <div class="legend-item"><span class="dot pastries"></span> Pastries (15%)</div>
+                </div>
+            </div>
+            
+            <div class="card top-product-card">
+                <h3>Top Selling This Week</h3>
+                <div class="product-highlight">
+                    <div class="highlight-img">🎂</div>
+                    <div class="highlight-info">
+                        <strong>Belgian Chocolate Truffle</strong>
+                        <span>18 Orders • ₹1,200/kg</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders Table -->
+    <div class="card recent-orders">
+        <div class="card-header">
+            <h3>Real-time Order Stream</h3>
+            <a href="/trivia-bakes/orders" class="view-all">View All Orders</a>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Product</th>
+                    <th>Fullfillment</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Payment</th>
+                </tr>
+            </thead>
+            <tbody id="dashboard-orders">
+                <!-- Data will be loaded via JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <style>
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .metric-card {
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+        }
+
+        .metric-icon svg { width: 24px; height: 24px; }
+        .pink { background: #d81b60; }
+        .orange { background: #fb8c00; }
+        .brown { background: #8d5d46; }
+        .green { background: #43a047; }
+
+        .metric-info h3 { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .metric-info .value { font-size: 1.5rem; font-weight: 800; color: var(--text-main); margin: 4px 0; }
+        .metric-info .trend { font-size: 0.75rem; color: #43a047; font-weight: 600; }
+        .metric-info .trend.up::before { content: '↑ '; }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .chart-container h3 { font-size: 1rem; margin-bottom: 24px; color: var(--primary); }
+
+        /* Bar Chart Mock */
+        .bar-chart-mock {
+            height: 250px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding-bottom: 30px;
+            position: relative;
+        }
+
+        .bar {
+            width: 40px;
+            background: var(--secondary);
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            transition: 0.3s;
+        }
+
+        .bar.active { background: var(--primary); box-shadow: 0 4px 12px rgba(141, 93, 70, 0.2); }
+        .bar span { position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); font-size: 0.75rem; color: var(--text-muted); }
+
+        /* Pie Chart Mock */
+        .side-charts { display: flex; flex-direction: column; gap: 24px; }
+        .pie-chart-mock {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary) 0% 65%, var(--accent) 65% 85%, var(--secondary) 85% 100%);
+            margin: 0 auto 24px;
+        }
+
+        .chart-legend { display: flex; flex-direction: column; gap: 8px; }
+        .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-muted); }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot.cakes { background: var(--primary); }
+        .dot.cupcakes { background: var(--accent); }
+        .dot.pastries { background: var(--secondary); }
+
+        /* Top Product Highlight */
+        .product-highlight {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--secondary);
+            border-radius: 16px;
+        }
+        .highlight-img { font-size: 2rem; }
+        .highlight-info strong { display: block; color: var(--primary); font-size: 0.95rem; }
+        .highlight-info span { font-size: 0.8rem; color: var(--text-muted); }
+
+        /* Data Table */
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .view-all { font-size: 0.85rem; color: var(--primary); text-decoration: none; font-weight: 600; }
+        
+        .data-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .data-table th { padding: 12px 16px; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+        .data-table td { padding: 16px; font-size: 0.9rem; border-bottom: 1px solid rgba(141, 93, 70, 0.05); }
+
+        .payment-status { display: flex; align-items: center; gap: 8px; font-weight: 700; color: #43a047; }
+        .payment-status svg { width: 14px; height: 14px; }
+
+        @media (max-width: 1200px) {
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+            .charts-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+
+    <script is:inline>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mockOrders = [
+                { id: '101', customer: 'Anjali Sharma', product: 'Chocolate Truffle (1kg)', date: 'Mar 13, 2:00 PM', amount: '₹1,200', status: 'preparing', payment: 'UPI' },
+                { id: '102', customer: 'Rahul Verma', product: 'Blueberry Cupcakes (6x)', date: 'Mar 13, 4:30 PM', amount: '₹450', status: 'pending', payment: 'GPay' },
+                { id: '103', customer: 'Priya Iyer', product: 'Red Velvet Pastry', date: 'Mar 13, 11:00 AM', amount: '₹180', status: 'delivered', payment: 'Card' }
+            ];
+
+            const tbody = document.getElementById('dashboard-orders');
+            tbody.innerHTML = mockOrders.map(order => `
+                <tr>
+                    <td><strong>${order.customer}</strong></td>
+                    <td>${order.product}</td>
+                    <td>${order.date}</td>
+                    <td><strong>${order.amount}</strong></td>
+                    <td><span class="status-badge status-${order.status}">${order.status}</span></td>
+                    <td>
+                        <div class="payment-status">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                            ${order.payment}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        });
+    </script>
+</TriviaLayout>

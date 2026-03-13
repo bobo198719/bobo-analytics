@@ -1,0 +1,173 @@
+---
+import TriviaLayout from "../../layouts/TriviaLayout.astro";
+---
+
+<TriviaLayout title="Sales Analytics | Trivia Bakes CRM">
+    <div class="header">
+        <div class="page-title">
+            <h1>Business Intelligence</h1>
+            <p>Growth trends, top bakes, and revenue forecasting.</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-outline">Export PDF Report</button>
+            <select class="btn btn-outline" style="appearance: auto;">
+                <option>Last 30 Days</option>
+                <option>Q1 2026</option>
+                <option>Full Year 2025</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Stats Summary -->
+    <div class="metrics-grid">
+        <div class="card metric-mini">
+            <span>Avg. Order Value</span>
+            <strong>₹1,450</strong>
+            <small class="up">+₹120 this month</small>
+        </div>
+        <div class="card metric-mini">
+            <span>New Customers</span>
+            <strong>42</strong>
+            <small class="up">8% Growth</small>
+        </div>
+        <div class="card metric-mini">
+            <span>Repeat Customer Rate</span>
+            <strong>68%</strong>
+            <small>Industry High</small>
+        </div>
+        <div class="card metric-mini">
+            <span>Peak Day</span>
+            <strong>Sundays</strong>
+            <small>2.4x avg. revenue</small>
+        </div>
+    </div>
+
+    <div class="analytics-main-grid">
+        <!-- Main Line Chart -->
+        <div class="card chart-box">
+            <div class="card-header">
+                <h3>Monthly Revenue Growth</h3>
+                <div class="chart-toggles">
+                    <span class="active">Revenue</span>
+                    <span>Orders</span>
+                </div>
+            </div>
+            <div class="line-chart-mock">
+                <!-- SVG Line Graph Mock -->
+                <svg viewBox="0 0 800 200" preserveAspectRatio="none">
+                    <path d="M0,150 Q100,160 200,80 T400,100 T600,40 T800,20" fill="none" stroke="var(--primary)" stroke-width="4" />
+                    <circle cx="0" cy="150" r="6" fill="var(--primary)" />
+                    <circle cx="200" cy="80" r="6" fill="var(--primary)" />
+                    <circle cx="400" cy="100" r="6" fill="var(--primary)" />
+                    <circle cx="600" cy="40" r="6" fill="var(--primary)" />
+                    <circle cx="800" cy="20" r="6" fill="var(--primary)" />
+                </svg>
+                <div class="chart-labels">
+                    <span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span><span>Mar</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="side-analytics">
+            <!-- Donut Category -->
+            <div class="card donut-card">
+                <h3>Sales by Category</h3>
+                <div class="donut-chart-container">
+                    <div class="donut-chart-mock">
+                        <div class="donut-center">
+                            <strong>₹1.2M</strong>
+                            <span>Total Sales</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-legend">
+                    <div class="legend-item"><span class="dot cakes"></span> Custom Cakes</div>
+                    <div class="legend-item"><span class="dot cupcakes"></span> Corporate Boxes</div>
+                    <div class="legend-item"><span class="dot pastries"></span> Daily Bakes</div>
+                </div>
+            </div>
+
+            <!-- Top Selling -->
+            <div class="card ranking-card">
+                <h3>Top Performing Bakes</h3>
+                <div class="ranking-list">
+                    <div class="rank-item">
+                        <div class="rank-num">01</div>
+                        <div class="rank-info">
+                            <strong>Lotus Biscoff Cheesecake</strong>
+                            <span>84 Units Sold</span>
+                        </div>
+                        <div class="rank-revenue">₹1.1L</div>
+                    </div>
+                    <div class="rank-item">
+                        <div class="rank-num">02</div>
+                        <div class="rank-info">
+                            <strong>Belgian Dark Truffle</strong>
+                            <span>76 Units Sold</span>
+                        </div>
+                        <div class="rank-revenue">₹92K</div>
+                    </div>
+                    <div class="rank-item">
+                        <div class="rank-num">03</div>
+                        <div class="rank-info">
+                            <strong>Classic Red Velvet</strong>
+                            <span>62 Units Sold</span>
+                        </div>
+                        <div class="rank-revenue">₹74K</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 32px; }
+        .metric-mini { padding: 20px; border-radius: 20px; text-align: center; }
+        .metric-mini span { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 8px; }
+        .metric-mini strong { font-size: 1.6rem; font-weight: 800; color: var(--primary); display: block; }
+        .metric-mini small { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; display: block; }
+        .metric-mini small.up { color: #43a047; font-weight: 700; }
+
+        .analytics-main-grid { display: grid; grid-template-columns: 1fr 340px; gap: 24px; }
+        .chart-box { padding: 32px; flex: 1; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .card-header h3 { font-size: 1.1rem; color: var(--primary); }
+        .chart-toggles { background: var(--secondary); padding: 4px; border-radius: 8px; display: flex; gap: 4px; }
+        .chart-toggles span { padding: 6px 16px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
+        .chart-toggles span.active { background: white; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+        .line-chart-mock { height: 300px; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+        .line-chart-mock svg { width: 100%; height: 240px; margin-top: 20px; filter: drop-shadow(0 10px 10px rgba(141, 93, 70, 0.1)); }
+        .chart-labels { display: flex; justify-content: space-between; padding: 0 10px; color: var(--text-muted); font-size: 0.75rem; font-weight: 600; }
+
+        .side-analytics { display: flex; flex-direction: column; gap: 24px; }
+        
+        /* Donut Chart */
+        .donut-chart-container { position: relative; width: 180px; height: 180px; margin: 0 auto 24px; }
+        .donut-chart-mock { 
+            width: 100%; height: 100%; border-radius: 50%; 
+            background: conic-gradient(var(--primary) 0% 60%, var(--accent) 60% 85%, var(--secondary) 85% 100%); 
+            display: flex; align-items: center; justify-content: center;
+        }
+        .donut-center { width: 70%; height: 70%; background: white; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .donut-center strong { font-size: 1.25rem; font-weight: 900; color: var(--primary); }
+        .donut-center span { font-size: 0.7rem; color: var(--text-muted); font-weight: 700; }
+
+        /* Ranking List */
+        .ranking-list { display: flex; flex-direction: column; gap: 16px; }
+        .rank-item { display: flex; align-items: center; gap: 16px; padding: 12px; border-radius: 12px; background: rgba(141, 93, 70, 0.03); transition: 0.2s; }
+        .rank-item:hover { transform: scale(1.02); background: var(--secondary); }
+        .rank-num { font-size: 1.25rem; font-weight: 900; color: var(--primary); opacity: 0.3; }
+        .rank-info { flex: 1; }
+        .rank-info strong { display: block; font-size: 0.85rem; }
+        .rank-info span { font-size: 0.75rem; color: var(--text-muted); }
+        .rank-revenue { font-weight: 800; color: var(--primary); font-size: 0.9rem; }
+
+        .chart-legend { display: flex; flex-direction: column; gap: 8px; }
+        .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-muted); }
+        .dot { width: 8px; height: 8px; border-radius: 50%; }
+        .dot.cakes { background: var(--primary); }
+        .dot.cupcakes { background: var(--accent); }
+        .dot.pastries { background: var(--secondary); }
+    </style>
+</TriviaLayout>

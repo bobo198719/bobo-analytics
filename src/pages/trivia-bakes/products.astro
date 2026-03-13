@@ -1,0 +1,110 @@
+---
+import TriviaLayout from "../../layouts/TriviaLayout.astro";
+---
+
+<TriviaLayout title="Product Boutique | Trivia Bakes CRM">
+    <div class="header">
+        <div class="page-title">
+            <h1>Signature Product Boutique</h1>
+            <p>Manage your bakery menu, flavoring profiles, and pricing.</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-outline" id="import-btn">Bulk Sync Menu</button>
+            <button class="btn btn-primary" onclick="openProductModal()">+ Create New Product</button>
+        </div>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="product-grid" id="product-list">
+        <!-- Mock Products -->
+        <div class="card p-card">
+            <div class="p-img">🎂</div>
+            <div class="p-details">
+                <div class="p-top">
+                    <span class="tag-cat">Signature Cake</span>
+                    <span class="prep-time">4h Prep</span>
+                </div>
+                <h3>Belgian Chocolate Truffle</h3>
+                <p>Pure dark GANACHE with layered chocolate sponge.</p>
+                <div class="p-meta">
+                    <div class="p-flavor"><span>Flavor:</span> Extra Dark</div>
+                    <div class="p-price">₹1,200/kg</div>
+                </div>
+            </div>
+            <div class="p-actions">
+                <button class="btn-sm">Edit</button>
+                <button class="btn-sm status">Out of Stock</button>
+            </div>
+        </div>
+
+        <div class="card p-card">
+            <div class="p-img">🧁</div>
+            <div class="p-details">
+                <div class="p-top">
+                    <span class="tag-cat">Cupcakes</span>
+                    <span class="prep-time">2h Prep</span>
+                </div>
+                <h3>Red Velvet Box (6x)</h3>
+                <p>Cream cheese frosting with classic cocoa velvet base.</p>
+                <div class="p-meta">
+                    <div class="p-flavor"><span>Flavor:</span> Classic Velvet</div>
+                    <div class="p-price">₹450/box</div>
+                </div>
+            </div>
+            <div class="p-actions">
+                <button class="btn-sm">Edit</button>
+                <button class="btn-sm active">Visible</button>
+            </div>
+        </div>
+
+        <div class="card p-card">
+            <div class="p-img">🍰</div>
+            <div class="p-details">
+                <div class="p-top">
+                    <span class="tag-cat">Daily Bakes</span>
+                    <span class="prep-time">1h Prep</span>
+                </div>
+                <h3>Lotus Biscoff Pastry</h3>
+                <p>Signature biscoff cookie butter crumble.</p>
+                <div class="p-meta">
+                    <div class="p-flavor"><span>Flavor:</span> Biscoff</div>
+                    <div class="p-price">₹180/pc</div>
+                </div>
+            </div>
+            <div class="p-actions">
+                <button class="btn-sm">Edit</button>
+                <button class="btn-sm active">Visible</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+        .p-card { display: flex; flex-direction: column; gap: 16px; transition: 0.3s; }
+        .p-card:hover { transform: translateY(-8px); border-color: var(--primary); }
+        
+        .p-img { height: 160px; background: var(--secondary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 4rem; }
+        
+        .p-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .tag-cat { font-size: 0.7rem; font-weight: 800; color: var(--primary); text-transform: uppercase; background: var(--secondary); padding: 4px 10px; border-radius: 20px; }
+        .prep-time { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 4px; }
+        .prep-time::before { content: '⏱️'; }
+
+        .p-details h3 { font-size: 1.2rem; color: var(--text-main); margin-bottom: 8px; font-family: 'Playfair Display', serif; }
+        .p-details p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; height: 3rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+        .p-meta { margin-top: 16px; border-top: 1px dashed var(--border); padding-top: 16px; display: flex; justify-content: space-between; align-items: center; }
+        .p-flavor { font-size: 0.85rem; color: var(--text-main); font-weight: 600; }
+        .p-flavor span { color: var(--text-muted); font-weight: 400; }
+        .p-price { font-size: 1.1rem; font-weight: 900; color: var(--primary); }
+
+        .p-actions { display: flex; gap: 10px; margin-top: auto; padding-top: 12px; }
+        .btn-sm { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: white; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
+        .btn-sm.active { background: #e8f5e9; color: #2e7d32; border-color: #2e7d32; }
+        .btn-sm.status { background: #ffebee; color: #c62828; border-color: #c62828; }
+    </style>
+
+    <script is:inline>
+        window.openProductModal = () => alert('Product Editor Active: Define Product Name, Category, Flavor, Price, Prep Time.');
+    </script>
+</TriviaLayout>
