@@ -117,4 +117,34 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             .charts-row { grid-template-columns: 1fr; }
         }
     </style>
+    <script is:inline>
+        document.addEventListener('DOMContentLoaded', () => {
+            const orders = JSON.parse(localStorage.getItem('bobo_orders') || '[]');
+            
+            // Calculate Today's Metrics
+            const todayStr = new Date().toISOString().split('T')[0];
+            const todayOrders = orders.filter(o => o.date === todayStr);
+            const pendingOrders = orders.filter(o => o.status !== 'completed' && o.status !== 'delivered');
+            const totalRevenue = todayOrders.reduce((sum, o) => sum + parseFloat(o.amount || 0), 0);
+
+            // Update UI
+            document.getElementById('val-orders').innerText = todayOrders.length;
+            document.getElementById('val-pending').innerText = pendingOrders.length;
+            document.getElementById('val-revenue').innerText = '₹' + totalRevenue.toLocaleString();
+            
+            if (orders.length > 0) {
+                // Find top product
+                const products = {};
+                orders.forEach(o => {
+                    products[o.product] = (products[o.product] || 0) + 1;
+                });
+                const topProd = Object.keys(products).reduce((a, b) => products[a] > products[b] ? a : b);
+                document.getElementById('val-top').innerText = topProd;
+            } else {
+                document.getElementById('val-top').innerText = 'None';
+                // Zero stats display
+                document.querySelectorAll('.trend').forEach(t => t.innerText = 'Start selling!');
+            }
+        });
+    </script>
 </BakersOSLayout>

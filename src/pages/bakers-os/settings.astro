@@ -56,7 +56,15 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                         <span>Send real-time tracking when dispatched</span>
                     </div>
                     <input type="checkbox" checked />
-                </div>
+                    <!-- Data Management -->
+        <div class="glass-card settings-section">
+            <h3>Data Management</h3>
+            <div class="form-body">
+                <p style="color:var(--text-muted); font-size:0.9rem;">Resetting your data will clear all orders, customers, and analytics. This cannot be undone.</p>
+                <button class="btn-s" style="margin-top:16px; border-color:#ef4444; color:#ef4444;" onclick="resetAllData()">🔥 Reset All Business Data</button>
+            </div>
+        </div>
+    </div>
                 
                 <div class="wa-config mt-24">
                     <label>WhatsApp API Key (Twilio/Meta)</label>
@@ -122,6 +130,14 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             // In a real app, this would update the account in localStorage/DB
             alert(`Identity Updated to: ${newName}. Refreshing layout...`);
             window.location.reload();
+        }
+
+        window.resetAllData = () => {
+            if (confirm("CRITICAL: Are you sure you want to delete ALL business orders and analytics? This will reset the platform to zero.")) {
+                localStorage.removeItem('bobo_orders');
+                alert("Data Zeroed Out Successfully.");
+                window.location.href = "/bakers-os";
+            }
         }
     </script>
 </BakersOSLayout>

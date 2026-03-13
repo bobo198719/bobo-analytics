@@ -180,8 +180,15 @@ import MainLayout from "../../layouts/MainLayout.astro";
         }
 
         window.simulatePayment = (method) => {
-            // Simulated Success
-            currentOrder.paymentMethod = method;
+            // Simulated Success - Save to Database
+            currentOrder.id = Math.floor(Math.random() * 900) + 100;
+            currentOrder.status = 'pending';
+            currentOrder.payment = method === 'COD' ? 'Pending' : 'Paid';
+            
+            let orders = JSON.parse(localStorage.getItem('bobo_orders') || '[]');
+            orders.unshift(currentOrder);
+            localStorage.setItem('bobo_orders', JSON.stringify(orders));
+
             document.getElementById('final-summary').innerHTML = `
                 <div style="margin: 24px 0; text-align: left; background: #fafafa; padding: 20px; border-radius: 12px; font-size: 0.9rem;">
                     <p><strong>Item:</strong> ${currentOrder.product}</p>
@@ -191,9 +198,6 @@ import MainLayout from "../../layouts/MainLayout.astro";
                 </div>
             `;
             showStep(4);
-            
-            // In a real app, this would trigger an API call:
-            // fetch('/api/bakers/new-order', { method: 'POST', body: JSON.stringify(currentOrder) });
         }
 
         document.addEventListener('DOMContentLoaded', () => {
