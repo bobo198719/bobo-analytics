@@ -1,95 +1,120 @@
 ---
 import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
-import BakersSubNav from "../../components/BakersSubNav.astro";
-
-// Mock data
-const stats = [
-  { label: "Total Orders", value: "1,248", change: "+12%", icon: "📦" },
-  { label: "Orders Today", value: "18", change: "+5%", icon: "🔥" },
-  { label: "Pending Orders", value: "42", change: "-2%", icon: "⏳" },
-  { label: "Completed Orders", value: "1,188", change: "+15%", icon: "✅" },
-  { label: "Monthly Revenue", value: "₹2,45,000", change: "+22%", icon: "💰" },
-  { label: "Avg. Rating", value: "4.9", icon: "⭐" }
-];
-
-const topCakes = [
-  { name: "Belgium Chocolate Truffle", sold: "245", revenue: "₹1,47,000", trend: "up" },
-  { name: "Red Velvet Cheesecake", sold: "182", revenue: "₹91,000", trend: "up" },
-  { name: "Blueberry Cupcake Box", sold: "156", revenue: "₹23,400", trend: "stable" }
-];
 ---
 
-<BakersOSLayout title="Baker Intelligence Dashboard | Bobo OS">
-  <BakersSubNav active="dashboard" />
-  
-  <div class="hb-header">
-      <div>
-          <h1>Baker Intelligence Dashboard</h1>
-          <p style="color: var(--text-muted);">Manage your home-based bakery business with AI-driven insights.</p>
-      </div>
-      <div class="hb-actions">
-          <button class="hb-btn primary">+ New Order</button>
-      </div>
-  </div>
+<BakersOSLayout title="Dashboard | Home Bakers OS">
+    <div class="dashboard-header">
+        <h1>Command Center</h1>
+        <p>Real-time performance and kitchen operations.</p>
+    </div>
 
-  <div class="stats-grid">
-      {stats.map(s => (
-          <div class="stat-card glass-card">
-              <div class="stat-icon">{s.icon}</div>
-              <div class="stat-info">
-                  <span class="stat-label">{s.label}</span>
-                  <span class="stat-value">{s.value}</span>
-              </div>
-          </div>
-      ))}
-  </div>
+    <!-- Metrics Row -->
+    <div class="metrics-grid">
+        <div class="glass-card metric-item">
+            <div class="icon">📦</div>
+            <div class="info">
+                <h3>Orders Today</h3>
+                <div class="value" id="val-orders">8</div>
+                <div class="trend up">+2 vs yesterday</div>
+            </div>
+        </div>
+        <div class="glass-card metric-item">
+            <div class="icon">🚚</div>
+            <div class="info">
+                <h3>Pending Deliveries</h3>
+                <div class="value" id="val-pending">3</div>
+                <div class="trend">Next: 4:00 PM</div>
+            </div>
+        </div>
+        <div class="glass-card metric-item">
+            <div class="icon">💰</div>
+            <div class="info">
+                <h3>Today's Revenue</h3>
+                <div class="value" id="val-revenue">₹4,250</div>
+                <div class="trend up">+15% expected</div>
+            </div>
+        </div>
+        <div class="glass-card metric-item featured">
+            <div class="icon">🏆</div>
+            <div class="info">
+                <h3>Top Product</h3>
+                <div class="value" id="val-top">Choco Truffle</div>
+                <div class="trend">65% of sales</div>
+            </div>
+        </div>
+    </div>
 
-  <div class="dashboard-content">
-      <div class="charts-column">
-          <div class="chart-card glass-card">
-              <h3>Sales Trend (Last 7 Days)</h3>
-              <div class="chart-mock">
-                  <div class="bars">
-                      {Array(7).fill(0).map((_, i) => <div class="bar" style={`height: ${Math.random() * 70 + 30}%`}></div>)}
-                  </div>
-              </div>
-          </div>
-      </div>
+    <!-- Charts Row -->
+    <div class="charts-row">
+        <div class="glass-card chart-container large">
+            <h3>Daily Sales Trend</h3>
+            <div class="bar-chart">
+                <div class="bar" style="height: 40%"><span class="label">Mon</span></div>
+                <div class="bar" style="height: 65%"><span class="label">Tue</span></div>
+                <div class="bar" style="height: 30%"><span class="label">Wed</span></div>
+                <div class="bar active" style="height: 90%"><span class="label">Thu</span></div>
+                <div class="bar" style="height: 50%"><span class="label">Fri</span></div>
+                <div class="bar" style="height: 75%"><span class="label">Sat</span></div>
+                <div class="bar" style="height: 85%"><span class="label">Sun</span></div>
+            </div>
+        </div>
+        <div class="glass-card chart-container">
+            <h3>Category Mix</h3>
+            <div class="pie-chart"></div>
+            <div class="legend">
+                <div class="l-item"><span class="dot" style="background:#f472b6"></span> Cakes</div>
+                <div class="l-item"><span class="dot" style="background:#fb923c"></span> Cupcakes</div>
+                <div class="l-item"><span class="dot" style="background:#ec4899"></span> Pastries</div>
+            </div>
+        </div>
+        <div class="glass-card chart-container">
+            <h3>Payment Methods</h3>
+            <div class="donut-chart">
+                <div class="inner"></div>
+            </div>
+            <div class="legend">
+                <div class="l-item"><span class="dot" style="background:#4ade80"></span> UPI / GPay</div>
+                <div class="l-item"><span class="dot" style="background:#60a5fa"></span> Card</div>
+                <div class="l-item"><span class="dot" style="background:#94a3b8"></span> Cash</div>
+            </div>
+        </div>
+    </div>
 
-      <div class="activity-column">
-          <div class="ranking-card glass-card">
-              <h3>Top Selling Items</h3>
-              <div class="ranking-list">
-                  {topCakes.map(c => (
-                      <div class="rank-item">
-                          <span>{c.name}</span>
-                          <strong>{c.revenue}</strong>
-                      </div>
-                  ))}
-              </div>
-          </div>
-      </div>
-  </div>
+    <style>
+        .dashboard-header { margin-bottom: 32px; }
+        .dashboard-header h1 { font-size: 2rem; font-weight: 800; font-family: 'Outfit'; }
+        .dashboard-header p { color: var(--text-muted); }
 
-  <style>
-      .hb-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-      .hb-actions { display: flex; gap: 12px; }
-      .hb-btn { padding: 10px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; background: var(--primary); color: white; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 32px; }
+        .metric-item { display: flex; align-items: center; gap: 16px; border: 1px solid var(--border); }
+        .metric-item .icon { font-size: 2rem; }
+        .metric-item h3 { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .metric-item .value { font-size: 1.5rem; font-weight: 800; margin-top: 4px; }
+        .metric-item .trend { font-size: 0.7rem; color: #94a3b8; margin-top: 4px; }
+        .metric-item .trend.up { color: #4ade80; }
+        .metric-item.featured { border-color: var(--primary); background: rgba(244, 114, 182, 0.1); }
 
-      .stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 32px; }
-      .stat-card { padding: 20px; display: flex; align-items: center; gap: 16px; }
-      .stat-icon { font-size: 1.5rem; }
-      .stat-info { display: flex; flex-direction: column; }
-      .stat-label { font-size: 0.75rem; color: var(--text-muted); }
-      .stat-value { font-size: 1.1rem; font-weight: 800; }
+        .charts-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 24px; }
+        .chart-container { display: flex; flex-direction: column; }
+        .chart-container h3 { font-size: 1rem; margin-bottom: 24px; font-weight: 700; color: var(--primary); }
 
-      .dashboard-content { display: grid; grid-template-columns: 1fr 350px; gap: 32px; }
-      .chart-card { padding: 32px; height: 300px; }
-      .chart-mock { height: 100%; display: flex; align-items: flex-end; gap: 8px; }
-      .bar { flex: 1; background: var(--primary); opacity: 0.6; border-radius: 4px 4px 0 0; }
+        .bar-chart { display: flex; height: 200px; align-items: flex-end; justify-content: space-between; padding-bottom: 30px; position: relative; }
+        .bar { width: 35px; background: rgba(244, 114, 182, 0.2); border-radius: 8px 8px 0 0; position: relative; transition: 0.3s; }
+        .bar:hover { background: var(--primary); }
+        .bar.active { background: var(--primary); box-shadow: 0 0 20px rgba(244, 114, 182, 0.3); }
+        .label { position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--text-muted); }
 
-      .ranking-card { padding: 32px; }
-      .ranking-list { display: flex; flex-direction: column; gap: 16px; margin-top: 20px; }
-      .rank-item { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
-  </style>
+        .pie-chart { width: 140px; height: 140px; border-radius: 50%; background: conic-gradient(#f472b6 0% 65%, #fb923c 65% 85%, #ec4899 85% 100%); margin: 0 auto; }
+        .donut-chart { width: 140px; height: 140px; border-radius: 50%; background: conic-gradient(#4ade80 0% 70%, #60a5fa 70% 90%, #94a3b8 90% 100%); margin: 0 auto; display: flex; align-items: center; justify-content: center; }
+        .donut-chart .inner { width: 80px; height: 80px; background: var(--bg-dark); border-radius: 50%; }
+
+        .legend { margin-top: 24px; display: flex; flex-direction: column; gap: 8px; }
+        .l-item { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-muted); }
+        .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+        @media (max-width: 1200px) {
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+            .charts-row { grid-template-columns: 1fr; }
+        }
+    </style>
 </BakersOSLayout>

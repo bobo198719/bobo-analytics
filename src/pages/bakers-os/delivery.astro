@@ -1,0 +1,151 @@
+---
+import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
+---
+
+<BakersOSLayout title="Delivery Calendar | Home Bakers OS">
+    <div class="header">
+        <h1>Delivery & Dispatch</h1>
+        <p>Manage pickup and drop-off schedules.</p>
+    </div>
+
+    <div class="delivery-grid">
+        <!-- Calendar Sidebar -->
+        <div class="glass-card calendar-mini">
+            <div class="cal-header">
+                <span>March 2026</span>
+                <div class="cal-nav">
+                    <button>&lt;</button>
+                    <button>&gt;</button>
+                </div>
+            </div>
+            <div class="cal-days">
+                <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+                {Array(31).fill(0).map((_, i) => (
+                    <div class={`day ${i === 12 ? 'active' : ''} ${[5, 12, 19, 26].includes(i+1) ? 'has-event' : ''}`}>{i + 1}</div>
+                ))}
+            </div>
+        </div>
+
+        <!-- Schedule List -->
+        <div class="schedule-main">
+            <div class="schedule-header glass-card">
+                <h2>Today's Dispatch List (March 13)</h2>
+                <div class="stats">
+                    <span><strong>5</strong> Total</span>
+                    <span><strong>2</strong> Pending</span>
+                    <span><strong>3</strong> Out</span>
+                </div>
+            </div>
+
+            <div id="schedule-list" class="schedule-list">
+                <!-- Data via JS -->
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .header { margin-bottom: 32px; }
+        .delivery-grid { display: grid; grid-template-columns: 320px 1fr; gap: 32px; }
+
+        .calendar-mini { padding: 24px; }
+        .cal-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 700; color: var(--primary); }
+        .cal-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; }
+        .cal-days span { font-size: 0.7rem; color: var(--text-muted); padding-bottom: 10px; }
+        .day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
+        .day:hover { background: rgba(255,255,255,0.05); }
+        .day.active { background: var(--primary); color: white; font-weight: 800; }
+        .day.has-event::after { content: ''; position: absolute; width: 4px; height: 4px; background: var(--secondary); border-radius: 50%; bottom: 4px; }
+        .day.has-event { position: relative; }
+
+        .schedule-header { margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+        .schedule-header h2 { font-size: 1.2rem; }
+        .schedule-header .stats { display: flex; gap: 20px; font-size: 0.9rem; color: var(--text-muted); }
+        .schedule-header strong { color: var(--primary); }
+
+        .schedule-item { 
+            background: var(--bg-card); 
+            border: 1px solid var(--border); 
+            border-radius: 16px; 
+            padding: 24px; 
+            margin-bottom: 16px; 
+            display: grid; 
+            grid-template-columns: 80px 1fr 150px 180px; 
+            align-items: center; 
+            gap: 24px;
+            transition: 0.3s;
+        }
+        .schedule-item:hover { border-color: var(--primary); transform: translateX(5px); }
+        .time-box { text-align: center; border-right: 1px solid var(--border); }
+        .time-box strong { display: block; font-size: 1.2rem; color: var(--primary); }
+        .time-box span { font-size: 0.7rem; color: var(--text-muted); }
+
+        .order-info h4 { margin-bottom: 4px; }
+        .order-info p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+
+        .status-pill { 
+            padding: 6px 12px; 
+            border-radius: 20px; 
+            font-size: 0.75rem; 
+            font-weight: 800; 
+            text-align: center;
+        }
+
+        .actions { display: flex; gap: 12px; justify-content: flex-end; }
+        .btn-s { background: none; border: 1px solid var(--border); color: white; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; }
+        .btn-s:hover { background: var(--border); }
+    </style>
+
+    <script is:inline>
+        const schedules = [
+            { id: '101', time: '11:00', period: 'AM', type: 'Pickup', customer: 'Anjali Sharma', address: 'B-Block, Green Valley Park', status: 'preparing' },
+            { id: '102', time: '02:30', period: 'PM', type: 'Delivery', customer: 'Rahul Verma', address: '4th Floor, Skyline Apts, Sector 4', status: 'out-for-delivery' },
+            { id: '103', time: '04:00', period: 'PM', type: 'Delivery', customer: 'Priya Iyer', address: 'Villa 22, Rose Estate', status: 'pending' },
+            { id: '104', time: '06:00', period: 'PM', type: 'Pickup', customer: 'Sonali Das', address: 'Storefront Pickup', status: 'pending' }
+        ];
+
+        function renderSchedules() {
+            const list = document.getElementById('schedule-list');
+            list.innerHTML = schedules.map(s => `
+                <div class="schedule-item">
+                    <div class="time-box">
+                        <strong>${s.time}</strong>
+                        <span>${s.period}</span>
+                    </div>
+                    <div class="order-info">
+                        <h4>${s.customer} (#ORD-${s.id})</h4>
+                        <p>📍 ${s.address}</p>
+                    </div>
+                    <div class="status-cell">
+                        <div class="status-pill" style="background: ${getStatusColor(s.status).bg}; color: ${getStatusColor(s.status).text}">
+                            ${s.status.replace(/-/g, ' ').toUpperCase()}
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button class="btn-s" onclick="cycleStatus('${s.id}')">Update</button>
+                        <button class="btn-s">✏️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getStatusColor(s) {
+            switch(s) {
+                case 'pending': return { bg: 'rgba(251,146,60,0.1)', text: '#fb923c' };
+                case 'preparing': return { bg: 'rgba(96,165,250,0.1)', text: '#60a5fa' };
+                case 'out-for-delivery': return { bg: 'rgba(236,72,153,0.1)', text: '#ec4899' };
+                case 'delivered': return { bg: 'rgba(74,222,128,0.1)', text: '#4ade80' };
+                default: return { bg: 'gray', text: 'white' };
+            }
+        }
+
+        window.cycleStatus = (id) => {
+            const flow = ['pending', 'preparing', 'out-for-delivery', 'delivered'];
+            const idx = schedules.findIndex(x => x.id === id);
+            const current = flow.indexOf(schedules[idx].status);
+            schedules[idx].status = flow[(current + 1) % flow.length];
+            renderSchedules();
+        };
+
+        document.addEventListener('DOMContentLoaded', renderSchedules);
+    </script>
+</BakersOSLayout>

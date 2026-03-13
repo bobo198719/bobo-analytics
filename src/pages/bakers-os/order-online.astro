@@ -1,0 +1,206 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+---
+
+<MainLayout title="Order Online | Home Bakers OS" hideNav={true}>
+    <div class="public-portal">
+        <header class="p-header">
+            <div class="p-logo">🧁</div>
+            <h1 id="biz-title">Sarah's Patisserie</h1>
+            <p>Fresh bakes delivered to your doorstep.</p>
+        </header>
+
+        <main class="p-content">
+            <!-- Step 1: Browse -->
+            <div id="step-1" class="order-step active">
+                <div class="section-title">
+                    <h2>Choose Your Bakes</h2>
+                </div>
+                <div class="p-grid" id="p-public-list">
+                    <!-- Data via JS -->
+                </div>
+            </div>
+
+            <!-- Step 2: Details -->
+            <div id="step-2" class="order-step">
+                <div class="section-title">
+                    <button class="back-btn" onclick="showStep(1)">&larr; Back to Menu</button>
+                    <h2>Order Details</h2>
+                </div>
+                <div class="glass-card checkout-form">
+                    <div class="selected-product" id="selected-bake-info"></div>
+                    <form id="public-order-form">
+                        <div class="f-group">
+                            <label>Your Name</label>
+                            <input type="text" id="cust-name" required />
+                        </div>
+                        <div class="f-group">
+                            <label>WhatsApp Number</label>
+                            <input type="tel" id="cust-phone" required />
+                        </div>
+                        <div class="f-group">
+                            <label>Delivery Address</label>
+                            <textarea id="cust-address" required></textarea>
+                        </div>
+                        <div class="f-group">
+                            <label>Delivery Date</label>
+                            <input type="date" id="cust-date" required />
+                        </div>
+                        <button type="submit" class="btn-checkout">Continue to Payment</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Step 3: Payment -->
+            <div id="step-3" class="order-step">
+                <div class="section-title">
+                    <h2>Secure Payment</h2>
+                </div>
+                <div class="glass-card payment-options">
+                    <div class="pay-item" onclick="simulatePayment('GPay')">
+                        <span>GPay / UPI</span>
+                        <span class="pay-icon">💎</span>
+                    </div>
+                    <div class="pay-item" onclick="simulatePayment('Card')">
+                        <span>Credit / Debit Card</span>
+                        <span class="pay-icon">💳</span>
+                    </div>
+                    <div class="pay-item" onclick="simulatePayment('COD')">
+                        <span>Cash on Delivery</span>
+                        <span class="pay-icon">💵</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Success -->
+            <div id="step-4" class="order-step">
+                <div class="glass-card success-card">
+                    <div class="success-icon">✨</div>
+                    <h2>Order Confirmed!</h2>
+                    <p>Your artisanal bake is now being curated in our kitchen.</p>
+                    <div class="order-summary" id="final-summary"></div>
+                    <div class="wa-notice">
+                        <p>✅ A confirmation has been sent to your WhatsApp.</p>
+                    </div>
+                    <button class="btn-checkout" onclick="window.location.reload()">Place Another Order</button>
+                </div>
+            </div>
+        </main>
+
+        <footer class="p-footer">
+            <p>Powered by Bobo Home Bakers OS • Secure Checkout</p>
+        </footer>
+    </div>
+
+    <style>
+        :root { --primary: #f472b6; --bg: #fff9f9; --text: #2d1a12; }
+        .public-portal { min-height: 100vh; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 40px 20px; }
+        .p-header { text-align: center; margin-bottom: 60px; }
+        .p-logo { font-size: 3.5rem; margin-bottom: 16px; }
+        .p-header h1 { font-family: 'Outfit'; font-size: 2.5rem; color: #8d5d46; margin-bottom: 8px; }
+        .p-header p { font-size: 1.1rem; color: #8d5d46; opacity: 0.7; }
+
+        .p-content { max-width: 800px; margin: 0 auto; }
+        .order-step { display: none; }
+        .order-step.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .section-title { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; }
+        .back-btn { background: none; border: none; color: var(--primary); font-weight: 700; cursor: pointer; }
+
+        .p-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+        .p-item { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(141, 93, 70, 0.08); transition: 0.3s; cursor: pointer; border: 1px solid transparent; }
+        .p-item:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .p-item h3 { font-family: 'Outfit'; margin-bottom: 8px; }
+        .p-item p { font-size: 0.85rem; color: #666; margin-bottom: 16px; }
+        .p-item .price { font-size: 1.25rem; font-weight: 900; color: var(--primary); }
+
+        .glass-card { background: white; border-radius: 24px; padding: 40px; box-shadow: 0 20px 50px rgba(141, 93, 70, 0.1); }
+        .f-group { margin-bottom: 20px; }
+        .f-group label { display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; color: #8d5d46; }
+        .f-group input, .f-group textarea { width: 100%; border: 2px solid #fce4ec; background: #fff; padding: 14px; border-radius: 12px; font-family: inherit; }
+        .btn-checkout { width: 100%; background: var(--primary); color: white; border: none; padding: 18px; border-radius: 14px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.3s; margin-top: 20px; }
+        .btn-checkout:hover { transform: scale(1.02); box-shadow: 0 10px 20px rgba(244, 114, 182, 0.3); }
+
+        .pay-item { display: flex; justify-content: space-between; align-items: center; padding: 20px; border: 2px solid #fce4ec; border-radius: 16px; margin-bottom: 16px; cursor: pointer; transition: 0.2s; font-weight: 700; }
+        .pay-item:hover { border-color: var(--primary); background: #fff9f9; }
+
+        .success-card { text-align: center; }
+        .success-icon { font-size: 4rem; margin-bottom: 24px; }
+        .wa-notice { background: #e8f5e9; color: #2e7d32; padding: 16px; border-radius: 12px; margin-top: 24px; font-weight: 700; }
+
+        .p-footer { text-align: center; margin-top: 80px; padding-bottom: 40px; color: #8d5d46; opacity: 0.5; font-size: 0.8rem; }
+    </style>
+
+    <script is:inline>
+        let products = [
+            { id: 1, name: 'Belgium Truffle Cake', price: 1200, desc: 'Signature dark chocolate indulgence.' },
+            { id: 2, name: 'Biscoff Cheesecake', price: 1500, desc: 'The original Lotus biscoff crunch.' },
+            { id: 3, name: 'Red Velvet Box (6)', price: 450, desc: 'Fluffy cupcakes with cream cheese.' }
+        ];
+
+        let currentOrder = {};
+
+        function renderMenu() {
+            const grid = document.getElementById('p-public-list');
+            grid.innerHTML = products.map(p => `
+                <div class="p-item" onclick="selectBake(${p.id})">
+                    <h3>${p.name}</h3>
+                    <p>${p.desc}</p>
+                    <div class="price">₹${p.price}</div>
+                </div>
+            `).join('');
+        }
+
+        window.selectBake = (id) => {
+            const p = products.find(x => x.id === id);
+            currentOrder.product = p.name;
+            currentOrder.price = p.price;
+            document.getElementById('selected-bake-info').innerHTML = `
+                <div style="background: #fce4ec; padding: 16px; border-radius: 12px; margin-bottom: 24px;">
+                    <strong>Item Selected:</strong> ${p.name} - ₹${p.price}
+                </div>
+            `;
+            showStep(2);
+        }
+
+        window.showStep = (num) => {
+            document.querySelectorAll('.order-step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step-' + num).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        document.getElementById('public-order-form').onsubmit = (e) => {
+            e.preventDefault();
+            currentOrder.customer = document.getElementById('cust-name').value;
+            currentOrder.phone = document.getElementById('cust-phone').value;
+            currentOrder.address = document.getElementById('cust-address').value;
+            currentOrder.date = document.getElementById('cust-date').value;
+            showStep(3);
+        }
+
+        window.simulatePayment = (method) => {
+            // Simulated Success
+            currentOrder.paymentMethod = method;
+            document.getElementById('final-summary').innerHTML = `
+                <div style="margin: 24px 0; text-align: left; background: #fafafa; padding: 20px; border-radius: 12px; font-size: 0.9rem;">
+                    <p><strong>Item:</strong> ${currentOrder.product}</p>
+                    <p><strong>Total:</strong> ₹${currentOrder.price}</p>
+                    <p><strong>Deliver to:</strong> ${currentOrder.customer}</p>
+                    <p><strong>Date:</strong> ${currentOrder.date}</p>
+                </div>
+            `;
+            showStep(4);
+            
+            // In a real app, this would trigger an API call:
+            // fetch('/api/bakers/new-order', { method: 'POST', body: JSON.stringify(currentOrder) });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const accounts = JSON.parse(localStorage.getItem('bobo_accounts') || '[]');
+            const client = accounts[accounts.length - 1] || { businessName: "Our Patisserie" };
+            document.getElementById('biz-title').innerText = client.businessName || "Our Patisserie";
+            renderMenu();
+        });
+    </script>
+</MainLayout>

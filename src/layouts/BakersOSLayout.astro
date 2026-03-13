@@ -1,5 +1,5 @@
 ---
-const { title = "Bobo Home Bakers OS" } = Astro.props;
+const { title = "Home Bakers OS" } = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -37,6 +37,21 @@ const { title = "Bobo Home Bakers OS" } = Astro.props;
             min-height: 100vh;
             overflow: hidden;
         }
+
+        /* Access Denied Overlay */
+        #access-denied {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+        }
+        #access-denied h1 { font-size: 3rem; color: #ef4444; margin-bottom: 20px; }
 
         aside.sidebar {
             width: var(--sidebar-width);
@@ -81,21 +96,25 @@ const { title = "Bobo Home Bakers OS" } = Astro.props;
         header.top-bar { height: 80px; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
         .search-box { background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 10px 16px; border-radius: 12px; width: 350px; color: white; border: 1px solid var(--border); }
         .user-meta { display: flex; align-items: center; gap: 24px; }
-        .avatar { width: 36px; height: 36px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+        .biz-tag { font-size: 0.7rem; background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px; font-weight: 800; text-transform: uppercase; }
+        .avatar { width: 36px; height: 36px; background: var(--secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: white; }
 
         .page-content { padding: 40px; }
-        .glass-card { background: var(--bg-card); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 20px; }
-
-        /* Animation for Baker OS */
-        .sparkle { animation: sparkle 2s infinite; }
-        @keyframes sparkle { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .glass-card { background: var(--bg-card); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 20px; padding: 24px; }
     </style>
 </head>
 <body>
+    <div id="access-denied">
+        <h1>🔒 Access Denied</h1>
+        <p>Your business environment (TEST) does not have access to the Home Bakers Portal.</p>
+        <p style="margin-top: 20px; color: #888;">Only Trial and Live accounts can access this module.</p>
+        <a href="/portal/dashboard" style="margin-top: 40px; color: #f472b6; font-weight: 700;">Return to Main Dashboard</a>
+    </div>
+
     <aside class="sidebar">
         <a href="/bakers-os" class="logo-area">
-            <div class="logo-orb">🧁</div>
-            <span>Home Bakers OS</span>
+            <div class="logo-orb" id="bizLogo">🧁</div>
+            <span id="bizName">Bakers OS</span>
         </a>
 
         <div class="nav-group">
@@ -106,66 +125,53 @@ const { title = "Bobo Home Bakers OS" } = Astro.props;
             </a>
             <a href="/bakers-os/orders" class="nav-link" data-nav="/bakers-os/orders">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                <span>Live Orders</span>
+                <span>Order Hub</span>
+            </a>
+            <a href="/bakers-os/delivery" class="nav-link" data-nav="/bakers-os/delivery">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span>Delivery Calendar</span>
             </a>
             <a href="/bakers-os/products" class="nav-link" data-nav="/bakers-os/products">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg>
-                <span>Bake Catalog</span>
+                <span>Products & Cake Menu</span>
             </a>
         </div>
 
         <div class="nav-group">
-            <span class="nav-label">Brand & Growth</span>
-            <a href="/bakers-os/profile" class="nav-link" data-nav="/bakers-os/profile">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/></svg>
-                <span>Baker Profile</span>
+            <span class="nav-label">Finance & Growth</span>
+            <a href="/bakers-os/calculator" class="nav-link" data-nav="/bakers-os/calculator">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg>
+                <span>Recipe Costing</span>
             </a>
-            <a href="/bakers-os/gallery" class="nav-link" data-nav="/bakers-os/gallery">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-                <span>Portfolio</span>
+            <a href="/bakers-os/analytics" class="nav-link" data-nav="/bakers-os/analytics">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                <span>Sales Intelligence</span>
             </a>
             <a href="/bakers-os/customers" class="nav-link" data-nav="/bakers-os/customers">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-3-3.87"/><path d="M9 21v-2a4 4 0 0 0 3-3.87"/><circle cx="12" cy="7" r="4"/></svg>
-                <span>CRM & Leads</span>
+                <span>Customer CRM</span>
             </a>
         </div>
 
-        <div class="nav-group">
-            <span class="nav-label">System</span>
-            <a href="/bakers-os/reports" class="nav-link" data-nav="/bakers-os/reports">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
-                <span>Reports</span>
-            </a>
+        <div class="nav-group" style="margin-top: auto;">
             <a href="/bakers-os/settings" class="nav-link" data-nav="/bakers-os/settings">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                <span>Settings</span>
+                <span>Portal Settings</span>
             </a>
-            
-            <div style="height: 1px; background: var(--border); margin: 16px 12px; opacity: 0.5;"></div>
-            
-            <a href="/grocery-os" class="nav-link" style="background: rgba(16, 185, 129, 0.05); color: #10b981; border-radius: 12px;">
-                <span style="font-size: 1.2rem;">🍎</span>
-                <span>Switch to Grocery OS</span>
+            <a href="/portal/dashboard" class="nav-link" style="color: #ef4444;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                <span>Exit Portal</span>
             </a>
         </div>
-
-        <script is:inline>
-            const currentPath = window.location.pathname;
-            document.querySelectorAll('.nav-link').forEach(link => {
-                const navPath = link.getAttribute('data-nav');
-                if (currentPath === navPath || (currentPath === navPath + '/')) {
-                    link.classList.add('active');
-                }
-            });
-        </script>
     </aside>
 
     <main class="content-wrapper">
         <header class="top-bar">
-            <input type="text" class="search-box" placeholder="Search orders, clients, or cakes..." />
+            <input type="text" class="search-box" placeholder="Search orders, ingredients, or clients..." />
             <div class="user-meta">
-                <span style="font-size: 0.9rem; font-weight: 600;">Sarah's Patisserie</span>
-                <div class="avatar">SJ</div>
+                <span class="biz-tag" id="envTag">Live</span>
+                <span style="font-size: 0.9rem; font-weight: 600;" id="topBizName">Sarah's Patisserie</span>
+                <div class="avatar" id="bizInitial">SJ</div>
             </div>
         </header>
 
@@ -173,5 +179,38 @@ const { title = "Bobo Home Bakers OS" } = Astro.props;
             <slot />
         </div>
     </main>
+
+    <script is:inline>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Find current account
+            const accounts = JSON.parse(localStorage.getItem('bobo_accounts') || '[]');
+            const client = accounts[accounts.length - 1] || { 
+                businessName: "Bakers OS", 
+                type: "Trial", 
+                ownerName: "Admin" 
+            };
+
+            // Security Check
+            if (client.type === 'Test') {
+                document.getElementById('access-denied').style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+
+            // Branding Injection
+            document.getElementById('bizName').innerText = client.businessName || "Bakers OS";
+            document.getElementById('topBizName').innerText = client.businessName || "Bakers OS";
+            document.getElementById('envTag').innerText = client.type || "Trial";
+            document.getElementById('bizInitial').innerText = (client.businessName || "B").charAt(0).toUpperCase();
+
+            // Navigation State
+            const currentPath = window.location.pathname;
+            document.querySelectorAll('.nav-link').forEach(link => {
+                const navPath = link.getAttribute('data-nav');
+                if (currentPath === navPath || (currentPath === navPath + '/')) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

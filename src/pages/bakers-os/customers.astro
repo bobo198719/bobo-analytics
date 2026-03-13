@@ -1,106 +1,95 @@
 ---
 import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
-import BakersSubNav from "../../components/BakersSubNav.astro";
-
-const customers = [
-  { id: 1, name: "Rahul Khanna", orders: 12, spent: "₹18,450", last: "2 days ago" },
-  { id: 2, name: "Sneha Kapur", orders: 4, spent: "₹4,200", last: "1 week ago" }
-];
 ---
 
-<BakersOSLayout title="Baker CRM | Home Bakers OS">
-  <BakersSubNav active="customers" />
-  
-  <div class="header-flex">
-      <div>
-          <h1>Customer Database</h1>
-          <p style="color: var(--text-muted);">Manage relationships and reward your loyal dessert lovers.</p>
-      </div>
-      <div class="hb-actions">
-          <button class="hb-btn secondary">Broadcast WhatsApp</button>
-          <button class="hb-btn primary">+ Add Lead</button>
-      </div>
-  </div>
+<BakersOSLayout title="Customer CRM | Home Bakers OS">
+    <div class="header">
+        <div class="title-area">
+            <h1>Customer Database</h1>
+            <p>Manage relationships and loyalty history.</p>
+        </div>
+        <div class="actions">
+            <button class="btn btn-primary" onclick="openCustomerModal()">+ Add New Client</button>
+        </div>
+    </div>
 
-  <div class="crm-stats grid-4">
-      <div class="stat-card glass-card">
-          <span class="sl">Total Customers</span>
-          <span class="sv">184</span>
-      </div>
-      <div class="stat-card glass-card">
-          <span class="sl">Repeat Rate</span>
-          <span class="sv">72%</span>
-      </div>
-      <div class="stat-card glass-card">
-          <span class="sl">High Value (VIP)</span>
-          <span class="sv">42</span>
-      </div>
-      <div class="stat-card glass-card">
-          <span class="sl">New this Month</span>
-          <span class="sv">12</span>
-      </div>
-  </div>
+    <div class="glass-card table-card">
+        <div class="table-filters">
+            <input type="text" placeholder="Search by name, phone or neighborhood..." id="clientSearch" />
+        </div>
 
-  <div class="crm-table-card glass-card">
-      <table class="crm-table">
-          <thead>
-              <tr>
-                  <th>Customer Name</th>
-                  <th>Orders</th>
-                  <th>Total Spent</th>
-                  <th>Last Interaction</th>
-                  <th>Engagement</th>
-              </tr>
-          </thead>
-          <tbody>
-              {customers.map(c => (
-                  <tr>
-                      <td>
-                          <div class="c-info-cell">
-                              <div class="c-avatar">{c.name[0]}</div>
-                              <span class="c-name">{c.name}</span>
-                          </div>
-                      </td>
-                      <td><span class="o-count">{c.orders} Bakes</span></td>
-                      <td><span class="spent-val">{c.spent}</span></td>
-                      <td><span class="last-val">{c.last}</span></td>
-                      <td>
-                          <div class="engage-actions">
-                              <button class="e-btn wa" title="Quick WhatsApp">💬</button>
-                              <button class="e-btn more">···</button>
-                          </div>
-                      </td>
-                  </tr>
-              ))}
-          </tbody>
-      </table>
-  </div>
+        <table class="hb-table">
+            <thead>
+                <tr>
+                    <th>Customer Name</th>
+                    <th>Contact</th>
+                    <th>Default Address</th>
+                    <th>Frequency</th>
+                    <th>LTV (Total)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="client-body">
+                <!-- Data via JS -->
+            </tbody>
+        </table>
+    </div>
 
-  <style>
-      .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-      .hb-actions { display: flex; gap: 12px; }
-      .hb-btn { padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: white; }
-      .hb-btn.primary { background: var(--primary); border: none; }
+    <style>
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+        .btn-primary { background: var(--primary); color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; }
+        
+        .table-card { padding: 0; overflow: hidden; }
+        .table-filters { padding: 20px; border-bottom: 1px solid var(--border); }
+        .table-filters input { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 12px; border-radius: 8px; color: white; }
 
-      .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 32px; }
-      .stat-card { padding: 24px; display: flex; flex-direction: column; gap: 8px; }
-      .sl { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
-      .sv { font-size: 1.5rem; font-weight: 900; font-family: 'Outfit'; }
+        .hb-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .hb-table th { padding: 16px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
+        .hb-table td { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        
+        .freq-badge { background: rgba(244, 114, 182, 0.1); color: var(--primary); padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 0.7rem; margin-left: 8px; }
+        
+        .row-actions { display: flex; gap: 12px; }
+        .act-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; }
+    </style>
 
-      .crm-table-card { padding: 32px; }
-      .crm-table { width: 100%; border-collapse: collapse; }
-      .crm-table th { text-align: left; padding: 16px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
-      .crm-table td { padding: 16px; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+    <script is:inline>
+        let clients = [
+            { id: 1, name: 'Anjali Sharma', phone: '+91 98234 56789', address: 'Viman Nagar, Pune', orders: 12, ltv: 18450, loyal: true },
+            { id: 2, name: 'Rahul Verma', phone: '+91 77234 12345', address: 'Kalyani Nagar, Pune', orders: 3, ltv: 4200, loyal: false },
+            { id: 3, name: 'Priya Iyer', phone: '+91 99345 67890', address: 'Magarpatta City, Pune', orders: 24, ltv: 32800, loyal: true }
+        ];
 
-      .c-info-cell { display: flex; align-items: center; gap: 12px; }
-      .c-avatar { width: 36px; height: 36px; background: rgba(244, 114, 182, 0.2); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; }
-      .c-name { font-weight: 700; }
+        function renderClients() {
+            const tbody = document.getElementById('client-body');
+            tbody.innerHTML = clients.map(c => `
+                <tr>
+                    <td>
+                        <strong>${c.name}</strong>
+                        ${c.loyal ? '<span class="freq-badge">LOYALIST</span>' : ''}
+                    </td>
+                    <td>${c.phone}</td>
+                    <td>${c.address}</td>
+                    <td>${c.orders} Orders</td>
+                    <td><strong>₹${c.ltv.toLocaleString()}</strong></td>
+                    <td>
+                        <div class="row-actions">
+                            <button class="act-btn" onclick="history('${c.id}')">👁️</button>
+                            <button class="act-btn" onclick="edit('${c.id}')">✏️</button>
+                            <button class="act-btn" onclick="del('${c.id}')">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
 
-      .spent-val { font-weight: 800; font-family: 'Outfit'; }
-      .last-val { font-size: 0.85rem; color: var(--text-muted); }
+        window.del = (id) => {
+            clients = clients.filter(x => x.id != id);
+            renderClients();
+        };
 
-      .engage-actions { display: flex; gap: 8px; }
-      .e-btn { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-      .e-btn.wa { color: #25d366; }
-  </style>
+        window.openCustomerModal = () => alert('Customer CRM Form: Name, Phone, Delivery Address, Social Link.');
+
+        document.addEventListener('DOMContentLoaded', renderClients);
+    </script>
 </BakersOSLayout>

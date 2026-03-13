@@ -1,67 +1,214 @@
 ---
 import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
-import BakersSubNav from "../../components/BakersSubNav.astro";
-
-const orders = [
-  { id: "#HB-1024", customer: "Rahul Khanna", product: "Custom Birthday Cake (2kg)", date: "15 Mar", status: "Preparing", payment: "Paid" },
-  { id: "#HB-1025", customer: "Sneha Kapur", product: "Vanilla Funfetti (Box of 6)", date: "12 Mar", status: "Ready", payment: "Pending" }
-];
 ---
 
-<BakersOSLayout title="Live Orders | Home Bakers OS">
-  <BakersSubNav active="orders" />
-  
-  <div class="header-flex">
-      <h1>Live Orders</h1>
-      <div class="tabs">
-          <button class="active">Current</button>
-          <button>Upcoming</button>
-          <button>Past</button>
-      </div>
-  </div>
+<BakersOSLayout title="Order Hub | Home Bakers OS">
+    <div class="hub-header">
+        <div class="title-area">
+            <h1>Order Hub</h1>
+            <p>Track fulfillment, payments, and dispatch.</p>
+        </div>
+        <div class="action-area">
+            <button class="btn btn-outline" id="export-list">Export List</button>
+            <button class="btn btn-primary" id="open-new-order">+ Create Manual Order</button>
+        </div>
+    </div>
 
-  <div class="glass-card table-container">
-      <table class="baker-table">
-          <thead>
-              <tr>
-                  <th>Order ID</th>
-                  <th>Customer</th>
-                  <th>Product</th>
-                  <th>Delivery</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-              </tr>
-          </thead>
-          <tbody>
-              {orders.map(o => (
-                  <tr>
-                      <td style="color: var(--primary); font-weight: 800;">{o.id}</td>
-                      <td>{o.customer}</td>
-                      <td>{o.product}</td>
-                      <td>{o.date}</td>
-                      <td><span class={`status-tag ${o.status.toLowerCase()}`}>{o.status}</span></td>
-                      <td><button class="action-btn">View</button></td>
-                  </tr>
-              ))}
-          </tbody>
-      </table>
-  </div>
+    <!-- Active Orders Table -->
+    <div class="glass-card order-table-card">
+        <div class="table-filters">
+            <div class="search-wrap">
+                <input type="text" placeholder="Search by customer, phone or ID..." id="hubSearch"/>
+            </div>
+            <div class="filter-group">
+                <select id="statusFilter">
+                    <option value="all">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="preparing">Preparing</option>
+                    <option value="completed">Completed</option>
+                </select>
+            </div>
+        </div>
 
-  <style>
-      .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
-      .tabs { display: flex; gap: 8px; background: rgba(0,0,0,0.2); padding: 4px; border-radius: 10px; }
-      .tabs button { background: transparent; border: none; color: var(--text-muted); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; }
-      .tabs button.active { background: var(--primary); color: white; }
+        <div class="table-wrap">
+            <table class="hb-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer / Contact</th>
+                        <th>Product Details</th>
+                        <th>Delivery Date</th>
+                        <th>Amount</th>
+                        <th>Payment</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="hub-orders-body">
+                    <!-- Loaded via client JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-      .table-container { padding: 32px; }
-      .baker-table { width: 100%; border-collapse: collapse; }
-      .baker-table th { text-align: left; padding: 12px; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid var(--border); }
-      .baker-table td { padding: 20px 12px; border-bottom: 1px solid var(--border); }
+    <!-- Order Drawer (Hidden) -->
+    <div id="order-drawer" class="drawer">
+        <div class="drawer-content">
+            <h2 id="drawer-title">New Order Entry</h2>
+            <form id="order-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Customer Name</label>
+                        <input type="text" id="o-customer" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="o-phone" required />
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Product Name</label>
+                        <input type="text" id="o-product" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Flavor Profile</label>
+                        <input type="text" id="o-flavor" required />
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Weight / Qty</label>
+                        <input type="text" id="o-weight" placeholder="e.g. 1kg or 6pcs" />
+                    </div>
+                    <div class="form-group">
+                        <label>Delivery Date</label>
+                        <input type="date" id="o-date" required />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Amount (₹)</label>
+                    <input type="number" id="o-amount" required />
+                </div>
+                <div class="form-group">
+                    <label>Delivery Address</label>
+                    <textarea id="o-address" rows="2"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" id="close-drawer">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Order Record</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-      .status-tag { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; }
-      .status-tag.preparing { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
-      .status-tag.ready { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+    <style>
+        .hub-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+        .hub-header h1 { font-size: 2rem; font-weight: 800; }
+        .action-area { display: flex; gap: 12px; }
+        
+        .btn { padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-outline { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); }
+        .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
 
-      .action-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
-  </style>
+        .order-table-card { padding: 0; overflow: hidden; }
+        .table-filters { padding: 20px; border-bottom: 1px solid var(--border); display: flex; gap: 16px; align-items: center; }
+        .search-wrap { flex: 1; }
+        .search-wrap input { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 10px 16px; border-radius: 8px; color: white; }
+        
+        .hb-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .hb-table th { padding: 16px; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+        .hb-table td { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        
+        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
+        .status-pending { background: rgba(251, 146, 60, 0.1); color: #fb923c; }
+        .status-preparing { background: rgba(96, 165, 250, 0.1); color: #60a5fa; }
+        .status-completed { background: rgba(74, 222, 128, 0.1); color: #4ade80; }
+
+        .pay-tag { font-size: 0.7rem; font-weight: 800; color: #4ade80; display: flex; align-items: center; gap: 4px; }
+        .wa-trigger { color: #4ade80; cursor: pointer; text-decoration: underline; font-size: 0.8rem; }
+
+        .row-actions { display: flex; gap: 8px; }
+        .act-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; }
+        .act-btn:hover { color: white; }
+
+        /* Drawer */
+        .drawer { position: fixed; right: -500px; top: 0; bottom: 0; width: 450px; background: #1e1b4b; z-index: 1000; box-shadow: -10px 0 40px rgba(0,0,0,0.5); transition: 0.3s; padding: 40px; }
+        .drawer.open { right: 0; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; }
+        .form-group input, .form-group textarea { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 12px; border-radius: 8px; color: white; outline: none; }
+        .form-actions { display: flex; gap: 12px; margin-top: 24px; }
+    </style>
+
+    <script is:inline>
+        let orders = [
+            { id: '101', customer: 'Anjali Sharma', phone: '+91 98234 56789', product: 'Choco Truffle', weight: '1kg', date: '2026-03-14', amount: '1200', payment: 'Paid', status: 'preparing' },
+            { id: '102', customer: 'Rahul Verma', phone: '+91 77234 12345', product: 'Blueberry Cupcakes', weight: '6pcs', date: '2026-03-14', amount: '450', payment: 'Pending', status: 'pending' },
+            { id: '103', customer: 'Priya Iyer', phone: '+91 99345 67890', product: 'Red Velvet Pastry', weight: '2pcs', date: '2026-03-13', amount: '180', payment: 'Paid', status: 'completed' }
+        ];
+
+        function renderOrders() {
+            const tbody = document.getElementById('hub-orders-body');
+            tbody.innerHTML = orders.map(o => `
+                <tr>
+                    <td>#ORD-${o.id}</td>
+                    <td><strong>${o.customer}</strong><br><small>${o.phone}</small></td>
+                    <td>${o.product} (${o.weight})</td>
+                    <td>${new Date(o.date).toDateString()}</td>
+                    <td>₹${o.amount}</td>
+                    <td>
+                        ${o.payment === 'Paid' ? '<span class="pay-tag">✅ Paid</span>' : '<span style="color:#ef4444">❌ Pending</span>'}
+                    </td>
+                    <td><span class="status-badge status-${o.status}">${o.status}</span></td>
+                    <td>
+                        <div class="row-actions">
+                            <span class="wa-trigger" onclick="notifyWA('${o.id}')">Notify WA</span>
+                            <button class="act-btn" onclick="editOrder('${o.id}')">✏️</button>
+                            <button class="act-btn" onclick="deleteOrder('${o.id}')">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        window.notifyWA = (id) => alert(`WhatsApp Automation: Message sent to order #${id} customer!`);
+        window.deleteOrder = (id) => {
+            orders = orders.filter(x => x.id !== id);
+            renderOrders();
+        };
+
+        document.getElementById('open-new-order').onclick = () => {
+             document.getElementById('order-drawer').classList.add('open');
+             document.getElementById('drawer-title').innerText = "New Order Entry";
+             document.getElementById('order-form').reset();
+        };
+
+        document.getElementById('close-drawer').onclick = () => {
+             document.getElementById('order-drawer').classList.remove('open');
+        };
+
+        document.getElementById('order-form').onsubmit = (e) => {
+            e.preventDefault();
+            const newOrder = {
+                id: Math.floor(Math.random() * 900) + 100,
+                customer: document.getElementById('o-customer').value,
+                phone: document.getElementById('o-phone').value,
+                product: document.getElementById('o-product').value,
+                flavor: document.getElementById('o-flavor').value,
+                weight: document.getElementById('o-weight').value,
+                date: document.getElementById('o-date').value,
+                amount: document.getElementById('o-amount').value,
+                payment: 'Pending',
+                status: 'pending'
+            };
+            orders.unshift(newOrder);
+            renderOrders();
+            document.getElementById('order-drawer').classList.remove('open');
+        };
+
+        document.addEventListener('DOMContentLoaded', renderOrders);
+    </script>
 </BakersOSLayout>

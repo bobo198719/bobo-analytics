@@ -1,0 +1,132 @@
+---
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tax Invoice | Home Bakers OS</title>
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; color: #333; margin: 0; padding: 40px; background: #f5f5f5; }
+        .invoice-box { max-width: 800px; margin: auto; padding: 50px; background: #fff; box-shadow: 0 0 20px rgba(0,0,0,0.1); border-radius: 8px; }
+        .header { display: flex; justify-content: space-between; border-bottom: 2px solid #eee; padding-bottom: 20px; margin-bottom: 40px; }
+        .biz-details h1 { font-family: 'Outfit', sans-serif; margin: 0; color: #f472b6; }
+        .biz-details p { margin: 5px 0; color: #666; font-size: 0.9rem; }
+        
+        .type-label { background: #eee; padding: 4px 12px; border-radius: 4px; font-weight: 800; text-transform: uppercase; font-size: 0.75rem; color: #888; display: inline-block; margin-bottom: 15px; }
+        
+        .client-info { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+        .info-block h4 { margin: 0 0 10px 0; color: #999; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
+        .info-block p { margin: 0; font-weight: 600; line-height: 1.5; }
+
+        table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
+        th { text-align: left; padding: 15px; background: #fafafa; border-bottom: 2px solid #eee; color: #666; font-size: 0.8rem; text-transform: uppercase; }
+        td { padding: 15px; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+        
+        .totals { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+        .total-row { display: flex; gap: 40px; width: 250px; justify-content: space-between; padding: 10px 0; }
+        .total-row.grand { border-top: 2px solid #f472b6; margin-top: 10px; color: #f472b6; font-weight: 900; font-size: 1.25rem; }
+
+        .footer { margin-top: 80px; text-align: center; color: #aaa; font-size: 0.8rem; border-top: 1px solid #eee; padding-top: 20px; }
+        
+        @media print {
+            body { background: white; padding: 0; }
+            .invoice-box { box-shadow: none; border: none; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print" style="max-width: 800px; margin: 0 auto 20px; text-align: right;">
+        <button onclick="window.print()" style="padding: 10px 20px; background: #f472b6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 700;">🖨️ Print / Download PDF</button>
+    </div>
+
+    <div class="invoice-box">
+        <div class="header">
+            <div class="biz-details">
+                <span class="type-label">Official Tax Invoice</span>
+                <h1 id="i-biz-name">Bakers OS</h1>
+                <p>Artisanal Home Bakery Solutions</p>
+                <p id="i-biz-contact">+91 99999 00000</p>
+            </div>
+            <div class="meta-details" style="text-align: right;">
+                <p><strong>Invoice #:</strong> <span id="i-num">INV-4202</span></p>
+                <p><strong>Date:</strong> <span id="i-date">March 13, 2026</span></p>
+            </div>
+        </div>
+
+        <div class="client-info">
+            <div class="info-block">
+                <h4>Bill To</h4>
+                <p id="i-customer-name">Anjali Sharma</p>
+                <p id="i-customer-phone">+91 98234 56789</p>
+                <p id="i-customer-address">B-Block, Green Valley Park, Pune</p>
+            </div>
+            <div class="info-block" style="text-align: right;">
+                <h4>Payment Method</h4>
+                <p id="i-payment-method">UPI / GPay</p>
+                <p style="color: #4ade80;">STATUS: SUCCESS</p>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th style="text-align: center">Qty</th>
+                    <th style="text-align: right">Unit Price</th>
+                    <th style="text-align: right">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <strong id="i-product-name">Belgium Chocolate Truffle Cake</strong><br>
+                        <small>Flavor: Dark Ganache | Weight: 1kg</small>
+                    </td>
+                    <td style="text-align: center">1</td>
+                    <td style="text-align: right">₹1,200</td>
+                    <td style="text-align: right">₹1,200</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="totals">
+            <div class="total-row">
+                <span>Sub-total</span>
+                <strong>₹1,200</strong>
+            </div>
+            <div class="total-row">
+                <span>Delivery Charge</span>
+                <strong>₹0</strong>
+            </div>
+            <div class="total-row grand">
+                <span>Total Amount</span>
+                <strong id="i-total">₹1,200</strong>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Thank you for supporting artisanal home bakes! This is a computer-generated invoice from Bakers OS.</p>
+        </div>
+    </div>
+
+    <script is:inline>
+        document.addEventListener('DOMContentLoaded', () => {
+             // Retrieve account for branding
+             const accounts = JSON.parse(localStorage.getItem('bobo_accounts') || '[]');
+             const client = accounts[accounts.length - 1] || { businessName: "Bobo Bakers OS" };
+             document.getElementById('i-biz-name').innerText = client.businessName || "Bobo Bakers OS";
+
+             // URL Search Params (Simulated dynamic data)
+             const params = new URLSearchParams(window.location.search);
+             if(params.has('id')) document.getElementById('i-num').innerText = 'INV-' + params.get('id');
+             if(params.has('cust')) document.getElementById('i-customer-name').innerText = params.get('cust');
+             if(params.has('total')) {
+                 document.getElementById('i-total').innerText = '₹' + params.get('total');
+                 document.querySelectorAll('tbody td:last-child').forEach(td => td.innerText = '₹' + params.get('total'));
+             }
+        });
+    </script>
+</body>
+</html>

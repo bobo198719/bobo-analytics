@@ -1,0 +1,199 @@
+---
+import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
+---
+
+<BakersOSLayout title="Recipe Costing | Home Bakers OS">
+    <div class="header">
+        <h1>Recipe Intelligence</h1>
+        <p>Analyze ingredient costs and optimize your margins.</p>
+    </div>
+
+    <div class="calculator-grid">
+        <!-- Main Form -->
+        <div class="glass-card calc-form">
+            <div class="form-header">
+                <input type="text" id="recipe-name" placeholder="Enter Recipe Name (e.g. Signature Truffle)" class="recipe-title-input" />
+            </div>
+
+            <div class="ingredient-table">
+                <div class="t-head">
+                    <span>Ingredient</span>
+                    <span>Qty (g/ml)</span>
+                    <span>Cost (per kg/L)</span>
+                    <span>Total</span>
+                    <span></span>
+                </div>
+                <div id="ingredient-rows" class="rows-container">
+                    <!-- Added via JS -->
+                </div>
+                <button class="add-row-btn" onclick="addRow()">+ Add Ingredient</button>
+            </div>
+
+            <div class="overheads mt-32">
+                <h3>Additional Overheads</h3>
+                <div class="input-grid-2">
+                    <div class="f-group">
+                        <label>Packaging Cost</label>
+                        <input type="number" id="v-packaging" value="45" oninput="runCalculations()" />
+                    </div>
+                    <div class="f-group">
+                        <label>Labor/Gas/Utilities</label>
+                        <input type="number" id="v-labor" value="150" oninput="runCalculations()" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profit Summary Sidebar -->
+        <div class="summary-area">
+            <div class="glass-card result-pill total-cost">
+                <span class="l">Production Cost</span>
+                <div class="v" id="res-total-cost">₹0</div>
+            </div>
+
+            <div class="glass-card pricing-panel">
+                <h3>Pricing strategy</h3>
+                <div class="panel-item">
+                    <span>Recommended (70% Margin)</span>
+                    <strong id="res-suggested">₹0</strong>
+                </div>
+                
+                <div class="divider"></div>
+                
+                <div class="actual-price-wrap">
+                    <label>Actual Selling Price</label>
+                    <div class="price-input">
+                        <span>₹</span>
+                        <input type="number" id="v-selling-price" value="1200" oninput="runCalculations()" />
+                    </div>
+                </div>
+
+                <div class="profit-highlight">
+                    <div class="l">Net Profit per Unit</div>
+                    <div class="v" id="res-profit">₹0</div>
+                </div>
+
+                <div class="margin-meter">
+                    <div class="m-top">
+                        <span>Profit Margin</span>
+                        <span id="res-margin-pct">0%</span>
+                    </div>
+                    <div class="m-bar"><div class="m-fill" id="res-margin-bar"></div></div>
+                </div>
+            </div>
+
+            <button class="btn-save-recipe" onclick="saveRecipe()">Save to Portfolio</button>
+        </div>
+    </div>
+
+    <style>
+        .header { margin-bottom: 32px; }
+        .calculator-grid { display: grid; grid-template-columns: 1fr 340px; gap: 32px; align-items: flex-start; }
+        
+        .recipe-title-input { width: 100%; background: none; border: none; border-bottom: 2px solid var(--border); font-size: 1.5rem; font-weight: 800; color: white; padding: 12px 0; margin-bottom: 32px; font-family: 'Outfit'; }
+        
+        .t-head { display: grid; grid-template-columns: 2fr 1fr 1.2fr 80px 40px; gap: 12px; padding: 12px; border-bottom: 2px solid var(--border); font-size: 0.75rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; }
+        .ing-row { display: grid; grid-template-columns: 2fr 1fr 1.2fr 80px 40px; gap: 12px; padding: 12px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .ing-row input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 8px; border-radius: 6px; color: white; }
+        .row-total { font-weight: 800; color: var(--primary); }
+        .del-btn { background: none; border: none; color: #ef4444; cursor: pointer; opacity: 0.5; }
+        .del-btn:hover { opacity: 1; }
+        
+        .add-row-btn { margin-top: 20px; background: rgba(244, 114, 182, 0.1); border: 1px dashed var(--primary); color: var(--primary); width: 100%; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+        
+        .mt-32 { margin-top: 32px; }
+        .input-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .f-group label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; }
+
+        .summary-area { position: sticky; top: 40px; display: flex; flex-direction: column; gap: 20px; }
+        .result-pill { padding: 24px; text-align: center; }
+        .result-pill .l { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; }
+        .result-pill .v { font-size: 2rem; font-weight: 900; color: var(--primary); }
+        
+        .pricing-panel { padding: 24px; }
+        .pricing-panel h3 { font-size: 0.9rem; margin-bottom: 20px; color: var(--text-muted); text-transform: uppercase; }
+        .panel-item { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.9rem; }
+        .divider { height: 1px; background: var(--border); margin: 20px 0; }
+        
+        .actual-price-wrap label { font-size: 0.8rem; color: var(--text-muted); }
+        .price-input { position: relative; margin-top: 8px; }
+        .price-input span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--primary); font-weight: 800; }
+        .price-input input { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--primary); padding: 12px 12px 12px 30px; border-radius: 12px; color: white; font-size: 1.25rem; font-weight: 800; }
+        
+        .profit-highlight { background: var(--primary); padding: 16px; border-radius: 12px; margin-top: 24px; text-align: center; }
+        .profit-highlight .l { font-size: 0.7rem; text-transform: uppercase; font-weight: 800; opacity: 0.8; }
+        .profit-highlight .v { font-size: 1.5rem; font-weight: 900; }
+
+        .margin-meter { margin-top: 20px; }
+        .m-top { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 8px; font-weight: 700; }
+        .m-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+        .m-fill { height: 100%; background: #4ade80; width: 0%; transition: 0.5s; }
+
+        .btn-save-recipe { background: var(--secondary); color: white; border: none; padding: 16px; border-radius: 16px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .btn-save-recipe:hover { transform: scale(1.02); filter: brightness(1.1); }
+    </style>
+
+    <script is:inline>
+        let ingredients = [
+            { name: 'Flour (Premium)', qty: 500, unitCost: 120 },
+            { name: 'Unsalted Butter', qty: 250, unitCost: 850 },
+            { name: 'Dark Chocolate 70%', qty: 300, unitCost: 1400 }
+        ];
+
+        function addRow() {
+            ingredients.push({ name: '', qty: 0, unitCost: 0 });
+            renderRows();
+        }
+
+        function removeRow(idx) {
+            ingredients.splice(idx, 1);
+            renderRows();
+            runCalculations();
+        }
+
+        function updateVal(idx, field, val) {
+            ingredients[idx][field] = field === 'name' ? val : parseFloat(val) || 0;
+            renderRows();
+            runCalculations();
+        }
+
+        function renderRows() {
+            const container = document.getElementById('ingredient-rows');
+            container.innerHTML = ingredients.map((ing, i) => `
+                <div class="ing-row">
+                    <input type="text" value="${ing.name}" oninput="updateVal(${i}, 'name', this.value)" placeholder="e.g. Cocoa Powder" />
+                    <input type="number" value="${ing.qty}" oninput="updateVal(${i}, 'qty', this.value)" />
+                    <input type="number" value="${ing.unitCost}" oninput="updateVal(${i}, 'unitCost', this.value)" />
+                    <span class="row-total">₹${Math.round((ing.qty * ing.unitCost) / 1000)}</span>
+                    <button class="del-btn" onclick="removeRow(${i})">✕</button>
+                </div>
+            `).join('');
+        }
+
+        function runCalculations() {
+            let totalIng = ingredients.reduce((sum, ing) => sum + ((ing.qty * ing.unitCost) / 1000), 0);
+            let packaging = parseFloat(document.getElementById('v-packaging').value) || 0;
+            let labor = parseFloat(document.getElementById('v-labor').value) || 0;
+            
+            let productionCost = totalIng + packaging + labor;
+            let sellingPrice = parseFloat(document.getElementById('v-selling-price').value) || 0;
+            
+            let suggested = productionCost / 0.3; // 70% margin goal
+            let profit = sellingPrice - productionCost;
+            let marginPct = (profit / sellingPrice) * 100;
+
+            document.getElementById('res-total-cost').innerText = '₹' + Math.round(productionCost);
+            document.getElementById('res-suggested').innerText = '₹' + Math.round(suggested);
+            document.getElementById('res-profit').innerText = '₹' + Math.round(profit);
+            document.getElementById('res-margin-pct').innerText = Math.round(marginPct) + '%';
+            document.getElementById('res-margin-bar').style.width = Math.min(100, Math.max(0, marginPct)) + '%';
+        }
+
+        window.saveRecipe = () => alert('Recipe analytics saved to business profile!');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderRows();
+            runCalculations();
+        });
+    </script>
+</BakersOSLayout>
