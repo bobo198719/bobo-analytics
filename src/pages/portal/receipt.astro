@@ -1,0 +1,173 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+---
+
+<MainLayout title="Subscription Receipt | Bobo Platform" hideNav={true}>
+    <div class="receipt-outer">
+        <div class="no-print actions">
+            <button onclick="window.print()" class="btn-print">🖨️ Print / Download PDF</button>
+            <a href="/portal/dashboard" class="btn-back">← Back to Dashboard</a>
+        </div>
+
+        <div class="receipt-card">
+            <div class="receipt-header">
+                <div class="logo">B</div>
+                <div class="biz-info">
+                    <h1>Bobo Platform SaaS</h1>
+                    <p>Cloud Command Center for Enterprise</p>
+                    <p>contact@boboanalytics.com</p>
+                </div>
+                <div class="receipt-meta">
+                    <div class="tag-paid">PAID</div>
+                    <p><strong>Receipt #:</strong> <span id="r-num">...</span></p>
+                    <p><strong>Date:</strong> <span id="r-date">...</span></p>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="billing-info">
+                <div class="info-group">
+                    <h4>Billed To</h4>
+                    <p><strong id="r-owner">...</strong></p>
+                    <p id="r-biz">...</p>
+                    <p id="r-email">...</p>
+                </div>
+                <div class="info-group text-right">
+                    <h4>Workspace ID</h4>
+                    <p><code id="r-id">...</code></p>
+                    <p id="r-industry">...</p>
+                </div>
+            </div>
+
+            <table class="receipt-table">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th class="text-right">Qty</th>
+                        <th class="text-right">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <strong id="r-desc">Subscription Activation (Trial)</strong><br>
+                            <small>Pro-rated workspace provisioning and cloud storage setup.</small>
+                        </td>
+                        <td class="text-right">1</td>
+                        <td class="text-right">₹0.00</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="summary-area">
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span>₹0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>GST (0%)</span>
+                    <span>₹0.00</span>
+                </div>
+                <div class="summary-row grand-total">
+                    <span>Total Paid</span>
+                    <strong style="color:var(--primary)">₹0.00</strong>
+                </div>
+            </div>
+
+            <div class="receipt-footer">
+                <p>This is a computer-generated receipt for your trial activation.</p>
+                <p>Thank you for choosing Bobo Platform to scale your business.</p>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --bg: #05081a;
+            --card: #ffffff;
+            --text: #1e293b;
+        }
+
+        .receipt-outer {
+            min-height: 100vh;
+            background: #f1f5f9;
+            padding: 60px 20px;
+            color: var(--text);
+        }
+
+        .actions {
+            max-width: 800px;
+            margin: 0 auto 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-print { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .btn-back { color: var(--text); font-weight: 600; text-decoration: none; font-size: 0.9rem; }
+
+        .receipt-card {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 60px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+        }
+
+        .receipt-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; }
+        .logo { width: 60px; height: 60px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 900; border-radius: 12px; }
+        .biz-info h1 { margin: 0; font-size: 1.5rem; color: #0f172a; }
+        .biz-info p { margin: 4px 0; color: #64748b; font-size: 0.9rem; }
+        
+        .receipt-meta { text-align: right; }
+        .tag-paid { background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-weight: 800; font-size: 0.75rem; display: inline-block; margin-bottom: 12px; }
+        .receipt-meta p { margin: 4px 0; font-size: 0.9rem; }
+
+        .divider { border: none; border-top: 1px solid #e2e8f0; margin: 32px 0; }
+
+        .billing-info { display: flex; justify-content: space-between; margin-bottom: 40px; }
+        .info-group h4 { margin: 0 0 12px 0; font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+        .info-group p { margin: 4px 0; }
+        .text-right { text-align: right; }
+
+        .receipt-table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
+        .receipt-table th { text-align: left; padding: 12px; border-bottom: 2px solid #f1f5f9; color: #64748b; font-size: 0.8rem; text-transform: uppercase; }
+        .receipt-table td { padding: 16px 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; }
+
+        .summary-area { width: 100%; max-width: 300px; margin-left: auto; }
+        .summary-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.95rem; }
+        .grand-total { border-top: 2px solid #f1f5f9; margin-top: 12px; padding-top: 12px; font-size: 1.25rem; }
+
+        .receipt-footer { margin-top: 80px; text-align: center; color: #94a3b8; font-size: 0.85rem; border-top: 1px solid #f1f5f9; padding-top: 32px; }
+
+        @media print {
+            .no-print { display: none; }
+            body { background: white; margin: 0; padding: 0; }
+            .receipt-outer { background: white; padding: 0; }
+            .receipt-card { box-shadow: none; padding: 40px; }
+        }
+    </style>
+
+    <script is:inline>
+        document.addEventListener('DOMContentLoaded', () => {
+            const accounts = JSON.parse(localStorage.getItem('bobo_accounts') || '[]');
+            if(accounts.length === 0) return;
+            
+            const client = accounts[accounts.length - 1];
+            
+            document.getElementById('r-num').innerText = 'TB-' + client.id.split('-')[1];
+            document.getElementById('r-date').innerText = new Date(client.created).toLocaleDateString('en-IN', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            });
+            document.getElementById('r-owner').innerText = client.ownerName;
+            document.getElementById('r-biz').innerText = client.businessName;
+            document.getElementById('r-email').innerText = client.email;
+            document.getElementById('r-id').innerText = client.id;
+            document.getElementById('r-industry').innerText = client.industry.toUpperCase() + ' OS';
+            document.getElementById('r-desc').innerText = `${client.plan.toUpperCase()} Plan Activation (Trial)`;
+        });
+    </script>
+</MainLayout>
