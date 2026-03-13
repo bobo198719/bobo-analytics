@@ -1,5 +1,13 @@
 ---
 import MainLayout from "../../layouts/MainLayout.astro";
+
+// Server-side detection of subdomain
+const host = Astro.url.host;
+const isSubdomain = host.split('.').length > 2 && !host.includes('localhost') && !host.includes('vercel.app');
+const subdomain = isSubdomain ? host.split('.')[0] : null;
+
+// Format subdomain for display (e.g. "triviabaker" -> "Trivia Baker")
+const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.slice(1).replace(/-/g, ' ') : null;
 ---
 
 <MainLayout title="Order Online | Home Bakers OS" hideNav={true}>
@@ -201,9 +209,13 @@ import MainLayout from "../../layouts/MainLayout.astro";
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            const serverDynamicName = "{dynamicName || ''}";
             const accounts = JSON.parse(localStorage.getItem('bobo_accounts') || '[]');
             const client = accounts[accounts.length - 1] || { businessName: "Our Patisserie" };
-            document.getElementById('biz-title').innerText = client.businessName || "Our Patisserie";
+            
+            // Priority: Subdomain Name > Account Name > Default
+            const finalTitle = serverDynamicName || client.businessName || "Our Patisserie";
+            document.getElementById('biz-title').innerText = finalTitle;
             renderMenu();
         });
     </script>

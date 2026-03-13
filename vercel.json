@@ -1,5 +1,17 @@
 {
   "framework": "astro",
   "installCommand": "npm install --legacy-peer-deps",
-  "buildCommand": "astro build"
+  "buildCommand": "astro build",
+  "rewrites": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "(?<subdomain>[^\\.]+)\\.boboanalytics\\.com"
+        }
+      ],
+      "destination": "/bakers-os/order-online"
+    }
+  ]
 }
