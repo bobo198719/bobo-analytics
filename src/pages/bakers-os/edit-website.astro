@@ -28,8 +28,11 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                     <textarea id="hero-subtitle" rows="3"></textarea>
                 </div>
                 <div class="input-group">
-                    <label>Hero Background Image (URL)</label>
-                    <input type="text" id="hero-bg" placeholder="Paste image URL here" />
+                    <label>Hero Background Image</label>
+                    <div class="file-upload-wrapper">
+                        <input type="file" id="hero-bg-file" accept="image/*" capture="environment" onchange="handleFileUpload(this, 'hero-bg')" />
+                        <div class="file-preview" id="hero-bg-preview"></div>
+                    </div>
                 </div>
             </section>
 
@@ -44,8 +47,11 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                     <textarea id="about-p1" rows="4"></textarea>
                 </div>
                 <div class="input-group">
-                    <label>Featured Image (URL)</label>
-                    <input type="text" id="about-img" />
+                    <label>Featured Image</label>
+                    <div class="file-upload-wrapper">
+                        <input type="file" id="about-img-file" accept="image/*" capture="environment" onchange="handleFileUpload(this, 'about-img')" />
+                        <div class="file-preview" id="about-img-preview"></div>
+                    </div>
                 </div>
             </section>
 
@@ -106,6 +112,32 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         }
         .input-group input:focus, .input-group textarea:focus { border-color: var(--primary); outline: none; background: rgba(0,0,0,0.3); }
 
+        .file-upload-wrapper {
+            position: relative;
+            background: rgba(0,0,0,0.2);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: 0.3s;
+        }
+        .file-upload-wrapper:hover { border-color: var(--primary); }
+        .file-upload-wrapper input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .file-preview {
+            width: 100%;
+            height: 120px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 8px;
+            display: none;
+            margin-top: 10px;
+        }
+
         .editor-sidebar { display: flex; flex-direction: column; gap: 24px; }
         .tip-card { border-left: 4px solid var(--primary); }
         .tip-card h4 { margin-bottom: 12px; }
@@ -127,27 +159,57 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             contactAddress: "Available for collection & delivery"
         };
 
+        let uploadedImages = {};
+
+        function handleFileUpload(input, key) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const base64 = e.target.result;
+                uploadedImages[key] = base64;
+                
+                const preview = document.getElementById(key + '-preview');
+                preview.style.backgroundImage = `url('${base64}')`;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
         function loadData() {
             const data = JSON.parse(localStorage.getItem('bobo_website_data') || JSON.stringify(DEFAULT_DATA));
             
             document.getElementById('hero-title').value = data.heroTitle;
             document.getElementById('hero-subtitle').value = data.heroSubtitle;
-            document.getElementById('hero-bg').value = data.heroBg;
             document.getElementById('about-title').value = data.aboutTitle;
             document.getElementById('about-p1').value = data.aboutP1;
-            document.getElementById('about-img').value = data.aboutImg;
             document.getElementById('contact-phone').value = data.contactPhone;
             document.getElementById('contact-address').value = data.contactAddress;
+
+            // Load previews
+            if (data.heroBg) {
+                const hp = document.getElementById('hero-bg-preview');
+                hp.style.backgroundImage = `url('${data.heroBg}')`;
+                hp.style.display = 'block';
+                uploadedImages['hero-bg'] = data.heroBg;
+            }
+            if (data.aboutImg) {
+                const ap = document.getElementById('about-img-preview');
+                ap.style.backgroundImage = `url('${data.aboutImg}')`;
+                ap.style.display = 'block';
+                uploadedImages['about-img'] = data.aboutImg;
+            }
         }
 
         window.saveWebsiteData = () => {
             const data = {
                 heroTitle: document.getElementById('hero-title').value,
                 heroSubtitle: document.getElementById('hero-subtitle').value,
-                heroBg: document.getElementById('hero-bg').value,
+                heroBg: uploadedImages['hero-bg'] || DEFAULT_DATA.heroBg,
                 aboutTitle: document.getElementById('about-title').value,
                 aboutP1: document.getElementById('about-p1').value,
-                aboutImg: document.getElementById('about-img').value,
+                aboutImg: uploadedImages['about-img'] || DEFAULT_DATA.aboutImg,
                 contactPhone: document.getElementById('contact-phone').value,
                 contactAddress: document.getElementById('contact-address').value
             };

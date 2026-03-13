@@ -18,9 +18,60 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         <!-- Data via JS -->
     </div>
 
+    <!-- Add/Edit Modal -->
+    <div id="product-modal" class="modal-overlay">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h2 id="modal-title">New Signature Bake</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="m-row">
+                    <div class="input-group">
+                        <label>Cake/Bake Name</label>
+                        <input type="text" id="p-name" placeholder="e.g. Belgian Truffle" />
+                    </div>
+                    <div class="input-group">
+                        <label>Rate (₹)</label>
+                        <input type="number" id="p-price" />
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Cake Description</label>
+                    <textarea id="p-desc" rows="3" placeholder="Describe the flavors and layers..."></textarea>
+                </div>
+                <div class="m-row">
+                    <div class="input-group">
+                        <label>Category</label>
+                        <select id="p-cat">
+                            <option>Signature Cakes</option>
+                            <option>Cheesecakes</option>
+                            <option>Cupcakes</option>
+                            <option>Tea Cakes</option>
+                            <option>Custom Orders</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Prep Time</label>
+                        <input type="text" id="p-prep" placeholder="e.g. 4h" />
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Upload Cake Photo / Use Camera</label>
+                    <div class="file-upload-wrapper">
+                        <input type="file" id="p-image-file" accept="image/*" capture="environment" onchange="previewProductImage(this)" />
+                        <div class="file-preview" id="p-image-preview"></div>
+                    </div>
+                </div>
+                <button class="btn btn-primary w-full" style="margin-top: 20px;" onclick="saveProduct()">Save to Catalogue</button>
+            </div>
+        </div>
+    </div>
+
     <style>
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
         .btn-primary { background: var(--primary); color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; }
+        .w-full { width: 100%; }
 
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
         
@@ -28,40 +79,68 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             background: var(--bg-card); 
             border: 1px solid var(--border); 
             border-radius: 20px; 
-            padding: 24px; 
+            overflow: hidden;
             display: flex; 
             flex-direction: column; 
-            gap: 16px; 
             transition: 0.3s;
         }
         .product-card:hover { transform: translateY(-8px); border-color: var(--primary); }
         
+        .p-image { height: 200px; background-size: cover; background-position: center; position: relative; }
+        .p-body { padding: 24px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+
         .p-top { display: flex; justify-content: space-between; align-items: flex-start; }
-        .p-cat { font-size: 0.65rem; background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 20px; font-weight: 800; text-transform: uppercase; }
+        .p-cat { font-size: 0.65rem; background: rgba(244, 114, 182, 0.2); color: var(--primary); padding: 4px 10px; border-radius: 20px; font-weight: 800; text-transform: uppercase; }
         .p-prep { font-size: 0.75rem; color: var(--text-muted); }
 
         .p-info h3 { font-size: 1.25rem; font-family: 'Outfit'; margin-bottom: 4px; }
         .p-info p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
         
-        .p-flavor { font-size: 0.8rem; background: rgba(244, 114, 182, 0.1); color: var(--primary); padding: 6px 12px; border-radius: 8px; font-weight: 700; align-self: flex-start; }
-        
         .p-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 16px; border-top: 1px dashed var(--border); }
         .p-price { font-size: 1.3rem; font-weight: 900; color: white; }
         
         .p-actions { display: flex; gap: 8px; }
-        .p-btn { background: none; border: 1px solid var(--border); color: white; padding: 8px; border-radius: 8px; cursor: pointer; }
-        .p-btn:hover { background: var(--border); }
+        .p-btn { border: 1px solid var(--border); background: none; color: white; padding: 8px; border-radius: 8px; cursor: pointer; }
+
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { max-width: 500px; width: 100%; padding: 32px; border: 1px solid var(--border); }
+        .modal-header { display: flex; justify-content: space-between; margin-bottom: 24px; }
+        .close-btn { background: none; border: none; color: white; font-size: 2rem; cursor: pointer; }
+        .m-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        .input-group { margin-bottom: 16px; }
+        .input-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; }
+        .input-group input, .input-group textarea, .input-group select {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            color: white;
+            font-family: inherit;
+        }
+
+        .file-upload-wrapper {
+            position: relative;
+            background: rgba(255,255,255,0.03);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        .file-upload-wrapper input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+        .file-preview { width: 100%; height: 100px; background-size: cover; background-position: center; margin-top: 10px; border-radius: 8px; display: none; }
     </style>
 
     <script is:inline>
         let products = JSON.parse(localStorage.getItem('bobo_products') || "[]");
+        let currentUploadedImage = null;
 
-        // Initial default data if empty
         if (products.length === 0) {
             products = [
-                { id: 1, name: 'Belgium Truffle Cake', cat: 'Signature Cakes', flavor: 'Dark Ganache', price: 1200, prep: '4h', desc: 'Dense chocolate sponge with 70% dark Belgian chocolate.' },
-                { id: 2, name: 'Biscoff Cheesecake', cat: 'Cheesecakes', flavor: 'Lotus Biscoff', price: 1500, prep: '6h', desc: 'Baked New York style cheesecake with Lotus spread.' },
-                { id: 3, name: 'Red Velvet Box (6)', cat: 'Cupcakes', flavor: 'Classic Velvet', price: 450, prep: '2h', desc: 'Classic red velvet with cream cheese frosting.' }
+                { id: 1, name: 'Belgium Truffle Cake', cat: 'Signature Cakes', image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800', price: 1200, prep: '4h', desc: 'Dense chocolate sponge with 70% dark Belgian chocolate.' },
+                { id: 2, name: 'Biscoff Cheesecake', cat: 'Cheesecakes', image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=800', price: 1500, prep: '6h', desc: 'Baked New York style cheesecake with Lotus spread.' }
             ];
             localStorage.setItem('bobo_products', JSON.stringify(products));
         }
@@ -70,47 +149,78 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             const list = document.getElementById('product-list');
             list.innerHTML = products.map((p, index) => `
                 <div class="product-card">
-                    <div class="p-top">
-                        <span class="p-cat">${p.cat || 'General'}</span>
-                        <span class="p-prep">⏱️ ${p.prep || '2h'}</span>
-                    </div>
-                    <div class="p-info">
-                        <h3>${p.name}</h3>
-                        <p>${p.desc || 'No description provided.'}</p>
-                    </div>
-                    <div class="p-footer">
-                        <div class="p-price">₹${p.price}</div>
-                        <div class="p-actions">
-                            <button class="p-btn" onclick="del(${index})">🗑️</button>
+                    <div class="p-image" style="background-image: url('${p.image || ''}')"></div>
+                    <div class="p-body">
+                        <div class="p-top">
+                            <span class="p-cat">${p.cat}</span>
+                            <span class="p-prep">⏱️ ${p.prep}</span>
+                        </div>
+                        <div class="p-info">
+                            <h3>${p.name}</h3>
+                            <p>${p.desc}</p>
+                        </div>
+                        <div class="p-footer">
+                            <div class="p-price">₹${p.price}</div>
+                            <div class="p-actions">
+                                <button class="p-btn" onclick="del(${index})">🗑️</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        window.del = (index) => {
-            if(!confirm('Delete this product from your catalogue?')) return;
-            products.splice(index, 1);
-            localStorage.setItem('bobo_products', JSON.stringify(products));
-            renderProducts();
+        window.previewProductImage = (input) => {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                currentUploadedImage = e.target.result;
+                const preview = document.getElementById('p-image-preview');
+                preview.style.backgroundImage = `url('${currentUploadedImage}')`;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
         };
 
         window.openProductModal = () => {
-            const name = prompt("Bake Name:");
-            if(!name) return;
-            const price = prompt("Price (₹):");
-            const desc = prompt("Short Description:");
-            
+            document.getElementById('product-modal').style.display = 'flex';
+        };
+
+        window.closeModal = () => {
+            document.getElementById('product-modal').style.display = 'none';
+        };
+
+        window.saveProduct = () => {
+            const name = document.getElementById('p-name').value;
+            const price = document.getElementById('p-price').value;
+            if(!name || !price) return alert('Name and Price are required');
+
             const newProd = {
                 id: Date.now(),
                 name,
-                price: parseFloat(price) || 0,
-                desc,
-                cat: 'Custom',
-                prep: '4h'
+                price: parseFloat(price),
+                desc: document.getElementById('p-desc').value,
+                cat: document.getElementById('p-cat').value,
+                prep: document.getElementById('p-prep').value || '4h',
+                image: currentUploadedImage
             };
-            
+
             products.unshift(newProd);
+            localStorage.setItem('bobo_products', JSON.stringify(products));
+            renderProducts();
+            closeModal();
+            // Reset form
+            document.getElementById('p-name').value = '';
+            document.getElementById('p-price').value = '';
+            document.getElementById('p-desc').value = '';
+            document.getElementById('p-image-preview').style.display = 'none';
+            currentUploadedImage = null;
+        };
+
+        window.del = (index) => {
+            if(!confirm('Delete this bake?')) return;
+            products.splice(index, 1);
             localStorage.setItem('bobo_products', JSON.stringify(products));
             renderProducts();
         };

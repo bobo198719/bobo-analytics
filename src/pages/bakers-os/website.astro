@@ -136,12 +136,47 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                 }
             }
 
-            // Optional: Inject some real products into the gallery or a new section if desired
-            // For now, these are the primary customizations requested.
+            // Update Products/Creations
+            if (products.length > 0) {
+                const gallery = document.querySelector('.gallery-grid');
+                gallery.innerHTML = products.map((p, i) => `
+                    <div class="g-item" style="background-image: url('${p.image || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=800&q=80'}')">
+                        <div class="g-overlay">
+                            <div class="g-info-card">
+                                <h3>${p.name}</h3>
+                                <p style="font-size: 0.8rem; margin: 5px 0;">${p.desc}</p>
+                                <div class="g-price">₹${p.price}</div>
+                                <a href="/bakers-os/order-online" class="g-order-btn">Order Now</a>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
         });
     </script>
-    
+
     <style>
+        /* Additional Info Card Style for Gallery Overlay */
+        .g-info-card {
+            text-align: center;
+            padding: 20px;
+            color: white;
+            transform: translateY(20px);
+            transition: 0.4s;
+        }
+        .g-item:hover .g-info-card { transform: translateY(0); }
+        .g-price { font-size: 1.5rem; font-weight: 800; color: var(--primary); margin: 10px 0; }
+        .g-order-btn { 
+            display: inline-block; 
+            background: var(--primary); 
+            color: white; 
+            padding: 8px 16px; 
+            border-radius: 50px; 
+            text-decoration: none; 
+            font-size: 0.8rem; 
+            font-weight: 700;
+        }
+        
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
 
         :root {
