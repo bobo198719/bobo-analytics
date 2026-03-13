@@ -157,7 +157,8 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         window.renderMenu = function() {
             const grid = document.getElementById('p-public-list');
             grid.innerHTML = products.map(p => `
-                <div class="p-item" onclick="selectBake(${p.id})">
+                <div class="p-item" onclick="selectBake('${p.id}')">
+                    <div class="p-img" style="background-image: url('${p.image || ''}'); height: 180px; background-size: cover; background-position: center; border-radius: 12px; margin-bottom: 16px;"></div>
                     <h3>${p.name}</h3>
                     <p>${p.desc}</p>
                     <div class="price">₹${p.price}</div>
@@ -166,12 +167,18 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         }
 
         window.selectBake = (id) => {
-            const p = products.find(x => x.id === id);
+            const p = products.find(x => x.id == id || x.id === id);
+            if (!p) return;
             currentOrder.product = p.name;
             currentOrder.price = p.price;
+            currentOrder.prep = p.prep;
             document.getElementById('selected-bake-info').innerHTML = `
-                <div style="background: #fce4ec; padding: 16px; border-radius: 12px; margin-bottom: 24px;">
-                    <strong>Item Selected:</strong> ${p.name} - ₹${p.price}
+                <div style="background: #fce4ec; padding: 20px; border-radius: 16px; margin-bottom: 24px; display: flex; gap: 15px; align-items: center;">
+                    <div style="width: 80px; height: 80px; border-radius: 12px; background-image: url('${p.image}'); background-size: cover;"></div>
+                    <div>
+                        <h4 style="margin: 0;">${p.name}</h4>
+                        <p style="margin: 4px 0 0; color: var(--primary); font-weight: 800;">₹${p.price}</p>
+                    </div>
                 </div>
             `;
             showStep(2);
