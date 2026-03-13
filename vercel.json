@@ -8,10 +8,10 @@
       "has": [
         {
           "type": "host",
-          "value": "(?<subdomain>[^\\.]+)\\.boboanalytics\\.com"
+          "value": "(?!(www|boboanalytics))(?<subdomain>[^\\.]+)\\.boboanalytics\\.com"
         }
       ],
-      "destination": "/bakers-os/order-online"
+      "destination": "/bakers-os/website"
     }
   ]
 }
