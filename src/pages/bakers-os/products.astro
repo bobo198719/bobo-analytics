@@ -9,7 +9,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             <p>Manage your signature bakes and pricing.</p>
         </div>
         <div class="actions" style="display: flex; gap: 12px; position: relative; z-index: 1000;">
-            <button class="btn btn-secondary" onclick="resetDatabase()" style="cursor: pointer; pointer-events: auto; position: relative; z-index: 1001;" title="Clear all and sync defaults">🔄 Reset</button>
+            <button class="btn btn-secondary" onclick="resetDatabase(this)" style="cursor: pointer; pointer-events: auto; position: relative; z-index: 1001;" title="Clear all and sync defaults">🔄 Reset</button>
             <div class="bulk-upload-wrapper">
                 <button class="btn btn-secondary" onclick="document.getElementById('bulk-upload-input').click()">
                     <span>📦 Bulk Images</span>
@@ -644,29 +644,45 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         // ═══════════════════════════════════════════════════════════════════
         //  Reset to defaults
         // ═══════════════════════════════════════════════════════════════════
-        window.resetDatabase = function() {
+        window.resetDatabase = function(btn) {
             console.log("Reset triggered");
             if (!confirm('CAUTION: This will delete ALL your products and images. Are you sure?')) return;
             
-            // Visual feedback
-            const btn = event.currentTarget;
-            if (btn) btn.innerText = "Cleaning...";
+            if (btn && typeof btn === 'object') btn.innerText = "Cleaning...";
 
             try {
                 localStorage.removeItem('bobo_products');
                 localStorage.removeItem('bobo_website_data');
+                localStorage.removeItem('bobo_cart');
                 
                 if (window.indexedDB) {
-                    const req = indexedDB.deleteDatabase(IDB_NAME);
-                    req.onsuccess = () => { window.location.reload(true); };
-                    req.onerror   = () => { window.location.reload(true); };
-                    req.onblocked = () => { window.location.reload(true); };
+                    // We use clear() instead of deleteDatabase because deleteDatabase 
+                    // is often blocked by the open connection on this very page.
+                    const openReq = indexedDB.open(IDB_NAME);
+                    openReq.onsuccess = function(e) {
+                        const db = e.target.result;
+                        try {
+                            const tx = db.transaction(IDB_STORE, 'readwrite');
+                            const store = tx.objectStore(IDB_STORE);
+                            store.clear();
+                            tx.oncomplete = function() {
+                                db.close();
+                                window.location.href = window.location.pathname + '?r=' + Date.now();
+                            };
+                        } catch(err) {
+                            db.close();
+                            window.location.href = window.location.pathname + '?r=' + Date.now();
+                        }
+                    };
+                    openReq.onerror = function() { 
+                        window.location.href = window.location.pathname + '?r=' + Date.now();
+                    };
                 } else {
-                    window.location.reload(true);
+                    window.location.href = window.location.pathname + '?r=' + Date.now();
                 }
             } catch(e) {
                 console.error("Reset script error:", e);
-                window.location.reload(true);
+                window.location.href = window.location.pathname + '?r=' + Date.now();
             }
         };
 
