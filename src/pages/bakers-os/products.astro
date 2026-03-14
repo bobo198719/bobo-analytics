@@ -1,4 +1,4 @@
-﻿---
+---
 import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
 ---
 
@@ -646,11 +646,22 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         // ═══════════════════════════════════════════════════════════════════
         window.resetDatabase = () => {
             if (!confirm('Delete ALL products and reset to defaults?')) return;
-            localStorage.removeItem('bobo_products');
-            localStorage.removeItem('bobo_website_data');
-            // Clear IndexedDB too
-            indexedDB.deleteDatabase(IDB_NAME);
-            window.location.reload();
+            try {
+                localStorage.removeItem('bobo_products');
+                localStorage.removeItem('bobo_website_data');
+                // Clear IndexedDB asynchronously and wait for it
+                if (window.indexedDB) {
+                    const req = indexedDB.deleteDatabase(IDB_NAME);
+                    req.onsuccess = () => { window.location.href = window.location.pathname; };
+                    req.onerror   = () => { window.location.href = window.location.pathname; };
+                    req.onblocked = () => { window.location.href = window.location.pathname; };
+                } else {
+                    window.location.href = window.location.pathname;
+                }
+            } catch(e) {
+                console.error("Reset failed:", e);
+                window.location.href = window.location.pathname;
+            }
         };
 
         // ── Bootstrap ──────────────────────────────────────────────────────
