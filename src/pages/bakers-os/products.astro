@@ -284,17 +284,11 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             renderProducts();
         };
 
-        window.approveProduct = (index) => {
-            products[index].status = 'approved';
-            localStorage.setItem('bobo_products', JSON.stringify(products));
-            renderProducts();
-        };
-
         window.bulkApprove = () => {
             products.forEach(p => { if (p.status === 'pending') p.status = 'approved'; });
-            localStorage.setItem('bobo_products', JSON.stringify(products));
+            safeStorageSet(products);
             renderProducts();
-            alert('All pending products have been published to the website!');
+            alert('✅ All products are now LIVE on your website!');
         };
 
         async function processImage(file) {
@@ -303,33 +297,22 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 reader.onload = (e) => {
                     const img = new Image();
                     img.onload = () => {
-                        const results = { full: '', medium: '', thumb: '' };
+                        // ⚠️ Only store ONE small thumbnail (200x200) in localStorage
+                        // storing large base64 images (1080px) overflows the 5MB limit
+                        const SIZE = 200;
                         const canvas = document.createElement('canvas');
+                        canvas.width = SIZE; canvas.height = SIZE;
                         const ctx = canvas.getContext('2d');
-                        
-                        const sizes = [
-                            { name: 'full', val: 1080 },
-                            { name: 'medium', val: 600 },
-                            { name: 'thumb', val: 300 }
-                        ];
-
-                        sizes.forEach(s => {
-                            canvas.width = s.val; canvas.height = s.val;
-                            ctx.fillStyle = "white";
-                            ctx.fillRect(0, 0, s.val, s.val);
-                            const scale = Math.min(s.val / img.width, s.val / img.height);
-                            const x = (s.val / 2) - (img.width / 2) * scale;
-                            const y = (s.val / 2) - (img.height / 2) * scale;
-                            
-                            // High end enhancement
-                            ctx.filter = 'brightness(1.05) contrast(1.08) saturate(1.12)';
-                            ctx.shadowBlur = 40; ctx.shadowColor = 'rgba(0,0,0,0.05)';
-                            
-                            ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-                            results[s.name] = canvas.toDataURL('image/webp', 0.85);
-                        });
-                        
-                        resolve(results);
+                        ctx.fillStyle = 'white';
+                        ctx.fillRect(0, 0, SIZE, SIZE);
+                        const scale = Math.min(SIZE / img.width, SIZE / img.height);
+                        const x = (SIZE / 2) - (img.width / 2) * scale;
+                        const y = (SIZE / 2) - (img.height / 2) * scale;
+                        ctx.filter = 'brightness(1.05) contrast(1.08) saturate(1.12)';
+                        ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+                        // Use 0.65 quality JPEG (much smaller than 0.85 WebP for storage)
+                        const thumb = canvas.toDataURL('image/jpeg', 0.65);
+                        resolve({ thumb });
                     };
                     img.src = e.target.result;
                 };
@@ -379,6 +362,20 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             document.getElementById('product-modal').style.display = 'none';
         };
 
+        function safeStorageSet(data) {
+            try {
+                const json = JSON.stringify(data);
+                const sizeKB = Math.round(json.length / 1024);
+                localStorage.setItem('bobo_products', json);
+                console.log(`✅ Saved ${data.length} products (${sizeKB} KB)`);
+                return true;
+            } catch (e) {
+                console.error('❌ localStorage QUOTA EXCEEDED:', e);
+                alert('⚠️ Storage limit reached! Some uploaded images may be too large. Please try uploading fewer images at a time.');
+                return false;
+            }
+        }
+
         window.saveProduct = async () => {
             const name = document.getElementById('p-name').value;
             const price = document.getElementById('p-price').value;
@@ -388,9 +385,10 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
 
             document.getElementById('processing-overlay').style.display = 'flex';
 
-            let finalImageResults = null;
+            let thumbDataUrl = null;
             if (fileInput.files.length > 0) {
-                finalImageResults = await processImage(fileInput.files[0]);
+                const result = await processImage(fileInput.files[0]);
+                thumbDataUrl = result.thumb;
             }
 
             const productData = {
@@ -399,16 +397,15 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 desc: document.getElementById('p-desc').value || templates[0].replace('{name}', name),
                 cat: document.getElementById('p-cat').value,
                 prep: document.getElementById('p-prep').value || '4h',
-                image_url: finalImageResults ? finalImageResults.full : currentUploadedImage,
-                medium_url: finalImageResults ? finalImageResults.medium : (products[editingIndex]?.medium_url || currentUploadedImage),
-                thumbnail_url: finalImageResults ? finalImageResults.thumb : (products[editingIndex]?.thumbnail_url || currentUploadedImage),
+                image_url: thumbDataUrl || currentUploadedImage || (products[editingIndex]?.image_url),
+                thumbnail_url: thumbDataUrl || currentUploadedImage || (products[editingIndex]?.thumbnail_url),
                 status: editingIndex !== null ? products[editingIndex].status : 'pending' 
             };
 
             if (editingIndex !== null) products[editingIndex] = productData;
             else products.unshift(productData);
 
-            localStorage.setItem('bobo_products', JSON.stringify(products));
+            safeStorageSet(products);
             renderProducts();
             closeModal();
             document.getElementById('processing-overlay').style.display = 'none';
@@ -435,18 +432,20 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                     desc: randomDesc, 
                     cat: 'Chocolate Cakes', 
                     prep: '4h', 
-                    image_url: processedImages.full,
-                    medium_url: processedImages.medium,
+                    image_url: processedImages.thumb,   // Only store thumbnail
                     thumbnail_url: processedImages.thumb,
                     status: 'pending' 
                 });
             }
-            localStorage.setItem('bobo_products', JSON.stringify(products));
+            const saved = safeStorageSet(products);
             setTimeout(() => { 
                 overlay.style.display = 'none'; 
-                currentFilter = 'pending'; // Switch to review gallery
-                document.querySelectorAll('.s-tab').forEach(t => t.classList.remove('active'));
-                document.querySelector('button[onclick*="pending"]').classList.add('active');
+                if (saved) {
+                    currentFilter = 'pending';
+                    document.querySelectorAll('.s-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelector('button[onclick*="pending"]').classList.add('active');
+                    alert(`✅ ${files.length} image(s) uploaded! They are in "Review Gallery". Click 👌 Publish to make them live.`);
+                }
                 renderProducts(); 
                 input.value = ''; 
             }, 500);
@@ -455,8 +454,20 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         window.del = (index) => {
             if(!confirm('Delete this bake?')) return;
             products.splice(index, 1);
-            localStorage.setItem('bobo_products', JSON.stringify(products));
+            safeStorageSet(products);
             renderProducts();
+        };
+
+        window.approveProduct = (index) => {
+            products[index].status = 'approved';
+            safeStorageSet(products);
+            renderProducts();
+            // Confirm to user
+            const saved = localStorage.getItem('bobo_products');
+            if (saved) {
+                const count = JSON.parse(saved).filter(p => p.status === 'approved').length;
+                console.log(`✅ Product approved. ${count} product(s) now live on website.`);
+            }
         };
 
         window.resetDatabase = () => {
