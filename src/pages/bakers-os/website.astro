@@ -157,9 +157,14 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             } catch(e) { return null; }
         }
         // ────────────────────────────────────────────────────────────────────
-
-        let cart = JSON.parse(localStorage.getItem('bobo_cart') || "[]");
-
+        let cart = [];
+        try { 
+            cart = JSON.parse(localStorage.getItem('bobo_cart') || "[]"); 
+            if (!Array.isArray(cart)) cart = [];
+        } catch(e) { 
+            cart = []; 
+            localStorage.removeItem('bobo_cart');
+        }
         document.addEventListener('DOMContentLoaded', () => {
             // ── ROBUST PRODUCT LOADING ──────────────────────────────────────
             // Old uploads stored 1080px base64 images (2-5 MB each) causing
@@ -173,7 +178,7 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                     if (Array.isArray(parsed) && parsed.length > 0) {
                         // A 200px JPEG thumbnail is ~8-20 KB. Anything over 100 KB
                         // is a full-res image from the old system — strip it.
-                        const tooBig = (s) => s && s.startsWith('data:') && s.length > 100000;
+                        const tooBig = (s) => typeof s === 'string' && s.startsWith('data:') && s.length > 100000;
                         products = parsed.map(p => ({
                             ...p,
                             status: p.status || 'approved',
@@ -210,17 +215,34 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             }));
 
             // ── APPLY WEBSITE CUSTOMISATION ─────────────────────────────────
-            const webData = (() => { try { return JSON.parse(localStorage.getItem('bobo_website_data')); } catch(e) { return null; } })();
-            if (webData) {
-                if (webData.heroTitle) document.querySelector('.hero-content h1').innerHTML = webData.heroTitle.replace(/\{(.*?)\}/g, '<span class="accent">$1</span>');
-                if (webData.heroSubtitle) document.querySelector('.hero-content p').innerText = webData.heroSubtitle;
-                if (webData.heroBg) document.querySelector('.hero').style.backgroundImage = `url('${webData.heroBg}')`;
-                if (webData.aboutTitle) document.querySelector('.about-text h2').innerText = webData.aboutTitle;
-                if (webData.aboutP1) document.querySelector('.about-text p').innerText = webData.aboutP1;
-                if (webData.aboutImg) document.querySelector('.about-image img').src = webData.aboutImg;
-                if (webData.contactAddress) document.querySelector('.f-contact p:first-of-type').innerText = `📍 ${webData.contactAddress}`;
-                if (webData.contactPhone) document.querySelector('.f-contact p:last-of-type').innerText = `📞 Order via WhatsApp: ${webData.contactPhone}`;
-            }
+            try {
+                const webData = JSON.parse(localStorage.getItem('bobo_website_data'));
+                if (webData) {
+                    const heroTitle = document.querySelector('.hero-content h1');
+                    if (heroTitle && webData.heroTitle) heroTitle.innerHTML = webData.heroTitle.replace(/\{(.*?)\}/g, '<span class="accent">$1</span>');
+                    
+                    const heroSub = document.querySelector('.hero-content p');
+                    if (heroSub && webData.heroSubtitle) heroSub.innerText = webData.heroSubtitle;
+                    
+                    const heroBg = document.querySelector('.hero');
+                    if (heroBg && webData.heroBg) heroBg.style.backgroundImage = `url('${webData.heroBg}')`;
+                    
+                    const aboutTitle = document.querySelector('.about-text h2');
+                    if (aboutTitle && webData.aboutTitle) aboutTitle.innerText = webData.aboutTitle;
+                    
+                    const aboutP1 = document.querySelector('.about-text p');
+                    if (aboutP1 && webData.aboutP1) aboutP1.innerText = webData.aboutP1;
+                    
+                    const aboutImg = document.querySelector('.about-image img');
+                    if (aboutImg && webData.aboutImg) aboutImg.src = webData.aboutImg;
+                    
+                    const locText = document.querySelector('.f-contact p:first-of-type');
+                    if (locText && webData.contactAddress) locText.innerText = `📍 ${webData.contactAddress}`;
+                    
+                    const phoneText = document.querySelector('.f-contact p:last-of-type');
+                    if (phoneText && webData.contactPhone) phoneText.innerText = `📞 Order via WhatsApp: ${webData.contactPhone}`;
+                }
+            } catch(e) { console.warn('Customisation error:', e); }
 
             // ── BUILD MENU ──────────────────────────────────────────────────
             const approvedProducts = products.filter(p => p.status === 'approved');
@@ -291,8 +313,10 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         window.filterMenu = category => {
             let allProducts = [];
             try {
-                const tooBig = s => s && s.startsWith('data:') && s.length > 50000;
-                allProducts = JSON.parse(localStorage.getItem('bobo_products') || '[]')
+                const tooBig = s => typeof s === 'string' && s.startsWith('data:') && s.length > 50000;
+                let stored = JSON.parse(localStorage.getItem('bobo_products') || '[]');
+                if (!Array.isArray(stored)) stored = [];
+                allProducts = stored
                     .filter(p => p.status === 'approved')
                     .map(p => ({
                         ...p,
@@ -332,15 +356,16 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         };
 
         function updateCartUI() {
-            const itemsContainer = document.getElementById('cart-items');
-            const count = document.getElementById('cart-count');
-            const total = document.getElementById('cart-total');
+            try {
+                const itemsContainer = document.getElementById('cart-items');
+                const count = document.getElementById('cart-count');
+                const total = document.getElementById('cart-total');
 
-            count.innerText = cart.reduce((acc, item) => acc + item.qty, 0);
+                if (count) count.innerText = cart.reduce((acc, item) => acc + item.qty, 0);
             
-            itemsContainer.innerHTML = cart.map((item, i) => `
+            if (itemsContainer) itemsContainer.innerHTML = cart.map((item, i) => `
                 <div class="cart-item">
-                    <div class="ci-image" style="background-image: url('${item.thumbnail_url || item.image_url || item.image}')"></div>
+                    <div class="ci-image" style="background-image: url('${item.thumbnail_url || item.image_url || item.image || ''}')"></div>
                     <div class="ci-info">
                         <h4>${item.name}</h4>
                         <p>₹${item.price} x ${item.qty}</p>
@@ -349,8 +374,11 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                 </div>
             `).join('');
 
-            const sum = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
-            total.innerText = `₹${sum}`;
+            if (total) {
+                const sum = cart.reduce((acc, item) => acc + (parseFloat(item.price) * item.qty), 0);
+                total.innerText = `₹${sum}`;
+            }
+            } catch(e) { console.warn('Cart error:', e); }
         }
 
         window.removeFromCart = (index) => {
