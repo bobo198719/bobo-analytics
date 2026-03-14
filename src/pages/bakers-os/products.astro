@@ -644,23 +644,30 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         // ═══════════════════════════════════════════════════════════════════
         //  Reset to defaults
         // ═══════════════════════════════════════════════════════════════════
-        window.resetDatabase = () => {
+        window.resetDatabase = async () => {
             if (!confirm('Delete ALL products and reset to defaults?')) return;
             try {
                 localStorage.removeItem('bobo_products');
                 localStorage.removeItem('bobo_website_data');
-                // Clear IndexedDB asynchronously and wait for it
+                
+                // Clear the store instead of deleting the whole DB, which prevents blocking 
+                // if there are open connections in other tabs.
                 if (window.indexedDB) {
-                    const req = indexedDB.deleteDatabase(IDB_NAME);
-                    req.onsuccess = () => { window.location.reload(true); };
-                    req.onerror   = () => { window.location.reload(true); };
-                    req.onblocked = () => { window.location.reload(true); };
+                    try {
+                        const db = await openImageDB();
+                        const tx = db.transaction(IDB_STORE, 'readwrite');
+                        tx.objectStore(IDB_STORE).clear();
+                        tx.oncomplete = () => { window.location.href = window.location.pathname + '?reset=' + Date.now(); };
+                        tx.onerror    = () => { window.location.href = window.location.pathname + '?reset=' + Date.now(); };
+                    } catch (e) {
+                        window.location.href = window.location.pathname + '?reset=' + Date.now();
+                    }
                 } else {
-                    window.location.reload(true);
+                    window.location.href = window.location.pathname + '?reset=' + Date.now();
                 }
             } catch(e) {
                 console.error("Reset failed:", e);
-                window.location.reload(true);
+                window.location.href = window.location.pathname + '?reset=' + Date.now();
             }
         };
 
