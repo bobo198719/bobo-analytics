@@ -129,6 +129,35 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
     </div>
 
     <script is:inline>
+        // ── Shared IndexedDB helpers (mirrors products.astro) ───────────────
+        const IDB_NAME  = 'bobo_image_store';
+        const IDB_STORE = 'images';
+
+        function openImageDB() {
+            return new Promise((resolve, reject) => {
+                const req = indexedDB.open(IDB_NAME, 1);
+                req.onupgradeneeded = e => {
+                    if (!e.target.result.objectStoreNames.contains(IDB_STORE))
+                        e.target.result.createObjectStore(IDB_STORE, { keyPath: 'id' });
+                };
+                req.onsuccess = e => resolve(e.target.result);
+                req.onerror   = e => reject(e);
+            });
+        }
+
+        async function getImageFromDB(imageId) {
+            if (!imageId) return null;
+            try {
+                const db = await openImageDB();
+                return new Promise(resolve => {
+                    const req = db.transaction(IDB_STORE, 'readonly').objectStore(IDB_STORE).get(imageId);
+                    req.onsuccess = e => resolve(e.target.result || null);
+                    req.onerror   = () => resolve(null);
+                });
+            } catch(e) { return null; }
+        }
+        // ────────────────────────────────────────────────────────────────────
+
         let cart = JSON.parse(localStorage.getItem('bobo_cart') || "[]");
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -223,9 +252,10 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                 menuContainer.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:#8d5d46;"><p>No products in this category.</p></div>';
                 return;
             }
-            menuContainer.innerHTML = items.map((p) => `
-                <div class="product-card-website">
-                    <div class="pw-image" style="background-image: url('${p.thumbnail_url || p.image_url || ''}')">
+            // Render immediately with thumbnail fallback (fast)
+            menuContainer.innerHTML = items.map(p => `
+                <div class="product-card-website" id="wcard-${p.id}">
+                    <div class="pw-image" id="wpimg-${p.id}" style="background-image: url('${p.thumbnail_url || p.medium_url || ''}')">
                         <span class="pw-tag">${p.cat}</span>
                     </div>
                     <div class="pw-content">
@@ -238,16 +268,36 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                     </div>
                 </div>
             `).join('');
+
+            // Async upgrade: load medium-res from IndexedDB for uploaded products
+            items.forEach(p => {
+                if (p.image_id) {
+                    getImageFromDB(p.image_id).then(img => {
+                        if (!img) return;
+                        const el = document.getElementById(`wpimg-${p.id}`);
+                        if (el) el.style.backgroundImage = `url('${img.medium || img.thumbnail}')`;
+                    });
+                }
+            });
         }
 
-        window.filterMenu = (category) => {
+        window.filterMenu = category => {
             let allProducts = [];
-            try { allProducts = JSON.parse(localStorage.getItem('bobo_products') || '[]').filter(p => p.status === 'approved'); } catch(e) {}
+            try {
+                const tooBig = s => s && s.startsWith('data:') && s.length > 50000;
+                allProducts = JSON.parse(localStorage.getItem('bobo_products') || '[]')
+                    .filter(p => p.status === 'approved')
+                    .map(p => ({
+                        ...p,
+                        thumbnail_url: tooBig(p.thumbnail_url) ? '' : (p.thumbnail_url || ''),
+                    }));
+            } catch(e) { allProducts = []; }
             const btns = document.querySelectorAll('.tab-btn');
             btns.forEach(b => b.classList.remove('active'));
             if (window.event) window.event.target.classList.add('active');
             renderMenu(category === 'all' ? allProducts : allProducts.filter(p => p.cat === category));
         };
+
 
         window.toggleCart = () => {
             document.getElementById('cart-sidebar').classList.toggle('active');
