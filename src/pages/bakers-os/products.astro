@@ -652,15 +652,15 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 // Clear IndexedDB asynchronously and wait for it
                 if (window.indexedDB) {
                     const req = indexedDB.deleteDatabase(IDB_NAME);
-                    req.onsuccess = () => { window.location.href = window.location.pathname; };
-                    req.onerror   = () => { window.location.href = window.location.pathname; };
-                    req.onblocked = () => { window.location.href = window.location.pathname; };
+                    req.onsuccess = () => { window.location.reload(true); };
+                    req.onerror   = () => { window.location.reload(true); };
+                    req.onblocked = () => { window.location.reload(true); };
                 } else {
-                    window.location.href = window.location.pathname;
+                    window.location.reload(true);
                 }
             } catch(e) {
                 console.error("Reset failed:", e);
-                window.location.href = window.location.pathname;
+                window.location.reload(true);
             }
         };
 
