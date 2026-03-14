@@ -132,27 +132,56 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         let cart = JSON.parse(localStorage.getItem('bobo_cart') || "[]");
 
         document.addEventListener('DOMContentLoaded', () => {
-            const webData = JSON.parse(localStorage.getItem('bobo_website_data'));
-            let products = JSON.parse(localStorage.getItem('bobo_products') || "[]");
-
-            if (products.length === 0) {
-                products = [
-                    { id: 'p1', name: 'Belgium Truffle Cake', cat: 'Chocolate Cakes', image_url: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=1000', thumbnail_url: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400', price: 1200, prep: '4h', desc: 'Dense chocolate sponge with 70% dark Belgian chocolate.', status: 'approved' },
-                    { id: 'p2', name: 'Biscoff Cheesecake', cat: 'Vanilla Cakes', image_url: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=1000', thumbnail_url: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=400', price: 1500, prep: '6h', desc: 'Baked New York style cheesecake with Lotus spread.', status: 'approved' },
-                    { id: 'p3', name: 'Red Velvet Box', cat: 'Cupcakes', image_url: 'https://images.unsplash.com/photo-1550617931-e17a7b70dce2?w=1000', thumbnail_url: 'https://images.unsplash.com/photo-1550617931-e17a7b70dce2?w=400', price: 850, prep: '3h', desc: 'Box of 6 premium red velvet cupcakes with cream cheese.', status: 'approved' },
-                    { id: 'p4', name: 'Strawberry Dream', cat: 'Fruit Cakes', image_url: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=1000', thumbnail_url: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400', price: 1350, prep: '5h', desc: 'Fresh strawberry layer cake with whipped cream frosting.', status: 'approved' }
-                ];
-                localStorage.setItem('bobo_products', JSON.stringify(products));
+            // ── ROBUST PRODUCT LOADING ──────────────────────────────────────
+            // Old uploads stored 1080px base64 images (2-5 MB each) causing
+            // silent localStorage failures. This strips oversized images and
+            // re-saves a clean, small version so the website always renders.
+            let products = [];
+            try {
+                const raw = localStorage.getItem('bobo_products');
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        // A 200px JPEG thumbnail is ~8-20 KB. Anything over 100 KB
+                        // is a full-res image from the old system — strip it.
+                        const tooBig = (s) => s && s.startsWith('data:') && s.length > 100000;
+                        products = parsed.map(p => ({
+                            ...p,
+                            status: p.status || 'approved',
+                            image_url: tooBig(p.image_url) ? '' : (p.image_url || p.image || ''),
+                            thumbnail_url: tooBig(p.thumbnail_url) ? '' : (p.thumbnail_url || p.image_url || p.image || ''),
+                        }));
+                        // Re-save slim version so future loads succeed
+                        try { localStorage.setItem('bobo_products', JSON.stringify(products)); } catch(e) {}
+                    }
+                }
+            } catch(e) {
+                console.warn('bobo_products corrupted — resetting.', e);
+                localStorage.removeItem('bobo_products');
+                products = [];
             }
 
-            // Fix legacy data
+            // ── SAMPLE PRODUCTS (shown when no products exist) ──────────────
+            if (products.length === 0) {
+                products = [
+                    { id: 'p1', name: 'Belgium Truffle Cake', cat: 'Chocolate Cakes', image_url: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600', thumbnail_url: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300', price: 1200, prep: '4h', desc: 'Dense chocolate sponge with 70% dark Belgian chocolate.', status: 'approved' },
+                    { id: 'p2', name: 'Biscoff Cheesecake',   cat: 'Vanilla Cakes',   image_url: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=600', thumbnail_url: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=300', price: 1500, prep: '6h', desc: 'Baked New York style cheesecake with Lotus spread.', status: 'approved' },
+                    { id: 'p3', name: 'Red Velvet Box',       cat: 'Cupcakes',        image_url: 'https://images.unsplash.com/photo-1550617931-e17a7b70dce2?w=600', thumbnail_url: 'https://images.unsplash.com/photo-1550617931-e17a7b70dce2?w=300', price: 850,  prep: '3h', desc: 'Box of 6 premium red velvet cupcakes with cream cheese.', status: 'approved' },
+                    { id: 'p4', name: 'Strawberry Dream',     cat: 'Fruit Cakes',     image_url: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=600', thumbnail_url: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=300', price: 1350, prep: '5h', desc: 'Fresh strawberry layer cake with whipped cream frosting.', status: 'approved' }
+                ];
+                try { localStorage.setItem('bobo_products', JSON.stringify(products)); } catch(e) {}
+            }
+
+            // ── FIX LEGACY DATA ─────────────────────────────────────────────
             products = products.map(p => ({
                 ...p,
                 status: p.status || 'approved',
-                image_url: p.image_url || p.image,
-                thumbnail_url: p.thumbnail_url || p.image
+                image_url: p.image_url || p.image || '',
+                thumbnail_url: p.thumbnail_url || p.image_url || p.image || ''
             }));
 
+            // ── APPLY WEBSITE CUSTOMISATION ─────────────────────────────────
+            const webData = (() => { try { return JSON.parse(localStorage.getItem('bobo_website_data')); } catch(e) { return null; } })();
             if (webData) {
                 if (webData.heroTitle) document.querySelector('.hero-content h1').innerHTML = webData.heroTitle.replace(/\{(.*?)\}/g, '<span class="accent">$1</span>');
                 if (webData.heroSubtitle) document.querySelector('.hero-content p').innerText = webData.heroSubtitle;
@@ -164,27 +193,39 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                 if (webData.contactPhone) document.querySelector('.f-contact p:last-of-type').innerText = `📞 Order via WhatsApp: ${webData.contactPhone}`;
             }
 
-            // MENU LOGIC - Filter Approved Only
+            // ── BUILD MENU ──────────────────────────────────────────────────
             const approvedProducts = products.filter(p => p.status === 'approved');
             const categories = [...new Set(approvedProducts.map(p => p.cat))];
             const menuTabs = document.getElementById('menu-tabs');
 
-            if (categories.length > 0) {
-                menuTabs.innerHTML = `
-                    <button class="tab-btn active" onclick="filterMenu('all')">All Delights</button>
-                    ${categories.map(cat => `<button class="tab-btn" onclick="filterMenu('${cat}')">${cat}</button>`).join('')}
-                `;
+            if (approvedProducts.length === 0) {
+                document.getElementById('menu-container').innerHTML = `
+                    <div style="grid-column:1/-1;text-align:center;padding:80px 20px;color:#8d5d46;">
+                        <p style="font-size:2rem;">🧁</p>
+                        <p style="font-weight:700;margin-top:12px;">Menu coming soon!</p>
+                        <p style="font-size:0.9rem;margin-top:8px;opacity:0.7;">Check back shortly.</p>
+                    </div>`;
+            } else {
+                if (categories.length > 0) {
+                    menuTabs.innerHTML = `
+                        <button class="tab-btn active" onclick="filterMenu('all')">All Delights</button>
+                        ${categories.map(cat => `<button class="tab-btn" onclick="filterMenu('${cat}')">${cat}</button>`).join('')}
+                    `;
+                }
+                renderMenu(approvedProducts);
             }
-
-            renderMenu(approvedProducts);
             updateCartUI();
         });
 
         function renderMenu(items) {
             const menuContainer = document.getElementById('menu-container');
-            menuContainer.innerHTML = items.map((p, i) => `
+            if (!items || items.length === 0) {
+                menuContainer.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:#8d5d46;"><p>No products in this category.</p></div>';
+                return;
+            }
+            menuContainer.innerHTML = items.map((p) => `
                 <div class="product-card-website">
-                    <div class="pw-image" style="background-image: url('${p.thumbnail_url || p.image_url || p.image || ''}')">
+                    <div class="pw-image" style="background-image: url('${p.thumbnail_url || p.image_url || ''}')">
                         <span class="pw-tag">${p.cat}</span>
                     </div>
                     <div class="pw-content">
@@ -200,16 +241,12 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         }
 
         window.filterMenu = (category) => {
-            const products = JSON.parse(localStorage.getItem('bobo_products') || "[]").filter(p => p.status === 'approved');
+            let allProducts = [];
+            try { allProducts = JSON.parse(localStorage.getItem('bobo_products') || '[]').filter(p => p.status === 'approved'); } catch(e) {}
             const btns = document.querySelectorAll('.tab-btn');
             btns.forEach(b => b.classList.remove('active'));
             if (window.event) window.event.target.classList.add('active');
-
-            if (category === 'all') {
-                renderMenu(products);
-            } else {
-                renderMenu(products.filter(p => p.cat === category));
-            }
+            renderMenu(category === 'all' ? allProducts : allProducts.filter(p => p.cat === category));
         };
 
         window.toggleCart = () => {
