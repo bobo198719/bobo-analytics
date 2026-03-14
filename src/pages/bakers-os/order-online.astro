@@ -141,14 +141,44 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
     </style>
 
     <script define:vars={{ dynamicName }}>
-        let products = JSON.parse(localStorage.getItem('bobo_products') || "[]");
-        const webData = JSON.parse(localStorage.getItem('bobo_website_data') || "{}");
+        // ── Shared IndexedDB helpers ───────────────
+        const IDB_NAME  = 'bobo_image_store';
+        const IDB_STORE = 'images';
+        function openImageDB() {
+            return new Promise((resolve, reject) => {
+                const req = indexedDB.open(IDB_NAME, 1);
+                req.onupgradeneeded = e => { if (!e.target.result.objectStoreNames.contains(IDB_STORE)) e.target.result.createObjectStore(IDB_STORE, { keyPath: 'id' }); };
+                req.onsuccess = e => resolve(e.target.result);
+                req.onerror   = e => reject(e);
+            });
+        }
+        async function getImageFromDB(imageId) {
+            if (!imageId) return null;
+            try {
+                const db = await openImageDB();
+                return new Promise(resolve => {
+                    const req = db.transaction(IDB_STORE, 'readonly').objectStore(IDB_STORE).get(imageId);
+                    req.onsuccess = e => resolve(e.target.result || null);
+                    req.onerror   = () => resolve(null);
+                });
+            } catch(e) { return null; }
+        }
+
+        let products = [];
+        try {
+            products = JSON.parse(localStorage.getItem('bobo_products') || "[]");
+            if (!Array.isArray(products)) products = [];
+        } catch(e) { products = []; }
+
+        let webData = {};
+        try { webData = JSON.parse(localStorage.getItem('bobo_website_data') || "{}"); } catch(e) {}
 
         if (products.length === 0) {
             products = [
-                { id: 1, name: 'Belgium Truffle Cake', price: 1200, desc: 'Signature dark chocolate indulgence.' },
-                { id: 2, name: 'Biscoff Cheesecake', price: 1500, desc: 'The original Lotus biscoff crunch.' },
-                { id: 3, name: 'Red Velvet Box (6)', price: 450, desc: 'Fluffy cupcakes with cream cheese.' }
+                { id: 'p1', name: 'Belgium Truffle Cake', price: 1200, prep: '4h', desc: 'Dense chocolate sponge with 70% dark Belgian chocolate.', status: 'approved', thumbnail_url: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300', medium_url: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=1024' },
+                { id: 'p2', name: 'Biscoff Cheesecake',   price: 1500, prep: '6h', desc: 'Baked New York style cheesecake with Lotus spread.', status: 'approved', thumbnail_url: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=300', medium_url: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=1024' },
+                { id: 'p3', name: 'Red Velvet Box',       price: 850,  prep: '3h', desc: 'Box of 6 premium red velvet cupcakes with cream cheese.', status: 'approved', thumbnail_url: 'https://images.unsplash.com/photo-1550617931-e17a7b70dce2?w=300', medium_url: 'https://images.unsplash.com/photo-1550617931-e17a7b70dce2?w=1024' },
+                { id: 'p4', name: 'Strawberry Dream',     price: 1350, prep: '5h', desc: 'Fresh strawberry layer cake with whipped cream frosting.', status: 'approved', thumbnail_url: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=300', medium_url: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=1024' }
             ];
         }
 
@@ -156,15 +186,30 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
 
         window.renderMenu = function() {
             const grid = document.getElementById('p-public-list');
-            const liveProducts = products.filter(p => p.status === 'approved');
-            grid.innerHTML = liveProducts.map(p => `
+            const liveProducts = products.filter(p => !p.status || p.status === 'approved');
+            
+            grid.innerHTML = liveProducts.map(p => {
+                const isDataUrl = p.thumbnail_url && p.thumbnail_url.startsWith('data:');
+                const initialImg = isDataUrl ? p.thumbnail_url : (p.medium_url || p.thumbnail_url || p.image_url || p.image || '');
+                return `
                 <div class="p-item" onclick="selectBake('${p.id}')">
-                    <div class="p-img" style="background-image: url('${p.thumbnail_url || p.image_url || p.image || ''}'); height: 180px; background-size: cover; background-position: center; border-radius: 12px; margin-bottom: 16px;"></div>
+                    <div class="p-img" id="opi-${p.id}" style="background-image: url('${initialImg}'); height: 180px; background-size: cover; background-position: center; border-radius: 12px; margin-bottom: 16px; background-color: #f9f9f9;"></div>
                     <h3>${p.name}</h3>
-                    <p>${p.desc}</p>
+                    <p style="height: 3em; overflow: hidden;">${p.desc}</p>
                     <div class="price">₹${p.price}</div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
+
+            liveProducts.forEach(p => {
+                if (p.image_id) {
+                    getImageFromDB(p.image_id).then(img => {
+                        if (!img) return;
+                        const el = document.getElementById(`opi-${p.id}`);
+                        if (el) el.style.backgroundImage = `url('${img.medium || img.thumbnail}')`;
+                    });
+                }
+            });
         }
 
         window.selectBake = (id) => {
@@ -173,15 +218,25 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             currentOrder.product = p.name;
             currentOrder.price = p.price;
             currentOrder.prep = p.prep;
+            
+            const isDataUrl = p.thumbnail_url && p.thumbnail_url.startsWith('data:');
+            const previewImg = isDataUrl ? p.thumbnail_url : (p.medium_url || p.thumbnail_url || p.image_url || p.image || '');
+
             document.getElementById('selected-bake-info').innerHTML = `
                 <div style="background: #fce4ec; padding: 20px; border-radius: 16px; margin-bottom: 24px; display: flex; gap: 15px; align-items: center;">
-                    <div style="width: 80px; height: 80px; border-radius: 12px; background-image: url('${p.thumbnail_url || p.image_url || p.image}'); background-size: cover;"></div>
+                    <div id="ob-prev" style="width: 80px; height: 80px; border-radius: 12px; background-image: url('${previewImg}'); background-color: #f9f9f9; background-size: cover; background-position: center;"></div>
                     <div>
                         <h4 style="margin: 0;">${p.name}</h4>
                         <p style="margin: 4px 0 0; color: var(--primary); font-weight: 800;">₹${p.price}</p>
                     </div>
                 </div>
             `;
+            if (p.image_id) {
+                getImageFromDB(p.image_id).then(img => {
+                    const el = document.getElementById('ob-prev');
+                    if (el && img) el.style.backgroundImage = `url('${img.medium || img.thumbnail}')`;
+                });
+            }
             showStep(2);
         }
 
