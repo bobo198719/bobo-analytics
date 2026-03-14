@@ -23,9 +23,9 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
     <!-- Status Tabs -->
     <div class="status-tabs-container">
         <div class="status-tabs" id="status-tabs">
-            <button class="s-tab active" onclick="filterByStatus('all')">All Products (<span id="count-all">0</span>)</button>
-            <button class="s-tab" onclick="filterByStatus('pending')">Review Gallery (<span id="count-pending">0</span>)</button>
-            <button class="s-tab" onclick="filterByStatus('approved')">Live on Site (<span id="count-approved">0</span>)</button>
+            <button class="s-tab active" onclick="filterByStatus('all', this)">All Products (<span id="count-all">0</span>)</button>
+            <button class="s-tab" onclick="filterByStatus('pending', this)">Review Gallery (<span id="count-pending">0</span>)</button>
+            <button class="s-tab" onclick="filterByStatus('approved', this)">Live on Site (<span id="count-approved">0</span>)</button>
         </div>
         <div id="bulk-actions" style="display: none;">
             <button class="btn btn-primary" onclick="bulkApprove()">👌 Publish All Pending</button>
@@ -434,10 +434,10 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             }
         }
 
-        window.filterByStatus = status => {
+        window.filterByStatus = (status, el) => {
             currentFilter = status;
             document.querySelectorAll('.s-tab').forEach(t => t.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            if (el) el.classList.add('active');
             renderProducts();
         };
 
@@ -648,35 +648,41 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             console.log("Reset triggered");
             if (!confirm('CAUTION: This will delete ALL your products and images. Are you sure?')) return;
             
-            if (btn && typeof btn === 'object') btn.innerText = "Cleaning...";
+            if (btn && typeof btn === 'object') {
+                btn.innerText = "Cleaning...";
+                btn.disabled = true;
+            }
 
             try {
+                // Wipe LocalStorage first (instant)
                 localStorage.removeItem('bobo_products');
                 localStorage.removeItem('bobo_website_data');
                 localStorage.removeItem('bobo_cart');
                 
+                // Wipe IndexedDB
                 if (window.indexedDB) {
-                    // We use clear() instead of deleteDatabase because deleteDatabase 
-                    // is often blocked by the open connection on this very page.
-                    const openReq = indexedDB.open(IDB_NAME);
-                    openReq.onsuccess = function(e) {
-                        const db = e.target.result;
-                        try {
-                            const tx = db.transaction(IDB_STORE, 'readwrite');
-                            const store = tx.objectStore(IDB_STORE);
-                            store.clear();
-                            tx.oncomplete = function() {
-                                db.close();
-                                window.location.href = window.location.pathname + '?r=' + Date.now();
-                            };
-                        } catch(err) {
-                            db.close();
-                            window.location.href = window.location.pathname + '?r=' + Date.now();
-                        }
-                    };
-                    openReq.onerror = function() { 
+                    // Force close any internal connections we might have
+                    const deleteRequest = indexedDB.deleteDatabase(IDB_NAME);
+                    
+                    deleteRequest.onsuccess = function() {
+                        console.log("DB deleted successfully");
                         window.location.href = window.location.pathname + '?r=' + Date.now();
                     };
+                    
+                    deleteRequest.onerror = function() {
+                        console.warn("DB delete error - falling back to reload");
+                        window.location.href = window.location.pathname + '?r=' + Date.now();
+                    };
+                    
+                    deleteRequest.onblocked = function() {
+                        console.warn("DB delete blocked - forcing reload anyway");
+                        window.location.href = window.location.pathname + '?r=' + Date.now();
+                    };
+                    
+                    // Fallback timeout in case IDB hangs
+                    setTimeout(() => {
+                        window.location.href = window.location.pathname + '?r=' + Date.now();
+                    }, 1000);
                 } else {
                     window.location.href = window.location.pathname + '?r=' + Date.now();
                 }
@@ -684,6 +690,13 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 console.error("Reset script error:", e);
                 window.location.href = window.location.pathname + '?r=' + Date.now();
             }
+        };
+
+        // Global recovery for severe JS errors
+        window.onerror = function(msg, url, line) {
+            console.error("Critical error:", msg, "at", line);
+            // If the script crashes, we at least want to show the Reset button as a recovery path
+            return false;
         };
 
         // ── Bootstrap ──────────────────────────────────────────────────────
