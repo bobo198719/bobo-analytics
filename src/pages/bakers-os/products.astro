@@ -8,8 +8,8 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             <h1>Product Catalogue</h1>
             <p>Manage your signature bakes and pricing.</p>
         </div>
-        <div class="actions" style="display: flex; gap: 12px;">
-            <button class="btn btn-secondary" onclick="resetDatabase()" title="Clear all and sync defaults">🔄 Reset</button>
+        <div class="actions" style="display: flex; gap: 12px; position: relative; z-index: 1000;">
+            <button class="btn btn-secondary" onclick="resetDatabase()" style="cursor: pointer; pointer-events: auto; position: relative; z-index: 1001;" title="Clear all and sync defaults">🔄 Reset</button>
             <div class="bulk-upload-wrapper">
                 <button class="btn btn-secondary" onclick="document.getElementById('bulk-upload-input').click()">
                     <span>📦 Bulk Images</span>
@@ -644,30 +644,29 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         // ═══════════════════════════════════════════════════════════════════
         //  Reset to defaults
         // ═══════════════════════════════════════════════════════════════════
-        window.resetDatabase = async () => {
-            if (!confirm('Delete ALL products and reset to defaults?')) return;
+        window.resetDatabase = function() {
+            console.log("Reset triggered");
+            if (!confirm('CAUTION: This will delete ALL your products and images. Are you sure?')) return;
+            
+            // Visual feedback
+            const btn = event.currentTarget;
+            if (btn) btn.innerText = "Cleaning...";
+
             try {
                 localStorage.removeItem('bobo_products');
                 localStorage.removeItem('bobo_website_data');
                 
-                // Clear the store instead of deleting the whole DB, which prevents blocking 
-                // if there are open connections in other tabs.
                 if (window.indexedDB) {
-                    try {
-                        const db = await openImageDB();
-                        const tx = db.transaction(IDB_STORE, 'readwrite');
-                        tx.objectStore(IDB_STORE).clear();
-                        tx.oncomplete = () => { window.location.href = window.location.pathname + '?reset=' + Date.now(); };
-                        tx.onerror    = () => { window.location.href = window.location.pathname + '?reset=' + Date.now(); };
-                    } catch (e) {
-                        window.location.href = window.location.pathname + '?reset=' + Date.now();
-                    }
+                    const req = indexedDB.deleteDatabase(IDB_NAME);
+                    req.onsuccess = () => { window.location.reload(true); };
+                    req.onerror   = () => { window.location.reload(true); };
+                    req.onblocked = () => { window.location.reload(true); };
                 } else {
-                    window.location.href = window.location.pathname + '?reset=' + Date.now();
+                    window.location.reload(true);
                 }
             } catch(e) {
-                console.error("Reset failed:", e);
-                window.location.href = window.location.pathname + '?reset=' + Date.now();
+                console.error("Reset script error:", e);
+                window.location.reload(true);
             }
         };
 
