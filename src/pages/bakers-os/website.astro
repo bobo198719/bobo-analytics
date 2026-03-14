@@ -253,9 +253,13 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                 return;
             }
             // Render immediately with thumbnail fallback (fast)
-            menuContainer.innerHTML = items.map(p => `
+            menuContainer.innerHTML = items.map(p => {
+                // For external URLs (like defaults), prefer medium directly. For local uploads, use thumbnail data URL first.
+                const isDataUrl = p.thumbnail_url && p.thumbnail_url.startsWith('data:');
+                const initialImg = isDataUrl ? p.thumbnail_url : (p.medium_url || p.thumbnail_url || p.image_url || '');
+                return `
                 <div class="product-card-website" id="wcard-${p.id}">
-                    <div class="pw-image" id="wpimg-${p.id}" style="background-image: url('${p.thumbnail_url || p.medium_url || ''}')">
+                    <div class="pw-image" id="wpimg-${p.id}" style="background-image: url('${initialImg}')">
                         <span class="pw-tag">${p.cat}</span>
                     </div>
                     <div class="pw-content">
@@ -277,6 +281,9 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                         const el = document.getElementById(`wpimg-${p.id}`);
                         if (el) el.style.backgroundImage = `url('${img.medium || img.thumbnail}')`;
                     });
+                } else if (p.medium_url) {
+                    const el = document.getElementById(`wpimg-${p.id}`);
+                    if (el) el.style.backgroundImage = `url('${p.medium_url}')`;
                 }
             });
         }
@@ -289,7 +296,9 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                     .filter(p => p.status === 'approved')
                     .map(p => ({
                         ...p,
-                        thumbnail_url: tooBig(p.thumbnail_url) ? '' : (p.thumbnail_url || ''),
+                        thumbnail_url: tooBig(p.thumbnail_url) ? '' : (p.thumbnail_url || p.image_url || ''),
+                        medium_url: tooBig(p.medium_url) ? '' : (p.medium_url || p.image_url || ''),
+                        high_res_url: tooBig(p.high_res_url) ? '' : (p.high_res_url || p.image_url || ''),
                     }));
             } catch(e) { allProducts = []; }
             const btns = document.querySelectorAll('.tab-btn');
