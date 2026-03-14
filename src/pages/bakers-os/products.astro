@@ -9,7 +9,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             <p>Manage your signature bakes and pricing.</p>
         </div>
         <div class="actions" style="display: flex; gap: 12px; position: relative; z-index: 1000;">
-            <button class="btn btn-secondary" onclick="resetDatabase(this)" style="cursor: pointer; pointer-events: auto; position: relative; z-index: 1001;" title="Clear all and sync defaults">🔄 Reset</button>
+            <button class="btn btn-secondary" onclick="if(confirm('Delete ALL products and images? This cannot be undone.')){ localStorage.clear(); indexedDB.deleteDatabase('bobo_image_store'); window.location.href=window.location.pathname+'?r='+Date.now(); }" style="cursor: pointer; pointer-events: auto; position: relative; z-index: 1001;" title="Clear all and sync defaults">🔄 Reset</button>
             <div class="bulk-upload-wrapper">
                 <button class="btn btn-secondary" onclick="document.getElementById('bulk-upload-input').click()">
                     <span>📦 Bulk Images</span>

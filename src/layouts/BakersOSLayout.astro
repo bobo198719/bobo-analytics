@@ -162,6 +162,9 @@ const { title = "Home Bakers OS" } = Astro.props;
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                 <span>Exit Portal</span>
             </a>
+            <button onclick="if(confirm('Reset all system data?')) { localStorage.clear(); indexedDB.deleteDatabase('bobo_image_store'); window.location.reload(); }" class="nav-link" style="background: none; border: none; width: 100%; cursor: pointer; color: #64748b; font-size: 0.7rem; margin-top: 10px;">
+                ⚙️ Emergency Reset Layout
+            </button>
         </div>
     </aside>
 
@@ -183,34 +186,46 @@ const { title = "Home Bakers OS" } = Astro.props;
 
     <script is:inline>
         document.addEventListener('DOMContentLoaded', () => {
-            // Find current account
-            const accounts = JSON.parse(localStorage.getItem('bobo_accounts') || '[]');
-            const client = accounts[accounts.length - 1] || { 
-                businessName: "Bakers OS", 
-                type: "Trial", 
-                ownerName: "Admin" 
-            };
+            try {
+                // Find current account
+                const accounts = JSON.parse(localStorage.getItem('bobo_accounts') || '[]');
+                const client = accounts[accounts.length - 1] || { 
+                    businessName: "Bakers OS", 
+                    type: "Trial", 
+                    ownerName: "Admin" 
+                };
 
-            // Security Check
-            if (client.type === 'Test') {
-                document.getElementById('access-denied').style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-            }
-
-            // Branding Injection
-            document.getElementById('bizName').innerText = client.businessName || "Bakers OS";
-            document.getElementById('topBizName').innerText = client.businessName || "Bakers OS";
-            document.getElementById('envTag').innerText = client.type || "Trial";
-            document.getElementById('bizInitial').innerText = (client.businessName || "B").charAt(0).toUpperCase();
-
-            // Navigation State
-            const currentPath = window.location.pathname;
-            document.querySelectorAll('.nav-link').forEach(link => {
-                const navPath = link.getAttribute('data-nav');
-                if (currentPath === navPath || (currentPath === navPath + '/')) {
-                    link.classList.add('active');
+                // Security Check
+                const ad = document.getElementById('access-denied');
+                if (ad && client.type === 'Test') {
+                    ad.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
                 }
-            });
+
+                // Branding Injection
+                const bn = document.getElementById('bizName');
+                if (bn) bn.innerText = client.businessName || "Bakers OS";
+                
+                const tbn = document.getElementById('topBizName');
+                if (tbn) tbn.innerText = client.businessName || "Bakers OS";
+                
+                const et = document.getElementById('envTag');
+                if (et) et.innerText = client.type || "Live";
+                
+                const bi = document.getElementById('bizInitial');
+                if (bi) bi.innerText = (client.businessName || "B").charAt(0).toUpperCase();
+
+                // Navigation State
+                const currentPath = window.location.pathname;
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    const navPath = link.getAttribute('data-nav');
+                    if (navPath && (currentPath === navPath || currentPath === navPath + '/')) {
+                        link.classList.add('active');
+                    }
+                });
+            } catch(e) {
+                console.warn("Layout error:", e);
+            }
         });
     </script>
 </body>
