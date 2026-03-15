@@ -255,10 +255,8 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         //  Backend image upload — generates 400 / 1024 / 2048 px square files
         //  Stored under /public/uploads/products on the server
         // ═══════════════════════════════════════════════════════════════════
-        // Dynamic API Base to support local dev (port 5000) and production
-        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
-            ? 'http://localhost:5000/api' 
-            : '/api';
+        // Use native Astro API routes for full production/Vercel support
+        const API_BASE = '/api';
 
         /**
          * CLIENT-SIDE IMAGE OPTIMIZER
@@ -302,14 +300,14 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             formData.append('image', file);
 
             try {
-                const response = await fetch(`${API_BASE}/products/upload-image`, {
+                const response = await fetch(`${API_BASE}/upload-cake-image`, {
                     method: 'POST',
                     body: formData
                 });
 
                 if (!response.ok) throw new Error('Upload failed');
-                
-                return await response.json();
+                const data = await response.json();
+                return data.image_url;
             } catch (error) {
                 console.error('Upload error:', error);
                 throw error;
@@ -321,8 +319,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         // ═══════════════════════════════════════════════════════════════════
         let products = [];
         let currentUploadedImageId   = null;   // legacy image_id for IndexedDB-backed images
-        let currentUploadedThumb     = null;   // thumbnail URL for fast grid placeholder
-        let currentUploadedImageMeta = null;   // { thumbnail_url, medium_url, high_res_url } from backend
+        let currentUploadedUrl       = null;   // Cloudinary secure URL
         let editingIndex = null;
         let currentFilter = 'all';
 
@@ -402,7 +399,11 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 const imgUrl    = p.medium_url || p.thumbnail_url || '';
                 return `
                 <div class="product-card ${isPending ? 'pending-review-card' : ''}" id="card-${p.id}">
-                    <div class="p-image" id="pimg-${p.id}" style="background:#1a1a1a;${imgUrl ? `background-image:url('${imgUrl}');` : ''}">
+                    <div class="p-image" id="pimg-${p.id}" style="overflow: hidden;">
+                        <img src="${p.image_url || p.medium_url || p.thumbnail_url || '/assets/cake-placeholder.png'}" 
+                             style="width: 100%; height: 100%; object-fit: cover;" 
+                             onerror="this.src='/assets/cake-placeholder.png'"
+                             loading="lazy" />
                         <span class="image-status-badge status-${p.status}">${isPending ? '⏳ Review' : '🌎 Live'}</span>
                     </div>
                     <div class="p-body">
@@ -483,23 +484,15 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             progress.style.width = '30%';
 
             try {
-                const result = await uploadImageToServer(file);
-                const files  = result.files || {};
-
-                currentUploadedThumb     = files.thumbnailUrl || '';
-                currentUploadedImageMeta = {
-                    thumbnail_url: files.thumbnailUrl || '',
-                    medium_url   : files.mediumUrl   || '',
-                    high_res_url : files.highResUrl || '',
-                };
+                const imageUrl = await uploadImageToServer(file);
+                currentUploadedUrl = imageUrl;
 
                 const preview = document.getElementById('p-image-preview');
-                const previewUrl = currentUploadedImageMeta.high_res_url
-                    || currentUploadedImageMeta.medium_url
-                    || currentUploadedImageMeta.thumbnail_url;
-                if (previewUrl) {
-                    preview.style.backgroundImage = `url('${previewUrl}')`;
+                // The 'preview' variable is already declared above, no need to re-declare.
+                if (imageUrl) {
+                    preview.style.backgroundImage = `url('${imageUrl}')`;
                     preview.style.display = 'block';
+                    overlay.style.display = 'none';
                 }
 
                 progress.style.width = '100%';
@@ -518,10 +511,8 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         //  Modal open / close / save
         // ═══════════════════════════════════════════════════════════════════
         window.openProductModal = async (index = null) => {
-            editingIndex           = index;
-            currentUploadedImageId = null;
-            currentUploadedThumb   = null;
-            currentUploadedImageMeta = null;
+            editingIndex       = index;
+            currentUploadedUrl = null;
 
             if (index !== null) {
                 const p = products[index];
@@ -595,11 +586,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 cat          : document.getElementById('p-cat').value,
                 prep         : document.getElementById('p-prep').value || '4h',
                 status       : existing?.status || 'pending',
-                image_id     : imageId,
-                // Canonical URLs used by website / cards
-                thumbnail_url: thumbnailUrl,
-                medium_url   : mediumUrl,
-                high_res_url : highResUrl,
+                image_url    : currentUploadedUrl || existing?.image_url || existing?.medium_url || existing?.thumbnail_url || '',
             };
 
             if (editingIndex !== null) products[editingIndex] = productData;

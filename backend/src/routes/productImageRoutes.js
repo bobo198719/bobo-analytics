@@ -3,74 +3,90 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const sharp = require("sharp");
+const { v2: cloudinary } = require("cloudinary");
+const { put } = require("@vercel/blob");
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 const router = express.Router();
 
-// Use memory storage so we can pipe directly into sharp
+// Use memory storage for Buffer processing
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: {
-    fileSize: 15 * 1024 * 1024, // 15 MB
-  },
+  limits: { fileSize: 15 * 1024 * 1024 },
 });
 
-const ROOT_DIR = path.join(__dirname, "..", "..", "..");
-// Save directly to the top-level public folder for Astro/Static serving
-const UPLOAD_DIR = path.join(ROOT_DIR, "public", "menu-images");
-
-// Ensure upload directory exists
-if (!fs.existsSync(UPLOAD_DIR)) {
-  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+// Configure Cloudinary only if real keys are provided
+const hasCloudinary = process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_KEY !== 'your_api_key';
+if (hasCloudinary) {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+  });
 }
 
-router.post(
-  "/products/upload-image",
-  upload.single("image"),
-  async (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({
-          status: "error",
-          message: "No image file uploaded",
-        });
-      }
-
-      const timestamp = Date.now();
-      const random = Math.floor(Math.random() * 1e9);
-      const safeName = req.file.originalname.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-");
-      const baseName = `${safeName}-${timestamp}`;
-
-      const highPath = path.join(UPLOAD_DIR, `${baseName}.webp`);
-
-      // Use sharp to generate 1080x1080 square crops in WebP
-      const image = sharp(req.file.buffer);
-
-      await image
-        .resize(1080, 1080, { fit: "cover", position: "centre" })
-        .toFormat("webp", { quality: 85 })
-        .toFile(highPath);
-
-      // Return ONLY the relative path for database storage as requested
-      const relativePath = `/menu-images/${baseName}.webp`;
-
-      return res.json({
-        status: "success",
-        files: {
-          url: relativePath,
-          thumbnailUrl: relativePath, // Same for now as it's optimized
-          mediumUrl: relativePath,
-          highResUrl: relativePath,
-        },
-      });
-    } catch (error) {
-      console.error("Product image upload failed:", error);
-      return res.status(500).json({
-        status: "error",
-        message: "Image upload failed",
-      });
+// THE NEW PRODUCTION-GRADE ROUTE
+// Matches the Astro page call to /api/upload-cake-image
+router.post("/upload-cake-image", upload.single("image"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ status: "error", message: "No image file uploaded" });
     }
+
+    // 1. Optimize for 1080x1080 WebP
+    const optimizedBuffer = await sharp(req.file.buffer)
+      .resize(1080, 1080, { fit: "cover", position: "centre" })
+      .toFormat("webp", { quality: 85 })
+      .toBuffer();
+
+    let finalUrl = "";
+    const filename = `bakers-os/${Date.now()}.webp`;
+
+    // 2. Storage Strategy
+    if (hasCloudinary) {
+      // Use Cloudinary
+      const uploadStream = () => {
+        return new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: "cake-menu" },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result.secure_url);
+            }
+          );
+          stream.end(optimizedBuffer);
+        });
+      };
+      finalUrl = await uploadStream();
+    } else if (process.env.BLOB_READ_WRITE_TOKEN) {
+      // Use Vercel Blob (Verified Workaround for live storage)
+      const blob = await put(filename, optimizedBuffer, {
+        access: 'public',
+        token: process.env.BLOB_READ_WRITE_TOKEN
+      });
+      finalUrl = blob.url;
+    } else {
+      // Local Fallback (Only works for non-Vercel environments)
+      const ROOT_DIR = path.join(__dirname, "..", "..", "..");
+      const UPLOAD_DIR = path.join(ROOT_DIR, "public", "menu-images");
+      if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+      const localFilename = `${Date.now()}.webp`;
+      fs.writeFileSync(path.join(UPLOAD_DIR, localFilename), optimizedBuffer);
+      finalUrl = `/menu-images/${localFilename}`;
+    }
+
+    return res.json({
+      status: "success",
+      url: finalUrl,
+      files: { url: finalUrl, thumbnailUrl: finalUrl }
+    });
+
+  } catch (error) {
+    console.error("Upload failed:", error);
+    return res.status(500).json({ status: "error", message: error.message });
   }
-);
+});
 
 module.exports = router;
-
