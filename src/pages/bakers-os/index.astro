@@ -118,13 +118,21 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         }
     </style>
     <script is:inline>
-        document.addEventListener('DOMContentLoaded', () => {
-            const orders = JSON.parse(localStorage.getItem('bobo_orders') || '[]');
+        document.addEventListener('DOMContentLoaded', async () => {
+            let orders = [];
+            try {
+                const res = await fetch('/api/orders');
+                orders = await res.json();
+                if (!Array.isArray(orders)) orders = [];
+            } catch (e) {
+                console.warn("API fallback for dashboard:", e);
+                orders = JSON.parse(localStorage.getItem('bobo_orders') || '[]');
+            }
             
             // Calculate Today's Metrics
-            const todayStr = new Date().toISOString().split('T')[0];
-            const todayOrders = orders.filter(o => o.date === todayStr);
-            const pendingOrders = orders.filter(o => o.status !== 'completed' && o.status !== 'delivered');
+            const today = new Date().toDateString();
+            const todayOrders = orders.filter(o => new Date(o.created_at).toDateString() === today);
+            const pendingOrders = orders.filter(o => !['delivered', 'completed', 'cancelled'].includes((o.status || '').toLowerCase()));
             const totalRevenue = todayOrders.reduce((sum, o) => sum + parseFloat(o.amount || 0), 0);
 
             // Update UI
@@ -133,17 +141,25 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             document.getElementById('val-revenue').innerText = '₹' + totalRevenue.toLocaleString();
             
             if (orders.length > 0) {
-                // Find top product
-                const products = {};
+                // Find top product from current orders
+                const productStats = {};
                 orders.forEach(o => {
-                    products[o.product] = (products[o.product] || 0) + 1;
+                    // Handle both single string and array of strings
+                    const items = Array.isArray(o.products) ? o.products : [o.products || o.product || 'Treats'];
+                    items.forEach(item => {
+                        const name = item.split(' x')[0].trim(); // Extract name from "Item x2"
+                        productStats[name] = (productStats[name] || 0) + 1;
+                    });
                 });
-                const topProd = Object.keys(products).reduce((a, b) => products[a] > products[b] ? a : b);
+                
+                const topProd = Object.keys(productStats).length > 0 
+                    ? Object.keys(productStats).reduce((a, b) => productStats[a] > productStats[b] ? a : b)
+                    : 'Choco Truffle';
+                    
                 document.getElementById('val-top').innerText = topProd;
             } else {
-                document.getElementById('val-top').innerText = 'None';
-                // Zero stats display
-                document.querySelectorAll('.trend').forEach(t => t.innerText = 'Start selling!');
+                document.getElementById('val-top').innerText = 'Choco Truffle'; // Default fallback
+                document.querySelectorAll('.trend').forEach(t => t.innerText = 'Launch your site!');
             }
         });
     </script>

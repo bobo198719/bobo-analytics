@@ -66,14 +66,30 @@ const { title = "Trivia" } = Astro.props;
         .logo-area {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
             margin-bottom: 40px;
             text-decoration: none;
             color: white;
-            padding-left: 12px;
+            padding-left: 8px;
         }
-        .logo-orb { font-size: 1.5rem; }
-        .logo-area span { font-family: 'Outfit'; font-weight: 800; font-size: 1.3rem; }
+        .logo-orb { 
+            width: 48px;
+            height: 48px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .logo-orb img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 4px;
+        }
+        .logo-area span { font-family: 'Outfit'; font-weight: 800; font-size: 1.4rem; letter-spacing: -0.5px; }
 
         .nav-group { margin-bottom: 32px; }
         .nav-label { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); padding-left: 12px; display: block; margin-bottom: 12px; }
@@ -233,8 +249,8 @@ const { title = "Trivia" } = Astro.props;
 
                 // Sidebar Logo Orb
                 const lo = document.getElementById('bizLogo');
-                if (lo && websiteData.bizLogo && websiteData.bizLogo !== '/bakers-logo.png') {
-                    lo.innerHTML = `<img src="${websiteData.bizLogo}" style="width:40px; height:40px; border-radius:8px; object-fit:contain;">`;
+                if (lo && websiteData.bizLogo) {
+                    lo.innerHTML = `<img src="${websiteData.bizLogo}" alt="Logo">`;
                 }
 
                 // Navigation State
