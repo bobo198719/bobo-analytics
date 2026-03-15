@@ -1,292 +1,276 @@
 ---
 import MainLayout from "../../layouts/MainLayout.astro";
 
-// Server-side detection of subdomain
 const host = Astro.url.host;
 const isSubdomain = host.split('.').length > 2 && !host.includes('localhost') && !host.includes('vercel.app');
 const subdomain = isSubdomain ? host.split('.')[0] : null;
-
-// Format subdomain for display (e.g. "triviabaker" -> "Trivia Baker")
-const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.slice(1).replace(/-/g, ' ') : null;
+const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.slice(1).replace(/-/g, ' ') : "Trivia Bakes";
 ---
 
-<MainLayout title="Order Online | Home Bakers OS" hideNav={true}>
-    <div class="public-portal">
-        <header class="p-header">
-            <div class="p-logo">🧁</div>
-            <h1 id="biz-title">Sarah's Patisserie</h1>
-            <p>Fresh bakes delivered to your doorstep.</p>
+<MainLayout title={`Checkout | ${dynamicName}`} hideNav={true}>
+    <div class="checkout-portal">
+        <header class="c-header">
+            <a href="/bakers-os/website" class="back-link">← Back to Bakery</a>
+            <div class="logo">🧁 {dynamicName}</div>
         </header>
 
-        <main class="p-content">
-            <!-- Step 1: Browse -->
-            <div id="step-1" class="order-step active">
-                <div class="section-title">
-                    <h2>Choose Your Bakes</h2>
-                </div>
-                <div class="p-grid" id="p-public-list">
-                    <!-- Data via JS -->
+        <main class="c-container">
+            <div class="c-steps">
+                <div class="c-step active" id="s1">1. Summary</div>
+                <div class="c-step" id="s2">2. Delivery</div>
+                <div class="c-step" id="s3">3. Payment</div>
+            </div>
+
+            <!-- STEP 1: SUMMARY -->
+            <div id="step-1" class="step-view active">
+                <div class="glass-card">
+                    <h3>Your Sweet Box</h3>
+                    <div id="summary-items" class="summary-list"></div>
+                    <div class="summary-total">
+                        <span>Grand Total</span>
+                        <span id="final-total">₹0</span>
+                    </div>
+                    <button class="btn-primary" onclick="nextStep(2)">Confirm Items & Continue</button>
+                    <p class="empty-msg" id="cart-empty" style="display:none;">Your box is empty! Go back and add some treats.</p>
                 </div>
             </div>
 
-            <!-- Step 2: Details -->
-            <div id="step-2" class="order-step">
-                <div class="section-title">
-                    <button class="back-btn" onclick="showStep(1)">&larr; Back to Menu</button>
-                    <h2>Order Details</h2>
-                </div>
-                <div class="glass-card checkout-form">
-                    <div class="selected-product" id="selected-bake-info"></div>
-                    <form id="public-order-form">
-                        <div class="f-group">
-                            <label>Your Name</label>
-                            <input type="text" id="cust-name" required />
-                        </div>
-                        <div class="f-group">
-                            <label>WhatsApp Number</label>
-                            <input type="tel" id="cust-phone" required />
+            <!-- STEP 2: DETAILS -->
+            <div id="step-2" class="step-view">
+                <div class="glass-card">
+                    <h3>Delivery Details</h3>
+                    <form id="checkout-form">
+                        <div class="f-row">
+                            <div class="f-group">
+                                <label>Recipient Name</label>
+                                <input type="text" id="c-name" placeholder="John Doe" required />
+                            </div>
+                            <div class="f-group">
+                                <label>WhatsApp Number</label>
+                                <input type="tel" id="c-phone" placeholder="+91 XXXX XXX XXX" required />
+                            </div>
                         </div>
                         <div class="f-group">
                             <label>Delivery Address</label>
-                            <textarea id="cust-address" required></textarea>
+                            <textarea id="c-address" placeholder="Flat, Street, Landmark, City..." required></textarea>
+                        </div>
+                        <div class="f-row">
+                            <div class="f-group">
+                                <label>Delivery Date</label>
+                                <input type="date" id="c-date" required />
+                            </div>
+                            <div class="f-group">
+                                <label>Preferred Time Slot</label>
+                                <select id="c-time">
+                                    <option>Standard (10 AM - 9 PM)</option>
+                                    <option>Morning (10 AM - 1 PM)</option>
+                                    <option>Afternoon (1 PM - 5 PM)</option>
+                                    <option>Evening (5 PM - 9 PM)</option>
+                                    <option>Midnight (Extra ₹250 applicable)</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="f-group">
-                            <label>Delivery Date</label>
-                            <input type="date" id="cust-date" required />
+                            <label>Special Instructions / Message on Cake</label>
+                            <textarea id="c-notes" placeholder="Any allergy info or text to write on the cake?"></textarea>
                         </div>
-                        <button type="submit" class="btn-checkout">Continue to Payment</button>
+                        <button type="submit" class="btn-primary">Proceed to Payment</button>
                     </form>
                 </div>
             </div>
 
-            <!-- Step 3: Payment -->
-            <div id="step-3" class="order-step">
-                <div class="section-title">
-                    <h2>Secure Payment</h2>
-                </div>
-                <div class="glass-card payment-options">
-                    <div class="pay-item" onclick="simulatePayment('GPay')">
-                        <span>GPay / UPI</span>
-                        <span class="pay-icon">💎</span>
-                    </div>
-                    <div class="pay-item" onclick="simulatePayment('Card')">
-                        <span>Credit / Debit Card</span>
-                        <span class="pay-icon">💳</span>
-                    </div>
-                    <div class="pay-item" onclick="simulatePayment('COD')">
-                        <span>Cash on Delivery</span>
-                        <span class="pay-icon">💵</span>
+            <!-- STEP 3: PAYMENT -->
+            <div id="step-3" class="step-view">
+                <div class="glass-card">
+                    <h3>Select Payment Method</h3>
+                    <div class="payment-grid">
+                        <div class="pay-option" onclick="placeOrder('UPI')">
+                            <div class="p-icon">💸</div>
+                            <div class="p-info">
+                                <strong>UPI / Google Pay</strong>
+                                <span>Fast & Secure</span>
+                            </div>
+                        </div>
+                        <div class="pay-option" onclick="placeOrder('Card')">
+                            <div class="p-icon">💳</div>
+                            <div class="p-info">
+                                <strong>Debit / Credit Card</strong>
+                                <span>Powered by Bobo Pay</span>
+                            </div>
+                        </div>
+                        <div class="pay-option" onclick="placeOrder('COD')">
+                            <div class="p-icon">💵</div>
+                            <div class="p-info">
+                                <strong>Cash on Delivery</strong>
+                                <span>Available locally</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Step 4: Success -->
-            <div id="step-4" class="order-step">
-                <div class="glass-card success-card">
-                    <div class="success-icon">✨</div>
-                    <h2>Order Confirmed!</h2>
-                    <p>Your artisanal bake is now being curated in our kitchen.</p>
-                    <div class="order-summary" id="final-summary"></div>
-                    <div class="wa-notice">
-                        <p>✅ A confirmation has been sent to your WhatsApp.</p>
+            <!-- STEP 4: SUCCESS -->
+            <div id="step-4" class="step-view">
+                <div class="glass-card success-view">
+                    <div class="check-anim">✨</div>
+                    <h2>Baketastic! Order Placed.</h2>
+                    <p>Your Order ID is <strong id="order-id">#10293</strong></p>
+                    <div class="success-actions">
+                        <button class="btn-whatsapp" onclick="sendWhatsApp()">Confirm On WhatsApp</button>
+                        <a href="/bakers-os/website" class="btn-outline">Back to Home</a>
                     </div>
-                    <button class="btn-checkout" onclick="window.location.reload()">Place Another Order</button>
                 </div>
             </div>
         </main>
-
-        <footer class="p-footer">
-            <p>Powered by Bobo Home Bakers OS • Secure Checkout</p>
-        </footer>
     </div>
 
     <style>
-        :root { --primary: #f472b6; --bg: #fff9f9; --text: #2d1a12; }
-        .public-portal { min-height: 100vh; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 40px 20px; }
-        .p-header { text-align: center; margin-bottom: 60px; }
-        .p-logo { font-size: 3.5rem; margin-bottom: 16px; }
-        .p-header h1 { font-family: 'Outfit'; font-size: 2.5rem; color: #8d5d46; margin-bottom: 8px; }
-        .p-header p { font-size: 1.1rem; color: #8d5d46; opacity: 0.7; }
+        :root { 
+            --primary: #F48FB1; 
+            --primary-dark: #C2185B; 
+            --bg: #FFFFFF; 
+            --primary-light: #FFF0F6;
+            --text: #2D2D2D; 
+        }
+        .checkout-portal { min-height: 100vh; background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; }
+        .c-header { padding: 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--primary-light); }
+        .back-link { text-decoration: none; color: var(--primary-dark); font-weight: 700; }
+        .logo { font-size: 1.5rem; font-weight: 800; font-family: 'Playfair Display', serif; color: var(--primary-dark); }
 
-        .p-content { max-width: 800px; margin: 0 auto; }
-        .order-step { display: none; }
-        .order-step.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .c-container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        .c-steps { display: flex; justify-content: center; gap: 40px; margin-bottom: 50px; }
+        .c-step { opacity: 0.3; font-weight: 800; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
+        .c-step.active { opacity: 1; color: var(--primary-dark); }
 
-        .section-title { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; }
-        .back-btn { background: none; border: none; color: var(--primary); font-weight: 700; cursor: pointer; }
+        .step-view { display: none; }
+        .step-view.active { display: block; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .p-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
-        .p-item { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(141, 93, 70, 0.08); transition: 0.3s; cursor: pointer; border: 1px solid transparent; }
-        .p-item:hover { transform: translateY(-5px); border-color: var(--primary); }
-        .p-item h3 { font-family: 'Outfit'; margin-bottom: 8px; }
-        .p-item p { font-size: 0.85rem; color: #666; margin-bottom: 16px; }
-        .p-item .price { font-size: 1.25rem; font-weight: 900; color: var(--primary); }
+        .glass-card { background: white; border-radius: 30px; padding: 40px; border: 1px solid var(--primary-light); box-shadow: 0 20px 40px rgba(244, 143, 177, 0.08); }
+        h3 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 30px; color: var(--text); }
 
-        .glass-card { background: white; border-radius: 24px; padding: 40px; box-shadow: 0 20px 50px rgba(141, 93, 70, 0.1); }
+        .summary-list { border-bottom: 2px dashed var(--primary-light); padding-bottom: 20px; margin-bottom: 20px; }
+        .summary-item { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .summary-item span:first-child { opacity: 0.7; }
+        .summary-total { display: flex; justify-content: space-between; font-size: 1.5rem; font-weight: 800; margin-bottom: 30px; color: var(--primary-dark); }
+
+        .f-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .f-group { margin-bottom: 20px; }
-        .f-group label { display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; color: #8d5d46; }
-        .f-group input, .f-group textarea { width: 100%; border: 2px solid #fce4ec; background: #fff; padding: 14px; border-radius: 12px; font-family: inherit; }
-        .btn-checkout { width: 100%; background: var(--primary); color: white; border: none; padding: 18px; border-radius: 14px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.3s; margin-top: 20px; }
-        .btn-checkout:hover { transform: scale(1.02); box-shadow: 0 10px 20px rgba(244, 114, 182, 0.3); }
+        .f-group label { display: block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; opacity: 0.6; }
+        .f-group input, .f-group textarea, .f-group select { width: 100%; padding: 14px 20px; border-radius: 12px; border: 2px solid var(--primary-light); outline: none; font-family: inherit; font-size: 1rem; }
+        .f-group input:focus, .f-group textarea:focus { border-color: var(--primary); }
 
-        .pay-item { display: flex; justify-content: space-between; align-items: center; padding: 20px; border: 2px solid #fce4ec; border-radius: 16px; margin-bottom: 16px; cursor: pointer; transition: 0.2s; font-weight: 700; }
-        .pay-item:hover { border-color: var(--primary); background: #fff9f9; }
+        .btn-primary { width: 100%; background: var(--primary); color: white; border: none; padding: 18px; border-radius: 50px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.3s; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-3px); }
 
-        .success-card { text-align: center; }
-        .success-icon { font-size: 4rem; margin-bottom: 24px; }
-        .wa-notice { background: #e8f5e9; color: #2e7d32; padding: 16px; border-radius: 12px; margin-top: 24px; font-weight: 700; }
+        .payment-grid { display: grid; gap: 15px; }
+        .pay-option { display: flex; align-items: center; gap: 20px; padding: 25px; border: 2px solid var(--primary-light); border-radius: 20px; cursor: pointer; transition: 0.3s; }
+        .pay-option:hover { border-color: var(--primary); background: var(--primary-light); }
+        .p-icon { font-size: 2rem; }
+        .p-info strong { display: block; font-size: 1.1rem; }
+        .p-info span { font-size: 0.85rem; opacity: 0.6; }
 
-        .p-footer { text-align: center; margin-top: 80px; padding-bottom: 40px; color: #8d5d46; opacity: 0.5; font-size: 0.8rem; }
+        .success-view { text-align: center; }
+        .check-anim { font-size: 5rem; margin-bottom: 20px; }
+        .success-actions { display: flex; flex-direction: column; gap: 15px; margin-top: 40px; }
+        .btn-whatsapp { background: #25d366; color: white; border: none; padding: 18px; border-radius: 50px; font-weight: 800; cursor: pointer; width: 100%; }
+        .btn-outline { border: 2px solid var(--primary-light); color: var(--text); padding: 15px; border-radius: 50px; text-decoration: none; font-weight: 700; }
+
+        @media (max-width: 600px) {
+            .f-row { grid-template-columns: 1fr; }
+        }
     </style>
 
-    <script define:vars={{ dynamicName }}>
-        // ── Shared IndexedDB helpers ───────────────
-        const IDB_NAME  = 'bobo_image_store';
-        const IDB_STORE = 'images';
-        function openImageDB() {
-            return new Promise((resolve, reject) => {
-                const req = indexedDB.open(IDB_NAME, 1);
-                req.onupgradeneeded = e => { if (!e.target.result.objectStoreNames.contains(IDB_STORE)) e.target.result.createObjectStore(IDB_STORE, { keyPath: 'id' }); };
-                req.onsuccess = e => resolve(e.target.result);
-                req.onerror   = e => reject(e);
-            });
-        }
-        async function getImageFromDB(imageId) {
-            if (!imageId) return null;
-            try {
-                const db = await openImageDB();
-                return new Promise(resolve => {
-                    const req = db.transaction(IDB_STORE, 'readonly').objectStore(IDB_STORE).get(imageId);
-                    req.onsuccess = e => resolve(e.target.result || null);
-                    req.onerror   = () => resolve(null);
-                });
-            } catch(e) { return null; }
-        }
-
-        let products = [];
-        try {
-            products = JSON.parse(localStorage.getItem('bobo_products') || "[]");
-            if (!Array.isArray(products)) products = [];
-        } catch(e) { products = []; }
-
-        let webData = {};
-        try { webData = JSON.parse(localStorage.getItem('bobo_website_data') || "{}"); } catch(e) {}
-
-        if (products.length === 0) {
-            products = [
-                { id: 'p1', name: 'Belgium Truffle Cake', price: 1200, prep: '4h', desc: 'Dense chocolate sponge with 70% dark Belgian chocolate.', status: 'approved', thumbnail_url: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300', medium_url: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=1024' },
-                { id: 'p2', name: 'Biscoff Cheesecake',   price: 1500, prep: '6h', desc: 'Baked New York style cheesecake with Lotus spread.', status: 'approved', thumbnail_url: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=300', medium_url: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=1024' },
-                { id: 'p3', name: 'Red Velvet Box',       price: 850,  prep: '3h', desc: 'Box of 6 premium red velvet cupcakes with cream cheese.', status: 'approved', thumbnail_url: 'https://images.unsplash.com/photo-1550617931-e17a7b70dce2?w=300', medium_url: 'https://images.unsplash.com/photo-1550617931-e17a7b70dce2?w=1024' },
-                { id: 'p4', name: 'Strawberry Dream',     price: 1350, prep: '5h', desc: 'Fresh strawberry layer cake with whipped cream frosting.', status: 'approved', thumbnail_url: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=300', medium_url: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=1024' }
-            ];
-        }
-
-        let currentOrder = {};
-
-        window.renderMenu = function() {
-            const grid = document.getElementById('p-public-list');
-            const liveProducts = products.filter(p => !p.status || p.status === 'approved');
-            
-            grid.innerHTML = liveProducts.map(p => {
-                const isDataUrl = p.thumbnail_url && p.thumbnail_url.startsWith('data:');
-                const initialImg = isDataUrl ? p.thumbnail_url : (p.medium_url || p.thumbnail_url || p.image_url || p.image || '');
-                return `
-                <div class="p-item" onclick="selectBake('${p.id}')">
-                    <div class="p-img" id="opi-${p.id}" style="background-image: url('${initialImg}'); height: 180px; background-size: cover; background-position: center; border-radius: 12px; margin-bottom: 16px; background-color: #f9f9f9;"></div>
-                    <h3>${p.name}</h3>
-                    <p style="height: 3em; overflow: hidden;">${p.desc}</p>
-                    <div class="price">₹${p.price}</div>
-                </div>
-                `;
-            }).join('');
-
-            liveProducts.forEach(p => {
-                if (p.image_id) {
-                    getImageFromDB(p.image_id).then(img => {
-                        if (!img) return;
-                        const el = document.getElementById(`opi-${p.id}`);
-                        if (el) el.style.backgroundImage = `url('${img.medium || img.thumbnail}')`;
-                    });
-                }
-            });
-        }
-
-        window.selectBake = (id) => {
-            const p = products.find(x => x.id == id || x.id === id);
-            if (!p) return;
-            currentOrder.product = p.name;
-            currentOrder.price = p.price;
-            currentOrder.prep = p.prep;
-            
-            const isDataUrl = p.thumbnail_url && p.thumbnail_url.startsWith('data:');
-            const previewImg = isDataUrl ? p.thumbnail_url : (p.medium_url || p.thumbnail_url || p.image_url || p.image || '');
-
-            document.getElementById('selected-bake-info').innerHTML = `
-                <div style="background: #fce4ec; padding: 20px; border-radius: 16px; margin-bottom: 24px; display: flex; gap: 15px; align-items: center;">
-                    <div id="ob-prev" style="width: 80px; height: 80px; border-radius: 12px; background-image: url('${previewImg}'); background-color: #f9f9f9; background-size: cover; background-position: center;"></div>
-                    <div>
-                        <h4 style="margin: 0;">${p.name}</h4>
-                        <p style="margin: 4px 0 0; color: var(--primary); font-weight: 800;">₹${p.price}</p>
-                    </div>
-                </div>
-            `;
-            if (p.image_id) {
-                getImageFromDB(p.image_id).then(img => {
-                    const el = document.getElementById('ob-prev');
-                    if (el && img) el.style.backgroundImage = `url('${img.medium || img.thumbnail}')`;
-                });
-            }
-            showStep(2);
-        }
-
-        window.showStep = (num) => {
-            document.querySelectorAll('.order-step').forEach(s => s.classList.remove('active'));
-            document.getElementById('step-' + num).classList.add('active');
-            window.scrollTo(0, 0);
-        }
-
-        document.getElementById('public-order-form').onsubmit = (e) => {
-            e.preventDefault();
-            currentOrder.customer = document.getElementById('cust-name').value;
-            currentOrder.phone = document.getElementById('cust-phone').value;
-            currentOrder.address = document.getElementById('cust-address').value;
-            currentOrder.date = document.getElementById('cust-date').value;
-            showStep(3);
-        }
-
-        window.simulatePayment = (method) => {
-            currentOrder.id = Math.floor(Math.random() * 900) + 100;
-            currentOrder.status = 'pending';
-            currentOrder.payment = method === 'COD' ? 'Pending' : 'Paid';
-            
-            let orders = JSON.parse(localStorage.getItem('bobo_orders') || '[]');
-            orders.unshift(currentOrder);
-            localStorage.setItem('bobo_orders', JSON.stringify(orders));
-
-            document.getElementById('final-summary').innerHTML = `
-                <div style="margin: 24px 0; text-align: left; background: #fafafa; padding: 20px; border-radius: 12px; font-size: 0.9rem;">
-                    <p><strong>Item:</strong> ${currentOrder.product}</p>
-                    <p><strong>Total:</strong> ₹${currentOrder.price}</p>
-                    <p><strong>Deliver to:</strong> ${currentOrder.customer}</p>
-                    <p><strong>Date:</strong> ${currentOrder.date}</p>
-                </div>
-            `;
-            showStep(4);
-        }
+    <script is:inline>
+        let cart = [];
+        let orderDetails = {};
+        let finalOrderId = '';
 
         document.addEventListener('DOMContentLoaded', () => {
-            const accounts = JSON.parse(localStorage.getItem('bobo_accounts') || '[]');
-            const client = accounts[accounts.length - 1] || { businessName: "Our Patisserie" };
+            loadCart();
+            document.getElementById('checkout-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                saveDetails();
+                nextStep(3);
+            });
+        });
+
+        function loadCart() {
+            cart = JSON.parse(localStorage.getItem('bobo_cart') || "[]");
+            const list = document.getElementById('summary-items');
+            const totalEl = document.getElementById('final-total');
             
-            const finalTitle = dynamicName || webData.businessName || client.businessName || "Our Patisserie";
-            document.getElementById('biz-title').innerText = finalTitle;
-            
-            if (webData.heroSubtitle) {
-                document.querySelector('.p-header p').innerText = webData.heroSubtitle;
+            if (cart.length === 0) {
+                document.getElementById('cart-empty').style.display = 'block';
+                document.querySelector('.btn-primary').disabled = true;
+                return;
             }
 
-            renderMenu();
-        });
+            let total = 0;
+            list.innerHTML = cart.map(item => {
+                total += (parseFloat(item.price) * item.qty);
+                return `<div class="summary-item">
+                    <span>${item.name} x ${item.qty}</span>
+                    <strong>₹${item.price * item.qty}</strong>
+                </div>`;
+            }).join('');
+            
+            totalEl.innerText = `₹${total}`;
+            orderDetails.total = total;
+            orderDetails.items = cart;
+        }
+
+        window.nextStep = (n) => {
+            document.querySelectorAll('.step-view').forEach(v => v.classList.remove('active'));
+            document.getElementById('step-' + n).classList.add('active');
+            
+            document.querySelectorAll('.c-step').forEach(s => s.classList.remove('active'));
+            if (n <= 3) document.getElementById('s' + n).classList.add('active');
+        }
+
+        function saveDetails() {
+            orderDetails.customerName = document.getElementById('c-name').value;
+            orderDetails.customerPhone = document.getElementById('c-phone').value;
+            orderDetails.address = document.getElementById('c-address').value;
+            orderDetails.date = document.getElementById('c-date').value;
+            orderDetails.timeSlot = document.getElementById('c-time').value;
+            orderDetails.notes = document.getElementById('c-notes').value;
+        }
+
+        window.placeOrder = (method) => {
+            finalOrderId = 'TX-' + Math.floor(10000 + Math.random() * 90000);
+            const orderObj = {
+                id: finalOrderId,
+                orderIndex: finalOrderId,
+                date: new Date().toISOString(),
+                deliveryDate: orderDetails.date,
+                customer: orderDetails.customerName,
+                phone: orderDetails.customerPhone,
+                address: orderDetails.address,
+                items: orderDetails.items.map(i => i.name).join(', '),
+                total: orderDetails.total,
+                status: 'Order Received',
+                payment: method === 'COD' ? 'Pending (COD)' : 'Paid (' + method + ')',
+                notes: orderDetails.notes,
+                source: 'Trivia Bakes Website'
+            };
+
+            // Save to CRM Integration (Order Hub)
+            let orders = JSON.parse(localStorage.getItem('bobo_orders') || "[]");
+            orders.unshift(orderObj);
+            localStorage.setItem('bobo_orders', JSON.stringify(orders));
+
+            // Clear Cart
+            localStorage.removeItem('bobo_cart');
+
+            document.getElementById('order-id').innerText = '#' + finalOrderId;
+            nextStep(4);
+        }
+
+        window.sendWhatsApp = () => {
+            const firstItem = orderDetails.items[0]?.name || "Treats";
+            const msg = encodeURIComponent(`Hello! I just placed an order from Trivia Bakes.\n\n Order ID: #${finalOrderId}\n Name: ${orderDetails.customerName}\n Items: ${orderDetails.items.map(i => i.name).join(', ')}\n Total: ₹${orderDetails.total}\n Address: ${orderDetails.address}\n\n Please confirm my order!`);
+            window.open(`https://wa.me/917387021958?text=${msg}`, '_blank');
+        }
     </script>
 </MainLayout>

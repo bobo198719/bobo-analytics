@@ -183,43 +183,55 @@ import MainLayout from "../layouts/MainLayout.astro";
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       errorEl.innerText = "";
-      
-      const pharmacyId = document.getElementById("pharmacyId").value;
+      const pharmacyIdInput = document.getElementById("pharmacyId").value.trim();
+      const pharmacyId = pharmacyIdInput.toLowerCase();
       const password = document.getElementById("password").value;
 
       try {
         let tenants = [];
+        let accounts = [];
         try {
-          const stored = localStorage.getItem("bobo_tenants");
-          if (stored) {
-            tenants = JSON.parse(stored);
-            if (!Array.isArray(tenants)) tenants = [];
-          }
+          const storedTenants = localStorage.getItem("bobo_tenants");
+          if (storedTenants) tenants = JSON.parse(storedTenants);
+          
+          const storedAccounts = localStorage.getItem("bobo_accounts");
+          if (storedAccounts) accounts = JSON.parse(storedAccounts);
         } catch (e) {
           console.error("Local storage parse error", e);
         }
 
-        let validTenant = tenants.find(t => t.pharmacyId === pharmacyId && t.password === password);
+        let validTenant = tenants.find(t => 
+          ((t.pharmacyId && t.pharmacyId.toLowerCase() === pharmacyId) || (t.username && t.username.toLowerCase() === pharmacyId)) && 
+          t.password === password
+        );
+        
+        if (!validTenant) {
+          validTenant = accounts.find(a => 
+            ((a.username && a.username.toLowerCase() === pharmacyId) || (a.id && a.id.toLowerCase() === pharmacyId)) && 
+            a.password === password && 
+            a.industry === "pharmacy"
+          );
+        }
 
         // Hardcode fallback for pharmatest
-        if (pharmacyId === "pharmatest" && password === "pharmatest") {
-            validTenant = { pharmacyId: "pharmatest", pharmacy: "Test Pharmacy", password: "pharmatest" };
+        if (!validTenant && pharmacyId === "pharmatest" && password === "pharmatest") {
+            validTenant = { pharmacyId: "pharmatest", pharmacy: "Test Pharmacy", password: "pharmatest", industry: "pharmacy" };
         }
         
         // Also support pharma123 from earlier
-        if (pharmacyId === "pharma123" && password === "pharma123") {
-            validTenant = { pharmacyId: "pharma123", pharmacy: "ABC Pharmacy", password: "pharma123" };
+        if (!validTenant && pharmacyId === "pharma123" && password === "pharma123") {
+            validTenant = { pharmacyId: "pharma123", pharmacy: "ABC Pharmacy", password: "pharma123", industry: "pharmacy" };
         }
 
         // Simulate network delay
         await new Promise(r => setTimeout(r, 600));
 
         if (validTenant) {
-          localStorage.setItem("pharmacy", validTenant.pharmacy);
-          localStorage.setItem("pharmacyId", validTenant.pharmacyId);
+          localStorage.setItem("pharmacy", validTenant.pharmacy || validTenant.businessName);
+          localStorage.setItem("pharmacyId", validTenant.pharmacyId || validTenant.username);
           localStorage.setItem("activeTenantContext", JSON.stringify({
-            id: validTenant.pharmacyId,
-            name: validTenant.pharmacy,
+            id: validTenant.pharmacyId || validTenant.username,
+            name: validTenant.pharmacy || validTenant.businessName,
             industry: "pharmacy"
           }));
           window.location.href = "/pharmacy-dashboard";

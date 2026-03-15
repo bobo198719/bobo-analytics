@@ -1,6 +1,6 @@
 const express=require("express");
 const multer=require("multer");
-const scanBill=require("../ocrEngine");
+const scanBill=require("../../ocrEngine");
 
 const router=express.Router();
 

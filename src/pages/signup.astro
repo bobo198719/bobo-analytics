@@ -60,11 +60,43 @@ import MainLayout from "../layouts/MainLayout.astro";
                                 </div>
                             </label>
                             <label class="ind-card">
+                                <input type="radio" name="sInd" value="healthcare" />
+                                <div class="card-inner">
+                                    <span class="icon">🏥</span>
+                                    <strong>Healthcare</strong>
+                                    <small>Patients, Billing, CRM</small>
+                                </div>
+                            </label>
+                            <label class="ind-card">
                                 <input type="radio" name="sInd" value="retail" />
                                 <div class="card-inner">
                                     <span class="icon">🛒</span>
                                     <strong>Retail</strong>
                                     <small>Billing, Inventory, CRM</small>
+                                </div>
+                            </label>
+                            <label class="ind-card">
+                                <input type="radio" name="sInd" value="finance" />
+                                <div class="card-inner">
+                                    <span class="icon">📈</span>
+                                    <strong>Finance</strong>
+                                    <small>Markets, Risk, Analysis</small>
+                                </div>
+                            </label>
+                            <label class="ind-card">
+                                <input type="radio" name="sInd" value="grocery" />
+                                <div class="card-inner">
+                                    <span class="icon">🍎</span>
+                                    <strong>Grocery</strong>
+                                    <small>Stock, POS, Barcode</small>
+                                </div>
+                            </label>
+                            <label class="ind-card">
+                                <input type="radio" name="sInd" value="fashion" />
+                                <div class="card-inner">
+                                    <span class="icon">👗</span>
+                                    <strong>Fashion</strong>
+                                    <small>Trends, Sizes, Inventory</small>
                                 </div>
                             </label>
                             <label class="ind-card">
@@ -76,11 +108,11 @@ import MainLayout from "../layouts/MainLayout.astro";
                                 </div>
                             </label>
                             <label class="ind-card">
-                                <input type="radio" name="sInd" value="grocery" />
+                                <input type="radio" name="sInd" value="tradeguard" />
                                 <div class="card-inner">
-                                    <span class="icon">🍎</span>
-                                    <strong>Grocery</strong>
-                                    <small>Stock, POS, Barcode</small>
+                                    <span class="icon">🛡️</span>
+                                    <strong>TradeGuard</strong>
+                                    <small>Signals, Portfolio, Risk</small>
                                 </div>
                             </label>
                         </div>
@@ -213,7 +245,7 @@ import MainLayout from "../layouts/MainLayout.astro";
         }
         .input-group input:focus { border-color: #6366f1; background: rgba(99,102,241,0.05); }
 
-        .industry-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        .industry-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
         .ind-card input { display: none; }
         .card-inner { 
             background: rgba(255,255,255,0.03); 
@@ -328,6 +360,9 @@ import MainLayout from "../layouts/MainLayout.astro";
                 document.getElementById("activationLoader").style.display = "flex";
 
                 const bizName = document.getElementById("sBizName").value;
+                const username = bizName.toLowerCase().replace(/\s+/g, '_') + '_admin';
+                const pass = document.getElementById("sPass").value;
+
                 const newTenant = {
                     id: 'L-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
                     businessName: bizName,
@@ -337,7 +372,9 @@ import MainLayout from "../layouts/MainLayout.astro";
                     industry: document.querySelector('input[name="sInd"]:checked').value,
                     plan: document.querySelector('input[name="sPlan"]:checked').value,
                     environment: 'trial',
-                    status: 'Pending',
+                    username: username,
+                    password: pass,
+                    status: 'Active',
                     source: 'Organic Signup',
                     type: 'Lead',
                     created: new Date().toISOString()
