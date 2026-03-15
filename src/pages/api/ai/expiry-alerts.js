@@ -1,9 +1,13 @@
-import { getDb } from '../../../lib/db.js';
+import { connectToDatabase } from '../../../lib/mongoose.js';
+import mongoose from 'mongoose';
 
 export const prerender = false;
 export const GET = async () => {
   try {
-    const db = await getDb();
+    await connectToDatabase();
+    // Assuming inventory is a collection we want to check
+    // We can use native driver via mongoose.connection.db or define a model
+    const db = mongoose.connection.db;
     const inventory = await db.collection('inventory').find({}).toArray();
     
     const today = new Date();
@@ -31,9 +35,16 @@ export const GET = async () => {
       }
     });
 
-    return new Response(JSON.stringify(alerts), { status: 200 });
+    return new Response(JSON.stringify(alerts), { 
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+    });
 
   } catch (err) {
-    return new Response(JSON.stringify({ error: "Server error" }), { status: 500 });
+    console.error("Expiry Alert Error:", err);
+    return new Response(JSON.stringify({ error: "Server error", details: err.message }), { 
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+    });
   }
 };
