@@ -144,15 +144,28 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
     </style>
 
     <script is:inline>
-        let orders = JSON.parse(localStorage.getItem('bobo_orders') || '[]');
+        let orders = [];
 
-        function renderOrders() {
+        async function fetchOrders() {
+            try {
+                const res = await fetch('/api/orders');
+                orders = await res.json();
+                renderOrders(orders);
+            } catch (e) {
+                console.error("Fetch error:", e);
+                document.getElementById('hub-orders-body').innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 40px; color: #ef4444;">Error loading orders from database.</td></tr>';
+            }
+        }
+
+        function renderOrders(dataToRender) {
             const tbody = document.getElementById('hub-orders-body');
-            if (orders.length === 0) {
+            const data = dataToRender || orders;
+            
+            if (data.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 40px; color: var(--text-muted);">No orders yet. Your business is ready to start!</td></tr>';
                 return;
             }
-            tbody.innerHTML = orders.map(o => {
+            tbody.innerHTML = data.map(o => {
                 const productName = o.product || o.items || 'Cake/Bake';
                 const orderAmount = o.amount || o.total || '0';
                 return `
@@ -176,16 +189,30 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             `}).join('');
         }
 
-        function saveAndRefresh() {
-            localStorage.setItem('bobo_orders', JSON.stringify(orders));
-            renderOrders();
-        }
-
         window.notifyWA = (id) => alert(`WhatsApp Automation: Message sent to order #${id} customer!`);
-        window.deleteOrder = (id) => {
-            if(!confirm('Delete this order record?')) return;
-            orders = orders.filter(x => x.id !== id);
-            saveAndRefresh();
+        
+        window.deleteOrder = async (id) => {
+            if(!confirm('Delete this order record PERMANENTLY from the database?')) return;
+            try {
+                const res = await fetch(`/api/orders?id=${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    await fetchOrders();
+                } else {
+                    alert("Failed to delete order.");
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        document.getElementById('hubSearch').oninput = (e) => {
+            const val = e.target.value.toLowerCase();
+            const filtered = orders.filter(o => 
+                o.customer.toLowerCase().includes(val) || 
+                o.phone.includes(val) || 
+                o.id.toString().includes(val)
+            );
+            renderOrders(filtered);
         };
 
         document.getElementById('open-new-order').onclick = () => {
@@ -198,10 +225,9 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
              document.getElementById('order-drawer').classList.remove('open');
         };
 
-        document.getElementById('order-form').onsubmit = (e) => {
+        document.getElementById('order-form').onsubmit = async (e) => {
             e.preventDefault();
             const newOrder = {
-                id: Math.floor(Math.random() * 900) + 100,
                 customer: document.getElementById('o-customer').value,
                 phone: document.getElementById('o-phone').value,
                 product: document.getElementById('o-product').value,
@@ -210,13 +236,28 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 date: document.getElementById('o-date').value,
                 amount: document.getElementById('o-amount').value,
                 payment: 'Pending',
-                status: 'pending'
+                status: 'pending',
+                source: 'Manual Entry'
             };
-            orders.unshift(newOrder);
-            saveAndRefresh();
-            document.getElementById('order-drawer').classList.remove('open');
+            
+            try {
+                const res = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newOrder)
+                });
+                
+                if (res.ok) {
+                    await fetchOrders();
+                    document.getElementById('order-drawer').classList.remove('open');
+                } else {
+                    alert("Failed to save order to database.");
+                }
+            } catch (e) {
+                console.error(e);
+            }
         };
 
-        document.addEventListener('DOMContentLoaded', renderOrders);
+        document.addEventListener('DOMContentLoaded', fetchOrders);
     </script>
 </BakersOSLayout>

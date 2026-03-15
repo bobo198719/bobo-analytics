@@ -237,11 +237,8 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             orderDetails.notes = document.getElementById('c-notes').value;
         }
 
-        window.placeOrder = (method) => {
-            finalOrderId = 'TX-' + Math.floor(10000 + Math.random() * 90000);
+        window.placeOrder = async (method) => {
             const orderObj = {
-                id: finalOrderId,
-                orderIndex: finalOrderId,
                 date: new Date().toISOString(),
                 deliveryDate: orderDetails.date,
                 customer: orderDetails.customerName,
@@ -255,16 +252,29 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                 source: 'Trivia Bakes Website'
             };
 
-            // Save to CRM Integration (Order Hub)
-            let orders = JSON.parse(localStorage.getItem('bobo_orders') || "[]");
-            orders.unshift(orderObj);
-            localStorage.setItem('bobo_orders', JSON.stringify(orders));
+            try {
+                const res = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderObj)
+                });
 
-            // Clear Cart
-            localStorage.removeItem('bobo_cart');
+                if (res.ok) {
+                    const result = await res.json();
+                    finalOrderId = result.order.id;
+                    
+                    // Clear Cart
+                    localStorage.removeItem('bobo_cart');
 
-            document.getElementById('order-id').innerText = '#' + finalOrderId;
-            nextStep(4);
+                    document.getElementById('order-id').innerText = '#' + finalOrderId;
+                    nextStep(4);
+                } else {
+                    alert("Failed to securely save your order. Please try again or contact us.");
+                }
+            } catch (e) {
+                console.error("Order error:", e);
+                alert("Connection error. Your order could not be placed.");
+            }
         }
 
         window.sendWhatsApp = () => {

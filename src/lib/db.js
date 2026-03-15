@@ -29,12 +29,6 @@ export async function getDb() {
               return Object.entries(query).every(([k, v]) => item[k] === v);
             });
           },
-          findOne: async (q) => {
-             const data = JSON.parse(fs.readFileSync(localDbPath, 'utf8'));
-             return (data[name] || []).find(item => {
-               return Object.entries(q).every(([k, v]) => item[k] === v);
-             });
-          }
         }),
         findOne: async (query) => {
             const data = JSON.parse(fs.readFileSync(localDbPath, 'utf8'));
@@ -50,7 +44,6 @@ export async function getDb() {
           return { insertedId: doc._id || doc.id };
         },
         updateOne: async (query, update) => {
-           // Basic update logic for local mock
            const data = JSON.parse(fs.readFileSync(localDbPath, 'utf8'));
            const index = (data[name] || []).findIndex(item => {
              return Object.entries(query).every(([k, v]) => item[k] === v);
@@ -61,6 +54,15 @@ export async function getDb() {
              fs.writeFileSync(localDbPath, JSON.stringify(data, null, 2));
            }
            return { modifiedCount: index !== -1 ? 1 : 0 };
+        },
+        deleteOne: async (query) => {
+          const data = JSON.parse(fs.readFileSync(localDbPath, 'utf8'));
+          const initialLength = (data[name] || []).length;
+          data[name] = (data[name] || []).filter(item => {
+            return !Object.entries(query).every(([k, v]) => item[k] === v);
+          });
+          fs.writeFileSync(localDbPath, JSON.stringify(data, null, 2));
+          return { deletedCount: initialLength - data[name].length };
         }
       })
     };
