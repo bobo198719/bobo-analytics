@@ -256,9 +256,8 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         //  Stored under /public/uploads/products on the server
         // ═══════════════════════════════════════════════════════════════════
         // Use native Astro API routes for full production/Vercel support
-        const API_BASE = '/api';
-
-        /**
+        const API_BASE = 'https://www.boboanalytics.com/api';
+        const products_table = [];       /**
          * CLIENT-SIDE IMAGE OPTIMIZER
          * Resizes to 1080x1080, converts to WebP, and compresses.
          */
@@ -305,9 +304,15 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                     body: formData
                 });
 
-                if (!response.ok) throw new Error('Upload failed');
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Upload failed status:', response.status, errorText);
+                    throw new Error(`Server Error (${response.status}): ${errorText.substring(0, 50)}...`);
+                }
                 const data = await response.json();
-                return data.image_url;
+                
+                // Return full data object for bulk/metadata compatibility
+                return data;
             } catch (error) {
                 console.error('Upload error:', error);
                 throw error;
@@ -318,6 +323,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         //  Product state (metadata only — no blobs in localStorage)
         // ═══════════════════════════════════════════════════════════════════
         let products = [];
+        let isUploading = false; 
         let currentUploadedImageId   = null;   // legacy image_id for IndexedDB-backed images
         let currentUploadedUrl       = null;   // Cloudinary secure URL
         let editingIndex = null;
@@ -479,12 +485,15 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             const file = input.files[0];
             if (!file) return;
 
+            if (isUploading) return alert('An upload is already in progress. Please wait.');
+            isUploading = true;
+
             const status   = document.getElementById('processing-status');
             const progress = document.getElementById('processing-progress');
             const overlay  = document.getElementById('processing-overlay');
             const preview  = document.getElementById('p-image-preview');
 
-            // Show instant local preview before heavy processing
+            // Show instant local preview
             const reader = new FileReader();
             reader.onload = e => {
                 preview.style.backgroundImage = `url('${e.target.result}')`;
@@ -497,13 +506,21 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             progress.style.width = '30%';
 
             try {
-                const imageUrl = await uploadImageToServer(file);
-                currentUploadedUrl = imageUrl;
+                // 1. Client-side optimization (Reduces 10MB -> 200KB)
+                const optimizedDataUrl = await optimizeImageClient(file);
+                
+                // Convert DataURL to Blob for FormData
+                const response = await fetch(optimizedDataUrl);
+                const optimizedBlob = await response.blob();
+                
+                status.innerText = 'Uploading to production storage…';
+                progress.style.width = '60%';
 
-                const preview = document.getElementById('p-image-preview');
-                // The 'preview' variable is already declared above, no need to re-declare.
-                if (imageUrl) {
-                    preview.style.backgroundImage = `url('${imageUrl}')`;
+                const result = await uploadImageToServer(optimizedBlob);
+                currentUploadedUrl = result.url || result.image_url;
+
+                if (currentUploadedUrl) {
+                    preview.style.backgroundImage = `url('${currentUploadedUrl}')`;
                     preview.style.display = 'block';
                     overlay.style.display = 'none';
                 }
@@ -511,11 +528,14 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 progress.style.width = '100%';
             } catch(e) {
                 console.error(e);
-                alert('Image upload failed. Please try again.');
+                alert(`Image upload failed: ${e.message}\n\nPlease check your internet connection and try again.`);
+                overlay.style.display = 'none';
+            } finally {
+                isUploading = false;
             }
 
             setTimeout(() => {
-                document.getElementById('processing-overlay').style.display = 'none';
+                overlay.style.display = 'none';
                 progress.style.width = '0%';
             }, 400);
         };
@@ -566,6 +586,10 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         };
 
         window.saveProduct = async () => {
+            if (isUploading) {
+                alert('Still uploading image... Please wait for the upload to complete before saving.');
+                return;
+            }
             const name  = document.getElementById('p-name').value.trim();
             const price = document.getElementById('p-price').value;
             if (!name || !price) return alert('Name and Price are required.');
@@ -574,23 +598,9 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             document.getElementById('processing-status').innerText = 'Saving…';
 
             const existing = editingIndex !== null ? products[editingIndex] : null;
-            const imageId  = currentUploadedImageId || existing?.image_id || null;
-
-            const thumbnailUrl =
-                currentUploadedImageMeta?.thumbnail_url
-                ?? currentUploadedThumb
-                ?? existing?.thumbnail_url
-                ?? '';
-            const mediumUrl =
-                currentUploadedImageMeta?.medium_url
-                ?? existing?.medium_url
-                ?? thumbnailUrl
-                ?? '';
-            const highResUrl =
-                currentUploadedImageMeta?.high_res_url
-                ?? existing?.high_res_url
-                ?? mediumUrl
-                ?? '';
+            
+            // Prefer the newly uploaded URL, otherwise keep the existing one
+            const finalImageUrl = currentUploadedUrl || existing?.image_url || existing?.high_res_url || existing?.medium_url || existing?.thumbnail_url || '';
 
             const productData = {
                 id           : existing?.id || ('p_' + Date.now()),
@@ -599,7 +609,11 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 cat          : document.getElementById('p-cat').value,
                 prep         : document.getElementById('p-prep').value || '4h',
                 status       : existing?.status || 'pending',
-                image_url    : currentUploadedUrl || existing?.image_url || existing?.medium_url || existing?.thumbnail_url || '',
+                image_url    : finalImageUrl,
+                // Maintain legacy fields for compatibility with website.astro
+                thumbnail_url: finalImageUrl,
+                medium_url   : finalImageUrl,
+                high_res_url : finalImageUrl
             };
 
             if (editingIndex !== null) products[editingIndex] = productData;
@@ -630,13 +644,18 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 progress.style.width = `${Math.round(((i) / files.length) * 100)}%`;
 
                 try {
+                    // 1. Client-side optimization (Reduces 10MB -> 200KB)
+                    const optimizedDataUrl = await optimizeImageClient(file);
+                    const response = await fetch(optimizedDataUrl);
+                    const optimizedBlob = await response.blob();
+
                     // Small delay to prevent UI freezing and allow redraw
                     await new Promise(r => setTimeout(r, 100));
                     
-                    const result = await uploadImageToServer(file);
-                    if (!result || !result.files) throw new Error('Invalid response');
+                    const result = await uploadImageToServer(optimizedBlob);
+                    if (!result || (!result.url && !result.image_url && !result.files)) throw new Error('Invalid response');
                     
-                    const imgs = result.files;
+                    const imgs = result.files || result; // Handle both direct result and nested files object
                     const fileName = file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ')
                         .split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
                     const desc = TEMPLATES[Math.floor(Math.random() * TEMPLATES.length)].replace('{name}', fileName);
@@ -650,9 +669,10 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                         prep         : '4h',
                         status       : 'pending',
                         image_id     : null,
-                        thumbnail_url: imgs.url || imgs.thumbnailUrl || '',
-                        medium_url   : imgs.url || imgs.mediumUrl   || imgs.thumbnailUrl || '',
-                        high_res_url : imgs.url || imgs.highResUrl  || imgs.mediumUrl   || imgs.thumbnailUrl || '',
+                        image_url    : imgs.url || imgs.image_url || imgs.thumbnailUrl || '',
+                        thumbnail_url: imgs.url || imgs.image_url || imgs.thumbnailUrl || '',
+                        medium_url   : imgs.url || imgs.image_url || imgs.mediumUrl   || imgs.thumbnailUrl || '',
+                        high_res_url : imgs.url || imgs.image_url || imgs.highResUrl  || imgs.mediumUrl   || imgs.thumbnailUrl || '',
                     });
                     successCount++;
                 } catch(err) {

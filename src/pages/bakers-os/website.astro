@@ -252,6 +252,40 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            // 1. Load Custom Website Data
+            const customData = JSON.parse(localStorage.getItem('bobo_website_data') || '{}');
+            
+            // Apply Branding
+            const bizLogo = customData.bizLogo || '/bakers-logo.png';
+            const bizName = customData.bizName || 'Trivia Bakes';
+            
+            document.querySelectorAll('.brand-text').forEach(el => el.innerText = bizName);
+            document.querySelectorAll('.logo-img').forEach(el => el.src = bizLogo);
+            
+            // Apply Hero
+            if (customData.heroTitle) document.querySelector('.hero-content h1').innerHTML = customData.heroTitle.replace('Happiness', `<span class="accent-text">Happiness</span>`);
+            if (customData.heroSubtitle) document.querySelector('.hero-content p').innerText = customData.heroSubtitle;
+            if (customData.heroBg) document.querySelector('.hero-premium-v2').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('${customData.heroBg}')`;
+            
+            // Apply About
+            if (customData.aboutTitle) document.querySelector('.about-text h2').innerText = customData.aboutTitle;
+            if (customData.aboutP1) document.querySelector('.about-text p').innerText = customData.aboutP1;
+            if (customData.aboutImg) document.querySelector('.about-image img').src = customData.aboutImg;
+            
+            // Apply Contact
+            if (customData.contactPhone) {
+                const waLink = document.querySelector('.wa-link');
+                if (waLink) {
+                    waLink.innerText = customData.contactPhone;
+                    waLink.href = `https://wa.me/${customData.contactPhone.replace(/\D/g, '')}`;
+                }
+            }
+            if (customData.contactAddress) {
+                const addr = document.querySelector('.f-contact-side p');
+                if (addr) addr.innerText = customData.contactAddress;
+            }
+
+            // 2. Load Products
             let products = [];
             try {
                 const raw = localStorage.getItem('bobo_products');
