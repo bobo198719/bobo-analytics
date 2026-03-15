@@ -1,4 +1,5 @@
-import { getDb } from "../../lib/db";
+import { connectToDatabase } from "../../lib/mongoose";
+import Product from "../../models/Product";
 
 export const prerender = false;
 
@@ -14,12 +15,11 @@ export async function ALL({ request }) {
     }
 
     const { method } = request;
-    const db = await getDb();
-    const collection = db.collection('products');
+    await connectToDatabase();
 
     try {
         if (method === 'GET') {
-            const products = await collection.find({}).toArray();
+            const products = await Product.find().sort({ created_at: -1 });
             return new Response(JSON.stringify(products), {
                 status: 200,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -39,14 +39,14 @@ export async function ALL({ request }) {
                 status: body.status || 'approved'
             };
 
-            // Use updateOne with upsert:true to handle both new and existing products correctly
-            await collection.updateOne(
+            // Use findOneAndUpdate for upsert
+            const product = await Product.findOneAndUpdate(
                 { id: productId },
                 { $set: productData },
-                { upsert: true }
+                { upsert: true, new: true }
             );
 
-            return new Response(JSON.stringify({ success: true, product: productData }), {
+            return new Response(JSON.stringify({ success: true, product }), {
                 status: body.id ? 200 : 201,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
@@ -58,8 +58,7 @@ export async function ALL({ request }) {
 
             if (!id) return new Response(JSON.stringify({ error: "Product ID required" }), { status:400 });
 
-            // deleteOne is now supported in our lib/db.js mock and real MongoDB
-            await collection.deleteOne({ id: id });
+            await Product.deleteOne({ id: id });
             return new Response(JSON.stringify({ success: true }), {
                 status: 200,
                 headers: corsHeaders

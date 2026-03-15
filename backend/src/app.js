@@ -12,6 +12,12 @@ const refillRoutes = require("./routes/refillRoutes");
 // const scanBillRoutes = require("./routes/scanBillRoutes");
 // const medicineRoutes = require("./routes/medicineRoutes");
 const productImageRoutes = require("./routes/productImageRoutes");
+const triviaProductRoutes = require("../routes/products");
+const triviaOrderRoutes = require("../routes/orders");
+const triviaUploadRoutes = require("../routes/upload");
+
+// Initialize Cloud Database
+require("../mongo");
 
 const app = express();
 
@@ -36,6 +42,9 @@ app.use("/api/refills", refillRoutes);
 // app.use("/api", scanBillRoutes);
 // app.use("/api", medicineRoutes);
 app.use("/api", productImageRoutes);
+app.use("/api/products", triviaProductRoutes);
+app.use("/api/orders", triviaOrderRoutes);
+app.use("/api/v2", triviaUploadRoutes);
 
 // Serve static files AFTER API routes to prevent collision
 app.use(express.static(path.join(__dirname, "..", "..", "public")));

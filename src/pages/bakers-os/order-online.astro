@@ -239,17 +239,13 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
 
         window.placeOrder = async (method) => {
             const orderObj = {
-                date: new Date().toISOString(),
-                deliveryDate: orderDetails.date,
-                customer: orderDetails.customerName,
+                customer_name: orderDetails.customerName,
                 phone: orderDetails.customerPhone,
-                address: orderDetails.address,
-                items: orderDetails.items.map(i => i.name).join(', '),
-                total: orderDetails.total,
-                status: 'Order Received',
-                payment: method === 'COD' ? 'Pending (COD)' : 'Paid (' + method + ')',
-                notes: orderDetails.notes,
-                source: 'Trivia Bakes Website'
+                products: orderDetails.items.map(i => `${i.name} x${i.qty}`),
+                amount: orderDetails.total,
+                payment_method: method,
+                payment_status: method === 'COD' ? 'pending' : 'paid',
+                status: 'pending'
             };
 
             try {
@@ -261,7 +257,7 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
 
                 if (res.ok) {
                     const result = await res.json();
-                    finalOrderId = result.order.id;
+                    finalOrderId = result.order.order_id || result.order.id;
                     
                     // Clear Cart
                     localStorage.removeItem('bobo_cart');

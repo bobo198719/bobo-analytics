@@ -166,23 +166,25 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 return;
             }
             tbody.innerHTML = data.map(o => {
-                const productName = o.product || o.items || 'Cake/Bake';
-                const orderAmount = o.amount || o.total || '0';
+                const productName = o.products ? o.products.join(', ') : 'Cake/Bake';
+                const orderAmount = o.amount || '0';
+                const orderId = o.order_id || o.id;
+                const customerName = o.customer_name || o.customer || 'Unknown';
                 return `
                 <tr>
-                    <td>#ORD-${o.id}</td>
-                    <td><strong>${o.customer}</strong><br><small>${o.phone}</small></td>
-                    <td>${productName} ${o.weight ? `(${o.weight})` : ''}</td>
-                    <td>${new Date(o.date).toDateString()}</td>
+                    <td>#${orderId}</td>
+                    <td><strong>${customerName}</strong><br><small>${o.phone}</small></td>
+                    <td>${productName}</td>
+                    <td>${new Date(o.created_at || Date.now()).toDateString()}</td>
                     <td>₹${orderAmount}</td>
                     <td>
-                        ${(o.payment && o.payment.includes('Paid')) ? '<span class="pay-tag">✅ Paid</span>' : '<span style="color:#ef4444">❌ Pending</span>'}
+                        ${(o.payment_status === 'paid' || (o.payment && o.payment.includes('Paid'))) ? '<span class="pay-tag">✅ Paid</span>' : '<span style="color:#ef4444">❌ Pending</span>'}
                     </td>
                     <td><span class="status-badge status-${(o.status || 'pending').toLowerCase()}">${o.status || 'pending'}</span></td>
                     <td>
                         <div class="row-actions">
-                            <span class="wa-trigger" onclick="notifyWA('${o.id}')">Notify WA</span>
-                            <button class="act-btn" onclick="deleteOrder('${o.id}')">🗑️</button>
+                            <span class="wa-trigger" onclick="notifyWA('${orderId}')">Notify WA</span>
+                            <button class="act-btn" onclick="deleteOrder('${orderId}')">🗑️</button>
                         </div>
                     </td>
                 </tr>
@@ -208,9 +210,9 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         document.getElementById('hubSearch').oninput = (e) => {
             const val = e.target.value.toLowerCase();
             const filtered = orders.filter(o => 
-                o.customer.toLowerCase().includes(val) || 
-                o.phone.includes(val) || 
-                o.id.toString().includes(val)
+                (o.customer_name || o.customer || "").toLowerCase().includes(val) || 
+                (o.phone || "").includes(val) || 
+                (o.order_id || o.id || "").toString().includes(val)
             );
             renderOrders(filtered);
         };
@@ -228,16 +230,12 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         document.getElementById('order-form').onsubmit = async (e) => {
             e.preventDefault();
             const newOrder = {
-                customer: document.getElementById('o-customer').value,
+                customer_name: document.getElementById('o-customer').value,
                 phone: document.getElementById('o-phone').value,
-                product: document.getElementById('o-product').value,
-                flavor: document.getElementById('o-flavor').value,
-                weight: document.getElementById('o-weight').value,
-                date: document.getElementById('o-date').value,
+                products: [document.getElementById('o-product').value + " (" + document.getElementById('o-flavor').value + ")"],
                 amount: document.getElementById('o-amount').value,
-                payment: 'Pending',
-                status: 'pending',
-                source: 'Manual Entry'
+                payment_status: 'pending',
+                status: 'pending'
             };
             
             try {

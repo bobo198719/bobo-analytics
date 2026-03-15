@@ -8,7 +8,22 @@
       "industry": "all"
     }
   ],
-  "products": [],
+  "products": [
+    {
+      "id": "P-826239",
+      "name": "Local Test Cake",
+      "price": 123,
+      "desc": "Freshly baked premium Local Test Cake made with high quality ingredients, soft texture, rich flavor, and beautifully crafted decoration. Perfect for celebrations and special occasions.",
+      "cat": "Chocolate Cakes",
+      "prep": "4h",
+      "status": "approved",
+      "image_url": "",
+      "thumbnail_url": "",
+      "medium_url": "",
+      "high_res_url": "",
+      "updated_at": "2026-03-15T21:08:46.839Z"
+    }
+  ],
   "orders": [],
   "website_data": {}
 }
