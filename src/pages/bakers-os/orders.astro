@@ -152,17 +152,20 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 40px; color: var(--text-muted);">No orders yet. Your business is ready to start!</td></tr>';
                 return;
             }
-            tbody.innerHTML = orders.map(o => `
+            tbody.innerHTML = orders.map(o => {
+                const productName = o.product || o.items || 'Cake/Bake';
+                const orderAmount = o.amount || o.total || '0';
+                return `
                 <tr>
                     <td>#ORD-${o.id}</td>
                     <td><strong>${o.customer}</strong><br><small>${o.phone}</small></td>
-                    <td>${o.product} (${o.weight || 'N/A'})</td>
+                    <td>${productName} ${o.weight ? `(${o.weight})` : ''}</td>
                     <td>${new Date(o.date).toDateString()}</td>
-                    <td>₹${o.amount}</td>
+                    <td>₹${orderAmount}</td>
                     <td>
-                        ${o.payment === 'Paid' ? '<span class="pay-tag">✅ Paid</span>' : '<span style="color:#ef4444">❌ Pending</span>'}
+                        ${(o.payment && o.payment.includes('Paid')) ? '<span class="pay-tag">✅ Paid</span>' : '<span style="color:#ef4444">❌ Pending</span>'}
                     </td>
-                    <td><span class="status-badge status-${o.status}">${o.status}</span></td>
+                    <td><span class="status-badge status-${(o.status || 'pending').toLowerCase()}">${o.status || 'pending'}</span></td>
                     <td>
                         <div class="row-actions">
                             <span class="wa-trigger" onclick="notifyWA('${o.id}')">Notify WA</span>
@@ -170,7 +173,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                         </div>
                     </td>
                 </tr>
-            `).join('');
+            `}).join('');
         }
 
         function saveAndRefresh() {

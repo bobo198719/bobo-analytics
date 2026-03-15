@@ -203,17 +203,33 @@ const { title = "Home Bakers OS" } = Astro.props;
                 }
 
                 // Branding Injection
+                const websiteData = JSON.parse(localStorage.getItem('bobo_website_data') || '{}');
+                const finalName = websiteData.bizName || client.businessName || "Trivia";
+                const finalLogo = websiteData.bizLogo || "/bakers-logo.png";
+
                 const bn = document.getElementById('bizName');
-                if (bn) bn.innerText = client.businessName || "Bakers OS";
+                if (bn) bn.innerText = finalName;
                 
                 const tbn = document.getElementById('topBizName');
-                if (tbn) tbn.innerText = client.businessName || "Bakers OS";
+                if (tbn) tbn.innerText = finalName;
                 
                 const et = document.getElementById('envTag');
                 if (et) et.innerText = client.type || "Live";
                 
                 const bi = document.getElementById('bizInitial');
-                if (bi) bi.innerText = (client.businessName || "B").charAt(0).toUpperCase();
+                if (bi) {
+                    if (finalLogo && finalLogo.startsWith('http')) {
+                        bi.innerHTML = `<img src="${finalLogo}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+                    } else {
+                        bi.innerText = finalName.charAt(0).toUpperCase();
+                    }
+                }
+
+                // Sidebar Logo Orb
+                const lo = document.getElementById('bizLogo');
+                if (lo && websiteData.bizLogo) {
+                    lo.innerHTML = `<img src="${websiteData.bizLogo}" style="width:32px; height:32px; border-radius:6px; object-fit:cover;">`;
+                }
 
                 // Navigation State
                 const currentPath = window.location.pathname;
