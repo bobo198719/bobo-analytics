@@ -286,36 +286,43 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             }
 
             // 2. Load Products
-            let products = [];
-            try {
-                const raw = localStorage.getItem('bobo_products');
-                if (raw) {
-                    products = JSON.parse(raw);
+            let liveProducts = [];
+
+            async function fetchLiveProducts() {
+                try {
+                    const res = await fetch('/api/products');
+                    const data = await res.json();
+                    if (Array.isArray(data) && data.length > 0) {
+                        liveProducts = data;
+                    } else {
+                        // Fallback to local default if DB is empty
+                        liveProducts = JSON.parse(localStorage.getItem('bobo_products') || "[]");
+                        if (liveProducts.length <= 3) {
+                             liveProducts = [
+                                { id:'p1', name:'Spider-Man Theme Cake', cat:'Chocolate Cakes', price:1800, desc:'Premium chocolate sponge with hand-piped Spider-man web design.', status:'approved', image_url:'/menu-images/whatsapp-image-2026-03-13-at-10-59-57-jpeg-1773564631013.webp' },
+                                { id:'p2', name:'Classic Smiley Cake',   cat:'Vanilla Cakes',   price:1200, desc:'Joyful vanilla cream cake with a classic smiley face design.',    status:'approved', image_url:'/menu-images/ww-jpeg-1773564633537.webp' },
+                                { id:'p3', name:'Luxury Cupcake Box',    cat:'Cupcakes',        price:950,  desc:'Set of 6 gourmet cupcakes with fresh berries and rich frosting.', status:'approved', image_url:'/menu-images/cake2-png-1773563690213.webp' },
+                                { id:'p4', name:'Doraemon Dream Cake',   cat:'Fruit Cakes',     price:1500, desc:'Bespoke buttercream cake featuring full Doraemon edible art.', status:'approved', image_url:'/menu-images/wewre-jpeg-1773564630497.webp' },
+                                { id:'p5', name:'Belgium Truffle Cake',  cat:'Chocolate Cakes', price:1450, desc:'Dense chocolate sponge with 70% dark Belgian chocolate.', status:'approved', image_url:'/menu-images/whatsapp-image-2026-03-13-at-10-59-51-jpeg-1773564630772.webp' },
+                                { id:'p6', name:'Biscoff Cheesecake',    cat:'Desserts',        price:1600, desc:'Creamy Biscoff-infused cheesecake.', status:'approved', image_url:'/menu-images/whatsapp-image-2026-03-13-at-11-00-07-jpeg-1773564632288.webp' }
+                            ];
+                        }
+                    }
+                    
+                    const approved = liveProducts.filter(p => !p.status || p.status === 'approved');
+                    renderMenu(approved);
+                    renderGallery(approved);
+                    updateCartUI();
+                } catch (e) {
+                    console.error("Live fetch failed:", e);
+                    // Last resort fallback
+                    const fallback = JSON.parse(localStorage.getItem('bobo_products') || "[]");
+                    renderMenu(fallback);
+                    renderGallery(fallback);
                 }
-            } catch(e) {
-                console.warn('bobo_products corrupted', e);
-                products = [];
             }
 
-            // MIGRATION: If the user has old generic data, force sync to the new high-quality ones
-            const hasHighRes = products.some(p => p.name && p.name.includes('Spider-Man'));
-            if (!hasHighRes || products.length <= 3) {
-                console.log("Upgrading to high-quality cake images...");
-                products = [
-                    { id:'p1', name:'Spider-Man Theme Cake', cat:'Chocolate Cakes', price:1800, desc:'Premium chocolate sponge with hand-piped Spider-man web design.', status:'approved', image_url:'/menu-images/whatsapp-image-2026-03-13-at-10-59-57-jpeg-1773564631013.webp' },
-                    { id:'p2', name:'Classic Smiley Cake',   cat:'Vanilla Cakes',   price:1200, desc:'Joyful vanilla cream cake with a classic smiley face design.',    status:'approved', image_url:'/menu-images/ww-jpeg-1773564633537.webp' },
-                    { id:'p3', name:'Luxury Cupcake Box',    cat:'Cupcakes',        price:950,  desc:'Set of 6 gourmet cupcakes with fresh berries and rich frosting.', status:'approved', image_url:'/menu-images/cake2-png-1773563690213.webp' },
-                    { id:'p4', name:'Doraemon Dream Cake',   cat:'Fruit Cakes',     price:1500, desc:'Bespoke buttercream cake featuring full Doraemon edible art.', status:'approved', image_url:'/menu-images/wewre-jpeg-1773564630497.webp' },
-                    { id:'p5', name:'Belgium Truffle Cake',  cat:'Chocolate Cakes', price:1450, desc:'Dense chocolate sponge with 70% dark Belgian chocolate.', status:'approved', image_url:'/menu-images/whatsapp-image-2026-03-13-at-10-59-51-jpeg-1773564630772.webp' },
-                    { id:'p6', name:'Biscoff Cheesecake',    cat:'Desserts',        price:1600, desc:'Creamy Biscoff-infused cheesecake.', status:'approved', image_url:'/menu-images/whatsapp-image-2026-03-13-at-11-00-07-jpeg-1773564632288.webp' }
-                ];
-                localStorage.setItem('bobo_products', JSON.stringify(products));
-            }
-
-            const approved = products.filter(p => !p.status || p.status === 'approved');
-            renderMenu(approved);
-            renderGallery(approved);
-            updateCartUI();
+            fetchLiveProducts();
         });
 
         function renderGallery(items) {
@@ -372,16 +379,14 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         }
 
         window.handleSearch = val => {
-            const products = JSON.parse(localStorage.getItem('bobo_products') || "[]");
             const q = val.toLowerCase();
-            const filtered = products.filter(p => p.name.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q));
+            const filtered = liveProducts.filter(p => p.name.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q));
             renderMenu(filtered);
         };
 
         window.filterMenu = cat => {
-            const products = JSON.parse(localStorage.getItem('bobo_products') || "[]");
-            if (cat === 'all') return renderMenu(products);
-            const filtered = products.filter(p => p.cat === cat);
+            if (cat === 'all') return renderMenu(liveProducts);
+            const filtered = liveProducts.filter(p => p.cat === cat);
             renderMenu(filtered);
             
             document.querySelectorAll('.cat-tab').forEach(btn => {
@@ -391,8 +396,7 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         };
 
         window.addToCart = (id, q = 1) => {
-            const products = JSON.parse(localStorage.getItem('bobo_products') || "[]");
-            const p = products.find(i => i.id == id);
+            const p = liveProducts.find(i => i.id == id);
             if (!p) return;
 
             const existing = cart.find(item => item.id == id);

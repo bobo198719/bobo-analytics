@@ -353,39 +353,22 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             { id:'p8', name:'Mango Delight Cake',    cat:'Fruit Cakes',     price:1350, prep:'5h', desc:'Fresh Alphonso mango chunks layered with soft vanilla sponge.', status:'approved', image_url:'/menu-images/whatsapp-image-2026-03-13-at-11-00-02-jpeg-1773564631780.webp' },
         ];
 
-        function loadProducts() {
+        async function loadProducts() {
             try {
-                const raw = localStorage.getItem('bobo_products');
-                if (raw) {
-                    const parsed = JSON.parse(raw);
-                    if (Array.isArray(parsed) && parsed.length > 0) {
-                        // Anti-empty-state: If users have the old default set, or are missing headers
-                        const hasSpiderMan = parsed.some(p => p.name && p.name.includes('Spider-Man'));
-                        if (!hasSpiderMan || parsed.length <= 3) {
-                            console.log("Migrating database to high-quality images...");
-                            products = JSON.parse(JSON.stringify(DEFAULTS));
-                            safeStorageSet(products);
-                            return;
-                        }
-
-                        // Strip any inline base64 blobs that bypassed the old fix
-                        const tooBig = s => s && s.startsWith('data:') && s.length > 50000;
-                        products = parsed.map(p => ({
-                            ...p,
-                            status         : p.status || 'approved',
-                            thumbnail_url  : tooBig(p.thumbnail_url)  ? '' : (p.thumbnail_url  || p.image_url || p.image || ''),
-                            medium_url     : tooBig(p.medium_url)     ? '' : (p.medium_url     || p.image_url || p.image || ''),
-                            high_res_url   : tooBig(p.high_res_url)   ? '' : (p.high_res_url   || p.image_url || p.image || ''),
-                        }));
-                        return;
-                    }
+                const res = await fetch('/api/products');
+                const data = await res.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    products = data;
+                } else {
+                    products = JSON.parse(JSON.stringify(DEFAULTS));
+                    // Optionally save defaults to DB if new account
                 }
+                renderProducts();
             } catch(e) {
-                console.warn('Reset corrupted storage:', e);
-                localStorage.removeItem('bobo_products');
+                console.warn('API Error, falling back to defaults:', e);
+                products = JSON.parse(JSON.stringify(DEFAULTS));
+                renderProducts();
             }
-            products = JSON.parse(JSON.stringify(DEFAULTS));
-            safeStorageSet(products);
         }
 
         function safeStorageSet(data) {
@@ -601,7 +584,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             if (!name || !price) return alert('Name and Price are required.');
 
             document.getElementById('processing-overlay').style.display = 'flex';
-            document.getElementById('processing-status').innerText = 'Saving…';
+            document.getElementById('processing-status').innerText = 'Securing Product in Database…';
 
             const existing = editingIndex !== null ? products[editingIndex] : null;
             
@@ -609,26 +592,37 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             const finalImageUrl = currentUploadedUrl || existing?.image_url || existing?.high_res_url || existing?.medium_url || existing?.thumbnail_url || '';
 
             const productData = {
-                id           : existing?.id || ('p_' + Date.now()),
-                name, price  : parseFloat(price),
+                id           : existing?.id, // Let API generate if null
+                name, 
+                price        : parseFloat(price),
                 desc         : document.getElementById('p-desc').value || TEMPLATES[0].replace('{name}', name),
                 cat          : document.getElementById('p-cat').value,
                 prep         : document.getElementById('p-prep').value || '4h',
-                status       : existing?.status || 'pending',
+                status       : existing?.status || 'approved',
                 image_url    : finalImageUrl,
-                // Maintain legacy fields for compatibility with website.astro
                 thumbnail_url: finalImageUrl,
                 medium_url   : finalImageUrl,
                 high_res_url : finalImageUrl
             };
 
-            if (editingIndex !== null) products[editingIndex] = productData;
-            else products.unshift(productData);
+            try {
+                const res = await fetch('/api/products', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(productData)
+                });
 
-            safeStorageSet(products);
-            renderProducts();
-            closeModal();
-            document.getElementById('processing-overlay').style.display = 'none';
+                if (res.ok) {
+                    await loadProducts();
+                    closeModal();
+                } else {
+                    alert('Failed to save product to database.');
+                }
+            } catch (e) {
+                console.error(e);
+            } finally {
+                document.getElementById('processing-overlay').style.display = 'none';
+            }
         };
 
         // ═══════════════════════════════════════════════════════════════════
@@ -712,12 +706,19 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         //  Initialization
         // ═══════════════════════════════════════════════════════════════════
         window.del = async index => {
-            if (!confirm('Delete this bake?')) return;
+            if (!confirm('Delete this bake PERMANENTLY from the database?')) return;
             const p = products[index];
-            if (p.image_id) await deleteImageFromDB(p.image_id);
-            products.splice(index, 1);
-            safeStorageSet(products);
-            renderProducts();
+            
+            try {
+                const res = await fetch(`/api/products?id=${p.id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    await loadProducts();
+                } else {
+                    alert('Failed to delete product.');
+                }
+            } catch (e) {
+                console.error(e);
+            }
         };
 
         // ═══════════════════════════════════════════════════════════════════
