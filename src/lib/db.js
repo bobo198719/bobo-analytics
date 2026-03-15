@@ -43,17 +43,27 @@ export async function getDb() {
           fs.writeFileSync(localDbPath, JSON.stringify(data, null, 2));
           return { insertedId: doc._id || doc.id };
         },
-        updateOne: async (query, update) => {
+        updateOne: async (query, update, options = {}) => {
            const data = JSON.parse(fs.readFileSync(localDbPath, 'utf8'));
            const index = (data[name] || []).findIndex(item => {
              return Object.entries(query).every(([k, v]) => item[k] === v);
            });
+           
            if (index !== -1) {
              const set = update.$set || update;
              data[name][index] = { ...data[name][index], ...set };
              fs.writeFileSync(localDbPath, JSON.stringify(data, null, 2));
+             return { modifiedCount: 1 };
+           } else if (options.upsert) {
+             const set = update.$set || update;
+             // For upsert, we combine query and set
+             const newDoc = { ...query, ...set };
+             if (!data[name]) data[name] = [];
+             data[name].push(newDoc);
+             fs.writeFileSync(localDbPath, JSON.stringify(data, null, 2));
+             return { upsertedCount: 1, upsertedId: newDoc.id };
            }
-           return { modifiedCount: index !== -1 ? 1 : 0 };
+           return { modifiedCount: 0 };
         },
         deleteOne: async (query) => {
           const data = JSON.parse(fs.readFileSync(localDbPath, 'utf8'));
