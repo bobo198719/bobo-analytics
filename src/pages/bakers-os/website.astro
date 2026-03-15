@@ -265,8 +265,10 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
 
             if (products.length === 0) {
                 products = [
-                    { id: 'p1', name: 'Belgium Truffle Cake', cat: 'Cakes', image_url: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600', price: 1200, desc: 'Dark Belgian chocolate.' },
-                    { id: 'p2', name: 'Biscoff Cheesecake', cat: 'Desserts', image_url: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=600', price: 1500, desc: 'Lotus spread cheesecake.' }
+                    { id:'p1', name:'Spider-Man Theme Cake', cat:'Chocolate Cakes', price:1800, desc:'Premium chocolate sponge with hand-piped Spider-man web design.', status:'approved', image_url:'/menu-images/whatsapp-image-2026-03-13-at-10-59-57-jpeg-1773564631013.webp' },
+                    { id:'p2', name:'Classic Smiley Cake',   cat:'Vanilla Cakes',   price:1200, desc:'Joyful vanilla cream cake with a classic smiley face design.',    status:'approved', image_url:'/menu-images/ww-jpeg-1773564633537.webp' },
+                    { id:'p3', name:'Luxury Cupcake Box',    cat:'Cupcakes',        price:950,  desc:'Set of 6 gourmet cupcakes with fresh berries and rich frosting.', status:'approved', image_url:'/menu-images/cake2-png-1773563690213.webp' },
+                    { id:'p4', name:'Doraemon Dream Cake',   cat:'Fruit Cakes',     price:1500, desc:'Bespoke buttercream cake featuring full Doraemon edible art.', status:'approved', image_url:'/menu-images/wewre-jpeg-1773564630497.webp' },
                 ];
             }
 
@@ -308,7 +310,7 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             
             menuContainer.innerHTML = items.map(p => {
                 const fallback = '/assets/cake-placeholder.png';
-                const imgPath = p.image_url || p.medium_url || p.thumbnail_url || fallback;
+                const imgPath = p.image_url || p.high_res_url || p.medium_url || p.thumbnail_url || fallback;
                 return `
                 <div class="bake-card-v2">
                     <div class="bake-img-box">
