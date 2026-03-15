@@ -347,11 +347,10 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 if (raw) {
                     const parsed = JSON.parse(raw);
                     if (Array.isArray(parsed) && parsed.length > 0) {
-                        // Anti-empty-state: If users have the old 2-3 item default set, 
-                        // force include the new high-quality ones if they are missing
+                        // Anti-empty-state: If users have the old default set, or are missing headers
                         const hasSpiderMan = parsed.some(p => p.name && p.name.includes('Spider-Man'));
-                        if (!hasSpiderMan && parsed.length < 5) {
-                            console.log("Migrating to high-quality defaults...");
+                        if (!hasSpiderMan || parsed.length <= 3) {
+                            console.log("Migrating database to high-quality images...");
                             products = JSON.parse(JSON.stringify(DEFAULTS));
                             safeStorageSet(products);
                             return;

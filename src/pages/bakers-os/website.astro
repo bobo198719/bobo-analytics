@@ -263,8 +263,10 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                 products = [];
             }
 
-            if (products.length <= 2) {
-                // AUTO-UPGRADE: If the user has the old empty set, force show the high-quality one
+            // MIGRATION: If the user has old generic data, force sync to the new high-quality ones
+            const hasHighRes = products.some(p => p.name && p.name.includes('Spider-Man'));
+            if (!hasHighRes || products.length <= 3) {
+                console.log("Upgrading to high-quality cake images...");
                 products = [
                     { id:'p1', name:'Spider-Man Theme Cake', cat:'Chocolate Cakes', price:1800, desc:'Premium chocolate sponge with hand-piped Spider-man web design.', status:'approved', image_url:'/menu-images/whatsapp-image-2026-03-13-at-10-59-57-jpeg-1773564631013.webp' },
                     { id:'p2', name:'Classic Smiley Cake',   cat:'Vanilla Cakes',   price:1200, desc:'Joyful vanilla cream cake with a classic smiley face design.',    status:'approved', image_url:'/menu-images/ww-jpeg-1773564633537.webp' },
