@@ -9,7 +9,7 @@ let client;
 let db;
 
 // Fallback to local JSON for development/debug if MONGODB_URI is not set
-const localDbPath = path.resolve('src/data/db.json');
+const localDbPath = path.join(process.cwd(), 'src/data/db.json');
 
 export async function getDb() {
   if (MONGODB_URI) {
