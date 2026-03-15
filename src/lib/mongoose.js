@@ -6,7 +6,7 @@ dotenv.config();
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-    console.error("❌ MONGODB_URI is missing from environment variables!");
+    throw new Error("MONGODB_URI is missing! Please add it to your Vercel Environment Variables.");
 }
 
 let cached = global.mongoose;
