@@ -1,5 +1,5 @@
 ---
-const { title = "Home Bakers OS" } = Astro.props;
+const { title = "Trivia" } = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -106,7 +106,7 @@ const { title = "Home Bakers OS" } = Astro.props;
 <body>
     <div id="access-denied">
         <h1>🔒 Access Denied</h1>
-        <p>Your business environment (TEST) does not have access to the Home Bakers Portal.</p>
+        <p>Your business environment (TEST) does not have access to the Trivia Portal.</p>
         <p style="margin-top: 20px; color: #888;">Only Trial and Live accounts can access this module.</p>
         <a href="/portal/dashboard" style="margin-top: 40px; color: #f472b6; font-weight: 700;">Return to Main Dashboard</a>
     </div>
@@ -204,7 +204,10 @@ const { title = "Home Bakers OS" } = Astro.props;
 
                 // Branding Injection
                 const websiteData = JSON.parse(localStorage.getItem('bobo_website_data') || '{}');
-                // Prioritize "Trivia" unless user has explicitly set another name in website editor
+                // Force reset if it's the old default
+                if (websiteData.bizName === "Bakers OS" || websiteData.bizName === "Home Bakers OS") {
+                    websiteData.bizName = "Trivia";
+                }
                 const finalName = websiteData.bizName || "Trivia";
                 const finalLogo = websiteData.bizLogo || "/bakers-logo.png";
 
