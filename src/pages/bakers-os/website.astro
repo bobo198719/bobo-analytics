@@ -481,6 +481,35 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         window.closeLightbox = () => {
             document.getElementById('lightbox').classList.remove('active');
         };
+
+        window.trackOrder = async () => {
+            const id = document.getElementById('order-search-id').value.trim();
+            if (!id) return alert("Please enter an Order ID.");
+
+            const resultEl = document.getElementById('track-result');
+            resultEl.innerHTML = '<p>Searching database...</p>';
+
+            try {
+                const res = await fetch(`/api/orders`);
+                const allOrders = await res.json();
+                const order = allOrders.find(o => (o.order_id === id || o.id === id));
+
+                if (order) {
+                    resultEl.innerHTML = `
+                        <div style="margin-top:20px; padding:20px; background:var(--primary-light); border-radius:20px;">
+                            <h4 style="color:var(--primary-dark)">Order Found!</h4>
+                            <p><strong>Status:</strong> ${order.status.toUpperCase()}</p>
+                            <p><strong>Customer:</strong> ${order.customer_name || order.customer}</p>
+                            <p><strong>Amount:</strong> ₹${order.amount}</p>
+                        </div>
+                    `;
+                } else {
+                    resultEl.innerHTML = '<p style="color:red; margin-top:20px;">Order not found. Please check the ID.</p>';
+                }
+            } catch (e) {
+                resultEl.innerHTML = '<p>Error connecting to tracking service.</p>';
+            }
+        };
     </script>
 
     <style is:inline>
