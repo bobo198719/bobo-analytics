@@ -1,48 +1,70 @@
 const express = require("express");
-const Product = require("../models/Product");
+const db = require("../db");
+
 const router = express.Router();
 
-// GET all products
+router.get("/products", async (req, res) => {
+    try {
+        const [rows] = await db.query("SELECT * FROM products ORDER BY created_at DESC");
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Complementary single product fetch
+router.get("/products/:id", async (req, res) => {
+    try {
+        const [rows] = await db.query("SELECT * FROM products WHERE id = ?", [req.params.id]);
+        if (rows.length === 0) return res.status(404).json({ error: "Product not found" });
+        res.json(rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Handle both / and /products depending on how it's mounted
 router.get("/", async (req, res) => {
     try {
-        const products = await Product.find().sort({ created_at: -1 });
-        res.json(products);
+        const [rows] = await db.query("SELECT * FROM products ORDER BY created_at DESC");
+        res.json(rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// POST to create or update product (Upsert)
 router.post("/", async (req, res) => {
     try {
-        const body = req.body;
-        const productId = body.id || `P-${Math.floor(100000 + Math.random() * 900000)}`;
-        
-        const updateData = {
-            ...body,
-            id: productId,
-            updated_at: Date.now()
-        };
+        const { id, name, price, desc, description, cat, category, image_path, image_url } = req.body;
+        const finalName = name || "";
+        const finalDesc = description || desc || "";
+        const finalPrice = Number(price) || 0;
+        const finalCat = category || cat || "General";
+        const finalImg = image_path || image_url || "";
 
-        const product = await Product.findOneAndUpdate(
-            { id: productId },
-            { $set: updateData },
-            { upsert: true, new: true }
-        );
-
-        res.status(200).json({ success: true, product });
+        if (id) {
+            // Update
+            await db.query(
+                "UPDATE products SET name=?, description=?, price=?, category=?, image_path=? WHERE id=?",
+                [finalName, finalDesc, finalPrice, finalCat, finalImg, id]
+            );
+            res.json({ success: true, message: "Product updated" });
+        } else {
+            // Insert
+            const [result] = await db.query(
+                "INSERT INTO products (name, description, price, category, image_path) VALUES (?, ?, ?, ?, ?)",
+                [finalName, finalDesc, finalPrice, finalCat, finalImg]
+            );
+            res.json({ success: true, id: result.insertId });
+        }
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// DELETE product
 router.delete("/:id", async (req, res) => {
     try {
-        const result = await Product.deleteOne({ id: req.params.id });
-        if (result.deletedCount === 0) {
-            return res.status(404).json({ error: "Product not found" });
-        }
+        await db.query("DELETE FROM products WHERE id = ?", [req.params.id]);
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
