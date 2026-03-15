@@ -113,8 +113,8 @@ const { title = "Home Bakers OS" } = Astro.props;
 
     <aside class="sidebar">
         <a href="/bakers-os" class="logo-area">
-            <div class="logo-orb" id="bizLogo">🧁</div>
-            <span id="bizName">Bakers OS</span>
+            <div class="logo-orb" id="bizLogo">🍰</div>
+            <span id="bizName">Trivia</span>
         </a>
 
         <div class="nav-group">
@@ -204,7 +204,8 @@ const { title = "Home Bakers OS" } = Astro.props;
 
                 // Branding Injection
                 const websiteData = JSON.parse(localStorage.getItem('bobo_website_data') || '{}');
-                const finalName = websiteData.bizName || client.businessName || "Trivia";
+                // Prioritize "Trivia" unless user has explicitly set another name in website editor
+                const finalName = websiteData.bizName || "Trivia";
                 const finalLogo = websiteData.bizLogo || "/bakers-logo.png";
 
                 const bn = document.getElementById('bizName');
