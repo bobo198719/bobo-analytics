@@ -32,16 +32,22 @@ export async function ALL({ request }) {
             // Generate a unique ID if not provided
             const productId = body.id || `P-${Math.floor(100000 + Math.random() * 900000)}`;
             
-            const newProduct = {
+            const productData = {
                 ...body,
                 id: productId,
-                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
                 status: body.status || 'approved'
             };
 
-            await collection.insertOne(newProduct);
-            return new Response(JSON.stringify({ success: true, product: newProduct }), {
-                status: 201,
+            // Use updateOne with upsert:true to handle both new and existing products correctly
+            await collection.updateOne(
+                { id: productId },
+                { $set: productData },
+                { upsert: true }
+            );
+
+            return new Response(JSON.stringify({ success: true, product: productData }), {
+                status: body.id ? 200 : 201,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
         }

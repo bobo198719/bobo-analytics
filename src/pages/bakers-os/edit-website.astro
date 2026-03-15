@@ -2,7 +2,7 @@
 import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
 ---
 
-<BakersOSLayout title="Website Editor | Home Bakers OS">
+<BakersOSLayout title="Website Editor | Trivia">
     <div class="editor-header">
         <div class="title-area">
             <h1>Website Customizer</h1>
@@ -211,7 +211,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             const formData = new FormData();
             formData.append('image', blob);
 
-            const response = await fetch('https://www.boboanalytics.com/api/upload-cake-image', {
+            const response = await fetch('/api/upload-cake-image', {
                 method: 'POST',
                 body: formData
             });

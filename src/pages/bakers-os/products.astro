@@ -186,6 +186,10 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             color: white;
             font-family: inherit;
         }
+        .input-group select option {
+            background: #1e1b4b; /* Matches sidebar color */
+            color: white;
+        }
 
         .file-upload-wrapper {
             position: relative;
@@ -262,7 +266,8 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         //  Stored under /public/uploads/products on the server
         // ═══════════════════════════════════════════════════════════════════
         // Use native Astro API routes for full production/Vercel support
-        const API_BASE = 'https://www.boboanalytics.com/api';
+        // Use relative path for all environment compatibility (Live/Vercel/Local)
+        const API_BASE = '/api';
         const products_table = [];       /**
          * CLIENT-SIDE IMAGE OPTIMIZER
          * Resizes to 1080x1080, converts to WebP, and compresses.
@@ -583,8 +588,11 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             const price = document.getElementById('p-price').value;
             if (!name || !price) return alert('Name and Price are required.');
 
-            document.getElementById('processing-overlay').style.display = 'flex';
-            document.getElementById('processing-status').innerText = 'Securing Product in Database…';
+            const overlay = document.getElementById('processing-overlay');
+            const statusText = document.getElementById('processing-status');
+            
+            overlay.style.display = 'flex';
+            statusText.innerText = 'Securing Product in Database…';
 
             const existing = editingIndex !== null ? products[editingIndex] : null;
             
@@ -592,7 +600,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             const finalImageUrl = currentUploadedUrl || existing?.image_url || existing?.high_res_url || existing?.medium_url || existing?.thumbnail_url || '';
 
             const productData = {
-                id           : existing?.id, // Let API generate if null
+                id           : existing?.id, // If null, API generates
                 name, 
                 price        : parseFloat(price),
                 desc         : document.getElementById('p-desc').value || TEMPLATES[0].replace('{name}', name),
@@ -615,13 +623,16 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 if (res.ok) {
                     await loadProducts();
                     closeModal();
+                    alert('✅ Product saved successfully!');
                 } else {
-                    alert('Failed to save product to database.');
+                    const err = await res.json();
+                    alert('Failed to save product: ' + (err.error || 'Unknown Error'));
                 }
             } catch (e) {
                 console.error(e);
+                alert('Connection error. Please try again.');
             } finally {
-                document.getElementById('processing-overlay').style.display = 'none';
+                overlay.style.display = 'none';
             }
         };
 
