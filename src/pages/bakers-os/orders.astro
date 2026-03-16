@@ -1,261 +1,204 @@
 ---
 import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
+import BakerSubNav from "../../components/BakerSubNav.astro";
 ---
 
-<BakersOSLayout title="Order Hub | Trivia">
-    <div class="hub-header">
-        <div class="title-area">
-            <h1>Order Hub</h1>
-            <p>Track fulfillment, payments, and dispatch.</p>
-        </div>
-        <div class="action-area">
-            <button class="btn btn-outline" id="export-list">Export List</button>
-            <button class="btn btn-primary" id="open-new-order">+ Create Manual Order</button>
-        </div>
-    </div>
+<BakersOSLayout title="Bakers Order Management | Bobo OS">
+  <BakerSubNav active="orders" />
+  <div class="header-flex" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+      <div>
+          <h1>Bakes & Orders</h1>
+          <p style="color: var(--text-muted);">Track custom requests and daily deliveries.</p>
+      </div>
+      <div class="order-tabs" style="display: flex; background: rgba(255,255,255,0.05); padding: 6px; border-radius: 14px; gap: 4px;">
+          <button class="o-tab active" onclick="filterOrders('Current', this)">Current</button>
+          <button class="o-tab" onclick="filterOrders('Upcoming', this)">Upcoming</button>
+          <button class="o-tab" onclick="filterOrders('Past', this)">Past</button>
+      </div>
+  </div>
 
-    <!-- Active Orders Table -->
-    <div class="glass-card order-table-card">
-        <div class="table-filters">
-            <div class="search-wrap">
-                <input type="text" placeholder="Search by customer, phone or ID..." id="hubSearch"/>
-            </div>
-            <div class="filter-group">
-                <select id="statusFilter">
-                    <option value="all">All Status</option>
-                    <option value="pending">Pending</option>
-                    <option value="preparing">Preparing</option>
-                    <option value="completed">Completed</option>
-                </select>
-            </div>
-        </div>
+  <div class="orders-table-card glass-card" style="padding: 32px; margin-bottom: 32px; overflow-x: auto;">
+      <div class="table-header-row" style="display: flex; justify-content: space-between; margin-bottom: 32px; gap: 20px; flex-wrap: wrap;">
+          <div class="search-box">
+              <input type="text" id="order-search" placeholder="Search by name, ID or phone..." oninput="renderOrders()" style="min-width: 300px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 12px; border-radius: 12px; color: white;" />
+          </div>
+          <div class="filter-row" style="display: flex; gap: 12px;">
+              <select id="status-filter" onchange="renderOrders()" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 10px; border-radius: 10px; font-weight: 600;"><option value="all">Status: All</option></select>
+              <select id="payment-filter" onchange="renderOrders()" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 10px; border-radius: 10px; font-weight: 600;"><option value="all">Payment: All</option></select>
+          </div>
+      </div>
 
-        <div class="table-wrap">
-            <table class="hb-table">
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Customer / Contact</th>
-                        <th>Product Details</th>
-                        <th>Delivery Date</th>
-                        <th>Amount</th>
-                        <th>Payment</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="hub-orders-body">
-                    <!-- Loaded via client JS -->
-                </tbody>
-            </table>
-        </div>
-    </div>
+      <table class="hb-order-table" style="width: 100%; border-collapse: collapse; min-width: 800px;">
+          <thead>
+              <tr>
+                  <th style="text-align: left; padding: 16px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border);">Order ID</th>
+                  <th style="text-align: left; padding: 16px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border);">Customer</th>
+                  <th style="text-align: left; padding: 16px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border);">Product Details</th>
+                  <th style="text-align: left; padding: 16px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border);">Delivery Date</th>
+                  <th style="text-align: left; padding: 16px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border);">Status</th>
+                  <th style="text-align: left; padding: 16px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border);">Payment</th>
+                  <th style="text-align: left; padding: 16px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border);">Actions</th>
+              </tr>
+          </thead>
+          <tbody id="orders-body">
+              <!-- Orders will be loaded here via JS -->
+          </tbody>
+      </table>
+      <div id="orders-loading" class="loading-state" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px; color: var(--text-muted);">
+          <div class="spinner"></div>
+          <p>Syncing with your kitchen...</p>
+      </div>
+  </div>
 
-    <!-- Order Drawer (Hidden) -->
-    <div id="order-drawer" class="drawer">
-        <div class="drawer-content">
-            <h2 id="drawer-title">New Order Entry</h2>
-            <form id="order-form">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Customer Name</label>
-                        <input type="text" id="o-customer" required />
-                    </div>
-                    <div class="form-group">
-                        <label>Phone Number</label>
-                        <input type="tel" id="o-phone" required />
-                    </div>
-                </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Product Name</label>
-                        <input type="text" id="o-product" required />
-                    </div>
-                    <div class="form-group">
-                        <label>Flavor Profile</label>
-                        <input type="text" id="o-flavor" required />
-                    </div>
-                </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Weight / Qty</label>
-                        <input type="text" id="o-weight" placeholder="e.g. 1kg or 6pcs" />
-                    </div>
-                    <div class="form-group">
-                        <label>Delivery Date</label>
-                        <input type="date" id="o-date" required />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Amount (₹)</label>
-                    <input type="number" id="o-amount" required />
-                </div>
-                <div class="form-group">
-                    <label>Delivery Address</label>
-                    <textarea id="o-address" rows="2"></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-outline" id="close-drawer">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Order Record</button>
-                </div>
-            </form>
-        </div>
-    </div>
+  <div class="custom-requests glass-card" style="padding: 32px;">
+      <div class="cr-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <h3>Custom Cake Requests (Unconfirmed)</h3>
+          <span class="cr-count" id="request-count" style="background: #ef4444; color: white; padding: 4px 12px; border-radius: 30px; font-size: 0.75rem; font-weight: 800;">0 New Requests</span>
+      </div>
+      <div class="cr-list" id="request-list">
+          <p style="color: var(--text-muted); text-align: center; padding: 20px;">No new custom requests at the moment.</p>
+      </div>
+  </div>
 
-    <style>
-        .hub-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
-        .hub-header h1 { font-size: 2rem; font-weight: 800; }
-        .action-area { display: flex; gap: 12px; }
-        
-        .btn { padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; transition: 0.2s; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-outline { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); }
-        .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+  <style>
+      .o-tab { background: transparent; border: none; color: var(--text-muted); padding: 8px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+      .o-tab.active { background: #f472b6; color: white; }
 
-        .order-table-card { padding: 0; overflow: hidden; }
-        .table-filters { padding: 20px; border-bottom: 1px solid var(--border); display: flex; gap: 16px; align-items: center; }
-        .search-wrap { flex: 1; }
-        .search-wrap input { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 10px 16px; border-radius: 8px; color: white; }
-        
-        .hb-table { width: 100%; border-collapse: collapse; text-align: left; }
-        .hb-table th { padding: 16px; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); }
-        .hb-table td { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
-        
-        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
-        .status-pending { background: rgba(251, 146, 60, 0.1); color: #fb923c; }
-        .status-preparing { background: rgba(96, 165, 250, 0.1); color: #60a5fa; }
-        .status-completed { background: rgba(74, 222, 128, 0.1); color: #4ade80; }
+      .spinner { width: 30px; height: 30px; border: 3px solid rgba(244, 114, 182, 0.2); border-left-color: #f472b6; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 12px; }
+      @keyframes spin { to { transform: rotate(360deg); } }
 
-        .pay-tag { font-size: 0.7rem; font-weight: 800; color: #4ade80; display: flex; align-items: center; gap: 4px; }
-        .wa-trigger { color: #4ade80; cursor: pointer; text-decoration: underline; font-size: 0.8rem; }
+      .o-id { font-weight: 800; color: #f472b6; }
+      .customer-cell, .product-cell { display: flex; flex-direction: column; gap: 4px; }
+      .c-name, .p-name { font-weight: 700; font-size: 0.95rem; }
+      .c-phone, .p-qty { font-size: 0.8rem; color: var(--text-muted); }
+      .o-date { font-weight: 600; font-size: 0.9rem; }
 
-        .row-actions { display: flex; gap: 8px; }
-        .act-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; }
-        .act-btn:hover { color: white; }
+      .o-status { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 30px; }
+      .status-new { background: rgba(244, 114, 182, 0.1); color: #f472b6; }
+      .status-preparing { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+      .status-ready { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+      .status-delivered { background: rgba(107, 114, 128, 0.1); color: #9ca3af; }
 
-        /* Drawer */
-        .drawer { position: fixed; right: -500px; top: 0; bottom: 0; width: 450px; background: #1e1b4b; z-index: 1000; box-shadow: -10px 0 40px rgba(0,0,0,0.5); transition: 0.3s; padding: 40px; }
-        .drawer.open { right: 0; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; }
-        .form-group input, .form-group textarea { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 12px; border-radius: 8px; color: white; outline: none; }
-        .form-actions { display: flex; gap: 12px; margin-top: 24px; }
-    </style>
+      .payment-paid { color: #10b981; }
+      .payment-pending { color: #fb923c; }
 
-    <script is:inline>
-        let orders = [];
+      .a-btn { padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: white; }
+      .a-btn.wa { color: #10b981; background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.2); }
+  </style>
 
-        async function fetchOrders() {
-            try {
-                const res = await fetch('/api/orders');
-                orders = await res.json();
-                renderOrders(orders);
-            } catch (e) {
-                console.error("Fetch error:", e);
-                document.getElementById('hub-orders-body').innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 40px; color: #ef4444;">Error loading orders from database.</td></tr>';
-            }
-        }
+  <script is:inline>
+      let orders = [];
+      let currentTab = 'Current';
 
-        function renderOrders(dataToRender) {
-            const tbody = document.getElementById('hub-orders-body');
-            const data = dataToRender || orders;
-            
-            if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 40px; color: var(--text-muted);">No orders yet. Your business is ready to start!</td></tr>';
-                return;
-            }
-            tbody.innerHTML = data.map(o => {
-                const productName = o.products ? o.products.join(', ') : 'Cake/Bake';
-                const orderAmount = o.amount || '0';
-                const orderId = o.order_id || o.id;
-                const customerName = o.customer_name || o.customer || 'Unknown';
-                return `
-                <tr>
-                    <td>#${orderId}</td>
-                    <td><strong>${customerName}</strong><br><small>${o.phone}</small></td>
-                    <td>${productName}</td>
-                    <td>${new Date(o.created_at || Date.now()).toDateString()}</td>
-                    <td>₹${orderAmount}</td>
-                    <td>
-                        ${(o.payment_status === 'paid' || (o.payment && o.payment.includes('Paid'))) ? '<span class="pay-tag">✅ Paid</span>' : '<span style="color:#ef4444">❌ Pending</span>'}
-                    </td>
-                    <td><span class="status-badge status-${(o.status || 'pending').toLowerCase()}">${o.status || 'pending'}</span></td>
-                    <td>
-                        <div class="row-actions">
-                            <span class="wa-trigger" onclick="notifyWA('${orderId}')">Notify WA</span>
-                            <button class="act-btn" onclick="deleteOrder('${orderId}')">🗑️</button>
-                        </div>
-                    </td>
-                </tr>
-            `}).join('');
-        }
+      async function init() {
+          await loadOrders();
+      }
 
-        window.notifyWA = (id) => alert(`WhatsApp Automation: Message sent to order #${id} customer!`);
-        
-        window.deleteOrder = async (id) => {
-            if(!confirm('Delete this order record PERMANENTLY from the database?')) return;
-            try {
-                const res = await fetch(`/api/orders?id=${id}`, { method: 'DELETE' });
-                if (res.ok) {
-                    await fetchOrders();
-                } else {
-                    alert("Failed to delete order.");
-                }
-            } catch (e) {
-                console.error(e);
-            }
-        };
+      async function loadOrders() {
+          const loading = document.getElementById('orders-loading');
+          try {
+              const res = await fetch('/api/orders');
+              if (!res.ok) throw new Error('API down');
+              orders = await res.json();
+              if (!Array.isArray(orders)) orders = [];
+              renderOrders();
+              loading.style.display = 'none';
+          } catch (e) {
+              console.error('Fetch error:', e);
+              loading.innerHTML = `<p>❌ Failed to load orders.</p>`;
+          }
+      }
 
-        document.getElementById('hubSearch').oninput = (e) => {
-            const val = e.target.value.toLowerCase();
-            const filtered = orders.filter(o => 
-                (o.customer_name || o.customer || "").toLowerCase().includes(val) || 
-                (o.phone || "").includes(val) || 
-                (o.order_id || o.id || "").toString().includes(val)
-            );
-            renderOrders(filtered);
-        };
+      function renderOrders() {
+          const body = document.getElementById('orders-body');
+          const search = document.getElementById('order-search').value.toLowerCase();
+          
+          let filtered = orders.filter(o => {
+              const matchesSearch = (o.customer_name || o.customer || "").toLowerCase().includes(search) || 
+                                   (o.id || "").toString().includes(search) ||
+                                   (Array.isArray(o.products) ? o.products.join(' ') : (o.products || o.product || "")).toLowerCase().includes(search);
+              
+              const matchesTab = (currentTab === 'Current' && (o.status === 'New' || o.status === 'Preparing' || o.status === 'Ready' || !o.status)) ||
+                                (currentTab === 'Upcoming' && o.status === 'Upcoming') ||
+                                (currentTab === 'Past' && (o.status === 'Delivered' || o.status === 'Cancelled' || o.status === 'completed'));
+              
+              return matchesSearch && matchesTab;
+          });
 
-        document.getElementById('open-new-order').onclick = () => {
-             document.getElementById('order-drawer').classList.add('open');
-             document.getElementById('drawer-title').innerText = "Manual Order Entry";
-             document.getElementById('order-form').reset();
-        };
+          body.innerHTML = filtered.map(o => `
+              <tr>
+                  <td><span class="o-id">#${o.id || o.order_id}</span></td>
+                  <td>
+                      <div class="customer-cell">
+                          <span class="c-name">${o.customer_name || o.customer || 'Guest'}</span>
+                          <span class="c-phone">${o.phone || ''}</span>
+                      </div>
+                  </td>
+                  <td>
+                      <div class="product-cell">
+                          <span class="p-name">${Array.isArray(o.products) ? o.products.join(', ') : (o.products || o.product || 'Treat')}</span>
+                          <span class="p-qty">Amount: ₹${o.amount || 0}</span>
+                      </div>
+                  </td>
+                  <td><span class="o-date">${new Date(o.created_at || Date.now()).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span></td>
+                  <td>
+                      <select onchange="updateOrderStatus('${o.id || o.order_id}', this.value)" class="o-status status-${(o.status || 'new').toLowerCase()}" style="border: none; cursor: pointer; background: rgba(255,255,255,0.1); color: white; font-weight: 800; font-size: 0.7rem; padding: 4px 10px; border-radius: 30px;">
+                          <option value="New" ${o.status === 'New' ? 'selected' : ''}>New</option>
+                          <option value="Preparing" ${o.status === 'Preparing' ? 'selected' : ''}>Preparing</option>
+                          <option value="Ready" ${o.status === 'Ready' ? 'selected' : ''}>Ready</option>
+                          <option value="Delivered" ${o.status === 'Delivered' || o.status === 'completed' ? 'selected' : ''}>Delivered</option>
+                          <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                      </select>
+                  </td>
+                  <td><span class="o-payment payment-${(o.payment_status || 'pending').toLowerCase()}">${o.payment_status || 'Pending'}</span></td>
+                  <td>
+                      <div class="action-cell" style="display: flex; gap: 8px;">
+                          <button class="a-btn wa" onclick="whatsappCustomer('${o.phone}', '${o.customer_name || o.customer}', '${o.id || o.order_id}')" title="Message on WhatsApp">💬 Msg</button>
+                          <button class="a-btn" onclick="deleteOrder('${o.id || o.order_id}')">🗑️</button>
+                      </div>
+                  </td>
+              </tr>
+          `).join('');
+      }
 
-        document.getElementById('close-drawer').onclick = () => {
-             document.getElementById('order-drawer').classList.remove('open');
-        };
+      window.filterOrders = (tab, btn) => {
+          currentTab = tab;
+          document.querySelectorAll('.o-tab').forEach(t => t.classList.remove('active'));
+          btn.classList.add('active');
+          renderOrders();
+      };
 
-        document.getElementById('order-form').onsubmit = async (e) => {
-            e.preventDefault();
-            const newOrder = {
-                customer_name: document.getElementById('o-customer').value,
-                phone: document.getElementById('o-phone').value,
-                products: [document.getElementById('o-product').value + " (" + document.getElementById('o-flavor').value + ")"],
-                amount: document.getElementById('o-amount').value,
-                payment_status: 'pending',
-                status: 'pending'
-            };
-            
-            try {
-                const res = await fetch('/api/orders', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(newOrder)
-                });
-                
-                if (res.ok) {
-                    await fetchOrders();
-                    document.getElementById('order-drawer').classList.remove('open');
-                } else {
-                    alert("Failed to save order to database.");
-                }
-            } catch (e) {
-                console.error(e);
-            }
-        };
+      window.updateOrderStatus = async (id, status) => {
+          try {
+              const res = await fetch('/api/orders', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ id, status, update_status_only: true })
+              });
+              if (res.ok) {
+                  await loadOrders();
+              }
+          } catch (e) {
+              alert('Update failed');
+          }
+      };
 
-        document.addEventListener('DOMContentLoaded', fetchOrders);
-    </script>
+      window.deleteOrder = async (id) => {
+          if (!confirm('Delete this order?')) return;
+          try {
+              const res = await fetch(\`/api/orders?id=\${id}\`, { method: 'DELETE' });
+              if (res.ok) await loadOrders();
+          } catch (e) { console.error(e); }
+      };
+
+      window.whatsappCustomer = (phone, name, id) => {
+          if (!phone) return alert('No phone number found.');
+          const cleanPhone = phone.replace(/\D/g, '');
+          const message = encodeURIComponent(\`Hi \${name}! Regarding your order #\${id} from Trivia Bakery.\`);
+          window.open(\`https://wa.me/\${cleanPhone}?text=\${message}\`, '_blank');
+      };
+
+      init();
+  </script>
 </BakersOSLayout>
+

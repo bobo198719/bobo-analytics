@@ -42,7 +42,7 @@ router.post(["/", "/products"], async (req, res) => {
         const finalCat = category || cat || "General";
         const finalImg = image_path || image_url || "";
 
-        if (id && !id.startsWith('bulk_')) {
+        if (id && String(id).startsWith && !String(id).startsWith('bulk_')) {
             // Update
             await db.query(
                 "UPDATE products SET name=?, description=?, price=?, category=?, image_path=? WHERE id=?",

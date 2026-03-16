@@ -1,95 +1,174 @@
 ---
 import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
+import BakerSubNav from "../../components/BakerSubNav.astro";
+
+// Mock baker customers for initial render, real data via JS
 ---
 
-<BakersOSLayout title="Customer CRM | Home Bakers OS">
-    <div class="header">
-        <div class="title-area">
-            <h1>Customer Database</h1>
-            <p>Manage relationships and loyalty history.</p>
-        </div>
-        <div class="actions">
-            <button class="btn btn-primary" onclick="openCustomerModal()">+ Add New Client</button>
-        </div>
-    </div>
+<BakersOSLayout title="Baker CRM | Bobo OS">
+  <BakerSubNav active="customers" />
+  <div class="header-flex" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+      <div>
+          <h1>Customer Database</h1>
+          <p style="color: var(--text-muted);">Manage relationships and reward your loyal dessert lovers.</p>
+      </div>
+      <div class="hb-actions" style="display: flex; gap: 12px;">
+          <button class="hb-btn secondary" style="padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: white;">Broadcast WhatsApp</button>
+          <button class="hb-btn primary" style="padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; background: #f472b6; color: white;">+ Add Lead</button>
+      </div>
+  </div>
 
-    <div class="glass-card table-card">
-        <div class="table-filters">
-            <input type="text" placeholder="Search by name, phone or neighborhood..." id="clientSearch" />
-        </div>
+  <div class="crm-stats grid-4" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 32px;">
+      <div class="stat-card glass-card" style="padding: 24px; display: flex; flex-direction: column; gap: 8px;">
+          <span class="sl" style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Total Customers</span>
+          <span class="sv" id="stat-total-cust" style="font-size: 1.5rem; font-weight: 900; font-family: 'Outfit';">...</span>
+      </div>
+      <div class="stat-card glass-card" style="padding: 24px; display: flex; flex-direction: column; gap: 8px;">
+          <span class="sl" style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Top Spender</span>
+          <span class="sv" id="stat-top-spend" style="font-size: 1.5rem; font-weight: 900; font-family: 'Outfit';">...</span>
+      </div>
+      <div class="stat-card glass-card" style="padding: 24px; display: flex; flex-direction: column; gap: 8px;">
+          <span class="sl" style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Repeat Rate</span>
+          <span class="sv" style="font-size: 1.5rem; font-weight: 900; font-family: 'Outfit';">84%</span>
+      </div>
+      <div class="stat-card glass-card" style="padding: 24px; display: flex; flex-direction: column; gap: 8px;">
+          <span class="sl" style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Last Order</span>
+          <span class="sv" id="stat-last-order" style="font-size: 1.5rem; font-weight: 900; font-family: 'Outfit';">...</span>
+      </div>
+  </div>
 
-        <table class="hb-table">
-            <thead>
-                <tr>
-                    <th>Customer Name</th>
-                    <th>Contact</th>
-                    <th>Default Address</th>
-                    <th>Frequency</th>
-                    <th>LTV (Total)</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="client-body">
-                <!-- Data via JS -->
-            </tbody>
-        </table>
-    </div>
+  <div class="crm-table-card glass-card" style="padding: 32px;">
+      <div class="table-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+          <h3>Customer List</h3>
+          <div class="table-tools" style="display: flex; gap: 12px;">
+              <input type="text" id="cust-search" placeholder="Search customers..." style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 10px 16px; border-radius: 10px; color: white; width: 240px;" oninput="renderCustomers()" />
+              <button class="filter-btn" style="background: transparent; border: 1px solid var(--border); color: white; padding: 10px 16px; border-radius: 10px; font-weight: 700; cursor: pointer;">Filters</button>
+          </div>
+      </div>
 
-    <style>
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
-        .btn-primary { background: var(--primary); color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; }
-        
-        .table-card { padding: 0; overflow: hidden; }
-        .table-filters { padding: 20px; border-bottom: 1px solid var(--border); }
-        .table-filters input { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 12px; border-radius: 8px; color: white; }
+      <table class="crm-table" style="width: 100%; border-collapse: collapse;">
+          <thead>
+              <tr>
+                  <th style="text-align: left; padding: 16px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border);">Customer Name</th>
+                  <th style="text-align: left; padding: 16px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border);">Contact Info</th>
+                  <th style="text-align: left; padding: 16px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border);">Orders</th>
+                  <th style="text-align: left; padding: 16px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border);">Total Spent</th>
+                  <th style="text-align: left; padding: 16px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border);">Last Order</th>
+                  <th style="text-align: left; padding: 16px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border);">Engagement</th>
+              </tr>
+          </thead>
+          <tbody id="cust-body">
+              <tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">Fetching your customer base...</td></tr>
+          </tbody>
+      </table>
+  </div>
 
-        .hb-table { width: 100%; border-collapse: collapse; text-align: left; }
-        .hb-table th { padding: 16px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
-        .hb-table td { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
-        
-        .freq-badge { background: rgba(244, 114, 182, 0.1); color: var(--primary); padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 0.7rem; margin-left: 8px; }
-        
-        .row-actions { display: flex; gap: 12px; }
-        .act-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; }
-    </style>
+  <style>
+      .c-info-cell { display: flex; align-items: center; gap: 12px; }
+      .c-avatar { width: 36px; height: 36px; background: rgba(244, 114, 182, 0.2); color: #f472b6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; }
+      .c-name { font-weight: 700; }
 
-    <script is:inline>
-        let clients = [
-            { id: 1, name: 'Anjali Sharma', phone: '+91 98234 56789', address: 'Viman Nagar, Pune', orders: 12, ltv: 18450, loyal: true },
-            { id: 2, name: 'Rahul Verma', phone: '+91 77234 12345', address: 'Kalyani Nagar, Pune', orders: 3, ltv: 4200, loyal: false },
-            { id: 3, name: 'Priya Iyer', phone: '+91 99345 67890', address: 'Magarpatta City, Pune', orders: 24, ltv: 32800, loyal: true }
-        ];
+      .contact-cell { display: flex; flex-direction: column; gap: 2px; }
+      .c-phone { font-weight: 600; font-size: 0.9rem; }
+      .c-email { font-size: 0.75rem; color: var(--text-muted); }
 
-        function renderClients() {
-            const tbody = document.getElementById('client-body');
-            tbody.innerHTML = clients.map(c => `
-                <tr>
-                    <td>
-                        <strong>${c.name}</strong>
-                        ${c.loyal ? '<span class="freq-badge">LOYALIST</span>' : ''}
-                    </td>
-                    <td>${c.phone}</td>
-                    <td>${c.address}</td>
-                    <td>${c.orders} Orders</td>
-                    <td><strong>₹${c.ltv.toLocaleString()}</strong></td>
-                    <td>
-                        <div class="row-actions">
-                            <button class="act-btn" onclick="history('${c.id}')">👁️</button>
-                            <button class="act-btn" onclick="edit('${c.id}')">✏️</button>
-                            <button class="act-btn" onclick="del('${c.id}')">🗑️</button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-        }
+      .o-count { font-weight: 700; color: #f472b6; font-size: 0.85rem; }
+      .spent-val { font-weight: 800; font-family: 'Outfit'; }
+      .last-val { font-size: 0.85rem; color: var(--text-muted); }
 
-        window.del = (id) => {
-            clients = clients.filter(x => x.id != id);
-            renderClients();
-        };
+      .engage-actions { display: flex; gap: 8px; }
+      .e-btn { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+      .e-btn.wa { color: #25d366; }
+      .e-btn.confirm { color: #f472b6; }
+  </style>
 
-        window.openCustomerModal = () => alert('Customer CRM Form: Name, Phone, Delivery Address, Social Link.');
+  <script is:inline>
+      let customers = [];
 
-        document.addEventListener('DOMContentLoaded', renderClients);
-    </script>
+      async function init() {
+          await loadData();
+      }
+
+      async function loadData() {
+          try {
+              const res = await fetch('/api/orders');
+              const orders = await res.json();
+              
+              const custMap = {};
+              orders.forEach(o => {
+                  const key = o.phone || 'unknown';
+                  if (!custMap[key]) {
+                      custMap[key] = {
+                          name: o.customer_name || o.customer || 'Unknown',
+                          phone: o.phone || 'N/A',
+                          email: o.email || 'N/A',
+                          orders: 0,
+                          spent: 0,
+                          lastDate: new Date(0)
+                      };
+                  }
+                  custMap[key].orders += 1;
+                  custMap[key].spent += parseFloat(o.amount || 0);
+                  const oDate = new Date(o.created_at || Date.now());
+                  if (oDate > custMap[key].lastDate) custMap[key].lastDate = oDate;
+              });
+
+              customers = Object.values(custMap).sort((a,b) => b.spent - a.spent);
+              renderCustomers();
+              updateStats(customers);
+          } catch (e) {
+              console.error(e);
+          }
+      }
+
+      function updateStats(data) {
+          document.getElementById('stat-total-cust').innerText = data.length;
+          document.getElementById('stat-top-spend').innerText = data.length > 0 ? '₹' + data[0].spent.toLocaleString() : '₹0';
+          document.getElementById('stat-last-order').innerText = data.length > 0 ? data[0].lastDate.toLocaleDateString('en-IN', {day:'2-digit', month:'short'}) : 'N/A';
+      }
+
+      function renderCustomers() {
+          const body = document.getElementById('cust-body');
+          const search = document.getElementById('cust-search').value.toLowerCase();
+          
+          const filtered = customers.filter(c => 
+              c.name.toLowerCase().includes(search) || 
+              c.phone.includes(search)
+          );
+
+          if (filtered.length === 0) {
+              body.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">No customers found.</td></tr>';
+              return;
+          }
+
+          body.innerHTML = filtered.map(c => `
+              <tr>
+                  <td>
+                      <div class="c-info-cell">
+                          <div class="c-avatar">${c.name[0]}</div>
+                          <span class="c-name">${c.name}</span>
+                      </div>
+                  </td>
+                  <td>
+                      <div class="contact-cell">
+                          <span class="c-phone">${c.phone}</span>
+                          <span class="c-email">${c.email}</span>
+                      </div>
+                  </td>
+                  <td><span class="o-count">${c.orders} Orders</span></td>
+                  <td><span class="spent-val">₹${c.spent.toLocaleString()}</span></td>
+                  <td><span class="last-val">${c.lastDate.getFullYear() > 1970 ? c.lastDate.toLocaleDateString('en-IN', {day:'2-digit', month:'short'}) : 'N/A'}</span></td>
+                  <td>
+                      <div class="engage-actions">
+                          <button class="e-btn wa" title="Quick WhatsApp" onclick="window.open('https://wa.me/${c.phone.replace(/\D/g, '')}')">💬</button>
+                          <button class="e-btn confirm" title="Update Status">🔔</button>
+                          <button class="e-btn more">···</button>
+                      </div>
+                  </td>
+              </tr>
+          `).join('');
+      }
+
+      init();
+  </script>
 </BakersOSLayout>
