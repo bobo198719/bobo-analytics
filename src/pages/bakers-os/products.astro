@@ -442,7 +442,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                             <div class="p-actions">
                                 ${isPending ? `<button class="p-btn approve" onclick="approveProduct(${gi})">👌 Publish</button>` : ''}
                                 <button class="p-btn" onclick="openProductModal(${gi})">✏️ Edit</button>
-                                <button class="p-btn delete-product-btn" onclick="del(${gi})">🗑️</button>
+                                <button class="p-btn delete-product-btn" data-id="${p.id}">🗑️</button>
                             </div>
                         </div>
                     </div>
@@ -810,36 +810,31 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         // ═══════════════════════════════════════════════════════════════════
         //  Initialization
         // ═══════════════════════════════════════════════════════════════════
-        window.del = async index => {
-            const p = products[index];
-            if (!p) return;
+        // ═══════════════════════════════════════════════════════════════════
+        //  Instant UI Delete Handler (Part 1 - Step 2)
+        // ═══════════════════════════════════════════════════════════════════
+        document.addEventListener("click", async function(e) {
+            if (e.target.closest(".delete-product-btn")) {
+                const btn = e.target.closest(".delete-product-btn");
+                const id = btn.dataset.id;
+                const card = btn.closest(".product-card");
 
-            if (!confirm(`Delete "${p.name}" PERMANENTLY?`)) return;
-            
-            // 1. INSTANT UI REMOVAL (Step 8)
-            const card = document.getElementById(`card-${p.id}`);
-            if (card) {
-                card.style.transform = 'scale(0.9)';
-                card.style.opacity = '0';
-                setTimeout(() => card.remove(), 250); // Fast snappy removal
+                if (!confirm("Delete this cake?")) return;
+
+                /* INSTANT REMOVE */
+                card.remove();
+
+                /* UPDATE LOCAL STATE */
+                products = products.filter(p => p.id != id);
+
+                /* BACKGROUND DELETE */
+                fetch("/api/products/" + id, {
+                    method: "DELETE"
+                }).catch(() => {
+                    alert("Delete failed. Refresh page.");
+                });
             }
-
-            // Update local state immediately for search/tabs
-            products = products.filter(x => x.id !== p.id);
-            // No full renderProducts() here to avoid flicker, the card.remove() handles visibility
-
-            // 2. BACKGROUND DELETION (Silent)
-            fetch(`/api/products/${p.id}`, { 
-                method: 'DELETE',
-                headers: { 'Cache-Control': 'no-cache' }
-            }).then(r => r.json()).then(res => {
-                if (res.success) {
-                    console.log(`✅ Server confirmed deletion for ID: ${p.id}`);
-                } else {
-                    console.error(`❌ Server rejection for ID: ${p.id}`, res.error);
-                }
-            }).catch(e => console.error(`❌ Network failure for background delete:`, e));
-        };
+        });
 
         // ═══════════════════════════════════════════════════════════════════
         //  Global Search Implementation (Step 2 - sluggish search fix)

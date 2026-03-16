@@ -32,7 +32,7 @@ export async function ALL({ params, request }) {
             redirect: 'follow'
         };
 
-        if (['POST', 'PUT', 'PATCH'].includes(request.method)) {
+        if (request.method !== 'GET' && request.method !== 'HEAD') {
             options.body = await request.arrayBuffer();
         }
 

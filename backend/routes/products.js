@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get("/products", async (req, res) => {
     try {
-        const [rows] = await db.query("SELECT * FROM products ORDER BY created_at DESC");
+        const [rows] = await db.query("SELECT * FROM bakery_products ORDER BY created_at DESC");
         res.json(rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -28,7 +28,7 @@ router.get("/products/:id", async (req, res) => {
 // Handle both / and /products depending on how it's mounted
 router.get("/", async (req, res) => {
     try {
-        const [rows] = await db.query("SELECT * FROM products ORDER BY created_at DESC");
+        const [rows] = await db.query("SELECT * FROM bakery_products ORDER BY created_at DESC");
         res.json(rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -47,14 +47,14 @@ router.post(["/", "/products"], async (req, res) => {
         if (id && String(id).startsWith && !String(id).startsWith('bulk_')) {
             // Update
             await db.query(
-                "UPDATE products SET name=?, description=?, price=?, category=?, image_path=? WHERE id=?",
+                "UPDATE bakery_products SET name=?, description=?, price=?, category=?, image_url=? WHERE id=?",
                 [finalName, finalDesc, finalPrice, finalCat, finalImg, id]
             );
             res.json({ success: true, message: "Product updated" });
         } else {
             // Insert
             const [result] = await db.query(
-                "INSERT INTO products (name, description, price, category, image_path) VALUES (?, ?, ?, ?, ?)",
+                "INSERT INTO bakery_products (name, description, price, category, image_url) VALUES (?, ?, ?, ?, ?)",
                 [finalName, finalDesc, finalPrice, finalCat, finalImg]
             );
             res.json({ success: true, id: result.insertId });
@@ -65,16 +65,29 @@ router.post(["/", "/products"], async (req, res) => {
     }
 });
 
-router.delete(["/:id", "/products/:id"], async (req, res) => {
+router.delete("/products/:id", async (req, res) => {
+    const id = req.params.id;
     try {
-        await db.query("DELETE FROM products WHERE id = ?", [req.params.id]);
+        const [product] = await db.query("SELECT image_url FROM bakery_products WHERE id = ?", [id]);
+        await db.query("DELETE FROM bakery_products WHERE id = ?", [id]);
+        
         res.json({ success: true });
+
+        /* async image cleanup */
+        setTimeout(() => {
+            if (product[0]?.image_url) {
+                const file = product[0].image_url.split("/").pop();
+                const fullPath = path.join("/var/www/storage/bakery/images", file);
+                fs.unlink(fullPath, () => {});
+            }
+        }, 0);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Delete failed:", err);
+        res.status(500).json({ error: "Delete failed" });
     }
 });
 
-router.delete(["/:id/image", "/products/:id/image"], async (req, res) => {
+router.delete("/products/:id/image", async (req, res) => {
     try {
         const [rows] = await db.query("SELECT image_path FROM products WHERE id = ?", [req.params.id]);
         if (rows.length === 0) return res.status(404).json({ error: "Product not found" });

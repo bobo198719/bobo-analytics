@@ -36,6 +36,18 @@ const initDb = () => {
     if (err) console.error("Error creating products table:", err);
   });
 
+  db.query(`CREATE TABLE IF NOT EXISTS bakery_products (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255),
+    description TEXT,
+    price INT,
+    category VARCHAR(100),
+    image_url VARCHAR(500),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`, (err) => {
+    if (err) console.error("Error creating bakery_products table:", err);
+  });
+
   db.query(`CREATE TABLE IF NOT EXISTS orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     customer_name VARCHAR(255),

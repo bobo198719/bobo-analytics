@@ -20,6 +20,10 @@ pm2 delete all || true
 # Start the new backend
 pm2 start server.js --name bobo-backend --watch
 
+echo "🛠️ Repairing Storage Permissions..."
+chmod -R 755 /var/www/storage || true
+chown -R www-data:www-data /var/www/storage || true
+
 echo "✨ Backend updated successfully!"
 rm backend_update.zip
 rm migrate.js # Cleanup migration script after run
