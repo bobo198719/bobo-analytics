@@ -277,8 +277,8 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         // ═══════════════════════════════════════════════════════════════════
         // Use native Astro API routes for full production/Vercel support
         // Use relative path for all environment compatibility (Live/Vercel/Local)
-        const hostingerUrl = "http://srv1449576.hstgr.cloud:5000";
-        const API_BASE = hostingerUrl + '/api';
+        const API_BASE = '/api';
+        const hostingerUrl = "http://srv1449576.hstgr.cloud:5000"; // For client-side image prefixing
         const products_table = [];       /**
          * CLIENT-SIDE IMAGE OPTIMIZER
          * Resizes to 1080x1080, converts to WebP, and compresses.
@@ -321,7 +321,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             formData.append('image', file);
 
             try {
-                const response = await fetch(`${API_BASE}/upload-product`, {
+                const response = await fetch(`${API_BASE}/upload-cake-image`, {
                     method: 'POST',
                     body: formData
                 });

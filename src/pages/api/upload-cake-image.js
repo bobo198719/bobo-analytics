@@ -55,7 +55,7 @@ export async function POST({ request }) {
     let finalUrl = "";
     
     // 2. Upload to Hostinger VPS (Primary if configured)
-    const hostingerUrl = process.env.HOSTINGER_BACKEND_URL; // e.g., http://srv1449576.hstgr.cloud:5000
+    const hostingerUrl = process.env.HOSTINGER_BACKEND_URL || "http://srv1449576.hstgr.cloud:5000";
     if (hostingerUrl) {
       try {
         const hFormData = new FormData();

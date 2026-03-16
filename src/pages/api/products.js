@@ -1,6 +1,6 @@
-import { getMySQL, initTables } from "../../lib/mysql";
-
 export const prerender = false;
+
+const hostingerUrl = process.env.HOSTINGER_BACKEND_URL || "http://srv1449576.hstgr.cloud:5000";
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -14,78 +14,34 @@ export async function ALL({ request }) {
     }
 
     const { method } = request;
-    const db = getMySQL();
-    
+    const url = new URL(request.url);
+    const searchParams = url.searchParams.toString();
+    const vpsUrl = `${hostingerUrl}/api/products${searchParams ? '?' + searchParams : ''}`;
+
     try {
-        await initTables(); // Ensure tables exist
-
-        if (method === 'GET') {
-            const [rows] = await db.query("SELECT * FROM products ORDER BY created_at DESC");
-            // Map table column names to frontend field names for backward compatibility
-            const products = rows.map(r => ({
-                ...r,
-                image_url: r.image_path, // Mapping
-                high_res_url: r.image_path,
-                medium_url: r.image_path,
-                thumbnail_url: r.image_path
-            }));
-            
-            return new Response(JSON.stringify(products), {
-                status: 200,
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-            });
-        }
-
-        if (method === 'POST') {
-            const body = await request.json();
-            const { id, name, price, desc, description, cat, category, image_path, image_url } = body;
-            
-            const finalName = name || "Unnamed Bake";
-            const finalPrice = Number(price) || 0;
-            const finalDesc = description || desc || "";
-            const finalCat = category || cat || "General";
-            const finalImg = image_path || image_url || "";
-
-            if (id && !isNaN(id)) {
-                // Update
-                await db.query(
-                    "UPDATE products SET name=?, description=?, price=?, category=?, image_path=? WHERE id=?",
-                    [finalName, finalDesc, finalPrice, finalCat, finalImg, id]
-                );
-                return new Response(JSON.stringify({ success: true, message: "Updated" }), {
-                    status: 200,
-                    headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-                });
-            } else {
-                // Insert
-                const [result] = await db.query(
-                    "INSERT INTO products (name, description, price, category, image_path) VALUES (?, ?, ?, ?, ?)",
-                    [finalName, finalDesc, finalPrice, finalCat, finalImg]
-                );
-                return new Response(JSON.stringify({ success: true, id: result.insertId }), {
-                    status: 201,
-                    headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-                });
+        let options = {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
             }
+        };
+
+        if (method === 'POST' || method === 'PATCH') {
+            const body = await request.clone().text();
+            options.body = body;
         }
 
-        if (method === 'DELETE') {
-            const url = new URL(request.url);
-            const id = url.searchParams.get('id');
-            if (!id) return new Response(JSON.stringify({ error: "Product ID required" }), { status: 400 });
+        const response = await fetch(vpsUrl, options);
+        const data = await response.json();
 
-            await db.query("DELETE FROM products WHERE id = ?", [id]);
-            return new Response(JSON.stringify({ success: true }), {
-                status: 200,
-                headers: corsHeaders
-            });
-        }
-
-        return new Response("Method not allowed", { status: 405 });
+        return new Response(JSON.stringify(data), {
+            status: response.status,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
 
     } catch (error) {
-        console.error("MySQL Products API Error:", error);
-        return new Response(JSON.stringify({ error: error.message }), {
+        console.error("Vercel Proxy Error (Products):", error);
+        return new Response(JSON.stringify({ error: "Failed to connect to backend", details: error.message }), {
             status: 500,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });

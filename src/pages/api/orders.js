@@ -1,6 +1,6 @@
-import { getMySQL, initTables } from "../../lib/mysql";
-
 export const prerender = false;
+
+const hostingerUrl = process.env.HOSTINGER_BACKEND_URL || "http://srv1449576.hstgr.cloud:5000";
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -14,83 +14,34 @@ export async function ALL({ request }) {
     }
 
     const { method } = request;
-    const db = getMySQL();
+    const url = new URL(request.url);
+    const searchParams = url.searchParams.toString();
+    const vpsUrl = `${hostingerUrl}/api/orders${searchParams ? '?' + searchParams : ''}`;
 
     try {
-        await initTables();
+        let options = {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
 
-        if (method === 'GET') {
-            const [rows] = await db.query("SELECT * FROM orders ORDER BY created_at DESC");
-            const orders = rows.map(r => ({
-                ...r,
-                products: typeof r.products === 'string' ? JSON.parse(r.products) : r.products,
-                order_id: r.id // Map primary key to order_id for frontend
-            }));
-            return new Response(JSON.stringify(orders), {
-                status: 200,
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-            });
+        if (['POST', 'PATCH', 'PUT'].includes(method)) {
+            const body = await request.clone().text();
+            options.body = body;
         }
 
-        if (method === 'POST') {
-            const body = await request.json();
-            const { customer_name, phone, products, amount, payment_method, status } = body;
-            
-            const [result] = await db.query(
-                "INSERT INTO orders (customer_name, phone, products, amount, payment_method, status) VALUES (?, ?, ?, ?, ?, ?)",
-                [
-                    customer_name || "Unknown",
-                    phone || "",
-                    JSON.stringify(products || []),
-                    Number(amount) || 0,
-                    payment_method || "COD",
-                    status || "pending"
-                ]
-            );
+        const response = await fetch(vpsUrl, options);
+        const data = await response.json();
 
-            return new Response(JSON.stringify({ success: true, order: { id: result.insertId, order_id: result.insertId } }), {
-                status: 201,
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-            });
-        }
-
-        if (method === 'PATCH') {
-            const url = new URL(request.url);
-            const id = url.searchParams.get('id');
-            if (!id) return new Response(JSON.stringify({ error: "Order ID required" }), { status: 400 });
-
-            const body = await request.json();
-            // Dynamically build update query for PATCH
-            const fields = Object.keys(body).filter(k => ['status', 'payment_status', 'amount'].includes(k));
-            if (fields.length === 0) return new Response(JSON.stringify({ error: "No valid fields to update" }), { status: 400 });
-
-            const query = `UPDATE orders SET ${fields.map(f => `${f}=?`).join(', ')} WHERE id=?`;
-            const values = [...fields.map(f => f === 'products' ? JSON.stringify(body[f]) : body[f]), id];
-
-            await db.query(query, values);
-            return new Response(JSON.stringify({ success: true }), {
-                status: 200,
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-            });
-        }
-
-        if (method === 'DELETE') {
-            const url = new URL(request.url);
-            const id = url.searchParams.get('id');
-            if (!id) return new Response(JSON.stringify({ error: "Order ID required" }), { status: 400 });
-
-            await db.query("DELETE FROM orders WHERE id = ?", [id]);
-            return new Response(JSON.stringify({ success: true }), {
-                status: 200,
-                headers: corsHeaders
-            });
-        }
-
-        return new Response("Method not allowed", { status: 405 });
+        return new Response(JSON.stringify(data), {
+            status: response.status,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
 
     } catch (error) {
-        console.error("MySQL Orders API Error:", error);
-        return new Response(JSON.stringify({ error: error.message }), {
+        console.error("Vercel Proxy Error (Orders):", error);
+        return new Response(JSON.stringify({ error: "Failed to connect to backend", details: error.message }), {
             status: 500,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
