@@ -69,11 +69,13 @@ export async function POST({ request }) {
         
         if (hResponse.ok) {
           const hResult = await hResponse.json();
-          // Construct full URL if it's a relative path from the backend
           finalUrl = hResult.image.startsWith('http') ? hResult.image : `${hostingerUrl}${hResult.image}`;
+        } else {
+          const hErrorText = await hResponse.text();
+          console.warn("Hostinger upload failed with status:", hResponse.status, hErrorText);
         }
       } catch (hError) {
-        console.warn("Hostinger upload failed, falling back:", hError);
+        console.warn("Hostinger upload network error:", hError);
       }
     }
 
