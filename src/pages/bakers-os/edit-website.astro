@@ -262,10 +262,29 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             }
         }
 
-        function loadData() {
-            const data = JSON.parse(localStorage.getItem('bobo_website_data') || JSON.stringify(DEFAULT_DATA));
-            
-            document.getElementById('biz-name').value = data.bizName || DEFAULT_DATA.bizName || "Trivia Bakes";
+        const hostingerUrl = "http://srv1449576.hstgr.cloud:5000";
+        const tenantInfo = JSON.parse(localStorage.getItem("activeTenantContext"));
+        const tenantId = tenantInfo ? tenantInfo.id : 'default_baker';
+
+        async function loadData() {
+            try {
+                const response = await fetch(`${hostingerUrl}/api/settings/${tenantId}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    applyDataToForm(data);
+                } else {
+                    // Fallback to local or default
+                    const localData = JSON.parse(localStorage.getItem('bobo_website_data') || JSON.stringify(DEFAULT_DATA));
+                    applyDataToForm(localData);
+                }
+            } catch (err) {
+                console.error("Load Fail:", err);
+                applyDataToForm(DEFAULT_DATA);
+            }
+        }
+
+        function applyDataToForm(data) {
+            document.getElementById('biz-name').value = data.bizName || DEFAULT_DATA.bizName;
             document.getElementById('hero-title').value = data.heroTitle || DEFAULT_DATA.heroTitle;
             document.getElementById('hero-subtitle').value = data.heroSubtitle || DEFAULT_DATA.heroSubtitle;
             document.getElementById('about-title').value = data.aboutTitle || DEFAULT_DATA.aboutTitle;
@@ -294,7 +313,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             }
         }
 
-        window.saveWebsiteData = () => {
+        window.saveWebsiteData = async () => {
             if (isUploading) {
                 alert('Please wait for the photo to finish uploading before saving.');
                 return;
@@ -312,9 +331,30 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 contactAddress: document.getElementById('contact-address').value
             };
 
-            localStorage.setItem('bobo_website_data', JSON.stringify(data));
-            alert('Website updated successfully! Your high-quality images are now saved to production storage.');
-            window.location.href = '/bakers-os/website';
+            try {
+                const btn = document.querySelector(".btn-primary");
+                btn.innerText = "Saving to Server...";
+                
+                const response = await fetch(`${hostingerUrl}/api/settings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tenantId, settings: data })
+                });
+
+                if (response.ok) {
+                    localStorage.setItem('bobo_website_data', JSON.stringify(data));
+                    alert('Website updated successfully on Bobo Server!');
+                    window.location.href = '/bakers-os/website';
+                } else {
+                    throw new Error("Server save failed");
+                }
+            } catch (err) {
+                console.error("Save Error:", err);
+                localStorage.setItem('bobo_website_data', JSON.stringify(data));
+                alert('Saved locally. Server sync failed.');
+            } finally {
+                document.querySelector(".btn-primary").innerText = "Save Changes";
+            }
         };
 
         document.addEventListener('DOMContentLoaded', loadData);

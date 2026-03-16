@@ -48,6 +48,27 @@ const initDb = () => {
   )`, (err) => {
     if (err) console.error("Error creating orders table:", err);
   });
+
+  db.query(`CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) UNIQUE,
+    password VARCHAR(255),
+    business_name VARCHAR(255),
+    industry VARCHAR(100),
+    plan VARCHAR(50) DEFAULT 'starter',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`, (err) => {
+    if (err) console.error("Error creating users table:", err);
+  });
+
+  db.query(`CREATE TABLE IF NOT EXISTS site_settings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tenant_id VARCHAR(255) UNIQUE,
+    settings JSON,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  )`, (err) => {
+    if (err) console.error("Error creating site_settings table:", err);
+  });
 };
 
 initDb();

@@ -54,12 +54,33 @@ export async function POST({ request }) {
 
     let finalUrl = "";
     
-    // 2. Upload to Cloudinary if keys exist
-    const canCloudinary = process.env.CLOUDINARY_CLOUD_NAME && 
-                         process.env.CLOUDINARY_API_KEY && 
-                         !process.env.CLOUDINARY_API_KEY.includes('your_');
+    // 2. Upload to Hostinger VPS (Primary if configured)
+    const hostingerUrl = process.env.HOSTINGER_BACKEND_URL; // e.g., http://srv1449576.hstgr.cloud:5000
+    if (hostingerUrl) {
+      try {
+        const hFormData = new FormData();
+        const blob = new Blob([optimizedBuffer], { type: 'image/webp' });
+        hFormData.append('image', blob, 'cake.webp');
+        
+        const hResponse = await fetch(`${hostingerUrl}/api/upload-product`, {
+          method: 'POST',
+          body: hFormData
+        });
+        
+        if (hResponse.ok) {
+          const hResult = await hResponse.json();
+          // Construct full URL if it's a relative path from the backend
+          finalUrl = hResult.image.startsWith('http') ? hResult.image : `${hostingerUrl}${hResult.image}`;
+        }
+      } catch (hError) {
+        console.warn("Hostinger upload failed, falling back:", hError);
+      }
+    }
 
-    if (canCloudinary) {
+    // 3. Fallback to Cloudinary
+    if (!finalUrl && process.env.CLOUDINARY_CLOUD_NAME && 
+        process.env.CLOUDINARY_API_KEY && 
+        !process.env.CLOUDINARY_API_KEY.includes('your_')) {
       const result = await new Promise((resolve, reject) => {
         cloudinary.uploader.upload_stream(
           { folder: "bakers-os", format: "webp" },
@@ -68,8 +89,8 @@ export async function POST({ request }) {
       });
       finalUrl = result.secure_url || result.url;
     } 
-    // 3. Fallback to Vercel Blob
-    else if (process.env.BLOB_READ_WRITE_TOKEN) {
+    // 4. Fallback to Vercel Blob
+    else if (!finalUrl && process.env.BLOB_READ_WRITE_TOKEN) {
       const filename = `bakers-os/${Date.now()}.webp`;
       const blob = await put(filename, optimizedBuffer, {
         access: 'public',
@@ -77,8 +98,8 @@ export async function POST({ request }) {
       });
       finalUrl = blob.url;
     } 
-    else {
-      throw new Error("No production-quality storage credentials found");
+    else if (!finalUrl) {
+      throw new Error("No storage backends worked and no credentials found for fallback.");
     }
 
     return new Response(JSON.stringify({ url: finalUrl }), {

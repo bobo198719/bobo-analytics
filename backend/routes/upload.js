@@ -19,12 +19,12 @@ router.post("/upload-product", upload.single("image"), async (req, res) => {
         const id = uuidv4();
         const filename = `cake-${id}.webp`;
         
-        // Robust path handling for Vercel/Local mix
-        const publicDir = path.join(process.cwd(), "..", "public", "menu-images");
-        const filepath = path.join(publicDir, filename);
+        // Save to internal public folder within backend
+        const uploadDir = path.join(__dirname, "..", "public", "menu-images");
+        const filepath = path.join(uploadDir, filename);
 
         await sharp(req.file.buffer)
-            .resize(1200)
+            .resize(1080, 1080, { fit: "cover", position: "centre" })
             .webp({ quality: 85 })
             .toFile(filepath);
 

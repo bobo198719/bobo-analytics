@@ -289,75 +289,52 @@ const { data } = Astro.props;
           const btn = loginForm.querySelector("button");
           const originalBtnText = btn.innerText;
           btn.innerText = "Authenticating...";
-          await new Promise(r => setTimeout(r, 600));
+          
+          const hostingerUrl = "http://srv1449576.hstgr.cloud:5000"; // Hardcoded for now as per user request for "boboanalytics" server
+          
+          const response = await fetch(`${hostingerUrl}/api/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+              username, 
+              password: pwd, 
+              industry: currentInd.toLowerCase() 
+            })
+          });
+
+          const result = await response.json();
           btn.innerText = originalBtnText;
 
-          let tenants = JSON.parse(localStorage.getItem("bobo_tenants") || "[]");
-          let accounts = JSON.parse(localStorage.getItem("bobo_accounts") || "[]");
-          
-          // Debugging log (only in development/console)
-          console.log("Login Attempt:", { username, industry: currentInd });
-          
-          function normalizeIndustry(ind) {
-            if (!ind) return "";
-            const mapping = {
-              "clothing-store": "fashion",
-              "fashion": "fashion",
-              "groceries": "grocery",
-              "grocery": "grocery",
-              "stock-trading": "tradeguard",
-              "tradeguard": "tradeguard"
-            };
-            return mapping[ind.toLowerCase()] || ind.toLowerCase();
-          }
-
-          const targetInd = normalizeIndustry(currentInd);
-
-          let validTenant = tenants.find(t => 
-             ((t.pharmacyId && t.pharmacyId.toLowerCase() === username) || (t.username && t.username.toLowerCase() === username)) && 
-             t.password === pwd && 
-             normalizeIndustry(t.industry) === targetInd
-          );
-
-          if (!validTenant) {
-            validTenant = accounts.find(a => 
-               ((a.username && a.username.toLowerCase() === username) || (a.id && a.id.toLowerCase() === username)) && 
-               a.password === pwd && 
-               normalizeIndustry(a.industry) === targetInd
-            );
-          }
-
-          // Emergency Fallback for the provisioned account mentioned by user
-          if (!validTenant && username === "cloth_admin" && pwd === "BOBO_9FPOZI" && targetInd === "fashion") {
-             validTenant = { username: "cloth_admin", businessName: "Cloth Provisioned", industry: "fashion", plan: "enterprise" };
-          }
-
-          if (validTenant) {
-            console.log("Login Successful:", validTenant);
-            // Set Unified Context
-            localStorage.setItem("activeTenantContext", JSON.stringify({
-               id: validTenant.pharmacyId || validTenant.username || validTenant.id,
-               name: validTenant.pharmacy || validTenant.businessName,
-               industry: normalizeIndustry(validTenant.industry) || targetInd,
-               plan: validTenant.plan || "starter"
-            }));
+          if (result.success) {
+            console.log("Login Successful:", result.user);
+            localStorage.setItem("activeTenantContext", JSON.stringify(result.user));
             window.location.href = "/dashboard";
           } else {
-             console.warn("Login Failed - No Match Found");
-             // Fallback: check if they exist but wrong industry
-             let existAnywhere = [...tenants, ...accounts].find(t => 
-                ((t.pharmacyId && t.pharmacyId.toLowerCase() === username) || (t.username && t.username.toLowerCase() === username)) && 
-                t.password === pwd
-             );
-             
-             if (existAnywhere) {
-                errorMsg.innerText = `Invalid portal. This account belongs to the ${existAnywhere.industry} vertical.`;
-             } else {
-                errorMsg.innerText = "Invalid credentials. Contact Super Admin to provision an instance.";
-             }
+            // Check for emergency fallback if offline or not in DB yet
+            if (username === "cloth_admin" && pwd === "BOBO_9FPOZI") {
+               localStorage.setItem("activeTenantContext", JSON.stringify({
+                  id: "cloth_admin",
+                  name: "Cloth Provisioned",
+                  industry: "fashion",
+                  plan: "enterprise"
+               }));
+               window.location.href = "/dashboard";
+               return;
+            }
+            errorMsg.innerText = result.message || "Invalid credentials. Contact Super Admin.";
           }
         } catch(err) {
-           errorMsg.innerText = "System error during authentication.";
+           console.error("Auth Fail:", err);
+           errorMsg.innerText = "Connection to Bobo Server failed. Using offline fallback...";
+           // LocalStorage Fallback for dev continuity
+           let tenants = JSON.parse(localStorage.getItem("bobo_tenants") || "[]");
+           let validTenant = tenants.find(t => t.username === username && t.password === pwd);
+           if (validTenant) {
+              localStorage.setItem("activeTenantContext", JSON.stringify(validTenant));
+              window.location.href = "/dashboard";
+           } else {
+              errorMsg.innerText = "System error during authentication. Check server status.";
+           }
         }
       });
     }
