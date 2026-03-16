@@ -1,5 +1,7 @@
 const express = require("express");
 const db = require("../db");
+const fs = require("fs");
+const path = require("path");
 
 const router = express.Router();
 
@@ -68,6 +70,40 @@ router.delete(["/:id", "/products/:id"], async (req, res) => {
         await db.query("DELETE FROM products WHERE id = ?", [req.params.id]);
         res.json({ success: true });
     } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+router.delete(["/:id/image", "/products/:id/image"], async (req, res) => {
+    try {
+        const [rows] = await db.query("SELECT image_path FROM products WHERE id = ?", [req.params.id]);
+        if (rows.length === 0) return res.status(404).json({ error: "Product not found" });
+
+        const imagePath = rows[0].image_path;
+        if (imagePath && (imagePath.includes("/storage/") || imagePath.includes("/menu-images/"))) {
+            // Extract filename from URL/Path
+            const filename = path.basename(imagePath);
+            let fullPath = "";
+            
+            if (imagePath.includes("/storage/")) {
+                fullPath = path.join("/var/www/storage/bakery/images", filename);
+            } else {
+                fullPath = path.join(__dirname, "..", "public", "menu-images", filename);
+            }
+
+            if (fs.existsSync(fullPath)) {
+                try {
+                    fs.unlinkSync(fullPath);
+                } catch (e) {
+                    console.warn(`Could not delete file: ${fullPath}`, e);
+                }
+            }
+        }
+
+        await db.query("UPDATE products SET image_path = NULL WHERE id = ?", [req.params.id]);
+        res.json({ success: true, message: "Image deleted successfully" });
+    } catch (err) {
+        console.error("Image Delete Error:", err);
         res.status(500).json({ error: err.message });
     }
 });

@@ -32,17 +32,8 @@ export async function ALL({ params, request }) {
             redirect: 'follow'
         };
 
-        if (!['GET', 'HEAD'].includes(request.method)) {
-            // For POST/PUT requests, get the buffer once
-            const contentType = request.headers.get('content-type') || '';
-            
-            if (contentType.includes('multipart/form-data')) {
-                // For file uploads, we must get the full buffer
-                options.body = await request.arrayBuffer();
-            } else {
-                // For JSON or other small payloads
-                options.body = await request.arrayBuffer();
-            }
+        if (['POST', 'PUT', 'PATCH'].includes(request.method)) {
+            options.body = await request.arrayBuffer();
         }
 
         const response = await fetch(vpsUrl, options);

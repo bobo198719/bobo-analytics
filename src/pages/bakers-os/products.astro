@@ -91,6 +91,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                         <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 8px;">Supports JPG, PNG, WEBP. AI background removal will be applied.</p>
                     </div>
                 </div>
+                <button id="p-delete-image-btn" class="btn btn-secondary w-full" style="display:none; margin-top: 5px; background: #ef4444; border: none; color: white;" onclick="deleteProductImage()">🗑️ Delete Current Image</button>
                 <button class="btn btn-primary w-full" style="margin-top: 20px;" onclick="saveProduct()">Save Product Details</button>
             </div>
         </div>
@@ -583,19 +584,24 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 document.getElementById('p-prep').value  = p.prep || '4h';
 
                 const preview = document.getElementById('p-image-preview');
+                const deleteBtn = document.getElementById('p-delete-image-btn');
+                
                 preview.style.display = 'block';
-                // Prefer stored URLs; fall back to legacy IndexedDB for older records
                 if (p.image_path || p.high_res_url || p.medium_url || p.thumbnail_url) {
                     preview.style.backgroundImage = `url('${p.image_path || p.high_res_url || p.medium_url || p.thumbnail_url || ''}')`;
+                    deleteBtn.style.display = 'block';
                 } else if (p.image_id) {
                     const img = await getImageFromDB(p.image_id);
                     if (img) {
                         preview.style.backgroundImage = `url('${img.high_res || img.medium || img.thumbnail}')`;
+                        deleteBtn.style.display = 'block';
                     } else {
                         preview.style.display = 'none';
+                        deleteBtn.style.display = 'none';
                     }
                 } else {
                     preview.style.display = 'none';
+                    deleteBtn.style.display = 'none';
                 }
             } else {
                 document.getElementById('modal-title').innerText = 'New Signature Bake';
@@ -603,6 +609,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 document.getElementById('p-price').value = '1200';
                 document.getElementById('p-desc').value  = '';
                 document.getElementById('p-image-preview').style.display = 'none';
+                document.getElementById('p-delete-image-btn').style.display = 'none';
             }
             document.getElementById('product-modal').style.display = 'flex';
         };
@@ -658,8 +665,45 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                     alert('Failed to save product: ' + (err.error || 'Unknown Error'));
                 }
             } catch (e) {
-                console.error(e);
-                alert('Connection error. Please try again.');
+                console.error('Save Error:', e);
+                alert('Save failed: ' + e.message);
+            } finally {
+                overlay.style.display = 'none';
+            }
+        };
+
+        window.deleteProductImage = async () => {
+            if (editingIndex === null) return;
+            const p = products[editingIndex];
+            if (!confirm('Are you sure you want to delete this product image? This cannot be undone.')) return;
+
+            const overlay = document.getElementById('processing-overlay');
+            const statusText = document.getElementById('processing-status');
+            overlay.style.display = 'flex';
+            statusText.innerText = 'Deleting Image...';
+
+            try {
+                const res = await fetch(`/api/products/${p.id}/image`, {
+                    method: 'DELETE'
+                });
+                const result = await res.json();
+                
+                if (result.success) {
+                    // Update local state
+                    products[editingIndex].image_path = null;
+                    products[editingIndex].image_url = null;
+                    
+                    document.getElementById('p-image-preview').style.display = 'none';
+                    document.getElementById('p-delete-image-btn').style.display = 'none';
+                    
+                    alert('Image deleted successfully.');
+                    renderProducts();
+                } else {
+                    throw new Error(result.error || 'Delete failed');
+                }
+            } catch (e) {
+                console.error('Delete Error:', e);
+                alert('Delete failed: ' + e.message);
             } finally {
                 overlay.style.display = 'none';
             }
