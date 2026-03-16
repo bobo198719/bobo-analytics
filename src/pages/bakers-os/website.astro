@@ -243,6 +243,10 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
 
     <script is:inline>
         let cart = [];
+        let liveProducts = [];
+        let tenantId = 'default_baker';
+        const API_BASE = '/api';
+
         try { 
             cart = JSON.parse(localStorage.getItem('bobo_cart') || "[]"); 
             if (!Array.isArray(cart)) cart = [];
@@ -254,110 +258,78 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         document.addEventListener('DOMContentLoaded', async () => {
             const host = window.location.host;
             const isSubdomain = host.split('.').length > 2 && !host.includes('localhost') && !host.includes('vercel.app');
-            const tenantId = isSubdomain ? host.split('.')[0] : 'default_baker';
-            const API_BASE = '/api';
-
-            // 1. Load Custom Website Data from Proxy
-            async function fetchSettings() {
-                try {
-                    const res = await fetch(`${API_BASE}/settings/${tenantId}`);
-                    if (res.ok) {
-                        const customData = await res.json();
-                        applyBranding(customData);
-                    } else {
-                        const localData = JSON.parse(localStorage.getItem('bobo_website_data') || '{}');
-                        applyBranding(localData);
-                    }
-                } catch (e) {
-                    console.error("Settings fetch failed:", e);
-                }
-            }
-
-            function applyBranding(customData) {
-                const bizLogo = customData.bizLogo || '/bakers-logo.png';
-                const bizName = customData.bizName || 'Trivia Bakes';
-                
-                document.querySelectorAll('.brand-text').forEach(el => el.innerText = bizName);
-                document.querySelectorAll('.logo-img').forEach(el => el.src = bizLogo);
-                
-                if (customData.heroTitle) document.querySelector('.hero-content h1').innerHTML = customData.heroTitle.replace('Happiness', `<span class="accent-text">Happiness</span>`);
-                if (customData.heroSubtitle) document.querySelector('.hero-content p').innerText = customData.heroSubtitle;
-                if (customData.heroBg) document.querySelector('.hero-premium-v2').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('${customData.heroBg}')`;
-                
-                if (customData.aboutTitle) document.querySelector('.about-text h2').innerText = customData.aboutTitle;
-                if (customData.aboutP1) document.querySelector('.about-text p').innerText = customData.aboutP1;
-                if (customData.aboutImg) document.querySelector('.about-image img').src = customData.aboutImg;
-                
-                if (customData.contactPhone) {
-                    const waLink = document.querySelector('.wa-link');
-                    if (waLink) {
-                        waLink.innerText = customData.contactPhone;
-                        waLink.href = `https://wa.me/${customData.contactPhone.replace(/\D/g, '')}`;
-                    }
-                }
-                if (customData.contactAddress) {
-                    const addr = document.querySelector('.f-contact-side p');
-                    if (addr) addr.innerText = customData.contactAddress;
-                }
-            }
-
-            // 2. Load Products
-            let liveProducts = [];
-
-            async function fetchLiveProducts() {
-                try {
-                    const res = await fetch(`${API_BASE}/products`);
-                    const data = await res.json();
-                    if (Array.isArray(data) && data.length > 0) {
-                        liveProducts = data;
-                    } else {
-                        // Fallback to local default if DB is empty
-                        liveProducts = [
-                            { id:'p1', name:'Spider-Man Theme Cake', category:'Chocolate Cakes', price:1800, description:'Premium chocolate sponge with hand-piped Spider-man web design.', status:'approved', image_path:'/menu-images/whatsapp-image-2026-03-13-at-10-59-57-jpeg-1773564631013.webp' },
-                            { id:'p2', name:'Classic Smiley Cake',   category:'Vanilla Cakes',   price:1200, description:'Joyful vanilla cream cake with a classic smiley face design.',    status:'approved', image_path:'/menu-images/ww-jpeg-1773564633537.webp' },
-                            { id:'p3', name:'Luxury Cupcake Box',    category:'Cupcakes',        price:950,  description:'Set of 6 gourmet cupcakes with fresh berries and rich frosting.', status:'approved', image_path:'/menu-images/cake2-png-1773563690213.webp' },
-                            { id:'p4', name:'Doraemon Dream Cake',   category:'Fruit Cakes',     price:1500, description:'Bespoke buttercream cake featuring full Doraemon edible art.', status:'approved', image_path:'/menu-images/wewre-jpeg-1773564630497.webp' },
-                            { id:'p5', name:'Belgium Truffle Cake',  category:'Chocolate Cakes', price:1450, description:'Dense chocolate sponge with 70% dark Belgian chocolate.', status:'approved', image_path:'/menu-images/whatsapp-image-2026-03-13-at-10-59-51-jpeg-1773564630772.webp' },
-                            { id:'p6', name:'Biscoff Cheesecake',    category:'Desserts',        price:1600, description:'Creamy Biscoff-infused cheesecake.', status:'approved', image_path:'/menu-images/whatsapp-image-2026-03-13-at-11-00-07-jpeg-1773564632288.webp' }
-                        ];
-                    }
-                    
-                    const approved = liveProducts.filter(p => !p.status || p.status === 'approved');
-                    renderMenu(approved);
-                    renderGallery(approved);
-                    updateCartUI();
-                } catch (e) {
-                    console.error("Live fetch failed:", e);
-                }
-            }
+            tenantId = isSubdomain ? host.split('.')[0] : 'default_baker';
 
             await fetchSettings();
             await fetchLiveProducts();
+            updateCartUI();
         });
 
-        function renderGallery(items) {
-            const container = document.getElementById('gallery-container');
-            if (!container) return;
-            const fallback = '/assets/cake-placeholder.png';
-            
-            // Show latest 8 approved items in gallery
-            const galleryItems = items.slice(0, 8);
-            
-            if (galleryItems.length === 0) {
-                container.innerHTML = '<p>Gallery will be populated as you add products.</p>';
-                return;
+        async function fetchSettings() {
+            try {
+                const res = await fetch(`${API_BASE}/settings/${tenantId}`);
+                if (res.ok) {
+                    const customData = await res.json();
+                    applyBranding(customData);
+                } else {
+                    const localData = JSON.parse(localStorage.getItem('bobo_website_data') || '{}');
+                    applyBranding(localData);
+                }
+            } catch (e) {
+                console.error("Settings fetch failed:", e);
             }
+        }
 
-            container.innerHTML = galleryItems.map(p => {
-                const imgPath = p.image_path || p.image_url || p.high_res_url || fallback;
-                return `
-                <div class="gallery-item-v2" onclick="openLightbox(this)">
-                    <img src="${imgPath}" 
-                         onerror="this.src='${fallback}'" 
-                         loading="lazy" />
-                </div>
-                `;
-            }).join('');
+        function applyBranding(customData) {
+            const bizLogo = customData.bizLogo || '/bakers-logo.png';
+            const bizName = customData.bizName || 'Trivia Bakes';
+            
+            document.querySelectorAll('.brand-text').forEach(el => el.innerText = bizName);
+            document.querySelectorAll('.logo-img').forEach(el => el.src = bizLogo);
+            
+            if (customData.heroTitle) {
+                const h1 = document.querySelector('.hero-content h1');
+                if (h1) h1.innerHTML = customData.heroTitle.replace('Happiness', `<span class="accent-text">Happiness</span>`);
+            }
+            if (customData.heroSubtitle) {
+                const p = document.querySelector('.hero-content p');
+                if (p) p.innerText = customData.heroSubtitle;
+            }
+            if (customData.heroBg) {
+                const hero = document.querySelector('.hero-premium-v2');
+                if (hero) hero.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('${customData.heroBg}')`;
+            }
+            
+            if (customData.aboutTitle) {
+                const h2 = document.querySelector('.about-text h2');
+                if (h2) h2.innerText = customData.aboutTitle;
+            }
+            if (customData.aboutP1) {
+                const p = document.querySelector('.about-text p');
+                if (p) p.innerText = customData.aboutP1;
+            }
+        }
+
+        async function fetchLiveProducts() {
+            try {
+                const res = await fetch(`${API_BASE}/products`);
+                const data = await res.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    liveProducts = data;
+                } else {
+                    liveProducts = [
+                        { id:'p1', name:'Spider-Man Theme Cake', category:'Chocolate Cakes', price:1800, description:'Premium chocolate sponge with hand-piped Spider-man web design.', status:'approved', image_path:'/menu-images/whatsapp-image-2026-03-13-at-10-59-57-jpeg-1773564631013.webp' },
+                        { id:'p2', name:'Classic Smiley Cake',   category:'Vanilla Cakes',   price:1200, description:'Joyful vanilla cream cake with a classic smiley face design.',    status:'approved', image_path:'/menu-images/ww-jpeg-1773564633537.webp' },
+                        { id:'p3', name:'Luxury Cupcake Box',    category:'Cupcakes',        price:950,  description:'Set of 6 gourmet cupcakes with fresh berries and rich frosting.', status:'approved', image_path:'/menu-images/cake2-png-1773563690213.webp' }
+                    ];
+                }
+                const approved = liveProducts.filter(p => !p.status || p.status === 'approved');
+                renderMenu(approved);
+                renderGallery(approved);
+            } catch (e) {
+                console.error("Live fetch failed:", e);
+                renderMenu([]);
+            }
         }
 
         function renderMenu(items) {
@@ -370,23 +342,23 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             
             menuContainer.innerHTML = items.map(p => {
                 const fallback = '/assets/cake-placeholder.png';
-                const imgPath = p.image_path || p.image_url || p.high_res_url || p.medium_url || p.thumbnail_url || fallback;
+                const imgPath = p.image_path || p.image_url || p.high_res_url || fallback;
                 const category = p.category || p.cat || 'General';
                 const description = p.description || p.desc || '';
                 
                 return `
-                <div class="bake-card-v2">
-                    <div class="bake-img-box">
-                        <img src="${imgPath}" onerror="this.src='${fallback}'" alt="${p.name}" loading="lazy" />
+                <div class="bake-card-v2" data-product-id="${p.id}" data-product-name="${p.name}" data-price="${p.price}">
+                    <div class="bake-img-box" onclick="openQuickView('${p.id}')" style="cursor: pointer;">
+                        <img src="${imgPath}" onerror="this.src='${fallback}'" alt="${p.name}" loading="lazy" class="product-image clickable" />
                         <div class="bake-badge">${category}</div>
-                        <button class="bake-qv-btn" onclick="openQuickView('${p.id}')">Quick View</button>
+                        <button class="bake-qv-btn" onclick="event.stopPropagation(); openQuickView('${p.id}')">Quick View</button>
                     </div>
                     <div class="bake-info">
-                        <h3>${p.name}</h3>
+                        <h3 onclick="openQuickView('${p.id}')" style="cursor: pointer;">${p.name}</h3>
                         <p>${description}</p>
                         <div class="bake-meta">
                             <span class="price">₹${p.price}</span>
-                            <button class="btn-add-cart-v2" onclick="addToCart('${p.id}')">Add to Cart</button>
+                            <button class="btn-add-cart-v2" data-product-id="${p.id}" onclick="event.stopPropagation(); addToCart('${p.id}')">Add to Cart</button>
                         </div>
                     </div>
                 </div>
@@ -394,21 +366,29 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             }).join('');
         }
 
+        function renderGallery(items) {
+            const container = document.getElementById('gallery-container');
+            if (!container) return;
+            const fallback = '/assets/cake-placeholder.png';
+            const galleryItems = items.slice(0, 8);
+            container.innerHTML = galleryItems.map(p => `
+                <div class="gallery-item-v2" onclick="openLightbox(this)">
+                    <img src="${p.image_path || p.image_url || fallback}" onerror="this.src='${fallback}'" loading="lazy" />
+                </div>
+            `).join('');
+        }
+
         window.handleSearch = val => {
             const q = val.toLowerCase();
-            const filtered = liveProducts.filter(p => {
-                const nameMatch = p.name.toLowerCase().includes(q);
-                const catMatch = (p.category || p.cat || '').toLowerCase().includes(q);
-                return nameMatch || catMatch;
-            });
+            const filtered = liveProducts.filter(p => 
+                p.name.toLowerCase().includes(q) || (p.category || p.cat || '').toLowerCase().includes(q)
+            );
             renderMenu(filtered);
         };
 
         window.filterMenu = cat => {
-            if (cat === 'all') return renderMenu(liveProducts);
-            const filtered = liveProducts.filter(p => (p.category === cat || p.cat === cat));
+            const filtered = cat === 'all' ? liveProducts : liveProducts.filter(p => (p.category === cat || p.cat === cat));
             renderMenu(filtered);
-            
             document.querySelectorAll('.cat-tab').forEach(btn => {
                 btn.classList.remove('active');
                 if (btn.innerText.includes(cat) || (cat === 'all' && btn.innerText.includes('All'))) btn.classList.add('active');
@@ -418,7 +398,6 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         window.addToCart = (id, q = 1) => {
             const p = liveProducts.find(i => i.id == id);
             if (!p) return;
-
             const existing = cart.find(item => item.id == id);
             if (existing) {
                 existing.qty += q;
@@ -434,7 +413,7 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             const container = document.getElementById('cart-items');
             const count = document.getElementById('cart-count');
             const total = document.getElementById('cart-total');
-            if (count) count.innerText = cart.reduce((a, b) => a + b.qty, 0);
+            if (count) count.innerText = cart.reduce((a, b) => a + Number(b.qty), 0);
             if (container) {
                 container.innerHTML = cart.map((item, i) => `
                     <div class="cart-item">
@@ -446,7 +425,7 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                     </div>
                 `).join('');
             }
-            if (total) total.innerText = '₹' + cart.reduce((a, b) => a + (b.price * b.qty), 0);
+            if (total) total.innerText = '₹' + cart.reduce((a, b) => a + (Number(b.price) * Number(b.qty)), 0);
         }
 
         window.removeFromCart = i => {
@@ -456,7 +435,8 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         };
 
         window.toggleCart = () => {
-            document.getElementById('cart-sidebar').classList.toggle('active');
+            const sidebar = document.getElementById('cart-sidebar');
+            if (sidebar) sidebar.classList.toggle('active');
         };
 
         window.openQuickView = id => {
@@ -468,15 +448,13 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             body.innerHTML = `
                 <div class="qv-content" style="padding: 40px; display: flex; gap: 30px; align-items: center;">
                     <div style="width: 400px; aspect-ratio: 1; overflow: hidden; border-radius: 24px; flex-shrink: 0;">
-                        <img src="${p.image_path || p.image_url || p.medium_url || fallback}" 
-                             onerror="this.src='${fallback}'"
-                             style="width: 100%; height: 100%; object-fit: cover;" />
+                        <img src="${p.image_path || p.image_url || fallback}" onerror="this.src='${fallback}'" style="width: 100%; height: 100%; object-fit: cover;" />
                     </div>
                     <div>
                         <h2>${p.name}</h2>
                         <p style="font-size: 1.5rem; color: var(--primary-dark); font-weight: 800; margin: 10px 0;">₹${p.price}</p>
                         <p>${p.description || p.desc || ''}</p>
-                        <button class="btn-hero-main" style="margin-top: 20px;" onclick="addToCart('${p.id}'); closeModals()">Add to Cart</button>
+                        <button class="btn-hero-main" style="margin-top: 20px;" onclick="event.stopPropagation(); addToCart('${p.id}'); closeModals()">Add to Cart</button>
                     </div>
                 </div>
             `;
@@ -487,12 +465,12 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
         };
 
-        // CUSTOM CAKE BUILDER LOGIC
-        let customCakeWeight = 0.5;
         window.openBuilder = () => {
-            document.getElementById('builder-modal').classList.add('active');
+            const modal = document.getElementById('builder-modal');
+            if (modal) modal.classList.add('active');
         };
 
+        let customCakeWeight = 0.5;
         window.setWeight = (w, btn) => {
             customCakeWeight = w;
             document.querySelectorAll('.weight-pills button').forEach(b => b.classList.remove('active'));
@@ -503,16 +481,14 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             const flavor = document.getElementById('cake-flavor').value;
             const msg = document.getElementById('cake-msg').value;
             const price = customCakeWeight === 0.5 ? 1200 : (customCakeWeight === 1 ? 2200 : 4200);
-            
             const customItem = {
                 id: 'custom_' + Date.now(),
                 name: `Custom ${flavor} Cake (${customCakeWeight} KG)`,
                 price: price,
                 qty: 1,
-                desc: msg ? `Message: "${msg}"` : "Custom designed cake",
-                image_url: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600'
+                description: msg ? `Message: "${msg}"` : "Custom designed cake",
+                image_path: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600'
             };
-
             cart.push(customItem);
             localStorage.setItem('bobo_cart', JSON.stringify(cart));
             updateCartUI();
@@ -520,48 +496,37 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             toggleCart();
         };
 
-
         window.openLightbox = (el) => {
             const img = el.querySelector('img');
             const lb = document.getElementById('lightbox');
             const lbImg = document.getElementById('lightbox-img');
-            if (img && lb && lbImg) {
-                lbImg.src = img.src;
-                lb.classList.add('active');
-            }
+            if (img && lb && lbImg) { lbImg.src = img.src; lb.classList.add('active'); }
         };
 
         window.closeLightbox = () => {
-            document.getElementById('lightbox').classList.remove('active');
+            const lb = document.getElementById('lightbox');
+            if (lb) lb.classList.remove('active');
         };
 
         window.trackOrder = async () => {
             const id = document.getElementById('order-search-id').value.trim();
             if (!id) return alert("Please enter an Order ID.");
-
             const resultEl = document.getElementById('track-result');
-            resultEl.innerHTML = '<p>Searching database...</p>';
-
+            resultEl.innerHTML = '<p>Searching...</p>';
             try {
                 const res = await fetch(`/api/orders`);
                 const allOrders = await res.json();
-                const order = allOrders.find(o => (o.order_id === id || o.id === id));
-
+                const order = allOrders.find(o => (String(o.order_id) === id || String(o.id) === id));
                 if (order) {
-                    resultEl.innerHTML = `
-                        <div style="margin-top:20px; padding:20px; background:var(--primary-light); border-radius:20px;">
-                            <h4 style="color:var(--primary-dark)">Order Found!</h4>
-                            <p><strong>Status:</strong> ${order.status.toUpperCase()}</p>
-                            <p><strong>Customer:</strong> ${order.customer_name || order.customer}</p>
-                            <p><strong>Amount:</strong> ₹${order.amount}</p>
-                        </div>
-                    `;
+                    resultEl.innerHTML = `<div style="margin-top:20px; padding:20px; background:var(--primary-light); border-radius:20px;">
+                        <h4 style="color:var(--primary-dark)">Order Found!</h4>
+                        <p>Status: ${order.status.toUpperCase()}</p>
+                        <p>Total: ₹${order.amount}</p>
+                    </div>`;
                 } else {
-                    resultEl.innerHTML = '<p style="color:red; margin-top:20px;">Order not found. Please check the ID.</p>';
+                    resultEl.innerHTML = '<p style="color:red;">Order not found.</p>';
                 }
-            } catch (e) {
-                resultEl.innerHTML = '<p>Error connecting to tracking service.</p>';
-            }
+            } catch (e) { resultEl.innerHTML = '<p>Error.</p>'; }
         };
     </script>
 
