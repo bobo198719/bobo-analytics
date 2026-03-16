@@ -59,6 +59,8 @@ export async function ALL({ params, request }) {
         const responseHeaders = new Headers(response.headers);
         // Overwrite CORS to follow Vercel proxy rules
         Object.keys(corsHeaders).forEach(key => responseHeaders.set(key, corsHeaders[key]));
+        responseHeaders.set("X-Proxy-Version", "1.0.1");
+        responseHeaders.set("X-Proxy-Handler", "Universal-Catch-All");
 
         return new Response(data, {
             status: response.status,
