@@ -810,18 +810,32 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         //  Initialization
         // ═══════════════════════════════════════════════════════════════════
         window.del = async index => {
-            if (!confirm('Delete this bake PERMANENTLY from the database?')) return;
+            if (!confirm('Delete this bake PERMANENTLY? Both record and image will be removed.')) return;
             const p = products[index];
             
+            // Immediate UI feedback (Step 7)
+            const card = document.getElementById(`card-${p.id}`);
+            if (card) card.style.opacity = '0.3';
+
             try {
-                const res = await fetch(`/api/products?id=${p.id}`, { method: 'DELETE' });
-                if (res.ok) {
-                    await loadProducts();
+                const res = await fetch(`/api/products/${p.id}`, { method: 'DELETE' });
+                const result = await res.json();
+                
+                if (result.success) {
+                    if (card) card.remove();
+                    // Update local array to keep indices in sync if needed, 
+                    // though a full reload or re-render is safer.
+                    // For now, let's just filter it out and re-render to be safe.
+                    products = products.filter(x => x.id !== p.id);
+                    renderProducts(); 
                 } else {
-                    alert('Failed to delete product.');
+                    if (card) card.style.opacity = '1';
+                    alert('Failed to delete product: ' + (result.error || 'Unknown error'));
                 }
             } catch (e) {
                 console.error(e);
+                if (card) card.style.opacity = '1';
+                alert('Connection error. Could not delete product.');
             }
         };
 
