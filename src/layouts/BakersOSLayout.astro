@@ -1,6 +1,4 @@
----
 const { title = "Trivia" } = Astro.props;
-import "../styles/theme.css";
 ---
 
 <!DOCTYPE html>
@@ -16,14 +14,14 @@ import "../styles/theme.css";
         :root {
             --sidebar-width: 280px;
             --bg-dark: #0f172a;
-            --bg-card: rgba(30, 41, 59, 0.4);
-            --primary: #f472b6; /* Baker Pink */
-            --secondary: #fb923c; /* Peach */
-            --accent: #ec4899;
+            --bg-card: #111827;
+            --primary: #1e293b;
+            --secondary: #fb923c;
+            --accent: #6366f1;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border: rgba(255, 255, 255, 0.08);
-            --sidebar-bg: #1e1b4b;
+            --sidebar-bg: #111827;
         }
 
         [data-theme="midnight"] { --bg-dark: #020617; --sidebar-bg: #0f172a; }
@@ -131,7 +129,7 @@ import "../styles/theme.css";
     <aside class="sidebar">
         <a href="/bakers-os" class="logo-area">
             <div class="logo-orb" id="bizLogo">
-                <img src="/bakers-logo.png" style="height:48px; object-fit:contain; border-radius:8px; display: block;" alt="Trivia Logo">
+                <img src="/bakers-logo.png" style="width:48px; height:48px; object-fit:contain; border-radius:8px; display: block;" alt="Trivia Logo">
             </div>
             <span id="bizName">Trivia</span>
         </a>

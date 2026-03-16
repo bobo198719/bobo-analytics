@@ -1,6 +1,6 @@
 export const prerender = false;
 
-const hostingerUrl = process.env.HOSTINGER_BACKEND_URL || "http://187.124.97.144:5000";
+const hostingerUrl = process.env.HOSTINGER_BACKEND_URL || "http://srv1449576.hstgr.cloud:5000";
 
 export async function GET({ params, request }) {
     const { path } = params;

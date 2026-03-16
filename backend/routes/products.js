@@ -17,7 +17,7 @@ router.get("/products", async (req, res) => {
 // Complementary single product fetch
 router.get("/products/:id", async (req, res) => {
     try {
-        const [rows] = await db.query("SELECT * FROM products WHERE id = ?", [req.params.id]);
+        const [rows] = await db.query("SELECT * FROM bakery_products WHERE id = ?", [req.params.id]);
         if (rows.length === 0) return res.status(404).json({ error: "Product not found" });
         res.json(rows[0]);
     } catch (err) {
@@ -68,19 +68,35 @@ router.post(["/", "/products"], async (req, res) => {
 router.delete("/products/:id", async (req, res) => {
     const id = req.params.id;
     try {
-        const [product] = await db.query("SELECT image_url FROM bakery_products WHERE id = ?", [id]);
+        // 1. Get product info safely
+        const [rows] = await db.query("SELECT image_url FROM bakery_products WHERE id = ?", [id]);
+        if (rows.length === 0) return res.status(404).json({ error: "Product not found" });
+
+        const image_url = rows[0].image_url;
+
+        // 2. Delete from DB
         await db.query("DELETE FROM bakery_products WHERE id = ?", [id]);
         
-        res.json({ success: true });
+        res.json({ success: true, message: "Product deleted safely" });
 
-        /* async image cleanup */
-        setTimeout(() => {
-            if (product[0]?.image_url) {
-                const file = product[0].image_url.split("/").pop();
-                const fullPath = path.join("/var/www/storage/bakery/images", file);
-                fs.unlink(fullPath, () => {});
-            }
-        }, 0);
+        /* 3. async image cleanup (Safely) */
+        if (image_url) {
+            setTimeout(() => {
+                try {
+                    const filename = image_url.split("/").pop();
+                    if (filename && filename !== 'cake-placeholder.png') {
+                        const fullPath = path.join("/var/www/storage/bakery/images", filename);
+                        if (fs.existsSync(fullPath)) {
+                            fs.unlink(fullPath, (err) => {
+                                if (err) console.error(`Failed to unlink ${fullPath}:`, err);
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.error("Background cleanup error:", e);
+                }
+            }, 0);
+        }
     } catch (err) {
         console.error("Delete failed:", err);
         res.status(500).json({ error: "Delete failed" });
@@ -89,20 +105,13 @@ router.delete("/products/:id", async (req, res) => {
 
 router.delete("/products/:id/image", async (req, res) => {
     try {
-        const [rows] = await db.query("SELECT image_path FROM products WHERE id = ?", [req.params.id]);
+        const [rows] = await db.query("SELECT image_url FROM bakery_products WHERE id = ?", [req.params.id]);
         if (rows.length === 0) return res.status(404).json({ error: "Product not found" });
 
-        const imagePath = rows[0].image_path;
-        if (imagePath && (imagePath.includes("/storage/") || imagePath.includes("/menu-images/"))) {
-            // Extract filename from URL/Path
-            const filename = path.basename(imagePath);
-            let fullPath = "";
-            
-            if (imagePath.includes("/storage/")) {
-                fullPath = path.join("/var/www/storage/bakery/images", filename);
-            } else {
-                fullPath = path.join(__dirname, "..", "public", "menu-images", filename);
-            }
+        const imageUrl = rows[0].image_url;
+        if (imageUrl && imageUrl.includes("/storage/")) {
+            const filename = path.basename(imageUrl);
+            const fullPath = path.join("/var/www/storage/bakery/images", filename);
 
             if (fs.existsSync(fullPath)) {
                 try {
@@ -113,7 +122,7 @@ router.delete("/products/:id/image", async (req, res) => {
             }
         }
 
-        await db.query("UPDATE products SET image_path = NULL WHERE id = ?", [req.params.id]);
+        await db.query("UPDATE bakery_products SET image_url = NULL WHERE id = ?", [req.params.id]);
         res.json({ success: true, message: "Image deleted successfully" });
     } catch (err) {
         console.error("Image Delete Error:", err);

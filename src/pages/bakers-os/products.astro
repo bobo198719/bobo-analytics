@@ -415,7 +415,23 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             list.innerHTML = filtered.map(p => {
                 const gi        = products.findIndex(x => x.id === p.id);
                 const isPending = p.status === 'pending';
-                const fullImgUrl = p.image_path || p.image_url || p.medium_url || p.thumbnail_url || '/assets/cake-placeholder.png';
+                
+                // Part 1 Step 5 Repair: Ensure safe image path
+                let rawImg = p.image_url || p.image_path || "";
+                let fullImgUrl = "/assets/cake-placeholder.png";
+                
+                if (rawImg) {
+                    if (rawImg.startsWith('http')) {
+                        fullImgUrl = rawImg;
+                    } else if (rawImg.startsWith('/storage/')) {
+                        fullImgUrl = rawImg;
+                    } else if (rawImg.startsWith('/menu-images/')) {
+                        fullImgUrl = rawImg;
+                    } else {
+                        // Assume it's just a filename
+                        fullImgUrl = `/storage/bakery/images/${rawImg}`;
+                    }
+                }
                 const category = p.category || p.cat || 'General';
                 const description = p.description || p.desc || '';
                 

@@ -68,6 +68,36 @@ async function migrate() {
   }
 
   await db2.end();
+
+  // Part 1 Step 2 Repair: Restore cake images and sync tables
+  const db3 = await mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT || 3306
+  });
+
+  console.log("🍰 Syncing Bakery Products from legacy table...");
+  try {
+    const [legacyProducts] = await db3.execute("SELECT * FROM products WHERE category LIKE '%Bake%' OR category LIKE '%Cake%'");
+    for (const p of legacyProducts) {
+      const [existing] = await db3.execute("SELECT id FROM bakery_products WHERE name = ?", [p.name]);
+      if (existing.length === 0) {
+        // Step 1.2: Ensure column image_url contains valid path
+        const imageUrl = p.image_path || "";
+        await db3.execute(
+          "INSERT INTO bakery_products (name, description, price, category, image_url) VALUES (?, ?, ?, ?, ?)",
+          [p.name, p.description, p.price, p.category, imageUrl]
+        );
+        console.log(`✅ Restored cake: ${p.name}`);
+      }
+    }
+  } catch (err) {
+    console.error("❌ Legacy Sync Error:", err.message);
+  }
+  await db3.end();
+
   console.log("🏁 Migration Complete!");
 }
 
