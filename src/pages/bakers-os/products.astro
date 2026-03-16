@@ -364,14 +364,14 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         ];
 
         const DEFAULTS = [
-            { id:'p1', name:'Spider-Man Theme Cake', cat:'Chocolate Cakes', price:1800, prep:'6h', desc:'Premium chocolate sponge with hand-piped Spider-man web design.', status:'approved', image_url:'/menu-images/whatsapp-image-2026-03-13-at-10-59-57-jpeg-1773564631013.webp' },
-            { id:'p2', name:'Classic Smiley Cake',   cat:'Vanilla Cakes',   price:1200, prep:'4h', desc:'Joyful vanilla cream cake with a classic smiley face design.',    status:'approved', image_url:'/menu-images/ww-jpeg-1773564633537.webp' },
-            { id:'p3', name:'Luxury Cupcake Box',    cat:'Cupcakes & Muffins',        price:950,  prep:'3h', desc:'Set of 6 gourmet cupcakes with fresh berries and rich frosting.', status:'approved', image_url:'/menu-images/cake2-png-1773563690213.webp' },
-            { id:'p4', name:'Doraemon Dream Cake',   cat:'Fruit Cakes',     price:1500, prep:'5h', desc:'Bespoke buttercream cake featuring full Doraemon edible art.', status:'approved', image_url:'/menu-images/wewre-jpeg-1773564630497.webp' },
-            { id:'p5', name:'Belgium Truffle Cake',  cat:'Chocolate Cakes', price:1450, prep:'4h', desc:'Dense chocolate sponge with 70% dark Belgian chocolate and silk ganache.', status:'approved', image_url:'/menu-images/whatsapp-image-2026-03-13-at-10-59-51-jpeg-1773564630772.webp' },
-            { id:'p6', name:'Biscoff Cheesecake',    cat:'Cheesecakes',        price:1600, prep:'8h', desc:'Creamy Biscoff-infused cheesecake with a crunchy speculoos base.',  status:'approved', image_url:'/menu-images/whatsapp-image-2026-03-13-at-11-00-07-jpeg-1773564632288.webp' },
-            { id:'p7', name:'Red Velvet Duo',        cat:'Cupcakes & Muffins',        price:850,  prep:'2h', desc:'Signature red velvet sponge with rich cream cheese frosting.', status:'approved', image_url:'/menu-images/cake3-png-1773563690485.webp' },
-            { id:'p8', name:'Mango Delight Cake',    cat:'Fruit Cakes',     price:1350, prep:'5h', desc:'Fresh Alphonso mango chunks layered with soft vanilla sponge.', status:'approved', image_url:'/menu-images/whatsapp-image-2026-03-13-at-11-00-02-jpeg-1773564631780.webp' },
+            { id:'p1', name:'Spider-Man Theme Cake', category:'Chocolate Cakes', price:1800, prep:'6h', description:'Premium chocolate sponge with hand-piped Spider-man web design.', status:'approved', image_path:'/menu-images/whatsapp-image-2026-03-13-at-10-59-57-jpeg-1773564631013.webp' },
+            { id:'p2', name:'Classic Smiley Cake',   category:'Vanilla Cakes',   price:1200, prep:'4h', description:'Joyful vanilla cream cake with a classic smiley face design.',    status:'approved', image_path:'/menu-images/ww-jpeg-1773564633537.webp' },
+            { id:'p3', name:'Luxury Cupcake Box',    category:'Cupcakes & Muffins',        price:950,  prep:'3h', description:'Set of 6 gourmet cupcakes with fresh berries and rich frosting.', status:'approved', image_path:'/menu-images/cake2-png-1773563690213.webp' },
+            { id:'p4', name:'Doraemon Dream Cake',   category:'Fruit Cakes',     price:1500, prep:'5h', description:'Bespoke buttercream cake featuring full Doraemon edible art.', status:'approved', image_path:'/menu-images/wewre-jpeg-1773564630497.webp' },
+            { id:'p5', name:'Belgium Truffle Cake',  category:'Chocolate Cakes', price:1450, prep:'4h', description:'Dense chocolate sponge with 70% dark Belgian chocolate and silk ganache.', status:'approved', image_path:'/menu-images/whatsapp-image-2026-03-13-at-10-59-51-jpeg-1773564630772.webp' },
+            { id:'p6', name:'Biscoff Cheesecake',    category:'Cheesecakes',        price:1600, prep:'8h', description:'Creamy Biscoff-infused cheesecake with a crunchy speculoos base.',  status:'approved', image_path:'/menu-images/whatsapp-image-2026-03-13-at-11-00-07-jpeg-1773564632288.webp' },
+            { id:'p7', name:'Red Velvet Duo',        category:'Cupcakes & Muffins',        price:850,  prep:'2h', description:'Signature red velvet sponge with rich cream cheese frosting.', status:'approved', image_path:'/menu-images/cake3-png-1773563690485.webp' },
+            { id:'p8', name:'Mango Delight Cake',    category:'Fruit Cakes',     price:1350, prep:'5h', description:'Fresh Alphonso mango chunks layered with soft vanilla sponge.', status:'approved', image_path:'/menu-images/whatsapp-image-2026-03-13-at-11-00-02-jpeg-1773564631780.webp' },
         ];
 
         async function loadProducts() {
@@ -413,8 +413,9 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             list.innerHTML = filtered.map(p => {
                 const gi        = products.findIndex(x => x.id === p.id);
                 const isPending = p.status === 'pending';
-                const rawPath = p.image_url || p.medium_url || p.thumbnail_url || p.image_path || '';
-                const fullImgUrl = p.image_url || p.medium_url || p.thumbnail_url || p.image_path || '/assets/cake-placeholder.png';
+                const fullImgUrl = p.image_path || p.image_url || p.medium_url || p.thumbnail_url || '/assets/cake-placeholder.png';
+                const category = p.category || p.cat || 'General';
+                const description = p.description || p.desc || '';
                 
                 return `
                 <div class="product-card ${isPending ? 'pending-review-card' : ''}" id="card-${p.id}">
@@ -427,12 +428,12 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                     </div>
                     <div class="p-body">
                         <div class="p-top">
-                            <span class="p-cat">${p.cat}</span>
-                            <span class="p-prep">⏱️ ${p.prep}</span>
+                            <span class="p-cat">${category}</span>
+                            <span class="p-prep">⏱️ ${p.prep || '4h'}</span>
                         </div>
                         <div class="p-info">
                             <h3>${p.name}</h3>
-                            <p>${p.desc}</p>
+                            <p>${description}</p>
                         </div>
                         <div class="p-footer">
                             <div class="p-price">₹${p.price}</div>
@@ -577,15 +578,15 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 document.getElementById('modal-title').innerText = 'Edit Signature Bake';
                 document.getElementById('p-name').value  = p.name;
                 document.getElementById('p-price').value = p.price;
-                document.getElementById('p-desc').value  = p.desc;
-                document.getElementById('p-cat').value   = p.cat;
-                document.getElementById('p-prep').value  = p.prep;
+                document.getElementById('p-desc').value  = p.description || p.desc || '';
+                document.getElementById('p-cat').value   = p.category || p.cat || 'General';
+                document.getElementById('p-prep').value  = p.prep || '4h';
 
                 const preview = document.getElementById('p-image-preview');
                 preview.style.display = 'block';
                 // Prefer stored URLs; fall back to legacy IndexedDB for older records
-                if (p.high_res_url || p.medium_url || p.thumbnail_url) {
-                    preview.style.backgroundImage = `url('${p.high_res_url || p.medium_url || p.thumbnail_url || ''}')`;
+                if (p.image_path || p.high_res_url || p.medium_url || p.thumbnail_url) {
+                    preview.style.backgroundImage = `url('${p.image_path || p.high_res_url || p.medium_url || p.thumbnail_url || ''}')`;
                 } else if (p.image_id) {
                     const img = await getImageFromDB(p.image_id);
                     if (img) {
@@ -628,20 +629,17 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             const existing = editingIndex !== null ? products[editingIndex] : null;
             
             // Prefer the newly uploaded URL, otherwise keep the existing one
-            const finalImageUrl = currentUploadedUrl || existing?.image_url || existing?.high_res_url || existing?.medium_url || existing?.thumbnail_url || '';
+            const finalImageUrl = currentUploadedUrl || existing?.image_path || existing?.image_url || existing?.high_res_url || '';
 
             const productData = {
-                id           : existing?.id, // If null, API generates
+                id           : existing?.id, 
                 name, 
                 price        : parseFloat(price),
-                desc         : document.getElementById('p-desc').value || TEMPLATES[0].replace('{name}', name),
-                cat          : document.getElementById('p-cat').value,
+                category     : document.getElementById('p-cat').value,
+                description  : document.getElementById('p-desc').value || TEMPLATES[0].replace('{name}', name),
                 prep         : document.getElementById('p-prep').value || '4h',
                 status       : existing?.status || 'approved',
-                image_url    : finalImageUrl,
-                thumbnail_url: finalImageUrl,
-                medium_url   : finalImageUrl,
-                high_res_url : finalImageUrl
+                image_path   : finalImageUrl
             };
 
             try {

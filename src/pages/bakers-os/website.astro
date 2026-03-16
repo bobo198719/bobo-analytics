@@ -313,12 +313,12 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                     } else {
                         // Fallback to local default if DB is empty
                         liveProducts = [
-                            { id:'p1', name:'Spider-Man Theme Cake', cat:'Chocolate Cakes', price:1800, desc:'Premium chocolate sponge with hand-piped Spider-man web design.', status:'approved', image_url:'/menu-images/whatsapp-image-2026-03-13-at-10-59-57-jpeg-1773564631013.webp' },
-                            { id:'p2', name:'Classic Smiley Cake',   cat:'Vanilla Cakes',   price:1200, desc:'Joyful vanilla cream cake with a classic smiley face design.',    status:'approved', image_url:'/menu-images/ww-jpeg-1773564633537.webp' },
-                            { id:'p3', name:'Luxury Cupcake Box',    cat:'Cupcakes',        price:950,  desc:'Set of 6 gourmet cupcakes with fresh berries and rich frosting.', status:'approved', image_url:'/menu-images/cake2-png-1773563690213.webp' },
-                            { id:'p4', name:'Doraemon Dream Cake',   cat:'Fruit Cakes',     price:1500, desc:'Bespoke buttercream cake featuring full Doraemon edible art.', status:'approved', image_url:'/menu-images/wewre-jpeg-1773564630497.webp' },
-                            { id:'p5', name:'Belgium Truffle Cake',  cat:'Chocolate Cakes', price:1450, desc:'Dense chocolate sponge with 70% dark Belgian chocolate.', status:'approved', image_url:'/menu-images/whatsapp-image-2026-03-13-at-10-59-51-jpeg-1773564630772.webp' },
-                            { id:'p6', name:'Biscoff Cheesecake',    cat:'Desserts',        price:1600, desc:'Creamy Biscoff-infused cheesecake.', status:'approved', image_url:'/menu-images/whatsapp-image-2026-03-13-at-11-00-07-jpeg-1773564632288.webp' }
+                            { id:'p1', name:'Spider-Man Theme Cake', category:'Chocolate Cakes', price:1800, description:'Premium chocolate sponge with hand-piped Spider-man web design.', status:'approved', image_path:'/menu-images/whatsapp-image-2026-03-13-at-10-59-57-jpeg-1773564631013.webp' },
+                            { id:'p2', name:'Classic Smiley Cake',   category:'Vanilla Cakes',   price:1200, description:'Joyful vanilla cream cake with a classic smiley face design.',    status:'approved', image_path:'/menu-images/ww-jpeg-1773564633537.webp' },
+                            { id:'p3', name:'Luxury Cupcake Box',    category:'Cupcakes',        price:950,  description:'Set of 6 gourmet cupcakes with fresh berries and rich frosting.', status:'approved', image_path:'/menu-images/cake2-png-1773563690213.webp' },
+                            { id:'p4', name:'Doraemon Dream Cake',   category:'Fruit Cakes',     price:1500, description:'Bespoke buttercream cake featuring full Doraemon edible art.', status:'approved', image_path:'/menu-images/wewre-jpeg-1773564630497.webp' },
+                            { id:'p5', name:'Belgium Truffle Cake',  category:'Chocolate Cakes', price:1450, description:'Dense chocolate sponge with 70% dark Belgian chocolate.', status:'approved', image_path:'/menu-images/whatsapp-image-2026-03-13-at-10-59-51-jpeg-1773564630772.webp' },
+                            { id:'p6', name:'Biscoff Cheesecake',    category:'Desserts',        price:1600, description:'Creamy Biscoff-infused cheesecake.', status:'approved', image_path:'/menu-images/whatsapp-image-2026-03-13-at-11-00-07-jpeg-1773564632288.webp' }
                         ];
                     }
                     
@@ -348,13 +348,16 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                 return;
             }
 
-            container.innerHTML = galleryItems.map(p => `
+            container.innerHTML = galleryItems.map(p => {
+                const imgPath = p.image_path || p.image_url || p.high_res_url || fallback;
+                return `
                 <div class="gallery-item-v2" onclick="openLightbox(this)">
-                    <img src="${p.image_url || p.high_res_url || p.medium_url || p.thumbnail_url || fallback}" 
+                    <img src="${imgPath}" 
                          onerror="this.src='${fallback}'" 
                          loading="lazy" />
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function renderMenu(items) {
@@ -367,17 +370,20 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             
             menuContainer.innerHTML = items.map(p => {
                 const fallback = '/assets/cake-placeholder.png';
-                const imgPath = p.image_url || p.high_res_url || p.medium_url || p.thumbnail_url || fallback;
+                const imgPath = p.image_path || p.image_url || p.high_res_url || p.medium_url || p.thumbnail_url || fallback;
+                const category = p.category || p.cat || 'General';
+                const description = p.description || p.desc || '';
+                
                 return `
                 <div class="bake-card-v2">
                     <div class="bake-img-box">
                         <img src="${imgPath}" onerror="this.src='${fallback}'" alt="${p.name}" loading="lazy" />
-                        <div class="bake-badge">${p.cat}</div>
+                        <div class="bake-badge">${category}</div>
                         <button class="bake-qv-btn" onclick="openQuickView('${p.id}')">Quick View</button>
                     </div>
                     <div class="bake-info">
                         <h3>${p.name}</h3>
-                        <p>${p.desc}</p>
+                        <p>${description}</p>
                         <div class="bake-meta">
                             <span class="price">₹${p.price}</span>
                             <button class="btn-add-cart-v2" onclick="addToCart('${p.id}')">Add to Cart</button>
@@ -390,13 +396,17 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
 
         window.handleSearch = val => {
             const q = val.toLowerCase();
-            const filtered = liveProducts.filter(p => p.name.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q));
+            const filtered = liveProducts.filter(p => {
+                const nameMatch = p.name.toLowerCase().includes(q);
+                const catMatch = (p.category || p.cat || '').toLowerCase().includes(q);
+                return nameMatch || catMatch;
+            });
             renderMenu(filtered);
         };
 
         window.filterMenu = cat => {
             if (cat === 'all') return renderMenu(liveProducts);
-            const filtered = liveProducts.filter(p => p.cat === cat);
+            const filtered = liveProducts.filter(p => (p.category === cat || p.cat === cat));
             renderMenu(filtered);
             
             document.querySelectorAll('.cat-tab').forEach(btn => {
@@ -458,14 +468,14 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             body.innerHTML = `
                 <div class="qv-content" style="padding: 40px; display: flex; gap: 30px; align-items: center;">
                     <div style="width: 400px; aspect-ratio: 1; overflow: hidden; border-radius: 24px; flex-shrink: 0;">
-                        <img src="${p.image_url || p.medium_url || fallback}" 
+                        <img src="${p.image_path || p.image_url || p.medium_url || fallback}" 
                              onerror="this.src='${fallback}'"
                              style="width: 100%; height: 100%; object-fit: cover;" />
                     </div>
                     <div>
                         <h2>${p.name}</h2>
                         <p style="font-size: 1.5rem; color: var(--primary-dark); font-weight: 800; margin: 10px 0;">₹${p.price}</p>
-                        <p>${p.desc}</p>
+                        <p>${p.description || p.desc || ''}</p>
                         <button class="btn-hero-main" style="margin-top: 20px;" onclick="addToCart('${p.id}'); closeModals()">Add to Cart</button>
                     </div>
                 </div>
