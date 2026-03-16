@@ -251,38 +251,52 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             localStorage.removeItem('bobo_cart');
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // 1. Load Custom Website Data
-            const customData = JSON.parse(localStorage.getItem('bobo_website_data') || '{}');
-            
-            // Apply Branding
-            const bizLogo = customData.bizLogo || '/bakers-logo.png';
-            const bizName = customData.bizName || 'Trivia Bakes';
-            
-            document.querySelectorAll('.brand-text').forEach(el => el.innerText = bizName);
-            document.querySelectorAll('.logo-img').forEach(el => el.src = bizLogo);
-            
-            // Apply Hero
-            if (customData.heroTitle) document.querySelector('.hero-content h1').innerHTML = customData.heroTitle.replace('Happiness', `<span class="accent-text">Happiness</span>`);
-            if (customData.heroSubtitle) document.querySelector('.hero-content p').innerText = customData.heroSubtitle;
-            if (customData.heroBg) document.querySelector('.hero-premium-v2').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('${customData.heroBg}')`;
-            
-            // Apply About
-            if (customData.aboutTitle) document.querySelector('.about-text h2').innerText = customData.aboutTitle;
-            if (customData.aboutP1) document.querySelector('.about-text p').innerText = customData.aboutP1;
-            if (customData.aboutImg) document.querySelector('.about-image img').src = customData.aboutImg;
-            
-            // Apply Contact
-            if (customData.contactPhone) {
-                const waLink = document.querySelector('.wa-link');
-                if (waLink) {
-                    waLink.innerText = customData.contactPhone;
-                    waLink.href = `https://wa.me/${customData.contactPhone.replace(/\D/g, '')}`;
+        document.addEventListener('DOMContentLoaded', async () => {
+            const tenantId = 'default_baker'; // Or detect from subdomain
+            const API_BASE = '/api';
+
+            // 1. Load Custom Website Data from Proxy
+            async function fetchSettings() {
+                try {
+                    const res = await fetch(`${API_BASE}/settings/${tenantId}`);
+                    if (res.ok) {
+                        const customData = await res.json();
+                        applyBranding(customData);
+                    } else {
+                        const localData = JSON.parse(localStorage.getItem('bobo_website_data') || '{}');
+                        applyBranding(localData);
+                    }
+                } catch (e) {
+                    console.error("Settings fetch failed:", e);
                 }
             }
-            if (customData.contactAddress) {
-                const addr = document.querySelector('.f-contact-side p');
-                if (addr) addr.innerText = customData.contactAddress;
+
+            function applyBranding(customData) {
+                const bizLogo = customData.bizLogo || '/bakers-logo.png';
+                const bizName = customData.bizName || 'Trivia Bakes';
+                
+                document.querySelectorAll('.brand-text').forEach(el => el.innerText = bizName);
+                document.querySelectorAll('.logo-img').forEach(el => el.src = bizLogo);
+                
+                if (customData.heroTitle) document.querySelector('.hero-content h1').innerHTML = customData.heroTitle.replace('Happiness', `<span class="accent-text">Happiness</span>`);
+                if (customData.heroSubtitle) document.querySelector('.hero-content p').innerText = customData.heroSubtitle;
+                if (customData.heroBg) document.querySelector('.hero-premium-v2').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('${customData.heroBg}')`;
+                
+                if (customData.aboutTitle) document.querySelector('.about-text h2').innerText = customData.aboutTitle;
+                if (customData.aboutP1) document.querySelector('.about-text p').innerText = customData.aboutP1;
+                if (customData.aboutImg) document.querySelector('.about-image img').src = customData.aboutImg;
+                
+                if (customData.contactPhone) {
+                    const waLink = document.querySelector('.wa-link');
+                    if (waLink) {
+                        waLink.innerText = customData.contactPhone;
+                        waLink.href = `https://wa.me/${customData.contactPhone.replace(/\D/g, '')}`;
+                    }
+                }
+                if (customData.contactAddress) {
+                    const addr = document.querySelector('.f-contact-side p');
+                    if (addr) addr.innerText = customData.contactAddress;
+                }
             }
 
             // 2. Load Products
@@ -290,23 +304,20 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
 
             async function fetchLiveProducts() {
                 try {
-                    const res = await fetch('/api/products');
+                    const res = await fetch(`${API_BASE}/products`);
                     const data = await res.json();
                     if (Array.isArray(data) && data.length > 0) {
                         liveProducts = data;
                     } else {
                         // Fallback to local default if DB is empty
-                        liveProducts = JSON.parse(localStorage.getItem('bobo_products') || "[]");
-                        if (liveProducts.length <= 3) {
-                             liveProducts = [
-                                { id:'p1', name:'Spider-Man Theme Cake', cat:'Chocolate Cakes', price:1800, desc:'Premium chocolate sponge with hand-piped Spider-man web design.', status:'approved', image_url:'/menu-images/whatsapp-image-2026-03-13-at-10-59-57-jpeg-1773564631013.webp' },
-                                { id:'p2', name:'Classic Smiley Cake',   cat:'Vanilla Cakes',   price:1200, desc:'Joyful vanilla cream cake with a classic smiley face design.',    status:'approved', image_url:'/menu-images/ww-jpeg-1773564633537.webp' },
-                                { id:'p3', name:'Luxury Cupcake Box',    cat:'Cupcakes',        price:950,  desc:'Set of 6 gourmet cupcakes with fresh berries and rich frosting.', status:'approved', image_url:'/menu-images/cake2-png-1773563690213.webp' },
-                                { id:'p4', name:'Doraemon Dream Cake',   cat:'Fruit Cakes',     price:1500, desc:'Bespoke buttercream cake featuring full Doraemon edible art.', status:'approved', image_url:'/menu-images/wewre-jpeg-1773564630497.webp' },
-                                { id:'p5', name:'Belgium Truffle Cake',  cat:'Chocolate Cakes', price:1450, desc:'Dense chocolate sponge with 70% dark Belgian chocolate.', status:'approved', image_url:'/menu-images/whatsapp-image-2026-03-13-at-10-59-51-jpeg-1773564630772.webp' },
-                                { id:'p6', name:'Biscoff Cheesecake',    cat:'Desserts',        price:1600, desc:'Creamy Biscoff-infused cheesecake.', status:'approved', image_url:'/menu-images/whatsapp-image-2026-03-13-at-11-00-07-jpeg-1773564632288.webp' }
-                            ];
-                        }
+                        liveProducts = [
+                            { id:'p1', name:'Spider-Man Theme Cake', cat:'Chocolate Cakes', price:1800, desc:'Premium chocolate sponge with hand-piped Spider-man web design.', status:'approved', image_url:'/menu-images/whatsapp-image-2026-03-13-at-10-59-57-jpeg-1773564631013.webp' },
+                            { id:'p2', name:'Classic Smiley Cake',   cat:'Vanilla Cakes',   price:1200, desc:'Joyful vanilla cream cake with a classic smiley face design.',    status:'approved', image_url:'/menu-images/ww-jpeg-1773564633537.webp' },
+                            { id:'p3', name:'Luxury Cupcake Box',    cat:'Cupcakes',        price:950,  desc:'Set of 6 gourmet cupcakes with fresh berries and rich frosting.', status:'approved', image_url:'/menu-images/cake2-png-1773563690213.webp' },
+                            { id:'p4', name:'Doraemon Dream Cake',   cat:'Fruit Cakes',     price:1500, desc:'Bespoke buttercream cake featuring full Doraemon edible art.', status:'approved', image_url:'/menu-images/wewre-jpeg-1773564630497.webp' },
+                            { id:'p5', name:'Belgium Truffle Cake',  cat:'Chocolate Cakes', price:1450, desc:'Dense chocolate sponge with 70% dark Belgian chocolate.', status:'approved', image_url:'/menu-images/whatsapp-image-2026-03-13-at-10-59-51-jpeg-1773564630772.webp' },
+                            { id:'p6', name:'Biscoff Cheesecake',    cat:'Desserts',        price:1600, desc:'Creamy Biscoff-infused cheesecake.', status:'approved', image_url:'/menu-images/whatsapp-image-2026-03-13-at-11-00-07-jpeg-1773564632288.webp' }
+                        ];
                     }
                     
                     const approved = liveProducts.filter(p => !p.status || p.status === 'approved');
@@ -315,14 +326,11 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                     updateCartUI();
                 } catch (e) {
                     console.error("Live fetch failed:", e);
-                    // Last resort fallback
-                    const fallback = JSON.parse(localStorage.getItem('bobo_products') || "[]");
-                    renderMenu(fallback);
-                    renderGallery(fallback);
                 }
             }
 
-            fetchLiveProducts();
+            await fetchSettings();
+            await fetchLiveProducts();
         });
 
         function renderGallery(items) {

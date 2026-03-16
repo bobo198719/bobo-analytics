@@ -262,13 +262,13 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             }
         }
 
-        const hostingerUrl = "http://srv1449576.hstgr.cloud:5000";
         const tenantInfo = JSON.parse(localStorage.getItem("activeTenantContext"));
         const tenantId = tenantInfo ? tenantInfo.id : 'default_baker';
+        const API_BASE = '/api';
 
         async function loadData() {
             try {
-                const response = await fetch(`${hostingerUrl}/api/settings/${tenantId}`);
+                const response = await fetch(`${API_BASE}/settings/${tenantId}`);
                 if (response.ok) {
                     const data = await response.json();
                     applyDataToForm(data);
@@ -335,7 +335,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 const btn = document.querySelector(".btn-primary");
                 btn.innerText = "Saving to Server...";
                 
-                const response = await fetch(`${hostingerUrl}/api/settings`, {
+                const response = await fetch(`${API_BASE}/settings`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ tenantId, settings: data })

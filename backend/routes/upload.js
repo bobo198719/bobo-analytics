@@ -11,24 +11,28 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 router.post("/upload-product", upload.single("image"), async (req, res) => {
+    console.log("📥 Received upload request:", req.file ? req.file.originalname : "No file");
+    
     try {
         if (!req.file) {
+            console.error("❌ No image file in request");
             return res.status(400).json({ error: "No image file provided" });
         }
 
         const id = uuidv4();
         const filename = `cake-${id}.webp`;
         
-        // Save to internal public folder within backend
         const uploadDir = path.join(__dirname, "..", "public", "menu-images");
         const filepath = path.join(uploadDir, filename);
 
+        console.log("🛠️ Processing image with Sharp...");
         await sharp(req.file.buffer)
             .resize(1080, 1080, { fit: "cover", position: "centre" })
             .webp({ quality: 85 })
             .toFile(filepath);
 
         const imagePath = `/menu-images/${filename}`;
+        console.log("✅ Image saved to:", imagePath);
 
         const [result] = await db.query(
             "INSERT INTO products (name, description, price, category, image_path) VALUES (?, ?, ?, ?, ?)",
@@ -41,6 +45,8 @@ router.post("/upload-product", upload.single("image"), async (req, res) => {
             ]
         );
 
+        console.log("💾 Product saved to Database, ID:", result.insertId);
+
         res.json({ 
             success: true, 
             image: imagePath,
@@ -48,7 +54,7 @@ router.post("/upload-product", upload.single("image"), async (req, res) => {
         });
 
     } catch (error) {
-        console.error("MySQL Upload Error:", error);
+        console.error("💥 MySQL Upload Error:", error);
         res.status(500).json({ error: "Upload failed", details: error.message });
     }
 });
