@@ -442,7 +442,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                             <div class="p-actions">
                                 ${isPending ? `<button class="p-btn approve" onclick="approveProduct(${gi})">👌 Publish</button>` : ''}
                                 <button class="p-btn" onclick="openProductModal(${gi})">✏️ Edit</button>
-                                <button class="p-btn" onclick="del(${gi})">🗑️</button>
+                                <button class="p-btn delete-product-btn" onclick="del(${gi})">🗑️</button>
                             </div>
                         </div>
                     </div>
@@ -816,37 +816,49 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
 
             if (!confirm(`Delete "${p.name}" PERMANENTLY?`)) return;
             
-            // 1. INSTANT UI REMOVAL (Perceived Latency < 50ms)
+            // 1. INSTANT UI REMOVAL (Step 8)
             const card = document.getElementById(`card-${p.id}`);
             if (card) {
                 card.style.transform = 'scale(0.9)';
                 card.style.opacity = '0';
-                setTimeout(() => card.remove(), 300); // Smooth fade out
+                setTimeout(() => card.remove(), 250); // Fast snappy removal
             }
 
-            // Update local state immediately
-            const originalProducts = [...products]; // Backup if we need to restore
+            // Update local state immediately for search/tabs
             products = products.filter(x => x.id !== p.id);
-            renderProducts();
+            // No full renderProducts() here to avoid flicker, the card.remove() handles visibility
 
-            // 2. BACKGROUND DELETION
-            try {
-                const res = await fetch(`/api/products/${p.id}`, { 
-                    method: 'DELETE',
-                    headers: { 'Cache-Control': 'no-cache' }
-                });
-                const result = await res.json();
-                
-                if (!result.success) {
-                    throw new Error(result.error || 'Server error');
+            // 2. BACKGROUND DELETION (Silent)
+            fetch(`/api/products/${p.id}`, { 
+                method: 'DELETE',
+                headers: { 'Cache-Control': 'no-cache' }
+            }).then(r => r.json()).then(res => {
+                if (res.success) {
+                    console.log(`✅ Server confirmed deletion for ID: ${p.id}`);
+                } else {
+                    console.error(`❌ Server rejection for ID: ${p.id}`, res.error);
                 }
-                console.log(`✅ Background delete confirmed for ID: ${p.id}`);
-            } catch (e) {
-                console.error('❌ Background delete failed:', e);
-                // Optional: Notify user but don't force reload as state is already updated
-                // alert('System notice: Delayed sync for deletion. This will resolve on next refresh.');
-            }
+            }).catch(e => console.error(`❌ Network failure for background delete:`, e));
         };
+
+        // ═══════════════════════════════════════════════════════════════════
+        //  Global Search Implementation (Step 2 - sluggish search fix)
+        // ═══════════════════════════════════════════════════════════════════
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.querySelector('.search-box');
+            if (searchInput) {
+                searchInput.placeholder = "Search bakes, prices, or categories...";
+                searchInput.addEventListener('input', (e) => {
+                    const term = e.target.value.toLowerCase();
+                    const allCards = document.querySelectorAll('.product-card');
+                    
+                    allCards.forEach(card => {
+                        const text = card.innerText.toLowerCase();
+                        card.style.display = text.includes(term) ? 'flex' : 'none';
+                    });
+                });
+            }
+        });
 
         // ═══════════════════════════════════════════════════════════════════
         //  Reset to defaults
