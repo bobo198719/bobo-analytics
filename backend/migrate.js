@@ -38,7 +38,38 @@ async function migrate() {
   }
 
   await db.end();
+
+  // Seed Medicine Master
+  const db2 = await mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT || 3306
+  });
+
+  const medicineData = require("./medicineMaster.json");
+  console.log("💊 Seeding Medicine Master...");
+
+  for (const med of medicineData.medicines) {
+    try {
+      await db2.execute(
+        "INSERT INTO medicine_master (barcode, name, mrp, purchase_price, gst, category, manufacturer) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [med.barcode, med.name, med.mrp, med.purchasePrice, med.gst, med.category, med.manufacturer]
+      );
+      console.log(`✅ Seeded medicine: ${med.name}`);
+    } catch (err) {
+      if (err.code === 'ER_DUP_ENTRY') {
+        console.log(`⏭️ Medicine ${med.name} already exists, skipping.`);
+      } else {
+        console.error(`❌ Error seeding medicine ${med.name}:`, err.message);
+      }
+    }
+  }
+
+  await db2.end();
   console.log("🏁 Migration Complete!");
 }
 
 migrate();
+

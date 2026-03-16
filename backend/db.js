@@ -69,7 +69,94 @@ const initDb = () => {
   )`, (err) => {
     if (err) console.error("Error creating site_settings table:", err);
   });
+
+  // Pharmacy Module Tables
+  db.query(`CREATE TABLE IF NOT EXISTS pharmacies (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    pharmacy VARCHAR(255),
+    pharmacyId VARCHAR(100) UNIQUE,
+    password VARCHAR(255),
+    phone VARCHAR(20),
+    address TEXT,
+    plan VARCHAR(50),
+    status VARCHAR(50) DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`, (err) => {
+    if (err) console.error("Error creating pharmacies table:", err);
+  });
+
+  db.query(`CREATE TABLE IF NOT EXISTS inventory (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    pharmacyId VARCHAR(100),
+    barcode VARCHAR(100),
+    product_name VARCHAR(255),
+    category VARCHAR(100),
+    manufacturer VARCHAR(100),
+    hsn_code VARCHAR(50),
+    pack_size VARCHAR(50),
+    mrp DECIMAL(10,2),
+    purchase_price DECIMAL(10,2),
+    selling_price DECIMAL(10,2),
+    gst_percent DECIMAL(5,2),
+    stock_qty INT DEFAULT 0,
+    expiry_date VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`, (err) => {
+    if (err) console.error("Error creating inventory table:", err);
+  });
+
+  db.query(`CREATE TABLE IF NOT EXISTS customers (
+    customer_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_name VARCHAR(255),
+    phone VARCHAR(20),
+    email VARCHAR(255),
+    address TEXT,
+    gstin VARCHAR(50),
+    customer_type VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`, (err) => {
+    if (err) console.error("Error creating customers table:", err);
+  });
+
+  db.query(`CREATE TABLE IF NOT EXISTS staff (
+    staff_id INT AUTO_INCREMENT PRIMARY KEY,
+    staff_name VARCHAR(255),
+    role VARCHAR(100),
+    phone VARCHAR(20),
+    login_email VARCHAR(255),
+    password_hash VARCHAR(255),
+    permissions TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`, (err) => {
+    if (err) console.error("Error creating staff table:", err);
+  });
+
+  db.query(`CREATE TABLE IF NOT EXISTS barcode_stock (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    barcode VARCHAR(100),
+    product_id INT,
+    stock INT,
+    value DECIMAL(12,2),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  )`, (err) => {
+    if (err) console.error("Error creating barcode_stock table:", err);
+  });
+
+  db.query(`CREATE TABLE IF NOT EXISTS medicine_master (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    barcode VARCHAR(100) UNIQUE,
+    name VARCHAR(255),
+    mrp DECIMAL(10,2),
+    purchase_price DECIMAL(10,2),
+    gst DECIMAL(5,2),
+    category VARCHAR(100),
+    manufacturer VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`, (err) => {
+    if (err) console.error("Error creating medicine_master table:", err);
+  });
 };
+
 
 initDb();
 

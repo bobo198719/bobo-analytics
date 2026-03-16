@@ -12,36 +12,54 @@ const gallery = [
 <BakersOSLayout title="Baker Gallery | Home Bakers OS">
   <BakersSubNav active="gallery" />
   
-  <div class="header-flex">
-      <div>
-          <h1>Baker Gallery</h1>
-          <p style="color: var(--text-muted);">Showcase your best creations to potential clients.</p>
-      </div>
-      <button class="add-btn">+ Upload New Work</button>
+  <div class="gallery-grid" id="gallery-list">
+      <!-- Dynamic Content -->
   </div>
 
-  <div class="gallery-grid">
-      {gallery.map(g => (
-          <div class="gallery-card glass-card">
-              <div class="g-img">🎂</div>
-              <div class="g-info">
-                  <div class="g-top">
-                      <h3>{g.name}</h3>
-                      <span class="tag">{g.category}</span>
+  <script is:inline>
+      async function loadGallery() {
+          const list = document.getElementById('gallery-list');
+          try {
+              const res = await fetch('/api/products');
+              const products = await res.json();
+              
+              if (products.length === 0) {
+                  list.innerHTML = '<p>No creations in your gallery yet. Add products to see them here.</p>';
+                  return;
+              }
+
+              list.innerHTML = products.map(p => `
+                  <div class="gallery-card glass-card">
+                      <div class="g-img">
+                          <img src="${p.image_url || '/assets/cake-placeholder.png'}" 
+                               style="width: 100%; height: 100%; object-fit: cover;" 
+                               onerror="this.src='/assets/cake-placeholder.png'" />
+                      </div>
+                      <div class="g-info">
+                          <div class="g-top">
+                              <h3>${p.name}</h3>
+                              <span class="tag">${p.cat}</span>
+                          </div>
+                          <p>${p.desc}</p>
+                          <div class="g-actions">
+                              <button onclick="window.location.href='/bakers-os/products'">Edit</button>
+                              <a href="/bakers-os/website" target="_blank" class="view-btn">View on Site</a>
+                          </div>
+                      </div>
                   </div>
-                  <p>{g.desc}</p>
-                  <div class="g-actions">
-                      <button>Delete</button>
-                      <button class="view">View Large</button>
+              `).join('') + `
+                  <div class="add-gallery-card glass-card" onclick="window.location.href='/bakers-os/products'">
+                      <div class="add-ic">+</div>
+                      <p>Add to Portfolio</p>
                   </div>
-              </div>
-          </div>
-      ))}
-      <div class="add-gallery-card glass-card">
-          <div class="add-ic">+</div>
-          <p>Add to Portfolio</p>
-      </div>
-  </div>
+              `;
+          } catch (e) {
+              console.error(e);
+              list.innerHTML = '<p>Error loading gallery items.</p>';
+          }
+      }
+      document.addEventListener('DOMContentLoaded', loadGallery);
+  </script>
 
   <style>
       .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
@@ -59,8 +77,8 @@ const gallery = [
       .g-info p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
 
       .g-actions { display: flex; gap: 12px; margin-top: 12px; }
-      .g-actions button { flex: 1; background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 8px; border-radius: 8px; font-weight: 700; cursor: pointer; }
-      .g-actions button.view { background: var(--primary); color: white; border: none; }
+      .g-actions button, .g-actions .view-btn { flex: 1; background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 8px; border-radius: 8px; font-weight: 700; cursor: pointer; text-decoration: none; text-align: center; font-size: 0.8rem; }
+      .g-actions .view-btn { background: var(--primary); color: white; border: none; }
 
       .add-gallery-card { border: 2px dashed var(--border); background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; cursor: pointer; }
       .add-ic { font-size: 2.5rem; }

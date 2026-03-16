@@ -33,7 +33,7 @@ router.get("/", async (req, res) => {
     }
 });
 
-router.post("/", async (req, res) => {
+router.post(["/", "/products"], async (req, res) => {
     try {
         const { id, name, price, desc, description, cat, category, image_path, image_url } = req.body;
         const finalName = name || "";
@@ -42,7 +42,7 @@ router.post("/", async (req, res) => {
         const finalCat = category || cat || "General";
         const finalImg = image_path || image_url || "";
 
-        if (id) {
+        if (id && !id.startsWith('bulk_')) {
             // Update
             await db.query(
                 "UPDATE products SET name=?, description=?, price=?, category=?, image_path=? WHERE id=?",
@@ -58,11 +58,12 @@ router.post("/", async (req, res) => {
             res.json({ success: true, id: result.insertId });
         }
     } catch (err) {
+        console.error("Product Save Error:", err);
         res.status(500).json({ error: err.message });
     }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete(["/:id", "/products/:id"], async (req, res) => {
     try {
         await db.query("DELETE FROM products WHERE id = ?", [req.params.id]);
         res.json({ success: true });

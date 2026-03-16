@@ -1,55 +1,49 @@
-const fs=require("fs");
-const path=require("path");
+const db = require("../../db");
 
-const dbPath=path.join(__dirname,"../database/db.json");
+exports.loginUser = async (req, res) => {
+  const { pharmacyId, password } = req.body;
 
-exports.loginUser=(req,res)=>{
+  try {
+    const [rows] = await db.query(
+      "SELECT * FROM pharmacies WHERE pharmacyId = ? AND password = ?",
+      [pharmacyId, password]
+    );
 
-const {pharmacyId,password}=req.body;
+    if (rows.length === 0) {
+      return res.status(401).json({ error: "Invalid login" });
+    }
 
-const db=JSON.parse(fs.readFileSync(dbPath));
-
-const user=db.pharmacies.find(
-p=>p.pharmacyId===pharmacyId && p.password===password
-);
-
-if(!user){
-
-return res.status(401).json({
-error:"Invalid login"
-});
-
-}
-
-res.json({
-message:"Login successful",
-pharmacy:user.pharmacy
-});
-
+    res.json({
+      message: "Login successful",
+      pharmacy: rows[0].pharmacy
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
-exports.createPharmacy=(req,res)=>{
+exports.createPharmacy = async (req, res) => {
+  const { pharmacy, pharmacyId, password } = req.body;
 
-const {pharmacy,pharmacyId,password}=req.body;
+  try {
+    const [result] = await db.query(
+      "INSERT INTO pharmacies (pharmacy, pharmacyId, password, plan, status) VALUES (?, ?, ?, ?, ?)",
+      [pharmacy, pharmacyId, password, "999", "active"]
+    );
 
-const db=JSON.parse(fs.readFileSync(dbPath));
-
-const newPharmacy={
-id:Date.now(),
-pharmacy,
-pharmacyId,
-password,
-plan:"999",
-status:"active"
+    res.json({
+      message: "Pharmacy created",
+      pharmacy: {
+        id: result.insertId,
+        pharmacy,
+        pharmacyId,
+        password,
+        plan: "999",
+        status: "active"
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
-db.pharmacies.push(newPharmacy);
-
-fs.writeFileSync(dbPath,JSON.stringify(db,null,2));
-
-res.json({
-message:"Pharmacy created",
-pharmacy:newPharmacy
-});
-
-};

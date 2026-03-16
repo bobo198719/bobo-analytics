@@ -278,7 +278,6 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         // Use native Astro API routes for full production/Vercel support
         // Use relative path for all environment compatibility (Live/Vercel/Local)
         const API_BASE = '/api';
-        const hostingerUrl = "http://srv1449576.hstgr.cloud:5000"; // For client-side image prefixing
         const products_table = [];       /**
          * CLIENT-SIDE IMAGE OPTIMIZER
          * Resizes to 1080x1080, converts to WebP, and compresses.
@@ -321,7 +320,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             formData.append('image', file);
 
             try {
-                const response = await fetch(`${API_BASE}/upload-cake-image`, {
+                const response = await fetch(`${API_BASE}/upload-product-image`, {
                     method: 'POST',
                     body: formData
                 });
@@ -409,7 +408,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 const gi        = products.findIndex(x => x.id === p.id);
                 const isPending = p.status === 'pending';
                 const rawPath = p.image_url || p.medium_url || p.thumbnail_url || p.image_path || '';
-                const fullImgUrl = (rawPath && !rawPath.startsWith('http')) ? `${hostingerUrl}${rawPath}` : (rawPath || '/assets/cake-placeholder.png');
+                const fullImgUrl = p.image_url || p.medium_url || p.thumbnail_url || p.image_path || '/assets/cake-placeholder.png';
                 
                 return `
                 <div class="product-card ${isPending ? 'pending-review-card' : ''}" id="card-${p.id}">
@@ -528,7 +527,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 const result = await uploadImageToServer(optimizedBlob);
                 // The VPS returns { image: "/menu-images/..." }
                 const rawUrl = result.url || result.image_url || result.image;
-                currentUploadedUrl = rawUrl.startsWith('http') ? rawUrl : `${hostingerUrl}${rawUrl}`;
+                currentUploadedUrl = result.url || result.image_url || result.image;
 
                 if (currentUploadedUrl) {
                     preview.style.backgroundImage = `url('${currentUploadedUrl}')`;
@@ -688,7 +687,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                         .split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
                     const desc = TEMPLATES[Math.floor(Math.random() * TEMPLATES.length)].replace('{name}', fileName);
                     const rawBulkUrl = imgs.url || imgs.image_url || imgs.thumbnailUrl || imgs.image || '';
-                    const finalBulkUrl = (rawBulkUrl && !rawBulkUrl.startsWith('http')) ? `${hostingerUrl}${rawBulkUrl}` : rawBulkUrl;
+                    const finalBulkUrl = imgs.url || imgs.image_url || imgs.thumbnailUrl || imgs.image || '';
 
                     products.unshift({
                         id           : 'bulk_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),

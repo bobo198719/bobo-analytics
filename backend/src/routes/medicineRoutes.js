@@ -1,28 +1,27 @@
-const express=require("express");
-const fs=require("fs");
+const express = require("express");
+const db = require("../../db");
 
-const router=express.Router();
+const router = express.Router();
 
-const db=JSON.parse(
-fs.readFileSync("medicineMaster.json")
-);
+router.get("/medicine/:barcode", async (req, res) => {
+  const barcode = req.params.barcode;
 
-router.get("/medicine/:barcode",(req,res)=>{
+  try {
+    const [rows] = await db.query(
+      "SELECT * FROM medicine_master WHERE barcode = ?",
+      [barcode]
+    );
 
-const barcode=req.params.barcode;
+    if (rows.length === 0) {
+      return res.json({
+        status: "not_found"
+      });
+    }
 
-const medicine=db.medicines.find(
-m=>m.barcode===barcode
-);
-
-if(!medicine){
-return res.json({
-status:"not_found"
+    res.json(rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
-}
 
-res.json(medicine);
-
-});
-
-module.exports=router;
+module.exports = router;

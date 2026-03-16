@@ -1,42 +1,39 @@
-const fs=require("fs");
-const path=require("path");
+const db = require("../../db");
 
-const dbPath=path.join(__dirname,"../database/db.json");
+exports.getInventory = async (req, res) => {
+  const { pharmacyId } = req.params;
 
-exports.getInventory=(req,res)=>{
-
-const {pharmacyId}=req.params;
-
-const db=JSON.parse(fs.readFileSync(dbPath));
-
-const inventory=db.inventory.filter(
-i=>i.pharmacyId===pharmacyId
-);
-
-res.json(inventory);
-
+  try {
+    const [rows] = await db.query(
+      "SELECT * FROM inventory WHERE pharmacyId = ?",
+      [pharmacyId]
+    );
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
-exports.addMedicine=(req,res)=>{
+exports.addMedicine = async (req, res) => {
+  const { pharmacyId, medicine, stock, expiry } = req.body;
 
-const {pharmacyId,medicine,stock,expiry}=req.body;
+  try {
+    const [result] = await db.query(
+      "INSERT INTO inventory (pharmacyId, product_name, stock_qty, expiry_date) VALUES (?, ?, ?, ?)",
+      [pharmacyId, medicine, stock, expiry]
+    );
 
-const db=JSON.parse(fs.readFileSync(dbPath));
-
-const newItem={
-pharmacyId,
-medicine,
-stock,
-expiry
-};
-
-db.inventory.push(newItem);
-
-fs.writeFileSync(dbPath,JSON.stringify(db,null,2));
-
-res.json({
-message:"Medicine added",
-item:newItem
-});
-
+    res.json({
+      message: "Medicine added",
+      item: {
+        id: result.insertId,
+        pharmacyId,
+        medicine,
+        stock,
+        expiry
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };

@@ -1,29 +1,18 @@
-const fs=require("fs");
-const path=require("path");
+const db = require("../../db");
 
-const dbPath=path.join(__dirname,"../database/db.json");
+exports.checkRefillAlerts = async (req, res) => {
+  try {
+    const [customers] = await db.query("SELECT * FROM customers");
+    
+    const alerts = customers.map(c => ({
+      name: c.customer_name,
+      phone: c.phone,
+      medicine: "Metformin", // Placeholder logic
+      message: "Your refill is due"
+    }));
 
-exports.checkRefillAlerts=(req,res)=>{
-
-const db=JSON.parse(fs.readFileSync(dbPath));
-
-const alerts=[];
-
-db.customers.forEach(c=>{
-
-if(c.totalPurchases>0){
-
-alerts.push({
-name:c.name,
-phone:c.phone,
-medicine:"Metformin",
-message:"Your refill is due"
-});
-
-}
-
-});
-
-res.json(alerts);
-
-};
+    res.json(alerts);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

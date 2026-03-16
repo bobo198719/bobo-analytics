@@ -3,60 +3,88 @@ const multer = require("multer");
 const sharp = require("sharp");
 const { v4: uuidv4 } = require("uuid");
 const path = require("path");
-const db = require("../db");
+const fs = require("fs");
 
 const router = express.Router();
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
-
-router.post("/upload-product", upload.single("image"), async (req, res) => {
-    console.log("📥 Received upload request:", req.file ? req.file.originalname : "No file");
-    
+// 1. Permanent Storage Configuration
+const STORAGE_DIR = "/var/www/storage/bakery/images";
+if (!fs.existsSync(STORAGE_DIR)) {
     try {
-        if (!req.file) {
-            console.error("❌ No image file in request");
-            return res.status(400).json({ error: "No image file provided" });
+        fs.mkdirSync(STORAGE_DIR, { recursive: true });
+        console.log("📁 Created permanent storage:", STORAGE_DIR);
+    } catch (err) {
+        console.warn("⚠️ Local environment check: Could not create Linux-style path, falling back to local public folder.");
+    }
+}
+
+// 2. Multer Configuration (Memory storage for processing with Sharp)
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+        fileSize: 10 * 1024 * 1024 // 10MB Limit
+    },
+    fileFilter: (req, file, cb) => {
+        const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+        if (allowedTypes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error("Invalid format. Supported: JPG, PNG, WEBP."));
+        }
+    }
+});
+
+// 3. Optimized Upload Endpoint
+router.post("/upload-product-image", (req, res) => {
+    upload.single("image")(req, res, async (err) => {
+        // Handle Multer errors (Size, Format)
+        if (err) {
+            if (err.code === "LIMIT_FILE_SIZE") {
+                return res.status(400).json({ error: "File too large. Maximum size is 10MB." });
+            }
+            return res.status(400).json({ error: err.message });
         }
 
-        const id = uuidv4();
-        const filename = `cake-${id}.webp`;
-        
-        const uploadDir = path.join(__dirname, "..", "public", "menu-images");
-        const filepath = path.join(uploadDir, filename);
+        if (!req.file) {
+            return res.status(400).json({ error: "No image provided" });
+        }
 
-        console.log("🛠️ Processing image with Sharp...");
-        await sharp(req.file.buffer)
-            .resize(1080, 1080, { fit: "cover", position: "centre" })
-            .webp({ quality: 85 })
-            .toFile(filepath);
+        try {
+            const id = uuidv4();
+            const filename = `${id}.webp`;
+            
+            // Check if we are on VPS or Local
+            const isVPS = fs.existsSync("/var/www/storage/bakery");
+            const targetDir = isVPS ? STORAGE_DIR : path.join(__dirname, "..", "public", "menu-images");
+            const filepath = path.join(targetDir, filename);
 
-        const imagePath = `/menu-images/${filename}`;
-        console.log("✅ Image saved to:", imagePath);
+            console.log(`🛠️ Optimizing: ${req.file.originalname} -> ${filename}`);
 
-        const [result] = await db.query(
-            "INSERT INTO products (name, description, price, category, image_path) VALUES (?, ?, ?, ?, ?)",
-            [
-                req.body.name || "Unnamed Bake",
-                req.body.description || req.body.desc || "",
-                Number(req.body.price) || 0,
-                req.body.category || req.body.cat || "General",
-                imagePath
-            ]
-        );
+            // Resize (1200px width), Convert to WebP, Maintain Quality
+            await sharp(req.file.buffer)
+                .resize(1200, null, { // 1200px width, auto height
+                    withoutEnlargement: true,
+                    fit: "inside"
+                })
+                .webp({ quality: 85, effort: 3 })
+                .toFile(filepath);
 
-        console.log("💾 Product saved to Database, ID:", result.insertId);
+            const publicUrl = isVPS 
+                ? `https://srv1449576.hstgr.cloud/storage/bakery/images/${filename}`
+                : `/menu-images/${filename}`;
 
-        res.json({ 
-            success: true, 
-            image: imagePath,
-            productId: result.insertId 
-        });
+            res.setHeader('Connection', 'close'); // Prevent timeout hang
+            res.json({
+                success: true,
+                url: publicUrl,
+                filename: filename
+            });
 
-    } catch (error) {
-        console.error("💥 MySQL Upload Error:", error);
-        res.status(500).json({ error: "Upload failed", details: error.message });
-    }
+        } catch (error) {
+            console.error("💥 Image Processing Crash:", error);
+            res.status(500).json({ error: "Image processing failed", details: error.message });
+        }
+    });
 });
 
 module.exports = router;

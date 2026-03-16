@@ -252,7 +252,9 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
-            const tenantId = 'default_baker'; // Or detect from subdomain
+            const host = window.location.host;
+            const isSubdomain = host.split('.').length > 2 && !host.includes('localhost') && !host.includes('vercel.app');
+            const tenantId = isSubdomain ? host.split('.')[0] : 'default_baker';
             const API_BASE = '/api';
 
             // 1. Load Custom Website Data from Proxy
@@ -448,8 +450,7 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         };
 
         window.openQuickView = id => {
-            const products = JSON.parse(localStorage.getItem('bobo_products') || "[]");
-            const p = products.find(i => i.id == id);
+            const p = liveProducts.find(i => i.id == id);
             if (!p) return;
             const modal = document.getElementById('quickview-modal');
             const body = document.getElementById('quickview-body');
@@ -475,6 +476,40 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         window.closeModals = () => {
             document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
         };
+
+        // CUSTOM CAKE BUILDER LOGIC
+        let customCakeWeight = 0.5;
+        window.openBuilder = () => {
+            document.getElementById('builder-modal').classList.add('active');
+        };
+
+        window.setWeight = (w, btn) => {
+            customCakeWeight = w;
+            document.querySelectorAll('.weight-pills button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        };
+
+        window.addCustomCake = () => {
+            const flavor = document.getElementById('cake-flavor').value;
+            const msg = document.getElementById('cake-msg').value;
+            const price = customCakeWeight === 0.5 ? 1200 : (customCakeWeight === 1 ? 2200 : 4200);
+            
+            const customItem = {
+                id: 'custom_' + Date.now(),
+                name: `Custom ${flavor} Cake (${customCakeWeight} KG)`,
+                price: price,
+                qty: 1,
+                desc: msg ? `Message: "${msg}"` : "Custom designed cake",
+                image_url: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600'
+            };
+
+            cart.push(customItem);
+            localStorage.setItem('bobo_cart', JSON.stringify(cart));
+            updateCartUI();
+            closeModals();
+            toggleCart();
+        };
+
 
         window.openLightbox = (el) => {
             const img = el.querySelector('img');

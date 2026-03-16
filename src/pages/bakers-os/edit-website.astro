@@ -10,6 +10,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         </div>
         <div class="actions">
             <a href="/bakers-os/website" target="_blank" class="btn btn-secondary">View Live Site ↗</a>
+            <button class="btn btn-secondary" onclick="resetDefaults()" style="margin-right: 12px;">Reset Defaults</button>
             <button class="btn btn-primary" onclick="saveWebsiteData()">Save Changes</button>
         </div>
     </div>
@@ -211,7 +212,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             const formData = new FormData();
             formData.append('image', blob);
 
-            const response = await fetch('/api/upload-cake-image', {
+            const response = await fetch('/api/upload-product-image', {
                 method: 'POST',
                 body: formData
             });
@@ -262,8 +263,10 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             }
         }
 
+        const host = window.location.host;
+        const isSubdomain = host.split('.').length > 2 && !host.includes('localhost') && !host.includes('vercel.app');
         const tenantInfo = JSON.parse(localStorage.getItem("activeTenantContext"));
-        const tenantId = tenantInfo ? tenantInfo.id : 'default_baker';
+        const tenantId = isSubdomain ? host.split('.')[0] : (tenantInfo ? tenantInfo.id : 'default_baker');
         const API_BASE = '/api';
 
         async function loadData() {
@@ -354,6 +357,14 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 alert('Saved locally. Server sync failed.');
             } finally {
                 document.querySelector(".btn-primary").innerText = "Save Changes";
+            }
+        };
+
+        window.resetDefaults = () => {
+            if (confirm("Reset all website settings to original Trivia Bakes theme?")) {
+                applyDataToForm(DEFAULT_DATA);
+                uploadedImages = {};
+                alert("Defaults applied. Click 'Save Changes' to push to server.");
             }
         };
 

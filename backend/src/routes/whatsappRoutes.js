@@ -1,55 +1,52 @@
-const express=require("express");
-const fs=require("fs");
-const path=require("path");
+const express = require("express");
+const db = require("../../db");
 
-const router=express.Router();
+const router = express.Router();
 
-const dbPath=path.join(__dirname,"../database/db.json");
+router.post("/send-bill", async (req, res) => {
+  const { pharmacyId, customerPhone, items, total } = req.body;
 
-router.post("/send-bill",(req,res)=>{
+  try {
+    const [rows] = await db.query(
+      "SELECT * FROM pharmacies WHERE pharmacyId = ?",
+      [pharmacyId]
+    );
 
-const {pharmacyId,customerPhone,items,total}=req.body;
+    if (rows.length === 0) {
+      return res.status(404).json({
+        error: "Pharmacy not found"
+      });
+    }
 
-const db=JSON.parse(fs.readFileSync(dbPath));
+    const pharmacy = rows[0];
 
-const pharmacy=db.pharmacies.find(
-p=>p.pharmacyId===pharmacyId
-);
-
-if(!pharmacy){
-
-return res.status(404).json({
-error:"Pharmacy not found"
-});
-
-}
-
-let billText=`${pharmacy.pharmacy}
+    let billText = `${pharmacy.pharmacy}
 Phone: ${pharmacy.phone}
 
 Invoice
 
 `;
 
-items.forEach(item=>{
-billText+=`${item.name} x${item.qty} ₹${item.price}\n`;
-});
+    items.forEach(item => {
+      billText += `${item.name} x${item.qty} ₹${item.price}\n`;
+    });
 
-billText+=`
+    billText += `
 Total: ₹${total}
 
 Thank you for visiting ${pharmacy.pharmacy}
 Powered by Bobo Analytics`;
 
-console.log("Sending WhatsApp bill to:",customerPhone);
+    console.log("Sending WhatsApp bill to:", customerPhone);
+    console.log(billText);
 
-console.log(billText);
-
-res.json({
-status:"Bill sent",
-message:billText
+    res.json({
+      status: "Bill sent",
+      message: billText
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-});
-
-module.exports=router;
+module.exports = router;
