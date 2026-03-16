@@ -15,13 +15,13 @@ const { title = "Trivia" } = Astro.props;
             --sidebar-width: 280px;
             --bg-dark: #0f172a;
             --bg-card: #111827;
-            --primary: #1e293b;
-            --secondary: #fb923c;
-            --accent: #6366f1;
+            --primary: #6366f1; /* Indigo */
+            --secondary: #fb923c; 
+            --accent: #4f46e5;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border: rgba(255, 255, 255, 0.08);
-            --sidebar-bg: #111827;
+            --sidebar-bg: #0f172a;
         }
 
         [data-theme="midnight"] { --bg-dark: #020617; --sidebar-bg: #0f172a; }
@@ -74,7 +74,7 @@ const { title = "Trivia" } = Astro.props;
         .logo-orb { 
             width: 48px;
             height: 48px;
-            background: rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.02);
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -103,11 +103,11 @@ const { title = "Trivia" } = Astro.props;
             font-weight: 600;
             transition: 0.2s;
         }
-        .nav-link:hover { background: rgba(244, 114, 182, 0.1); color: var(--primary); transform: translateX(5px); }
-        .nav-link.active { background: rgba(244, 114, 182, 0.15); color: var(--primary); border-left: 3px solid var(--primary); }
+        .nav-link:hover { background: rgba(99, 102, 241, 0.1); color: var(--primary); transform: translateX(5px); }
+        .nav-link.active { background: rgba(99, 102, 241, 0.15); color: var(--primary); border-left: 3px solid var(--primary); }
         .nav-link svg { width: 20px; height: 20px; opacity: 0.8; }
 
-        main.content-wrapper { flex: 1; height: 100vh; overflow-y: auto; background: radial-gradient(circle at 100% 0%, rgba(244, 114, 182, 0.05) 0%, transparent 50%); }
+        main.content-wrapper { flex: 1; height: 100vh; overflow-y: auto; background: radial-gradient(circle at 100% 0%, rgba(99, 102, 241, 0.05) 0%, transparent 50%); }
         header.top-bar { height: 80px; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
         .search-box { background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 10px 16px; border-radius: 12px; width: 350px; color: white; border: 1px solid var(--border); }
         .user-meta { display: flex; align-items: center; gap: 24px; }

@@ -102,7 +102,7 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
                       </div>
                   </div>
                   <div class="legend" id="cat-legend">
-                      <div class="leg-item"><span class="dot cakes" style="background: #f472b6;"></span> Cakes</div>
+                      <div class="leg-item"><span class="dot cakes" style="background: #6366f1;"></span> Cakes</div>
                       <div class="leg-item"><span class="dot cookies" style="background: #fb923c;"></span> Cookies</div>
                       <div class="leg-item"><span class="dot others" style="background: #94a3b8;"></span> Others</div>
                   </div>
@@ -144,10 +144,10 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
 
   <style>
       .hb-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-      .hb-badge { background: rgba(244, 114, 182, 0.1); color: #f472b6; padding: 4px 12px; border-radius: 30px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: inline-block; }
+      .hb-badge { background: rgba(99, 102, 241, 0.1); color: #6366f1; padding: 4px 12px; border-radius: 30px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: inline-block; }
       .hb-actions { display: flex; gap: 12px; }
       .hb-btn { padding: 10px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: white; }
-      .hb-btn.primary { background: #f472b6; border: none; }
+      .hb-btn.primary { background: #6366f1; border: none; }
       .hb-btn:hover { transform: translateY(-2px); }
 
       .stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 32px; }
@@ -169,14 +169,14 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
       
       .chart-mock { height: 200px; display: flex; flex-direction: column; }
       .bars { flex: 1; display: flex; align-items: flex-end; gap: 12px; margin-bottom: 12px; }
-      .bar { flex: 1; background: #f472b6; border-radius: 4px 4px 0 0; opacity: 0.7; transition: 0.3s; }
-      .bar:hover { opacity: 1; background: #ec4899; }
+      .bar { flex: 1; background: #6366f1; border-radius: 4px 4px 0 0; opacity: 0.7; transition: 0.3s; }
+      .bar:hover { opacity: 1; background: #4f46e5; }
       .labels { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); }
 
       .charts-row { display: flex; gap: 24px; }
       .chart-card.half { flex: 1; }
 
-      .donut-mock { width: 120px; height: 120px; border-radius: 50%; border: 12px solid #f472b6; border-left-color: #fb923c; border-bottom-color: #94a3b8; margin: 20px auto; display: flex; align-items: center; justify-content: center; }
+      .donut-mock { width: 120px; height: 120px; border-radius: 50%; border: 12px solid #6366f1; border-left-color: #fb923c; border-bottom-color: #94a3b8; margin: 20px auto; display: flex; align-items: center; justify-content: center; }
       .donut-inner { text-align: center; }
       .donut-inner .val { display: block; font-weight: 800; font-size: 1.2rem; }
       .donut-inner .lab { font-size: 0.7rem; color: var(--text-muted); }
@@ -187,7 +187,7 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
 
       .repeat-meter { margin: 24px 0; }
       .meter-bar { height: 12px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; margin-bottom: 8px; }
-      .meter-fill { height: 100%; background: linear-gradient(90deg, #f472b6, #ec4899); border-radius: 10px; }
+      .meter-fill { height: 100%; background: linear-gradient(90deg, #6366f1, #4f46e5); border-radius: 10px; }
       .repeat-val { font-weight: 700; font-size: 0.9rem; }
       .chart-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
 
@@ -206,15 +206,15 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
 
       .recent-orders-card { padding: 32px; }
       .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-      .view-all { font-size: 0.8rem; color: #f472b6; font-weight: 700; text-decoration: none; }
+      .view-all { font-size: 0.8rem; color: #6366f1; font-weight: 700; text-decoration: none; }
       .order-mini-list { display: flex; flex-direction: column; gap: 12px; }
       .order-mini-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 10px; font-size: 0.85rem; }
-      .om-id { font-weight: 800; color: #f472b6; opacity: 0.8; }
+      .om-id { font-weight: 800; color: #6366f1; opacity: 0.8; }
       .om-name { flex: 1; font-weight: 600; }
       .om-status { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 2px 8px; border-radius: 30px; }
       .om-status.preparing { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
       .om-status.ready { background: rgba(16, 185, 129, 0.1); color: #10b981; }
-      .om-status.new { background: rgba(244, 114, 182, 0.1); color: #f472b6; }
+      .om-status.new { background: rgba(99, 102, 241, 0.1); color: #6366f1; }
 
       @media (max-width: 1400px) {
           .stats-grid { grid-template-columns: repeat(3, 1fr); }
