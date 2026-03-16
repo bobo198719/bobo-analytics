@@ -70,27 +70,31 @@ router.post("/upload-product-image", (req, res) => {
         const targetPath = path.join(targetDir, filename);
 
         try {
-            // High-speed optimization with Sharp
-            // Resize (1200px max width), Convert to WebP (80 quality)
-            await sharp(originalPath)
-                .resize(1200, null, { 
-                    withoutEnlargement: true,
-                    fit: "inside"
-                })
-                .webp({ quality: 80, effort: 2 }) // Quality 80 as requested, effort 2 for speed
-                .toFile(targetPath);
+            const isWebP = req.file.mimetype === 'image/webp';
+            const sizeInKb = req.file.size / 1024;
 
-            // Clean up original file in background
-            fs.unlink(originalPath, (err) => {
-                if (err) console.error("Error deleting temp file:", err);
-            });
+            // If it's already WebP and reasonably sized (under 500KB), just move it
+            if (isWebP && sizeInKb < 500) {
+                fs.renameSync(originalPath, targetPath);
+            } else {
+                // High-speed optimization with Sharp
+                await sharp(originalPath)
+                    .resize(1200, null, { 
+                        withoutEnlargement: true,
+                        fit: "inside"
+                    })
+                    .webp({ quality: 80, effort: 2 })
+                    .toFile(targetPath);
+                
+                // Clean up original file
+                if (fs.existsSync(originalPath)) fs.unlinkSync(originalPath);
+            }
 
             const isVPS = fs.existsSync("/var/www/storage/bakery");
             const publicUrl = isVPS 
                 ? `https://srv1449576.hstgr.cloud/storage/bakery/images/${filename}`
                 : `/menu-images/${filename}`;
 
-            // Return immediately as requested
             res.json({
                 success: true,
                 url: publicUrl,
@@ -99,7 +103,6 @@ router.post("/upload-product-image", (req, res) => {
 
         } catch (error) {
             console.error("💥 Image Processing Crash:", error);
-            // Cleanup original on error too
             if (fs.existsSync(originalPath)) fs.unlinkSync(originalPath);
             res.status(500).json({ error: "Image processing failed", details: error.message });
         }

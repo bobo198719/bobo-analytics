@@ -33,7 +33,16 @@ export async function ALL({ params, request }) {
         };
 
         if (!['GET', 'HEAD'].includes(request.method)) {
-            options.body = await request.clone().arrayBuffer();
+            // For POST/PUT requests, get the buffer once
+            const contentType = request.headers.get('content-type') || '';
+            
+            if (contentType.includes('multipart/form-data')) {
+                // For file uploads, we must get the full buffer
+                options.body = await request.arrayBuffer();
+            } else {
+                // For JSON or other small payloads
+                options.body = await request.arrayBuffer();
+            }
         }
 
         const response = await fetch(vpsUrl, options);
