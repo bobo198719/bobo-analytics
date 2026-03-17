@@ -74,8 +74,12 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                         <div class="p-info">
                             <strong>Integrated UPI / GPay</strong>
                             <span>Direct to Bank Transfer</span>
+                            <div class="mt-24">
+                                <label style="display:block; font-size:0.65rem; color:var(--text-muted); margin-bottom:4px;">UPI ID (e.g. baker@upi)</label>
+                                <input type="text" id="upi-input" placeholder="Enter UPI ID" style="width:100%; background:rgba(0,0,0,0.2); border:1px solid var(--border); padding:8px; border-radius:8px; color:white;" />
+                                <button class="btn-save" style="margin-top:10px; width:100%; padding:10px;" onclick="saveUPI()">Update UPI</button>
+                            </div>
                         </div>
-                        <span class="status">CONNECTED</span>
                     </div>
                     <div class="payment-method">
                         <div class="p-info">
@@ -170,6 +174,37 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             }
         }
 
+        window.saveUPI = async () => {
+            const upi = document.getElementById('upi-input').value;
+            if (!upi) return alert("Please enter a valid UPI ID");
+
+            try {
+                const res = await fetch("/api/settings/upi", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ upi, tenantId: "default" })
+                });
+                if (res.ok) {
+                    alert("UPI Connected Successfully");
+                }
+            } catch (e) {
+                alert("Failed to connect UPI");
+            }
+        };
+
+        async function loadSettings() {
+            try {
+                const res = await fetch("/api/settings/default");
+                if (res.ok) {
+                    const settings = await res.json();
+                    if (settings.upi) {
+                        document.getElementById('upi-input').value = settings.upi;
+                    }
+                }
+            } catch(e) {}
+        }
+
         init();
+        loadSettings();
     </script>
 </BakersOSLayout>

@@ -13,7 +13,7 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
           <p style="color: var(--text-muted);">Manage relationships and reward your loyal dessert lovers.</p>
       </div>
       <div class="hb-actions" style="display: flex; gap: 12px;">
-          <button class="hb-btn secondary" style="padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: white;">Broadcast WhatsApp</button>
+          <button class="hb-btn secondary" onclick="broadcast()" style="padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: white;">Broadcast WhatsApp</button>
           <button class="hb-btn primary" onclick="addLead()" style="padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; background: var(--primary); color: white;">+ Add Lead</button>
       </div>
   </div>
@@ -193,6 +193,21 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
           if (!phone || phone === 'N/A') return alert("No phone number available");
           const cleanPhone = phone.replace(/\D/g, '');
           window.open(`https://wa.me/${cleanPhone}`, '_blank');
+      };
+
+      window.broadcast = async () => {
+          if (customers.length === 0) return alert("No customers to broadcast to.");
+          if (!confirm(`This will open ${customers.length} WhatsApp tabs. Continue?`)) return;
+          
+          customers.forEach((c, i) => {
+              if (c.phone && c.phone !== 'N/A') {
+                  // Delay slightly to prevent browser blocking
+                  setTimeout(() => {
+                      const cleanPhone = c.phone.replace(/\D/g, '');
+                      window.open(`https://wa.me/${cleanPhone}?text=Hi ${c.name}, Check our latest cakes 🎂`, '_blank');
+                  }, i * 1000);
+              }
+          });
       };
 
       init();

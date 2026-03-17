@@ -17,15 +17,20 @@ router.get("/bakery/:slug", async (req, res) => {
 
         const bakery = users[0];
         
-        // Mock additional data if not in DB yet (location, logo, phone)
-        // In a real app, these would be in the users or site_settings table
+        // Fetch real settings (UPI, etc) from site_settings
+        const [settingsRows] = await db.query("SELECT settings FROM site_settings WHERE tenant_id = ?", [slug]);
+        let settings = {};
+        if (settingsRows.length > 0) {
+            settings = typeof settingsRows[0].settings === 'string' ? JSON.parse(settingsRows[0].settings) : settingsRows[0].settings;
+        }
+        
         const profileResponse = {
             name: bakery.name,
             slug: bakery.slug,
-            upi: bakery.upi || "bobo@upi",
-            location: "Gurgaon", // Default fallback
-            logo: "/bakers-logo.png",
-            phone: "9876543210"
+            upi: settings.upi || bakery.upi || "9354056262@ybl",
+            location: settings.location || "Gurgaon", 
+            logo: settings.logo || "/bakers-logo.png",
+            phone: settings.phone || "9354056262"
         };
 
         res.json(profileResponse);

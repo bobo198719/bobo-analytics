@@ -9,16 +9,15 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
     </div>
 
     <!-- Quick Insights -->
-    <div class="insight-cards">
         <div class="glass-card insight">
-            <span class="l">Year-on-Year Growth</span>
-            <div class="v">+32.5%</div>
-            <div class="sparkline"><div class="fill" style="width: 70%"></div></div>
+            <span class="l">Current Revenue</span>
+            <div class="v" id="revenue-val">₹0</div>
+            <p>Based on current view</p>
         </div>
         <div class="glass-card insight">
-            <span class="l">Avg. Ticket Size</span>
-            <div class="v">₹1,450</div>
-            <p>Up ₹120 this month</p>
+            <span class="l">Total Orders</span>
+            <div class="v" id="total-orders-val">0</div>
+            <p>Completed & New</p>
         </div>
         <div class="glass-card insight highlight">
             <span class="l">Most Sold Category</span>
@@ -38,8 +37,8 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             <div class="chart-header">
                 <h3>Revenue Trend (6 Months)</h3>
                 <div class="selectors">
-                    <span class="active">Monthly</span>
-                    <span>Weekly</span>
+                    <span onclick="setView('monthly')">Monthly</span>
+                    <span onclick="setView('weekly')">Weekly</span>
                 </div>
             </div>
             <div class="line-chart">
@@ -130,4 +129,45 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             .analytics-main { grid-template-columns: 1fr; }
         }
     </style>
+    <script is:inline>
+        let orders = [];
+
+        async function loadData() {
+            try {
+                const res = await fetch("/api/orders");
+                orders = await res.json();
+                updateUI("monthly");
+            } catch (e) {
+                console.error("Failed to load analytics data:", e);
+                orders = [];
+            }
+        }
+
+        function updateUI(type) {
+            let filtered = orders;
+
+            if (type === "weekly") {
+                const last7 = Date.now() - (7 * 24 * 60 * 60 * 1000);
+                filtered = orders.filter(o => new Date(o.created_at || Date.now()) > last7);
+            }
+
+            const revenue = filtered.reduce((a, b) => a + (parseFloat(b.amount) || 0), 0);
+            const total = filtered.length;
+
+            document.getElementById("revenue-val").innerText = "₹" + revenue.toLocaleString();
+            document.getElementById("total-orders-val").innerText = total;
+            
+            // Update active state in UI
+            document.querySelectorAll('.selectors span').forEach(s => {
+                s.classList.remove('active');
+                if (s.innerText.toLowerCase() === type) s.classList.add('active');
+            });
+        }
+
+        window.setView = (type) => {
+            updateUI(type);
+        }
+
+        loadData();
+    </script>
 </BakersOSLayout>

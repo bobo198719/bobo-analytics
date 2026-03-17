@@ -19,7 +19,14 @@ router.get("/products", async (req, res) => {
         query += " ORDER BY created_at DESC";
         
         const [rows] = await db.query(query, params);
-        res.json(rows);
+        const host = "http://187.124.97.144:5000";
+        const processedRows = rows.map(p => {
+            if (p.image_url && !p.image_url.startsWith("http")) {
+                p.image_url = `${host}${p.image_url.startsWith('/') ? '' : '/'}${p.image_url}`;
+            }
+            return p;
+        });
+        res.json(processedRows);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

@@ -416,20 +416,17 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 const gi        = products.findIndex(x => x.id === p.id);
                 const isPending = p.status === 'pending';
                 
-                // Part 1 Step 5 Repair: Ensure safe image path
+                // Image Path Safety Repair
                 let rawImg = p.image_url || p.image_path || "";
                 let fullImgUrl = "/assets/cake-placeholder.png";
                 
                 if (rawImg) {
                     if (rawImg.startsWith('http')) {
-                        fullImgUrl = rawImg;
-                    } else if (rawImg.startsWith('/storage/')) {
-                        fullImgUrl = rawImg;
-                    } else if (rawImg.startsWith('/menu-images/')) {
+                        // If it's a full URL, use it (Backend now returns full URLs but we'll be safe)
                         fullImgUrl = rawImg;
                     } else {
-                        // Assume it's just a filename
-                        fullImgUrl = `/storage/bakery/images/${rawImg}`;
+                        // If it's local, use the /api proxy
+                        fullImgUrl = "/api" + (rawImg.startsWith('/') ? '' : '/') + rawImg;
                     }
                 }
                 const category = p.category || p.cat || 'General';
