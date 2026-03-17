@@ -7,7 +7,7 @@ router.get("/bakery/:slug", async (req, res) => {
         const { slug } = req.params;
         // Search in users table first
         const [users] = await db.query(
-            "SELECT business_name as name, bakery_slug as slug, bakery_upi as upi, industry FROM users WHERE bakery_slug = ?",
+            "SELECT business_name as name, bakery_slug as slug, bakery_upi as upi, industry, phone FROM users WHERE bakery_slug = ?",
             [slug]
         );
 
@@ -17,7 +17,7 @@ router.get("/bakery/:slug", async (req, res) => {
 
         const bakery = users[0];
         
-        // Fetch real settings (UPI, etc) from site_settings
+        // Fetch real settings (UPI, etc) from site_settings (legacy/override)
         const [settingsRows] = await db.query("SELECT settings FROM site_settings WHERE tenant_id = ?", [slug]);
         let settings = {};
         if (settingsRows.length > 0) {
@@ -30,7 +30,7 @@ router.get("/bakery/:slug", async (req, res) => {
             upi: settings.upi || bakery.upi || "9354056262@ybl",
             location: settings.location || "Gurgaon", 
             logo: settings.logo || "/bakers-logo.png",
-            phone: settings.phone || "9354056262"
+            phone: settings.phone || bakery.phone || "7387021958"
         };
 
         res.json(profileResponse);
