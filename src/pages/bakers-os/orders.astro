@@ -62,19 +62,19 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
 
   <style>
       .o-tab { background: transparent; border: none; color: var(--text-muted); padding: 8px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; }
-      .o-tab.active { background: #f472b6; color: white; }
+      .o-tab.active { background: var(--primary); color: white; }
 
-      .spinner { width: 30px; height: 30px; border: 3px solid rgba(244, 114, 182, 0.2); border-left-color: #f472b6; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 12px; }
+      .spinner { width: 30px; height: 30px; border: 3px solid rgba(99, 102, 241, 0.2); border-left-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 12px; }
       @keyframes spin { to { transform: rotate(360deg); } }
 
-      .o-id { font-weight: 800; color: #f472b6; }
+      .o-id { font-weight: 800; color: var(--primary); }
       .customer-cell, .product-cell { display: flex; flex-direction: column; gap: 4px; }
       .c-name, .p-name { font-weight: 700; font-size: 0.95rem; }
       .c-phone, .p-qty { font-size: 0.8rem; color: var(--text-muted); }
       .o-date { font-weight: 600; font-size: 0.9rem; }
 
       .o-status { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 30px; }
-      .status-new { background: rgba(244, 114, 182, 0.1); color: #f472b6; }
+      .status-new { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
       .status-preparing { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
       .status-ready { background: rgba(16, 185, 129, 0.1); color: #10b981; }
       .status-delivered { background: rgba(107, 114, 128, 0.1); color: #9ca3af; }

@@ -112,7 +112,7 @@ const { title = "Trivia" } = Astro.props;
         .search-box { background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 10px 16px; border-radius: 12px; width: 350px; color: white; border: 1px solid var(--border); }
         .user-meta { display: flex; align-items: center; gap: 24px; }
         .biz-tag { font-size: 0.7rem; background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px; font-weight: 800; text-transform: uppercase; }
-        .avatar { width: 36px; height: 36px; background: var(--secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: white; }
+        .avatar { width: 36px; height: 36px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: white; }
 
         .page-content { padding: 40px; }
         .glass-card { background: var(--bg-card); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 20px; padding: 24px; }
@@ -123,7 +123,7 @@ const { title = "Trivia" } = Astro.props;
         <h1>🔒 Access Denied</h1>
         <p>Your business environment (TEST) does not have access to the Trivia Portal.</p>
         <p style="margin-top: 20px; color: #888;">Only Trial and Live accounts can access this module.</p>
-        <a href="/portal/dashboard" style="margin-top: 40px; color: #f472b6; font-weight: 700;">Return to Main Dashboard</a>
+        <a href="/portal/dashboard" style="margin-top: 40px; color: var(--primary); font-weight: 700;">Return to Main Dashboard</a>
     </div>
 
     <aside class="sidebar">
@@ -197,7 +197,7 @@ const { title = "Trivia" } = Astro.props;
         <header class="top-bar">
             <input type="text" class="search-box" placeholder="Search orders, ingredients, or clients..." />
             <div class="user-meta">
-                <a href="/bakers-os/website" target="_blank" style="text-decoration: none; font-size: 0.8rem; font-weight: 700; color: var(--primary); background: rgba(244, 114, 182, 0.1); padding: 8px 16px; border-radius: 8px; border: 1px solid var(--primary); transition: 0.2s;">View Live Site ↗</a>
+                <a href="/bakers-os/website" target="_blank" style="text-decoration: none; font-size: 0.8rem; font-weight: 700; color: var(--primary); background: rgba(99, 102, 241, 0.1); padding: 8px 16px; border-radius: 8px; border: 1px solid var(--primary); transition: 0.2s;">View Live Site ↗</a>
                 <span class="biz-tag" id="envTag">Live</span>
                 <span style="font-size: 0.9rem; font-weight: 600;" id="topBizName">Sarah's Patisserie</span>
                 <div class="avatar" id="bizInitial">SJ</div>
@@ -228,12 +228,14 @@ const { title = "Trivia" } = Astro.props;
                 }
 
                 // Branding Injection
+                const profileData = JSON.parse(localStorage.getItem('bobo_baker_profile') || '{}');
                 const websiteData = JSON.parse(localStorage.getItem('bobo_website_data') || '{}');
+                
                 // Force reset if it's the old default
                 if (websiteData.bizName === "Bakers OS" || websiteData.bizName === "Home Bakers OS") {
                     websiteData.bizName = "Trivia";
                 }
-                const finalName = websiteData.bizName || "Trivia";
+                const finalName = profileData.business || websiteData.bizName || "Trivia";
                 const finalLogo = websiteData.bizLogo || "/bakers-logo.png";
 
                 const bn = document.getElementById('bizName');
