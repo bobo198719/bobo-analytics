@@ -33,6 +33,13 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                     <button onclick="addIngredient()" style="background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.8rem;">+ Add Item</button>
                 </div>
                 
+                <div class="ingredients-header" style="display: grid; grid-template-columns: 2fr 1fr 1fr 40px; gap: 12px; margin-bottom: 8px; padding: 0 4px;">
+                    <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800;">Ingredient Name</span>
+                    <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800;">Grams (qty)</span>
+                    <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800;">Price (per kg)</span>
+                    <span></span>
+                </div>
+                
                 <div id="ingredients" style="display: flex; flex-direction: column; gap: 12px;">
                     <!-- Ingredients rendered here -->
                 </div>
