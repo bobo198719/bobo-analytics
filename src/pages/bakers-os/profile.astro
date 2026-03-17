@@ -1,34 +1,19 @@
----
-import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
-import BakersSubNav from "../../components/BakersSubNav.astro";
-
-const baker = {
-  name: "Sarah Jenkins",
-  business: "Jenkin's Gourmet Cakes",
-  phone: "+91 98765 43210",
-  address: "123 Baker St, Green Meadows",
-  city: "Gurgaon",
-  rating: 4.9,
-  specialties: ["Cakes", "Cupcakes", "Cookies"]
-};
----
-
 <BakersOSLayout title="Baker Profile | Home Bakers OS">
   <BakersSubNav active="profile" />
   
   <div class="profile-hero glass-card">
       <div class="hero-bg"></div>
       <div class="hero-content">
-          <div class="avatar-lg">SJ</div>
+          <div class="avatar-lg" id="profile-initials">SJ</div>
           <div class="hero-meta">
-              <h1>{baker.business}</h1>
+              <h1 id="display-business">Jenkin's Gourmet Cakes</h1>
               <div class="hero-badges">
                   <span>Verified 🍰</span>
-                  <span>{baker.city} 📍</span>
+                  <span id="display-city">Gurgaon 📍</span>
               </div>
           </div>
           <div class="hero-actions">
-              <button class="primary-btn">Edit Profile</button>
+              <button class="primary-btn" onclick="openEditModal()">Edit Profile</button>
               <button class="secondary-btn">Share Page</button>
           </div>
       </div>
@@ -38,17 +23,19 @@ const baker = {
       <div class="main-info">
           <div class="card-section glass-card">
               <h3>About the Patisserie</h3>
-              <p>Specializing in Belgian Chocolate and custom celebration cakes. Using only premium ingredients and a lot of love.</p>
-              <div class="spec-tags">
-                  {baker.specialties.map(s => <span class="tag">{s}</span>)}
+              <p id="display-bio">Specializing in Belgian Chocolate and custom celebration cakes. Using only premium ingredients and a lot of love.</p>
+              <div class="spec-tags" id="display-specialties">
+                  <span class="tag">Cakes</span>
+                  <span class="tag">Cupcakes</span>
+                  <span class="tag">Cookies</span>
               </div>
           </div>
 
           <div class="card-section glass-card">
               <h3>Contact Details</h3>
               <div class="contact-list">
-                  <div class="c-item"><strong>Phone:</strong> {baker.phone}</div>
-                  <div class="c-item"><strong>Address:</strong> {baker.address}</div>
+                  <div class="c-item"><strong>Phone:</strong> <span id="display-phone">+91 98765 43210</span></div>
+                  <div class="c-item"><strong>Address:</strong> <span id="display-address">123 Baker St, Green Meadows</span></div>
               </div>
           </div>
       </div>
@@ -58,23 +45,137 @@ const baker = {
               <h3>Quick Settings</h3>
               <div class="quick-toggle">
                   <span>Accepting Orders</span>
-                  <div class="toggle active"></div>
+                  <div class="toggle" id="orders-toggle" onclick="toggleOrders()"></div>
               </div>
           </div>
       </div>
   </div>
 
+  <!-- Edit Modal -->
+  <div id="edit-modal" class="modal-overlay">
+      <div class="modal-content glass-card">
+          <div class="modal-header">
+              <h2>Edit Business Profile</h2>
+              <button class="close-btn" onclick="closeEditModal()">&times;</button>
+          </div>
+          <div class="modal-body">
+              <div class="input-group">
+                  <label>Business Name</label>
+                  <input type="text" id="edit-business" />
+              </div>
+              <div class="input-group">
+                  <label>City/Location</label>
+                  <input type="text" id="edit-city" />
+              </div>
+              <div class="input-group">
+                  <label>About / Bio</label>
+                  <textarea id="edit-bio" rows="3"></textarea>
+              </div>
+              <div class="input-group">
+                  <label>Phone Number</label>
+                  <input type="text" id="edit-phone" />
+              </div>
+              <div class="input-group">
+                  <label>Full Address</label>
+                  <textarea id="edit-address" rows="2"></textarea>
+              </div>
+              <div class="input-group">
+                  <label>Specialties (comma separated)</label>
+                  <input type="text" id="edit-specs" placeholder="Cakes, Cookies, Brownies" />
+              </div>
+              <button class="save-btn" onclick="saveProfile()">Save Changes</button>
+          </div>
+      </div>
+  </div>
+
+  <script is:inline>
+      const DEFAULT_BAKER = {
+          business: "Jenkin's Gourmet Cakes",
+          city: "Gurgaon",
+          bio: "Specializing in Belgian Chocolate and custom celebration cakes. Using only premium ingredients and a lot of love.",
+          phone: "+91 98765 43210",
+          address: "123 Baker St, Green Meadows",
+          specialties: ["Cakes", "Cupcakes", "Cookies"],
+          acceptingOrders: true
+      };
+
+      function getProfile() {
+          const saved = localStorage.getItem('bobo_baker_profile');
+          return saved ? JSON.parse(saved) : DEFAULT_BAKER;
+      }
+
+      function updateUI() {
+          const baker = getProfile();
+          document.getElementById('display-business').innerText = baker.business;
+          document.getElementById('display-city').innerText = baker.city + ' 📍';
+          document.getElementById('display-bio').innerText = baker.bio;
+          document.getElementById('display-phone').innerText = baker.phone;
+          document.getElementById('display-address').innerText = baker.address;
+          
+          const specContainer = document.getElementById('display-specialties');
+          specContainer.innerHTML = baker.specialties.map(s => `<span class="tag">${s.trim()}</span>`).join('');
+          
+          const toggle = document.getElementById('orders-toggle');
+          if (baker.acceptingOrders) toggle.classList.add('active');
+          else toggle.classList.remove('active');
+
+          const initials = document.getElementById('profile-initials');
+          if (initials) initials.innerText = baker.business.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      }
+
+      window.openEditModal = () => {
+          const baker = getProfile();
+          document.getElementById('edit-business').value = baker.business;
+          document.getElementById('edit-city').value = baker.city;
+          document.getElementById('edit-bio').value = baker.bio;
+          document.getElementById('edit-phone').value = baker.phone;
+          document.getElementById('edit-address').value = baker.address;
+          document.getElementById('edit-specs').value = baker.specialties.join(', ');
+          document.getElementById('edit-modal').style.display = 'flex';
+      };
+
+      window.closeEditModal = () => {
+          document.getElementById('edit-modal').style.display = 'none';
+      };
+
+      window.saveProfile = () => {
+          const baker = getProfile();
+          const updated = {
+              ...baker,
+              business: document.getElementById('edit-business').value,
+              city: document.getElementById('edit-city').value,
+              bio: document.getElementById('edit-bio').value,
+              phone: document.getElementById('edit-phone').value,
+              address: document.getElementById('edit-address').value,
+              specialties: document.getElementById('edit-specs').value.split(',').map(s => s.trim()).filter(s => s)
+          };
+          localStorage.setItem('bobo_baker_profile', JSON.stringify(updated));
+          updateUI();
+          closeEditModal();
+      };
+
+      window.toggleOrders = () => {
+          const baker = getProfile();
+          baker.acceptingOrders = !baker.acceptingOrders;
+          localStorage.setItem('bobo_baker_profile', JSON.stringify(baker));
+          updateUI();
+      };
+
+      document.addEventListener('DOMContentLoaded', updateUI);
+  </script>
+
   <style>
       .profile-hero { height: 350px; overflow: hidden; position: relative; margin-bottom: 32px; padding: 0; }
-      .hero-bg { height: 180px; background: linear-gradient(135deg, var(--primary), var(--secondary)); opacity: 0.3; }
+      .hero-bg { height: 180px; background: linear-gradient(135deg, var(--primary), var(--secondary)); opacity: 0.2; }
       .hero-content { padding: 0 40px; display: flex; align-items: flex-end; gap: 32px; position: relative; top: -40px; }
       
-      .avatar-lg { width: 140px; height: 140px; border-radius: 20px; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: 800; border: 4px solid var(--bg-dark); }
+      .avatar-lg { width: 140px; height: 140px; border-radius: 20px; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: 800; border: 4px solid var(--bg-dark); color: white; }
       .hero-meta h1 { font-family: 'Outfit'; font-size: 2.2rem; margin-bottom: 8px; }
       .hero-badges { display: flex; gap: 12px; color: var(--text-muted); font-size: 0.9rem; font-weight: 700; }
       
       .hero-actions { flex: 1; display: flex; justify-content: flex-end; gap: 12px; padding-bottom: 12px; }
-      .primary-btn { background: white; color: black; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+      .primary-btn { background: white; color: black; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+      .primary-btn:hover { background: #e2e8f0; transform: translateY(-2px); }
       .secondary-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; }
 
       .profile-grid { display: grid; grid-template-columns: 1fr 350px; gap: 32px; }
@@ -82,16 +183,29 @@ const baker = {
       .card-section { padding: 32px; }
       .card-section h3 { font-family: 'Outfit'; margin-bottom: 24px; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 12px; }
 
-      .spec-tags { display: flex; gap: 10px; margin-top: 20px; }
-      .tag { background: rgba(244, 114, 182, 0.1); color: var(--primary); padding: 4px 12px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; }
+      .spec-tags { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+      .tag { background: rgba(99, 102, 241, 0.1); color: var(--primary); padding: 4px 12px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; }
 
       .contact-list { display: flex; flex-direction: column; gap: 16px; }
       .c-item strong { color: var(--text-muted); margin-right: 8px; }
 
       .quick-toggle { display: flex; justify-content: space-between; align-items: center; }
-      .toggle { width: 44px; height: 22px; background: rgba(255,255,255,0.1); border-radius: 30px; position: relative; cursor: pointer; }
+      .toggle { width: 44px; height: 22px; background: rgba(255,255,255,0.1); border-radius: 30px; position: relative; cursor: pointer; transition: 0.3s; }
       .toggle::after { content: ''; position: absolute; left: 4px; top: 3px; width: 16px; height: 16px; background: #64748b; border-radius: 50%; transition: 0.3s; }
       .toggle.active { background: var(--primary); }
       .toggle.active::after { left: 24px; background: white; }
+
+      /* Modal Styles */
+      .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+      .modal-content { max-width: 500px; width: 100%; padding: 32px; border: 1px solid var(--border); }
+      .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+      .close-btn { background: none; border: none; color: white; font-size: 2rem; cursor: pointer; }
+      
+      .input-group { margin-bottom: 20px; }
+      .input-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; }
+      .input-group input, .input-group textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white; font-family: inherit; }
+      
+      .save-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 10px; font-size: 1rem; }
+      .save-btn:hover { filter: brightness(1.1); }
   </style>
 </BakersOSLayout>
