@@ -1,0 +1,102 @@
+---
+export const prerender = false;
+
+const { slug } = Astro.params;
+const backendUrl = process.env.HOSTINGER_BACKEND_URL || "http://187.124.97.144:5000";
+
+// Fetch bakery info
+const bakeryRes = await fetch(`${backendUrl}/api/bakery/${slug}`);
+if (!bakeryRes.ok) return Astro.redirect('/404');
+const bakery = await bakeryRes.json();
+
+// Fetch products
+const productRes = await fetch(`${backendUrl}/api/products?slug=${slug}`);
+const products = await productRes.json();
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{bakery.name} | Bobo App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #C58C85;
+            --bg: #f8f9fa;
+            --white: #ffffff;
+            --text: #2d3436;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); }
+        
+        .app-container { max-width: 500px; margin: auto; background: var(--white); min-height: 100vh; position: relative; }
+        
+        header { padding: 20px; border-bottom: 1px solid #eee; position: sticky; top: 0; background: var(--white); z-index: 100; display: flex; align-items: center; gap: 15px; }
+        .back-btn { font-size: 1.5rem; text-decoration: none; color: var(--text); }
+        .bakery-info h1 { font-size: 1.2rem; font-weight: 800; }
+        .bakery-info p { font-size: 0.8rem; color: #636e72; }
+
+        .items-list { padding: 15px; }
+        .product-card { display: flex; gap: 15px; background: var(--white); padding: 15px; border-radius: 18px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #f1f1f1; }
+        
+        .p-image { width: 100px; height: 100px; border-radius: 12px; object-fit: cover; }
+        .p-details { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .p-details h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+        .p-details .price { font-weight: 800; color: var(--primary); font-size: 1.1rem; }
+        
+        .actions { display: flex; gap: 8px; margin-top: 10px; }
+        .btn-sm { flex: 1; padding: 8px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
+        .btn-order { background: var(--primary); color: white; }
+        .btn-pay { background: #eee; color: var(--text); }
+
+        .fab-cart { position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: white; padding: 15px 25px; border-radius: 30px; font-weight: 800; box-shadow: 0 10px 20px rgba(197, 140, 133, 0.3); text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header>
+            <a href="#" class="back-btn">←</a>
+            <div class="bakery-info">
+                <h1>{bakery.name}</h1>
+                <p>📍 {bakery.location} | Open Now</p>
+            </div>
+        </header>
+
+        <div class="items-list">
+            {products.map(p => (
+                <div class="product-card">
+                    <img src={p.image_url || "/cake-placeholder.png"} class="p-image" />
+                    <div class="p-details">
+                        <div>
+                            <h3>{p.name}</h3>
+                            <p class="price">₹{p.price}</p>
+                        </div>
+                        <div class="actions">
+                            <button class="btn-sm btn-order" onclick={`order('${p.name}')`}>Order</button>
+                            <button class="btn-sm btn-pay" onclick={`pay('${p.price}', '${bakery.upi}')`}>Pay UPI</button>
+                        </div>
+                    </div>
+                </div>
+            ))}
+        </div>
+
+        <a href={`https://wa.me/${bakery.phone}`} class="fab-cart">
+            WhatsApp Support 💬
+        </a>
+    </div>
+
+    <script is:inline define:vars={{ phone: bakery.phone }}>
+        window.order = (name) => {
+            const text = encodeURIComponent(`I want to order: ${name}`);
+            window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+        }
+        window.pay = (amount, upi) => {
+            if(!upi) return alert("Bakery UPI not set!");
+            window.location.href = `upi://pay?pa=${upi}&pn=Bakery&am=${amount}&cu=INR`;
+        }
+    </script>
+</body>
+</html>

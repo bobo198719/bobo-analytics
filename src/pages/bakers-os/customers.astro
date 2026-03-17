@@ -14,7 +14,7 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
       </div>
       <div class="hb-actions" style="display: flex; gap: 12px;">
           <button class="hb-btn secondary" style="padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: white;">Broadcast WhatsApp</button>
-          <button class="hb-btn primary" style="padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; background: var(--primary); color: white;">+ Add Lead</button>
+          <button class="hb-btn primary" onclick="addLead()" style="padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; background: var(--primary); color: white;">+ Add Lead</button>
       </div>
   </div>
 
@@ -168,6 +168,32 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
               </tr>
           `).join('');
       }
+
+      window.addLead = async () => {
+          const name = prompt("Enter customer name:");
+          if (!name) return;
+          const phone = prompt("Enter phone number:");
+          
+          try {
+              const res = await fetch("/api/customers/add", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ name, phone })
+              });
+              if (res.ok) {
+                  alert("Lead added successfully!");
+                  loadData();
+              }
+          } catch (e) {
+              alert("Failed to add lead");
+          }
+      };
+
+      window.whatsappCustomer = (phone) => {
+          if (!phone || phone === 'N/A') return alert("No phone number available");
+          const cleanPhone = phone.replace(/\D/g, '');
+          window.open(`https://wa.me/${cleanPhone}`, '_blank');
+      };
 
       init();
   </script>

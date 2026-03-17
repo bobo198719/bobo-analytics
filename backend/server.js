@@ -11,6 +11,7 @@ const settingsRoutes = require("./routes/settings");
 const followRoutes = require("./routes/follow");
 const offerRoutes = require("./routes/offers");
 const bakeryRoutes = require("./routes/bakery");
+const customerRoutes = require("./routes/customers");
 
 const fs = require('fs');
 
@@ -60,6 +61,7 @@ app.use("/api", settingsRoutes);
 app.use("/api", followRoutes);
 app.use("/api", offerRoutes);
 app.use("/api", bakeryRoutes);
+app.use("/api/customers", customerRoutes);
 
 app.get("/api/system-repair", async (req, res) => {
     try {
@@ -85,3 +87,19 @@ const server = app.listen(PORT, "0.0.0.0", () => {
 
 // Set server timeout to 60 seconds
 server.timeout = 60000;
+
+// Real-time Order Notifications (WebSocket)
+const WebSocket = require("ws");
+const wss = new WebSocket.Server({ port: 8080 });
+
+wss.on("connection", ws => {
+    console.log("🔔 Dashboard Client connected to Real-time Hub");
+});
+
+global.broadcastNewOrder = (order) => {
+    wss.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify({ type: "NEW_ORDER", order }));
+        }
+    });
+};

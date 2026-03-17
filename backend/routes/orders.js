@@ -43,7 +43,21 @@ router.post("/", async (req, res) => {
             ]
         );
 
+        const newOrder = { id: result.insertId, customer_name, phone, products, amount, payment_method, status: status || "pending" };
+        if (global.broadcastNewOrder) global.broadcastNewOrder(newOrder);
+
         res.json({ success: true, id: result.insertId });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+router.post("/update", async (req, res) => {
+    try {
+        const { id, status } = req.body;
+        if (!id || !status) return res.status(400).json({ error: "ID and Status required" });
+        await db.query("UPDATE orders SET status=? WHERE id=?", [status, id]);
+        res.json({ success: true, message: "Order status updated" });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

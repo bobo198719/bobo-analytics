@@ -92,6 +92,33 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
 
       async function init() {
           await loadOrders();
+          
+          // PART 1: AUTO REFRESH (LOOP FIX)
+          setInterval(loadOrders, 5000);
+
+          // PART 2: REAL-TIME WEBSOCKET
+          try {
+              const socket = new WebSocket("ws://187.124.97.144:8080");
+              socket.onmessage = (event) => {
+                  const data = JSON.parse(event.data);
+                  if (data.type === "NEW_ORDER") {
+                      // Professional push alert
+                      if (Notification.permission === "granted") {
+                          new Notification("New Order Received! 🚀", { body: `Order for ${data.order.customer_name}` });
+                      } else {
+                          alert("New Order Received! 🚀");
+                      }
+                      loadOrders();
+                  }
+              };
+              socket.onopen = () => console.log("✅ Joined Real-time Order Hub");
+          } catch(e) {
+              console.warn("WebSocket failed, falling back to polling.");
+          }
+          
+          if (Notification.permission === "default") {
+              Notification.requestPermission();
+          }
       }
 
       async function loadOrders() {
@@ -99,26 +126,30 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
           try {
               const res = await fetch('/api/orders');
               if (!res.ok) throw new Error('API down');
-              orders = await res.json();
-              if (!Array.isArray(orders)) orders = [];
-              renderOrders();
-              loading.style.display = 'none';
+              const data = await res.json();
+              
+              // Only re-render if data actually changed to save performance
+              if (JSON.stringify(data) !== JSON.stringify(orders)) {
+                  orders = Array.isArray(data) ? data : [];
+                  renderOrders();
+              }
+              
+              if(loading) loading.style.display = 'none';
           } catch (e) {
               console.error('Fetch error:', e);
-              loading.innerHTML = `<p>❌ Failed to load orders.</p>`;
           }
       }
 
       function renderOrders() {
           const body = document.getElementById('orders-body');
+          if(!body) return;
           const search = document.getElementById('order-search').value.toLowerCase();
           
           let filtered = orders.filter(o => {
               const matchesSearch = (o.customer_name || o.customer || "").toLowerCase().includes(search) || 
-                                   (o.id || "").toString().includes(search) ||
-                                   (Array.isArray(o.products) ? o.products.join(' ') : (o.products || o.product || "")).toLowerCase().includes(search);
+                                   (o.id || "").toString().includes(search);
               
-              const matchesTab = (currentTab === 'Current' && (o.status === 'New' || o.status === 'Preparing' || o.status === 'Ready' || !o.status)) ||
+              const matchesTab = (currentTab === 'Current' && (o.status === 'New' || o.status === 'Preparing' || o.status === 'Ready' || !o.status || o.status === 'pending')) ||
                                 (currentTab === 'Upcoming' && o.status === 'Upcoming') ||
                                 (currentTab === 'Past' && (o.status === 'Delivered' || o.status === 'Cancelled' || o.status === 'completed'));
               
@@ -143,7 +174,7 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
                   <td><span class="o-date">${new Date(o.created_at || Date.now()).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span></td>
                   <td>
                       <select onchange="updateOrderStatus('${o.id || o.order_id}', this.value)" class="o-status status-${(o.status || 'new').toLowerCase()}" style="border: none; cursor: pointer; background: rgba(255,255,255,0.1); color: white; font-weight: 800; font-size: 0.7rem; padding: 4px 10px; border-radius: 30px;">
-                          <option value="New" ${o.status === 'New' ? 'selected' : ''}>New</option>
+                          <option value="New" ${o.status === 'New' || o.status === 'pending' ? 'selected' : ''}>New</option>
                           <option value="Preparing" ${o.status === 'Preparing' ? 'selected' : ''}>Preparing</option>
                           <option value="Ready" ${o.status === 'Ready' ? 'selected' : ''}>Ready</option>
                           <option value="Delivered" ${o.status === 'Delivered' || o.status === 'completed' ? 'selected' : ''}>Delivered</option>
@@ -154,7 +185,6 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
                   <td>
                       <div class="action-cell" style="display: flex; gap: 8px;">
                           <button class="a-btn wa" onclick="whatsappCustomer('${o.phone}', '${o.customer_name || o.customer}', '${o.id || o.order_id}')" title="Message on WhatsApp">💬 Msg</button>
-                          <button class="a-btn" onclick="deleteOrder('${o.id || o.order_id}')">🗑️</button>
                       </div>
                   </td>
               </tr>
@@ -170,10 +200,10 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
 
       window.updateOrderStatus = async (id, status) => {
           try {
-              const res = await fetch('/api/orders', {
+              const res = await fetch('/api/orders/update', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ id, status, update_status_only: true })
+                  body: JSON.stringify({ id, status })
               });
               if (res.ok) {
                   await loadOrders();
@@ -183,22 +213,13 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
           }
       };
 
-      window.deleteOrder = async (id) => {
-          if (!confirm('Delete this order?')) return;
-          try {
-              const res = await fetch(\`/api/orders?id=\${id}\`, { method: 'DELETE' });
-              if (res.ok) await loadOrders();
-          } catch (e) { console.error(e); }
-      };
-
       window.whatsappCustomer = (phone, name, id) => {
           if (!phone) return alert('No phone number found.');
           const cleanPhone = phone.replace(/\D/g, '');
-          const message = encodeURIComponent(\`Hi \${name}! Regarding your order #\${id} from Trivia Bakery.\`);
-          window.open(\`https://wa.me/\${cleanPhone}?text=\${message}\`, '_blank');
+          const message = encodeURIComponent(`Hi ${name}! Regarding your order #${id} from Trivia Bakery.`);
+          window.open(`https://wa.me/${cleanPhone}?text=${message}`, '_blank');
       };
 
       init();
   </script>
 </BakersOSLayout>
-
