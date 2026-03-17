@@ -26,6 +26,9 @@ if (!fs.existsSync(uploadDir)) {
 
 app.use(cors());
 
+// Serve uploads directory specifically (proxied via /api/uploads)
+app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
+
 // Serve images from the internal public directory
 app.use("/menu-images", express.static(uploadDir));
 

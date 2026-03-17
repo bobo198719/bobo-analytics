@@ -118,7 +118,12 @@ const products = await productRes.json();
             {products.map(p => (
                 <div class="product-card">
                     <div class="img-container">
-                        <img src={p.image_url || "/cake-placeholder.png"} class="product-img" alt={p.name} />
+                        <img 
+                            src={`https://www.boboanalytics.com${p.image_url || "/default-cake.png"}`} 
+                            class="product-img" 
+                            alt={p.name} 
+                            onerror="this.src='/default-cake.png'"
+                        />
                     </div>
                     <div class="product-info">
                         <h3>{p.name}</h3>

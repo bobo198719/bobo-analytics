@@ -19,10 +19,15 @@ router.get("/products", async (req, res) => {
         query += " ORDER BY created_at DESC";
         
         const [rows] = await db.query(query, params);
-        const host = "http://187.124.97.144:5000";
         const processedRows = rows.map(p => {
-            if (p.image_url && !p.image_url.startsWith("http")) {
-                p.image_url = `${host}${p.image_url.startsWith('/') ? '' : '/'}${p.image_url}`;
+            if (p.image_url) {
+                // If it's the full old URL or storage path, strip it down to filename
+                if (p.image_url.includes("blob.vercel-storage.com")) {
+                    // Keep original or fallback
+                } else {
+                    const filename = p.image_url.split("/").pop();
+                    p.image_url = `/api/uploads/${filename}`;
+                }
             }
             return p;
         });
