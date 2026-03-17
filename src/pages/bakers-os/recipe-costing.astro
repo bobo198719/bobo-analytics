@@ -167,9 +167,13 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                     body: JSON.stringify({ query })
                 });
 
-                if (!res.ok) throw new Error("AI Service Busy");
-
                 const data = await res.json();
+
+                if (!res.ok) {
+                    const errorMsg = data.details || data.error || "AI Service Busy";
+                    const hint = data.hint ? `\n\nHint: ${data.hint}` : "";
+                    throw new Error(errorMsg + hint);
+                }
                 
                 // Load AI Data
                 ingredients = data.ingredients.map(i => ({
