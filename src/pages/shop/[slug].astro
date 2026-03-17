@@ -106,9 +106,9 @@ const products = await productRes.json();
                 <button class="btn btn-follow" onclick="followBakery()">
                     Follow Bakery ✨
                 </button>
-                <a href={`https://wa.me/${bakery.phone}?text=I%20saw%20your%20bakery%20on%20Bobo!`} target="_blank" class="btn btn-wa">
+                <button class="btn btn-wa" onclick="orderCake('Cake', '...')">
                     WhatsApp Order
-                </a>
+                </button>
             </div>
         </header>
 
@@ -130,7 +130,7 @@ const products = await productRes.json();
                         <p class="price">₹{p.price}</p>
                         
                         <div class="product-actions">
-                            <button class="btn btn-order btn-sm" onclick={`orderCake('${p.name}')`}>
+                            <button class="btn btn-order btn-sm" onclick={`orderCake('${p.name}', '${p.price}')`}>
                                 Order Now
                             </button>
                             <button class="btn btn-pay btn-sm" onclick={`payUPI('${p.price}', '${bakery.upi}')`}>
@@ -150,9 +150,20 @@ const products = await productRes.json();
     </div>
 
     <script is:inline define:vars={{ phone: bakery.phone, slug: bakery.slug }}>
-        window.orderCake = (name) => {
-            const text = encodeURIComponent(`Hi! I'd like to order: ${name}`);
-            window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+        function formatPhoneNumber(num) {
+            let cleaned = num.toString().replace(/\D/g, "");
+            if (cleaned.startsWith("0")) cleaned = cleaned.substring(1);
+            if (cleaned.startsWith("91") && cleaned.length === 12) return cleaned;
+            return "91" + (cleaned.length === 12 && cleaned.startsWith("91") ? cleaned.substring(2) : cleaned);
+        }
+
+        window.orderCake = (name, price) => {
+            const formattedNumber = formatPhoneNumber(phone);
+            const msg = price !== '...' 
+                ? `Hi! I'd like to order: ${name} for ₹${price}`
+                : `Hi! I saw your bakery on Bobo and I'd like to inquire about your cakes.`;
+            const text = encodeURIComponent(msg);
+            window.open(`https://wa.me/${formattedNumber}?text=${text}`, '_blank');
         };
 
         window.payUPI = (amount, upi) => {
