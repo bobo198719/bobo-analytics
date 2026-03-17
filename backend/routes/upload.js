@@ -90,10 +90,7 @@ router.post("/upload-product-image", (req, res) => {
                 if (fs.existsSync(originalPath)) fs.unlinkSync(originalPath);
             }
 
-            const isVPS = fs.existsSync("/var/www/storage/bakery");
-            const publicUrl = isVPS 
-                ? `https://srv1449576.hstgr.cloud/storage/bakery/images/${filename}`
-                : `/menu-images/${filename}`;
+            const publicUrl = `/api/uploads/${filename}`;
 
             res.json({
                 success: true,

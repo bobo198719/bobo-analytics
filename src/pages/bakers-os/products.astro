@@ -422,10 +422,15 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 
                 if (rawImg) {
                     if (rawImg.startsWith('http')) {
-                        // If it's a full URL, use it (Backend now returns full URLs but we'll be safe)
                         fullImgUrl = rawImg;
+                    } else if (rawImg.startsWith('/api/') || rawImg.startsWith('api/')) {
+                        // Already has api prefix
+                        fullImgUrl = rawImg.startsWith('/') ? rawImg : '/' + rawImg;
+                    } else if (rawImg.startsWith('/storage/')) {
+                        // Map legacy storage to hostinger proxy
+                        fullImgUrl = "/api/uploads/" + rawImg.split('/').pop();
                     } else {
-                        // If it's local, use the /api proxy
+                        // Default fallback logic
                         fullImgUrl = "/api" + (rawImg.startsWith('/') ? '' : '/') + rawImg;
                     }
                 }
