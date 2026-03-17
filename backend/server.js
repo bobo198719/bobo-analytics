@@ -12,6 +12,7 @@ const followRoutes = require("./routes/follow");
 const offerRoutes = require("./routes/offers");
 const bakeryRoutes = require("./routes/bakery");
 const customerRoutes = require("./routes/customers");
+const recipeRoutes = require("./routes/recipes");
 
 const fs = require('fs');
 
@@ -62,6 +63,7 @@ app.use("/api", followRoutes);
 app.use("/api", offerRoutes);
 app.use("/api", bakeryRoutes);
 app.use("/api/customers", customerRoutes);
+app.use("/api/recipes", recipeRoutes);
 
 app.get("/api/system-repair", async (req, res) => {
     try {

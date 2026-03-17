@@ -1,0 +1,196 @@
+---
+import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
+---
+
+<BakersOSLayout title="Recipe Costing | Baker OS">
+    <div class="header-flex" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+        <div>
+            <h1>Recipe Costing & AI Pricing</h1>
+            <p style="color: var(--text-muted);">Calculate costs, margins, and get AI-suggested selling prices.</p>
+        </div>
+        <a href="/bakers-os/portfolio" class="hb-btn secondary" style="padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: white; text-decoration: none;">View Portfolio</a>
+    </div>
+
+    <div class="costing-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px;">
+        <div class="glass-card" style="padding: 32px;">
+            <div class="f-group" style="margin-bottom: 24px;">
+                <label style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; font-weight: 800;">Recipe Name</label>
+                <input type="text" id="recipeName" placeholder="e.g. Belgian Chocolate Truffle Cake" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 14px; border-radius: 12px; color: white; font-size: 1.1rem;" />
+            </div>
+
+            <div class="ingredients-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 style="font-size: 1rem; color: var(--primary);">Ingredients</h3>
+                    <button onclick="addIngredient()" style="background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.8rem;">+ Add Item</button>
+                </div>
+                
+                <div id="ingredients-list" style="display: flex; flex-direction: column; gap: 12px;">
+                    <!-- Ingredients rendered here -->
+                </div>
+            </div>
+
+            <div class="overhead-section" style="margin-top: 32px; padding-top: 32px; border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="f-group">
+                    <label style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;">Packaging Cost (₹)</label>
+                    <input type="number" id="packaging" value="20" oninput="calculate()" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white;" />
+                </div>
+                <div class="f-group">
+                    <label style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;">Labour/Utility (₹)</label>
+                    <input type="number" id="labour" value="50" oninput="calculate()" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white;" />
+                </div>
+            </div>
+        </div>
+
+        <div class="results-sidebar">
+            <div class="glass-card" style="padding: 32px; position: sticky; top: 20px; display: flex; flex-direction: column; gap: 24px;">
+                <div id="profit-alert" style="padding: 12px; border-radius: 8px; text-align: center; font-weight: 700; font-size: 0.85rem;">
+                    Start calculating...
+                </div>
+
+                <div class="stat">
+                    <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Total Production Cost</span>
+                    <h2 style="font-size: 2.5rem; font-family: 'Outfit';">₹<span id="productionCost">0</span></h2>
+                </div>
+
+                <div class="stat">
+                    <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">AI Suggested Price</span>
+                    <h2 style="font-size: 2rem; color: var(--primary); font-family: 'Outfit';">₹<span id="suggestedPrice">0</span></h2>
+                </div>
+
+                <div class="mini-stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div style="background: rgba(255,255,255,0.03); padding: 16px; border-radius: 12px;">
+                        <span style="display: block; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">Net Profit</span>
+                        <strong id="profit" style="font-size: 1.1rem; color: #10b981;">₹0</strong>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.03); padding: 16px; border-radius: 12px;">
+                        <span style="display: block; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">Margin</span>
+                        <strong id="margin" style="font-size: 1.1rem; color: #10b981;">0%</strong>
+                    </div>
+                </div>
+
+                <button onclick="saveRecipe()" id="saveBtn" style="width: 100%; background: var(--primary); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 1rem; margin-top: 12px;">Save to Portfolio</button>
+            </div>
+        </div>
+    </div>
+
+    <script is:inline>
+        let ingredients = [
+            { name: "Flour/Maida", qty: 500, cost: 50 },
+            { name: "Sugar", qty: 300, cost: 45 },
+            { name: "Cocoa Powder", qty: 50, cost: 600 }
+        ];
+
+        function addIngredient() {
+            ingredients.push({ name: "", qty: 0, cost: 0 });
+            render();
+        }
+
+        function removeIngredient(index) {
+            ingredients.splice(index, 1);
+            render();
+            calculate();
+        }
+
+        function render() {
+            const list = document.getElementById('ingredients-list');
+            list.innerHTML = "";
+            
+            ingredients.forEach((ing, i) => {
+                const div = document.createElement('div');
+                div.style = "display: grid; grid-template-columns: 2fr 1fr 1fr 40px; gap: 12px; align-items: center;";
+                div.innerHTML = `
+                    <input type="text" placeholder="Item Name" value="${ing.name}" oninput="ingredients[${i}].name=this.value" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); padding:10px; border-radius:8px; color:white; width:100%"/>
+                    <input type="number" placeholder="Qty (g/ml)" value="${ing.qty}" oninput="ingredients[${i}].qty=Number(this.value); calculate()" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); padding:10px; border-radius:8px; color:white; width:100%"/>
+                    <input type="number" placeholder="Cost/kg" value="${ing.cost}" oninput="ingredients[${i}].cost=Number(this.value); calculate()" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); padding:10px; border-radius:8px; color:white; width:100%"/>
+                    <button onclick="removeIngredient(${i})" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:1.2rem">×</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function calculate() {
+            let total = 0;
+            ingredients.forEach(i => {
+                total += (i.qty * i.cost) / 1000;
+            });
+
+            const packaging = Number(document.getElementById("packaging").value || 0);
+            const labour = Number(document.getElementById("labour").value || 0);
+            
+            const rawCost = total;
+            const productionCost = rawCost + packaging + labour;
+
+            document.getElementById("productionCost").innerText = Math.round(productionCost);
+
+            // AI Suggestion Logic
+            let markup = 0.6; // 60% default
+            if (productionCost < 300) markup = 0.8; // 80% for small items
+            else if (productionCost < 800) markup = 0.7; // 70% 
+            
+            const suggestedPrice = productionCost + (productionCost * markup);
+            const profit = suggestedPrice - productionCost;
+            const margin = Math.round((profit / productionCost) * 100);
+
+            document.getElementById("suggestedPrice").innerText = Math.round(suggestedPrice);
+            document.getElementById("profit").innerText = "₹" + Math.round(profit);
+            document.getElementById("margin").innerText = margin + "%";
+
+            // Alerts
+            const alert = document.getElementById("profit-alert");
+            if (margin < 30) {
+                alert.innerText = "🚨 Low Profit Margin! Increase price.";
+                alert.style.backgroundColor = "rgba(239, 68, 68, 0.1)";
+                alert.style.color = "#ef4444";
+            } else if (margin < 50) {
+                alert.innerText = "⚖️ Moderate Profitability.";
+                alert.style.backgroundColor = "rgba(251, 146, 60, 0.1)";
+                alert.style.color = "#fb923c";
+            } else {
+                alert.innerText = "💎 Excellent Profit Margin!";
+                alert.style.backgroundColor = "rgba(16, 185, 129, 0.1)";
+                alert.style.color = "#10b981";
+            }
+        }
+
+        window.saveRecipe = async () => {
+            const recipeName = document.getElementById("recipeName").value;
+            if (!recipeName) return alert("Please enter a recipe name");
+
+            const saveBtn = document.getElementById("saveBtn");
+            const originalText = saveBtn.innerText;
+            saveBtn.innerText = "Saving to Database...";
+            saveBtn.disabled = true;
+
+            try {
+                const res = await fetch("/api/recipes/save", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        recipeName,
+                        ingredients,
+                        productionCost: document.getElementById("productionCost").innerText,
+                        sellingPrice: document.getElementById("suggestedPrice").innerText,
+                        profit: document.getElementById("profit").innerText.replace('₹',''),
+                        margin: document.getElementById("margin").innerText.replace('%','')
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert("✨ Recipe Saved Successfully to your Portfolio!");
+                } else {
+                    alert("❌ Failed to save recipe");
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Server Connection Error");
+            } finally {
+                saveBtn.innerText = originalText;
+                saveBtn.disabled = false;
+            }
+        };
+
+        render();
+        calculate();
+    </script>
+</BakersOSLayout>

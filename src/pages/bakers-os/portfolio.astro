@@ -1,0 +1,115 @@
+---
+import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
+---
+
+<BakersOSLayout title="Recipe Portfolio | Baker OS">
+    <div class="header-flex" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+        <div>
+            <h1>Recipe Portfolio</h1>
+            <p style="color: var(--text-muted);">Your library of costed master recipes and pricing history.</p>
+        </div>
+        <a href="/bakers-os/recipe-costing" class="hb-btn primary" style="padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; background: var(--primary); color: white; text-decoration: none;">+ New Recipe</a>
+    </div>
+
+    <div id="recipe-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px;">
+        <!-- Recipes loaded here -->
+        <div class="loading-state" style="grid-column: 1/-1; text-align: center; padding: 100px; color: var(--text-muted);">
+            <div style="font-size: 2rem; margin-bottom: 16px;">📂</div>
+            <p>Accessing your recipe vault...</p>
+        </div>
+    </div>
+
+    <style>
+        .recipe-card {
+            transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .recipe-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.1);
+        }
+        .recipe-badge {
+            font-size: 0.65rem;
+            font-weight: 900;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+    </style>
+
+    <script is:inline>
+        async function loadPortfolio() {
+            const grid = document.getElementById('recipe-grid');
+            try {
+                const res = await fetch("/api/recipes");
+                const data = await res.json();
+
+                if (data.length === 0) {
+                    grid.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 100px; background: rgba(255,255,255,0.02); border-radius: 32px; border: 1px dashed var(--border);">
+                            <div style="font-size: 3rem; margin-bottom: 20px;">🥐</div>
+                            <h3>No master recipes yet</h3>
+                            <p style="color: var(--text-muted);">Start by costing your first bake.</p>
+                            <a href="/bakers-os/recipe-costing" style="display: inline-block; margin-top: 24px; color: var(--primary); font-weight: 800; text-decoration: none;">Launch Calculator →</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                grid.innerHTML = data.map(r => {
+                    const margin = Number(r.margin);
+                    let badgeColor = "#10b981";
+                    let badgeBg = "rgba(16, 185, 129, 0.1)";
+                    if (margin < 30) {
+                        badgeColor = "#ef4444";
+                        badgeBg = "rgba(239, 68, 68, 0.1)";
+                    } else if (margin < 50) {
+                        badgeColor = "#fb923c";
+                        badgeBg = "rgba(251, 146, 60, 0.1)";
+                    }
+
+                    return `
+                        <div class="glass-card recipe-card" style="padding: 24px;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <h3 style="font-family: 'Outfit'; font-size: 1.25rem;">${r.recipe_name}</h3>
+                                <span class="recipe-badge" style="color: ${badgeColor}; background: ${badgeBg};">
+                                    ${margin}% Margin
+                                </span>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
+                                    <span style="display: block; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">Cost</span>
+                                    <strong style="font-size: 1.1rem;">₹${r.production_cost}</strong>
+                                </div>
+                                <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
+                                    <span style="display: block; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">Price</span>
+                                    <strong style="font-size: 1.1rem; color: var(--primary);">₹${r.selling_price}</strong>
+                                </div>
+                            </div>
+
+                            <div style="font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 16px;">
+                                <strong>Ingredients:</strong> ${r.ingredients.length} items • 
+                                Saved ${new Date(r.created_at).toLocaleDateString('en-IN', {day:'2-digit', month:'short'})}
+                            </div>
+
+                            <div style="display: flex; gap: 8px;">
+                                <button onclick="window.location.href='/bakers-os/recipe-costing'" class="hb-btn secondary" style="flex: 1; padding: 10px; font-size: 0.75rem; border-radius: 8px; border: 1px solid var(--border); background: none; color: white; cursor: pointer;">Edit Recipe</button>
+                                <button onclick="alert('Digital card copied to clipboard!')" class="hb-btn secondary" style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: white; cursor: pointer;">📋</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (e) {
+                console.error(e);
+                grid.innerHTML = `<div style="grid-column: 1/-1; color: #ef4444; text-align: center; padding: 40px;">⚠️ Connection Error. Portfolio currently unavailable.</div>`;
+            }
+        }
+
+        loadPortfolio();
+    </script>
+</BakersOSLayout>
