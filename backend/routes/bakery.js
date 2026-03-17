@@ -7,7 +7,7 @@ router.get("/bakery/:slug", async (req, res) => {
         const { slug } = req.params;
         // Search in users table first
         const [users] = await db.query(
-            "SELECT business_name as name, bakery_slug as slug, bakery_upi as upi, industry, phone FROM users WHERE bakery_slug = ?",
+            "SELECT business_name as name, bakery_slug as slug, bakery_upi as upi, industry, phone, location FROM users WHERE bakery_slug = ?",
             [slug]
         );
 
@@ -28,7 +28,7 @@ router.get("/bakery/:slug", async (req, res) => {
             name: bakery.name,
             slug: bakery.slug,
             upi: settings.upi || bakery.upi || "9354056262@ybl",
-            location: settings.location || "Gurgaon", 
+            location: settings.location || bakery.location || "Mumbai Vasai West", 
             logo: settings.logo || "/bakers-logo.png",
             phone: settings.phone || bakery.phone || "7387021958"
         };
