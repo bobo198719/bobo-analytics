@@ -10,11 +10,20 @@ const { title = "Bobo Analytics", hideNav = false } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="google-site-verification" content="7eTIrcExWh6vKQURAn-WzHy0NSdBdRgBfJnL-JTwzsY" />
-    <title>{title}</title>
-    <meta name="description" content="Bobo Analytics provides scalable SaaS solutions for bakery, pharmacy, grocery and retail businesses." />
+    <title>Bobo Analytics | Scalable SaaS for Bakery, Pharmacy & Retail Businesses</title>
+    <meta name="description" content="Bobo Analytics is a scalable SaaS platform helping bakeries, pharmacies, groceries and retailers manage orders, inventory, customers and analytics in one powerful dashboard." />
     <meta name="keywords" content="bakery software, pharmacy POS, grocery POS, SaaS business tools India" />
+    
+    <!-- Open Graph Social Previews -->
+    <meta property="og:title" content="Bobo Analytics SaaS Platform" />
+    <meta property="og:description" content="Manage bakery, pharmacy, grocery and retail businesses with one powerful SaaS platform." />
+    <meta property="og:url" content="https://boboanalytics.com" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://boboanalytics.com/favicon.png" />
+    
     <link rel="icon" href="/favicon.png" type="image/png">
 
+    <!-- JSON-LD Structured Data for Google -->
     <script type="application/ld+json">
     {
      "@context":"https://schema.org",
@@ -22,7 +31,39 @@ const { title = "Bobo Analytics", hideNav = false } = Astro.props;
      "name":"Bobo Analytics",
      "url":"https://boboanalytics.com",
      "logo":"https://boboanalytics.com/favicon.png",
-     "description":"Industry-specific SaaS platform for bakery, pharmacy, grocery and retail businesses."
+     "description":"Bobo Analytics provides scalable SaaS software solutions for bakery, pharmacy, grocery and retail businesses.",
+     "sameAs":[
+     "https://boboanalytics.com"
+     ]
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+     "@context":"https://schema.org",
+     "@type":"WebSite",
+     "url":"https://boboanalytics.com",
+     "name":"Bobo Analytics",
+     "potentialAction":{
+     "@type":"SearchAction",
+     "target":"https://boboanalytics.com/?q={search_term_string}",
+     "query-input":"required name=search_term_string"
+     }
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+     "@context":"https://schema.org",
+     "@type":"SoftwareApplication",
+     "name":"Bobo Analytics",
+     "operatingSystem":"Web",
+     "applicationCategory":"BusinessApplication",
+     "offers":{
+     "@type":"Offer",
+     "price":"0",
+     "priceCurrency":"INR"
+     }
     }
     </script>
     <style>
