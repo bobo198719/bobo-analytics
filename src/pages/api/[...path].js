@@ -30,18 +30,8 @@ export async function ALL({ params, request }) {
                 'Access-Control-Allow-Headers': 'Content-Type, Authorization',
             }
         });
-    } catch (e) {
-        console.error("🚨 OpenAI Error Details:", {
-            message: e.message,
-            stack: e.stack,
-            type: e.type,
-            code: e.code
-        });
-        return new Response(JSON.stringify({
-            error: "AI Generation Failed",
-            details: e.message,
-            hint: !process.env.OPENAI_API_KEY ? "Missing OPENAI_API_KEY in .env" : "Check OpenAI credits or model availability"
-        }), {
+    } catch (error) {
+        return new Response(JSON.stringify({ error: error.message }), { 
             status: 500,
             headers: { 'Content-Type': 'application/json' }
         });

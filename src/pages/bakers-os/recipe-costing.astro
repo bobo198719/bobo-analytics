@@ -13,61 +13,18 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
 
     <div class="costing-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px;">
         <div class="glass-card" style="padding: 32px;">
-            <!-- UNIVERSAL AI GENERATOR -->
-            <div class="glass-card" style="padding: 24px; margin-bottom: 32px; border: 1px solid var(--primary); background: rgba(99, 102, 241, 0.05);">
-                <h3 style="color: var(--primary); margin-bottom: 16px; font-size: 1.1rem;">🚀 Universal AI Recipe Generator</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Type any cake (e.g. "Eggless Belgian Truffle 2kg") and AI will build the full recipe + costing.</p>
+            <!-- SEARCH SECTION -->
+            <div class="search-box" style="margin-bottom: 24px; position: relative;">
+                <label style="display: block; font-size: 0.75rem; color: var(--primary); margin-bottom: 8px; text-transform: uppercase; font-weight: 800;">Recipe Search & Presets</label>
                 <div style="display: flex; gap: 12px;">
-                    <input type="text" id="aiInput" placeholder="Try: Black Forest Cake 1kg egg..." 
-                        style="flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 14px; border-radius: 12px; color: white; outline: none;" />
-                    <button onclick="generateAI()" id="aiGenBtn" style="background: var(--primary); color: white; border: none; padding: 0 24px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; white-space: nowrap;">Generate with AI</button>
-                </div>
-            </div>
-
-            <div style="text-align: center; margin-bottom: 32px; position: relative;">
-                <span style="background: var(--border); height: 1px; width: 100%; position: absolute; top: 50%; left: 0; z-index: 1;"></span>
-                <span style="background: #0f172a; padding: 0 16px; position: relative; z-index: 2; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800;">OR USE PRESETS</span>
-            </div>
-
-            <!-- AI SEARCH SECTION -->
-            <div class="ai-search-box" style="margin-bottom: 24px; position: relative;">
-                <label style="display: block; font-size: 0.75rem; color: var(--primary); margin-bottom: 8px; text-transform: uppercase; font-weight: 800;">Smart Recipe Search</label>
-                <div style="display: flex; gap: 12px;">
-                    <input type="text" id="searchRecipe" placeholder="Search cake (e.g. Black Forest)" oninput="showSuggestions()" style="flex: 1; background: rgba(99, 102, 241, 0.1); border: 1px solid var(--primary); padding: 14px; border-radius: 12px; color: white; font-size: 1rem; outline: none;" />
+                    <input type="text" id="searchRecipe" placeholder="Search cake presets (e.g. Black Forest)" oninput="showSuggestions()" style="flex: 1; background: rgba(99, 102, 241, 0.1); border: 1px solid var(--primary); padding: 14px; border-radius: 12px; color: white; font-size: 1rem; outline: none;" />
                 </div>
                 <div id="suggestions" style="position: absolute; top: 100%; left: 0; right: 0; background: #1e293b; border: 1px solid var(--border); border-radius: 12px; margin-top: 4px; z-index: 100; max-height: 200px; overflow-y: auto; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.5);"></div>
             </div>
 
-            <!-- AI CONFIGURATION BOX -->
-            <div id="configBox" class="glass-card" style="display: none; background: rgba(99, 102, 241, 0.05); border: 1px solid var(--primary); padding: 20px; margin-bottom: 24px; animation: slideDown 0.3s ease;">
-                <h4 style="margin-bottom: 16px; font-size: 0.9rem; color: var(--primary);">Configure AI Generation</h4>
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
-                    <div class="f-group">
-                        <label style="display: block; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">Weight</label>
-                        <select id="cakeKg" style="width: 100%; background: #0f172a; border: 1px solid var(--border); padding: 10px; border-radius: 8px; color: white;">
-                            <option value="0.5">0.5 KG</option>
-                            <option value="1" selected>1 KG</option>
-                            <option value="2">2 KG</option>
-                            <option value="3">3 KG</option>
-                            <option value="5">5 KG</option>
-                        </select>
-                    </div>
-                    <div class="f-group">
-                        <label style="display: block; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">Dietary</label>
-                        <select id="cakeType" style="width: 100%; background: #0f172a; border: 1px solid var(--border); padding: 10px; border-radius: 8px; color: white;">
-                            <option value="egg">With Egg</option>
-                            <option value="eggless">Eggless</option>
-                        </select>
-                    </div>
-                    <div class="f-group" style="display: flex; align-items: flex-end;">
-                        <button onclick="generateRecipe()" style="width: 100%; height: 42px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 700;">✨ Generate</button>
-                    </div>
-                </div>
-            </div>
-
             <div class="f-group" style="margin-bottom: 24px;">
                 <label style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; font-weight: 800;">Recipe Name</label>
-                <input type="text" id="recipeName" readonly placeholder="Enter or select a recipe..." style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 14px; border-radius: 12px; color: white; font-size: 1.1rem; cursor: not-allowed;" />
+                <input type="text" id="recipeName" placeholder="Enter recipe name..." style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 14px; border-radius: 12px; color: white; font-size: 1.1rem;" />
             </div>
 
             <div class="ingredients-section">
@@ -105,7 +62,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 </div>
 
                 <div class="stat">
-                    <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">AI Suggested Price</span>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Suggested Selling Price</span>
                     <h2 style="font-size: 2rem; color: var(--primary); font-family: 'Outfit';">₹<span id="suggestedPrice">0</span></h2>
                 </div>
 
@@ -125,14 +82,6 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         </div>
     </div>
 
-    <!-- Processing Overlay -->
-    <div id="processing-overlay" class="modal-overlay" style="z-index: 3000; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 20px;">
-        <div class="processing-content glass-card" style="text-align: center; padding: 40px; max-width: 400px; width: 100%; background: #1e293b; border-radius: 20px; border: 1px solid var(--primary);">
-            <div class="ai-spinner" style="width: 40px; height: 40px; border: 3px solid rgba(99, 102, 241, 0.1); border-left-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;"></div>
-            <h2 style="margin-top: 24px; color: white;">AI Chef Consulting...</h2>
-            <p id="processing-status" style="color: var(--text-muted); margin-top: 12px; font-size: 0.9rem;">Building your custom recipe with precise ingredient quantities and costing...</p>
-        </div>
-    </div>
 
     <style>
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -146,62 +95,6 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
     <script is:inline>
         let ingredients = [];
 
-        // UNIVERSAL AI GENERATOR (OPENAI)
-        window.generateAI = async () => {
-            const query = document.getElementById("aiInput").value.trim();
-            if (!query) return alert("Please type what you want to bake!");
-
-            const btn = document.getElementById("aiGenBtn");
-            const overlay = document.getElementById("processing-overlay");
-            const statusText = document.getElementById("processing-status");
-
-            try {
-                btn.innerText = "AI Thinking...";
-                btn.disabled = true;
-                overlay.style.display = "flex";
-                statusText.innerText = "Building the perfect " + query + "...";
-
-                const res = await fetch("/api/recipes/ai-recipe", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ query })
-                });
-
-                const data = await res.json();
-
-                if (!res.ok) {
-                    const errorMsg = data.details || data.error || "AI Service Busy";
-                    const hint = data.hint ? `\n\nHint: ${data.hint}` : "";
-                    throw new Error(errorMsg + hint);
-                }
-                
-                // Load AI Data
-                ingredients = data.ingredients.map(i => ({
-                    name: i.name,
-                    qty: Number(i.qty),
-                    cost: Number(i.cost)
-                }));
-
-                document.getElementById("recipeName").value = data.name;
-                
-                render();
-                calculate();
-
-                // Success Feedback
-                const alertBox = document.getElementById("alert");
-                alertBox.innerText = "💎 GPT-4 Generated";
-                alertBox.style.color = "#10b981";
-                alertBox.style.backgroundColor = "rgba(16, 185, 129, 0.1)";
-
-            } catch (e) {
-                console.error(e);
-                alert("🚨 AI Error: " + e.message);
-            } finally {
-                btn.innerText = "Generate with AI";
-                btn.disabled = false;
-                overlay.style.display = "none";
-            }
-        };
 
         const recipesDB = [
             "Black Forest Cake",
@@ -243,14 +136,15 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             document.getElementById("searchRecipe").value = name;
             document.getElementById("recipeName").value = name;
             document.getElementById("suggestions").style.display = "none";
-            document.getElementById("configBox").style.display = "block";
+            // Manual Preset Generation based on name
+            generateRecipeFromPreset(name);
         }
 
-        // AI RECIPE GENERATOR
-        function generateRecipe() {
-            const name = document.getElementById("searchRecipe").value.toLowerCase();
-            const kg = Number(document.getElementById("cakeKg").value);
-            const type = document.getElementById("cakeType").value;
+        // PRESET RECIPE GENERATOR
+        function generateRecipeFromPreset(name) {
+            name = name.toLowerCase();
+            const kg = 1; // Default to 1kg for presets
+            const type = "eggless"; // Default to eggless for presets
 
             // CLEAR EXISTING
             ingredients = [];
@@ -320,13 +214,13 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
 
             // SUCCESS FEEDBACK
             const alertBox = document.getElementById("alert");
-            alertBox.innerText = "✨ AI Generated (" + kg + "kg " + type + ")";
+            alertBox.innerText = "✨ Preset Loaded";
             alertBox.style.color = "var(--primary)";
             alertBox.style.backgroundColor = "rgba(99, 102, 241, 0.1)";
 
             // Update recipe name to include kg and type
             document.getElementById("recipeName").value = 
-                document.getElementById("searchRecipe").value + " (" + kg + "kg, " + type.toUpperCase() + ")";
+                document.getElementById("searchRecipe").value + " (1kg, EGGLESS)";
         }
 
         // ADD INGREDIENT
@@ -402,7 +296,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             runAI(total);
         }
 
-        // AI PRICING ENGINE (SMART)
+        // SMART PRICING ENGINE
         function runAI(cost) {
             if (cost <= 0) return;
             let margin;
