@@ -4,7 +4,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
 const host = Astro.url.host;
 const isSubdomain = host.split('.').length > 2 && !host.includes('localhost') && !host.includes('vercel.app');
 const subdomain = isSubdomain ? host.split('.')[0] : null;
-const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.slice(1).replace(/-/g, ' ') : "Trivia Bakes";
+const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.slice(1).replace(/-/g, ' ') : "Baker OS";
 ---
 
 <MainLayout title={`Checkout | ${dynamicName}`} hideNav={true}>

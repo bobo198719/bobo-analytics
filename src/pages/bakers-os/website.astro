@@ -7,7 +7,7 @@ const isSubdomain = host.split('.').length > 2 && !host.includes('localhost') &&
 const subdomain = isSubdomain ? host.split('.')[0] : null;
 
 // Format subdomain for display (e.g. "triviabaker" -> "Trivia Baker")
-const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.slice(1).replace(/-/g, ' ') : "Trivia Bakes";
+const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.slice(1).replace(/-/g, ' ') : "Baker OS";
 ---
 
 <MainLayout title={`${dynamicName} | Premium Home Bakery`} hideNav={true}>

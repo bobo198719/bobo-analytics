@@ -1,5 +1,5 @@
 ---
-const { title = "Trivia" } = Astro.props;
+const { title = "Baker OS" } = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -122,7 +122,7 @@ const { title = "Trivia" } = Astro.props;
 <body>
     <div id="access-denied">
         <h1>🔒 Access Denied</h1>
-        <p>Your business environment (TEST) does not have access to the Trivia Portal.</p>
+        <p>Your business environment (TEST) does not have access to the Baker OS Portal.</p>
         <p style="margin-top: 20px; color: #888;">Only Trial and Live accounts can access this module.</p>
         <a href="/portal/dashboard" style="margin-top: 40px; color: var(--primary); font-weight: 700;">Return to Main Dashboard</a>
     </div>
@@ -130,9 +130,9 @@ const { title = "Trivia" } = Astro.props;
     <aside class="sidebar">
         <a href="/bakers-os" class="logo-area">
             <div class="logo-orb" id="bizLogo">
-                <img src="/bakers-logo.png" style="width:48px; height:48px; object-fit:contain; border-radius:8px; display: block;" alt="Trivia Logo">
+                <img src="/bakers-logo.png" style="width:48px; height:48px; object-fit:contain; border-radius:8px; display: block;" alt="Baker OS Logo">
             </div>
-            <span id="bizName">Trivia</span>
+            <span id="bizName">Baker OS</span>
         </a>
 
         <div class="nav-group">
@@ -233,10 +233,10 @@ const { title = "Trivia" } = Astro.props;
                 const websiteData = JSON.parse(localStorage.getItem('bobo_website_data') || '{}');
                 
                 // Force reset if it's the old default
-                if (websiteData.bizName === "Bakers OS" || websiteData.bizName === "Home Bakers OS") {
-                    websiteData.bizName = "Trivia";
+                if (websiteData.bizName === "Bakers OS" || websiteData.bizName === "Home Bakers OS" || websiteData.bizName === "Trivia") {
+                    websiteData.bizName = "Baker OS";
                 }
-                const finalName = profileData.business || websiteData.bizName || "Trivia";
+                const finalName = profileData.business || websiteData.bizName || "Baker OS";
                 const finalLogo = profileData.logo || websiteData.bizLogo || "/bakers-logo.png";
 
                 const bn = document.getElementById('bizName');
