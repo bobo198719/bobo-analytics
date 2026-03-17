@@ -8,6 +8,9 @@ const productRoutes = require("./routes/products");
 const orderRoutes = require("./routes/orders");
 const authRoutes = require("./routes/auth");
 const settingsRoutes = require("./routes/settings");
+const followRoutes = require("./routes/follow");
+const offerRoutes = require("./routes/offers");
+const bakeryRoutes = require("./routes/bakery");
 
 const fs = require('fs');
 
@@ -54,6 +57,9 @@ app.use("/api", productRoutes);
 app.use("/api", orderRoutes);
 app.use("/api", authRoutes);
 app.use("/api", settingsRoutes);
+app.use("/api", followRoutes);
+app.use("/api", offerRoutes);
+app.use("/api", bakeryRoutes);
 
 app.get("/api/system-repair", async (req, res) => {
     try {

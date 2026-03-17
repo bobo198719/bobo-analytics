@@ -73,6 +73,10 @@ import BakersSubNav from "../../components/BakersSubNav.astro";
                   <input type="text" id="edit-logo" placeholder="https://..." />
               </div>
               <div class="input-group">
+                  <label>Shop Handle (Slug for your URL)</label>
+                  <input type="text" id="edit-slug" placeholder="e.g. trivia-bakes" />
+              </div>
+              <div class="input-group">
                   <label>City/Location</label>
                   <input type="text" id="edit-city" />
               </div>
@@ -143,6 +147,7 @@ import BakersSubNav from "../../components/BakersSubNav.astro";
           const baker = getProfile();
           document.getElementById('edit-business').value = baker.business;
           document.getElementById('edit-logo').value = baker.logo || '';
+          document.getElementById('edit-slug').value = baker.slug || '';
           document.getElementById('edit-city').value = baker.city || '';
           document.getElementById('edit-bio').value = baker.bio || '';
           document.getElementById('edit-phone').value = baker.phone || '';
@@ -161,6 +166,7 @@ import BakersSubNav from "../../components/BakersSubNav.astro";
               ...baker,
               business: document.getElementById('edit-business').value,
               logo: document.getElementById('edit-logo').value,
+              slug: document.getElementById('edit-slug').value,
               city: document.getElementById('edit-city').value,
               bio: document.getElementById('edit-bio').value,
               phone: document.getElementById('edit-phone').value,
@@ -181,21 +187,23 @@ import BakersSubNav from "../../components/BakersSubNav.astro";
 
       window.sharePage = async () => {
           const baker = getProfile();
-          const shareData = {
-              title: baker.business,
-              text: `Check out ${baker.business} on Bobo Analytics!`,
-              url: window.location.href
-          };
+          const slug = (baker.business || "baker").toLowerCase().replace(/\s+/g, '-');
+          const publicUrl = window.location.origin + "/shop/" + (baker.slug || slug);
 
           try {
+              await navigator.clipboard.writeText(publicUrl);
+              alert(`Link copied: ${publicUrl}`);
+              
               if (navigator.share) {
-                  await navigator.share(shareData);
-              } else {
-                  await navigator.clipboard.writeText(window.location.href);
-                  alert('Link copied to clipboard!');
+                  await navigator.share({
+                      title: baker.business,
+                      text: `Check out ${baker.business} on Bobo Shop!`,
+                      url: publicUrl
+                  });
               }
           } catch (err) {
               console.error('Share failed:', err);
+              alert(`Share this link: ${publicUrl}`);
           }
       };
 

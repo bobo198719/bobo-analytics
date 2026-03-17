@@ -1,0 +1,182 @@
+---
+export const prerender = false;
+
+const { slug } = Astro.params;
+const backendUrl = process.env.HOSTINGER_BACKEND_URL || "http://187.124.97.144:5000";
+
+// Fetch bakery info
+const bakeryRes = await fetch(`${backendUrl}/api/bakery/${slug}`);
+if (!bakeryRes.ok) return Astro.redirect('/404');
+const bakery = await bakeryRes.json();
+
+// Fetch products for this bakery
+const productRes = await fetch(`${backendUrl}/api/products?slug=${slug}`);
+const products = await productRes.json();
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{bakery.name} | Bobo Shop</title>
+    
+    <!-- SEO & Social Meta -->
+    <meta property="og:title" content={bakery.name} />
+    <meta property="og:description" content={`Order fresh bakes from ${bakery.name} in ${bakery.location}.`} />
+    <meta property="og:image" content={bakery.logo} />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #C58C85;
+            --secondary: #fff4f3;
+            --text-dark: #2d3436;
+            --text-muted: #636e72;
+            --white: #ffffff;
+            --accent: #25D366;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Outfit', sans-serif; background: var(--secondary); color: var(--text-dark); line-height: 1.6; }
+        
+        .container { max-width: 1000px; margin: auto; padding: 20px; }
+        
+        /* Header */
+        header { text-align: center; padding: 60px 20px; background: var(--white); border-radius: 0 0 40px 40px; box-shadow: 0 10px 30px rgba(197, 140, 133, 0.1); margin-bottom: 40px; }
+        .logo-ring { width: 120px; height: 120px; margin: 0 auto 20px; padding: 5px; border: 3px solid var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .logo-ring img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        
+        h1 { font-size: 2.5rem; font-weight: 800; color: var(--primary); margin-bottom: 10px; }
+        .location { font-weight: 600; color: var(--text-muted); margin-bottom: 15px; }
+        .tagline { max-width: 500px; margin: 0 auto 25px; font-size: 1.1rem; color: var(--text-muted); }
+        
+        .header-btns { display: flex; justify-content: center; gap: 15px; }
+        .btn { padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; transition: 0.3s; font-size: 1rem; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-follow { background: var(--primary); color: white; }
+        .btn-follow:hover { filter: brightness(1.1); transform: translateY(-2px); }
+        .btn-wa { background: var(--accent); color: white; }
+        .btn-wa:hover { filter: brightness(1.1); transform: translateY(-2px); }
+        
+        /* Product Grid */
+        h2 { text-align: center; font-size: 2rem; font-weight: 800; margin-bottom: 30px; position: relative; }
+        h2::after { content: ''; display: block; width: 60px; height: 4px; background: var(--primary); margin: 10px auto; border-radius: 2px; }
+        
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+        .product-card { background: var(--white); border-radius: 24px; padding: 15px; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .product-card:hover { transform: translateY(-10px); box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
+        
+        .img-container { width: 100%; height: 200px; border-radius: 18px; overflow: hidden; margin-bottom: 15px; background: #f8f9fa; }
+        .product-img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .product-card:hover .product-img { transform: scale(1.1); }
+        
+        .product-info h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 5px; }
+        .price { font-size: 1.5rem; font-weight: 800; color: var(--primary); margin-bottom: 15px; }
+        
+        .product-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-order { background: var(--primary); color: white; }
+        .btn-pay { background: var(--white); color: var(--primary); border: 2px solid var(--primary); }
+        .btn-sm { padding: 10px; font-size: 0.85rem; }
+        
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            .header-btns { flex-direction: column; }
+            .product-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="logo-ring">
+                <img src={bakery.logo || "/bakers-logo.png"} alt={bakery.name} />
+            </div>
+            <h1>{bakery.name}</h1>
+            <p class="location">📍 {bakery.location}</p>
+            <p class="tagline">
+                Order fresh cakes, cupcakes, and cookies directly from my kitchen. 
+                Stay updated for new bakes and exclusive loyalty offers! 🎂
+            </p>
+            
+            <div class="header-btns">
+                <button class="btn btn-follow" onclick="followBakery()">
+                    Follow Bakery ✨
+                </button>
+                <a href={`https://wa.me/${bakery.phone}?text=I%20saw%20your%20bakery%20on%20Bobo!`} target="_blank" class="btn btn-wa">
+                    WhatsApp Order
+                </a>
+            </div>
+        </header>
+
+        <h2>Cake Gallery</h2>
+        
+        <div class="product-grid">
+            {products.map(p => (
+                <div class="product-card">
+                    <div class="img-container">
+                        <img src={p.image_url || "/cake-placeholder.png"} class="product-img" alt={p.name} />
+                    </div>
+                    <div class="product-info">
+                        <h3>{p.name}</h3>
+                        <p class="price">₹{p.price}</p>
+                        
+                        <div class="product-actions">
+                            <button class="btn btn-order btn-sm" onclick={`orderCake('${p.name}')`}>
+                                Order Now
+                            </button>
+                            <button class="btn btn-pay btn-sm" onclick={`payUPI('${p.price}', '${bakery.upi}')`}>
+                                Pay via UPI
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            ))}
+        </div>
+        
+        {products.length === 0 && (
+            <div style="text-align:center; padding: 40px; color: var(--text-muted);">
+                <p>No products featured yet. Check back soon!</p>
+            </div>
+        )}
+    </div>
+
+    <script is:inline define:vars={{ phone: bakery.phone, slug: bakery.slug }}>
+        window.orderCake = (name) => {
+            const text = encodeURIComponent(`Hi! I'd like to order: ${name}`);
+            window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+        };
+
+        window.payUPI = (amount, upi) => {
+            const upiUrl = `upi://pay?pa=${upi}&pn=Bakery&am=${amount}&cu=INR`;
+            window.location.href = upiUrl;
+            // Fallback alert for desktop users
+            setTimeout(() => {
+                alert(`UPI ID: ${upi}\nAmount: ₹${amount}\n\nPlease switch to your mobile UPI app.`);
+            }, 500);
+        };
+
+        window.followBakery = async () => {
+            try {
+                const response = await fetch("/api/follow", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ slug: slug })
+                });
+                
+                if (response.ok) {
+                    alert("You are now following this bakery! 🎉 You'll receive updates soon.");
+                } else {
+                    alert("Something went wrong. Please try again later.");
+                }
+            } catch (e) {
+                console.error("Follow error:", e);
+            }
+        };
+    </script>
+
+</body>
+</html>

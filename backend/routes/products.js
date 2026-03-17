@@ -7,7 +7,18 @@ const router = express.Router();
 
 router.get("/products", async (req, res) => {
     try {
-        const [rows] = await db.query("SELECT * FROM bakery_products ORDER BY created_at DESC");
+        const { slug } = req.query;
+        let query = "SELECT * FROM bakery_products";
+        let params = [];
+        
+        if (slug) {
+            query += " WHERE bakery_slug = ?";
+            params.push(slug);
+        }
+        
+        query += " ORDER BY created_at DESC";
+        
+        const [rows] = await db.query(query, params);
         res.json(rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -28,7 +39,18 @@ router.get("/products/:id", async (req, res) => {
 // Handle both / and /products depending on how it's mounted
 router.get("/", async (req, res) => {
     try {
-        const [rows] = await db.query("SELECT * FROM bakery_products ORDER BY created_at DESC");
+        const { slug } = req.query;
+        let query = "SELECT * FROM bakery_products";
+        let params = [];
+        
+        if (slug) {
+            query += " WHERE bakery_slug = ?";
+            params.push(slug);
+        }
+        
+        query += " ORDER BY created_at DESC";
+        
+        const [rows] = await db.query(query, params);
         res.json(rows);
     } catch (err) {
         res.status(500).json({ error: err.message });

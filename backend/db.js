@@ -167,6 +167,13 @@ const initDb = () => {
   )`, (err) => {
     if (err) console.error("Error creating medicine_master table:", err);
   });
+  db.query(`CREATE TABLE IF NOT EXISTS followers(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    bakery_slug VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`, (err) => {
+    if (err) console.error("Error creating followers table:", err);
+  });
 };
 
 
