@@ -19,8 +19,7 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         <nav class="glass-nav">
             <div class="nav-content">
                 <div class="logo" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-                    <img src="/bakers-logo.png" alt="Trivia Bakes Logo" class="logo-img" />
-                    <span class="brand-text">Trivia Bakes</span>
+                    <span class="brand-text">Baker OS</span>
                 </div>
                 <div class="nav-links">
                     <a href="#about">Our Story</a>
@@ -208,7 +207,7 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                 </div>
                 <div class="about-text">
                     <span class="sub">Passion for Excellence</span>
-                    <h2>The Story of Trivia Bakes</h2>
+                    <h2>The Story of Baker OS</h2>
                     <p>What started as a childhood hobby in a small kitchen has grown into a mission to bring joy to our community through the art of baking.</p>
                     <p>We believe that every celebration deserves a centerpiece that tastes as good as it looks. That's why we meticulously source our butter, chocolate, and seasonal fruits to ensure excellence in every crumb.</p>
                     <a href="#menu" class="btn-text" onclick="window.scrollTo(0, document.querySelector('#menu').offsetTop - 100); return false;">View Fresh Menu &rarr;</a>
@@ -220,7 +219,7 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         <footer class="website-footer-v2" id="footer">
             <div class="footer-grid">
                 <div class="f-info-side">
-                    <h2 class="brand-text">Trivia Bakes</h2>
+                    <h2 class="brand-text">Baker OS</h2>
                     <p>Making life sweeter, one cake at a time.</p>
                     <div class="f-socials">
                         <span>Instagram</span> <span>Facebook</span>
@@ -236,7 +235,7 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                 </div>
             </div>
             <div class="footer-credits">
-                <p>&copy; Trivia Bakes. Powered by Bobo Platform.</p>
+                <p>&copy; Baker OS. Powered by Bobo Platform.</p>
             </div>
         </footer>
     </div>
@@ -282,7 +281,7 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
 
         function applyBranding(customData) {
             const bizLogo = customData.bizLogo || '/bakers-logo.png';
-            const bizName = customData.bizName || 'Trivia Bakes';
+            const bizName = customData.bizName || 'Baker OS';
             
             document.querySelectorAll('.brand-text').forEach(el => el.innerText = bizName);
             document.querySelectorAll('.logo-img').forEach(el => el.src = bizLogo);

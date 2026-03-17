@@ -22,7 +22,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 <h3>1. Business Identity</h3>
                 <div class="input-group">
                     <label>Bakery / Business Name</label>
-                    <input type="text" id="biz-name" placeholder="e.g. Trivia Bakes" />
+                    <input type="text" id="biz-name" placeholder="e.g. Baker OS" />
                 </div>
                 <div class="input-group">
                     <label>Store Logo (Optional)</label>
@@ -166,7 +166,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
     <script is:inline>
         let isUploading = false;
         const DEFAULT_DATA = {
-            bizName: "Trivia Bakes",
+            bizName: "Baker OS",
             bizLogo: "/bakers-logo.png",
             heroTitle: "Crafting Sweet Memories with Every Bite",
             heroSubtitle: "Artisanal cakes, handcrafted pastries, and custom treats made with love and the finest ingredients.",
@@ -361,7 +361,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         };
 
         window.resetDefaults = () => {
-            if (confirm("Reset all website settings to original Trivia Bakes theme?")) {
+            if (confirm("Reset all website settings to original Baker OS theme?")) {
                 applyDataToForm(DEFAULT_DATA);
                 uploadedImages = {};
                 alert("Defaults applied. Click 'Save Changes' to push to server.");

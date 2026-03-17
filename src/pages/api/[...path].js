@@ -1,6 +1,6 @@
 export const prerender = false;
 
-const hostingerUrl = process.env.HOSTINGER_BACKEND_URL || "http://187.124.97.144:5000";
+const hostingerUrl = process.env.HOSTINGER_BACKEND_URL || "http://srv1449576.hstgr.cloud:5000";
 
 export async function ALL({ params, request }) {
     const { path } = params;
@@ -30,8 +30,18 @@ export async function ALL({ params, request }) {
                 'Access-Control-Allow-Headers': 'Content-Type, Authorization',
             }
         });
-    } catch (error) {
-        return new Response(JSON.stringify({ error: error.message }), { 
+    } catch (e) {
+        console.error("🚨 OpenAI Error Details:", {
+            message: e.message,
+            stack: e.stack,
+            type: e.type,
+            code: e.code
+        });
+        return new Response(JSON.stringify({
+            error: "AI Generation Failed",
+            details: e.message,
+            hint: !process.env.OPENAI_API_KEY ? "Missing OPENAI_API_KEY in .env" : "Check OpenAI credits or model availability"
+        }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
         });

@@ -98,7 +98,7 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
 
           // PART 2: REAL-TIME WEBSOCKET
           try {
-              const socket = new WebSocket("ws://187.124.97.144:8080");
+              const socket = new WebSocket("ws://srv1449576.hstgr.cloud:8080");
               socket.onmessage = (event) => {
                   const data = JSON.parse(event.data);
                   if (data.type === "NEW_ORDER") {
@@ -216,7 +216,7 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
       window.whatsappCustomer = (phone, name, id) => {
           if (!phone) return alert('No phone number found.');
           const cleanPhone = phone.replace(/\D/g, '');
-          const message = encodeURIComponent(`Hi ${name}! Regarding your order #${id} from Trivia Bakery.`);
+          const message = encodeURIComponent(`Hi ${name}! Regarding your order #${id} from Baker OS.`);
           window.open(`https://wa.me/${cleanPhone}?text=${message}`, '_blank');
       };
 

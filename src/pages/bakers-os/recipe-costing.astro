@@ -13,15 +13,67 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
 
     <div class="costing-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px;">
         <div class="glass-card" style="padding: 32px;">
+            <!-- UNIVERSAL AI GENERATOR -->
+            <div class="glass-card" style="padding: 24px; margin-bottom: 32px; border: 1px solid var(--primary); background: rgba(99, 102, 241, 0.05);">
+                <h3 style="color: var(--primary); margin-bottom: 16px; font-size: 1.1rem;">🚀 Universal AI Recipe Generator</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Type any cake (e.g. "Eggless Belgian Truffle 2kg") and AI will build the full recipe + costing.</p>
+                <div style="display: flex; gap: 12px;">
+                    <input type="text" id="aiInput" placeholder="Try: Black Forest Cake 1kg egg..." 
+                        style="flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 14px; border-radius: 12px; color: white; outline: none;" />
+                    <button onclick="generateAI()" id="aiGenBtn" style="background: var(--primary); color: white; border: none; padding: 0 24px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; white-space: nowrap;">Generate with AI</button>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 32px; position: relative;">
+                <span style="background: var(--border); height: 1px; width: 100%; position: absolute; top: 50%; left: 0; z-index: 1;"></span>
+                <span style="background: #0f172a; padding: 0 16px; position: relative; z-index: 2; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800;">OR USE PRESETS</span>
+            </div>
+
+            <!-- AI SEARCH SECTION -->
+            <div class="ai-search-box" style="margin-bottom: 24px; position: relative;">
+                <label style="display: block; font-size: 0.75rem; color: var(--primary); margin-bottom: 8px; text-transform: uppercase; font-weight: 800;">Smart Recipe Search</label>
+                <div style="display: flex; gap: 12px;">
+                    <input type="text" id="searchRecipe" placeholder="Search cake (e.g. Black Forest)" oninput="showSuggestions()" style="flex: 1; background: rgba(99, 102, 241, 0.1); border: 1px solid var(--primary); padding: 14px; border-radius: 12px; color: white; font-size: 1rem; outline: none;" />
+                </div>
+                <div id="suggestions" style="position: absolute; top: 100%; left: 0; right: 0; background: #1e293b; border: 1px solid var(--border); border-radius: 12px; margin-top: 4px; z-index: 100; max-height: 200px; overflow-y: auto; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.5);"></div>
+            </div>
+
+            <!-- AI CONFIGURATION BOX -->
+            <div id="configBox" class="glass-card" style="display: none; background: rgba(99, 102, 241, 0.05); border: 1px solid var(--primary); padding: 20px; margin-bottom: 24px; animation: slideDown 0.3s ease;">
+                <h4 style="margin-bottom: 16px; font-size: 0.9rem; color: var(--primary);">Configure AI Generation</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+                    <div class="f-group">
+                        <label style="display: block; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">Weight</label>
+                        <select id="cakeKg" style="width: 100%; background: #0f172a; border: 1px solid var(--border); padding: 10px; border-radius: 8px; color: white;">
+                            <option value="0.5">0.5 KG</option>
+                            <option value="1" selected>1 KG</option>
+                            <option value="2">2 KG</option>
+                            <option value="3">3 KG</option>
+                            <option value="5">5 KG</option>
+                        </select>
+                    </div>
+                    <div class="f-group">
+                        <label style="display: block; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">Dietary</label>
+                        <select id="cakeType" style="width: 100%; background: #0f172a; border: 1px solid var(--border); padding: 10px; border-radius: 8px; color: white;">
+                            <option value="egg">With Egg</option>
+                            <option value="eggless">Eggless</option>
+                        </select>
+                    </div>
+                    <div class="f-group" style="display: flex; align-items: flex-end;">
+                        <button onclick="generateRecipe()" style="width: 100%; height: 42px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 700;">✨ Generate</button>
+                    </div>
+                </div>
+            </div>
+
             <div class="f-group" style="margin-bottom: 24px;">
                 <label style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; font-weight: 800;">Recipe Name</label>
-                <input type="text" id="recipeName" placeholder="e.g. Belgian Chocolate Truffle Cake" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 14px; border-radius: 12px; color: white; font-size: 1.1rem;" />
+                <input type="text" id="recipeName" readonly placeholder="Enter or select a recipe..." style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 14px; border-radius: 12px; color: white; font-size: 1.1rem; cursor: not-allowed;" />
             </div>
 
             <div class="ingredients-section">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <h3 style="font-size: 1rem; color: var(--primary);">Ingredients</h3>
-                    <button onclick="addIngredient()" style="background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.8rem;">+ Add Item</button>
+                    <button onclick="addIngredient()" style="background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.8rem;">+ Add Item</button>
                 </div>
                 
                 <div id="ingredients" style="display: flex; flex-direction: column; gap: 12px;">
@@ -73,12 +125,205 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         </div>
     </div>
 
+    <!-- Processing Overlay -->
+    <div id="processing-overlay" class="modal-overlay" style="z-index: 3000; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 20px;">
+        <div class="processing-content glass-card" style="text-align: center; padding: 40px; max-width: 400px; width: 100%; background: #1e293b; border-radius: 20px; border: 1px solid var(--primary);">
+            <div class="ai-spinner" style="width: 40px; height: 40px; border: 3px solid rgba(99, 102, 241, 0.1); border-left-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;"></div>
+            <h2 style="margin-top: 24px; color: white;">AI Chef Consulting...</h2>
+            <p id="processing-status" style="color: var(--text-muted); margin-top: 12px; font-size: 0.9rem;">Building your custom recipe with precise ingredient quantities and costing...</p>
+        </div>
+    </div>
+
+    <style>
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .suggestion-item:hover { background: rgba(99, 102, 241, 0.1) !important; color: var(--primary); }
+    </style>
+
     <script is:inline>
-        let ingredients = [
-            { name: "Flour/Maida", qty: 500, cost: 50 },
-            { name: "Sugar", qty: 300, cost: 45 },
-            { name: "Cocoa Powder", qty: 50, cost: 600 }
+        let ingredients = [];
+
+        // UNIVERSAL AI GENERATOR (OPENAI)
+        window.generateAI = async () => {
+            const query = document.getElementById("aiInput").value.trim();
+            if (!query) return alert("Please type what you want to bake!");
+
+            const btn = document.getElementById("aiGenBtn");
+            const overlay = document.getElementById("processing-overlay");
+            const statusText = document.getElementById("processing-status");
+
+            try {
+                btn.innerText = "AI Thinking...";
+                btn.disabled = true;
+                overlay.style.display = "flex";
+                statusText.innerText = "Building the perfect " + query + "...";
+
+                const res = await fetch("/api/recipes/ai-recipe", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ query })
+                });
+
+                if (!res.ok) throw new Error("AI Service Busy");
+
+                const data = await res.json();
+                
+                // Load AI Data
+                ingredients = data.ingredients.map(i => ({
+                    name: i.name,
+                    qty: Number(i.qty),
+                    cost: Number(i.cost)
+                }));
+
+                document.getElementById("recipeName").value = data.name;
+                
+                render();
+                calculate();
+
+                // Success Feedback
+                const alertBox = document.getElementById("alert");
+                alertBox.innerText = "💎 GPT-4 Generated";
+                alertBox.style.color = "#10b981";
+                alertBox.style.backgroundColor = "rgba(16, 185, 129, 0.1)";
+
+            } catch (e) {
+                console.error(e);
+                alert("🚨 AI Error: " + e.message);
+            } finally {
+                btn.innerText = "Generate with AI";
+                btn.disabled = false;
+                overlay.style.display = "none";
+            }
+        };
+
+        const recipesDB = [
+            "Black Forest Cake",
+            "Belgium Chocolate Truffle",
+            "Biscoff Cheesecake",
+            "Red Velvet Cake",
+            "Pineapple Fresh Cream",
+            "Butterscotch Delight",
+            "Mango Seasonal Special",
+            "Vanilla Classic Bean"
         ];
+
+        // AI SUGGESTIONS ENGINE
+        function showSuggestions() {
+            const input = document.getElementById("searchRecipe").value.toLowerCase();
+            const box = document.getElementById("suggestions");
+            
+            if (!input) {
+                box.style.display = "none";
+                return;
+            }
+
+            const matches = recipesDB.filter(item => item.toLowerCase().includes(input));
+            
+            if (matches.length > 0) {
+                box.innerHTML = matches.map(item => `
+                    <div class="suggestion-item" onclick="selectRecipe('${item}')"
+                        style="cursor:pointer; padding:12px; border-bottom:1px solid rgba(255,255,255,0.05); color:white; font-size:0.9rem; transition:0.2s;">
+                        ${item}
+                    </div>
+                `).join('');
+                box.style.display = "block";
+            } else {
+                box.style.display = "none";
+            }
+        }
+
+        function selectRecipe(name) {
+            document.getElementById("searchRecipe").value = name;
+            document.getElementById("recipeName").value = name;
+            document.getElementById("suggestions").style.display = "none";
+            document.getElementById("configBox").style.display = "block";
+        }
+
+        // AI RECIPE GENERATOR
+        function generateRecipe() {
+            const name = document.getElementById("searchRecipe").value.toLowerCase();
+            const kg = Number(document.getElementById("cakeKg").value);
+            const type = document.getElementById("cakeType").value;
+
+            // CLEAR EXISTING
+            ingredients = [];
+
+            // BASE RECIPES (1KG STANDARDS)
+            let baseRecipe = [];
+
+            if (name.includes("black forest")) {
+                baseRecipe = [
+                    { name: "Chocolate Flour Mix", qty: 250, cost: 80 },
+                    { name: "Whipped Cream", qty: 400, cost: 240 },
+                    { name: "Cherry Filling", qty: 100, cost: 450 },
+                    { name: "Chocolate Flakes", qty: 50, cost: 600 },
+                    { name: "Sugar Syrup", qty: 100, cost: 40 }
+                ];
+            } else if (name.includes("truffle")) {
+                baseRecipe = [
+                    { name: "Dark Chocolate (55%)", qty: 300, cost: 950 },
+                    { name: "Fresh Cream", qty: 200, cost: 260 },
+                    { name: "Chocolate Spone Mix", qty: 300, cost: 90 },
+                    { name: "Unsalted Butter", qty: 50, cost: 650 }
+                ];
+            } else if (name.includes("red velvet")) {
+                baseRecipe = [
+                    { name: "Red Velvet Base", qty: 350, cost: 120 },
+                    { name: "Cream Cheese", qty: 150, cost: 1400 },
+                    { name: "Refined Oil", qty: 100, cost: 180 },
+                    { name: "Whipped Topping", qty: 300, cost: 220 }
+                ];
+            } else if (name.includes("biscoff")) {
+                baseRecipe = [
+                    { name: "Biscoff Spread", qty: 200, cost: 1100 },
+                    { name: "Biscoff Biscuits", qty: 150, cost: 900 },
+                    { name: "Cream Cheese", qty: 300, cost: 1400 },
+                    { name: "Sour Cream", qty: 100, cost: 380 }
+                ];
+            } else {
+                // DEFAULT GENERIC CAKE
+                baseRecipe = [
+                    { name: "Cake Flour", qty: 300, cost: 60 },
+                    { name: "Granulated Sugar", qty: 200, cost: 45 },
+                    { name: "Whipped Cream", qty: 300, cost: 240 },
+                    { name: "Flavour Essence", qty: 10, cost: 800 }
+                ];
+            }
+
+            // DIETARY LOGIC (EGG vs EGGLESS)
+            if (type === "egg") {
+                baseRecipe.push({ name: "Fresh Eggs", qty: (4 * 50), cost: 140 }); // ~4 eggs, 200g
+            } else {
+                baseRecipe.push({ name: "Condensed Milk / Curd", qty: 200, cost: 260 });
+                baseRecipe.push({ name: "Baking Powder/Soda", qty: 10, cost: 30 });
+            }
+
+            // SCALE BY KG
+            baseRecipe.forEach(item => {
+                ingredients.push({
+                    name: item.name,
+                    qty: Math.round(item.qty * kg),
+                    cost: item.cost
+                });
+            });
+
+            // UPDATE UI & CALCULATE
+            render();
+            calculate();
+
+            // SUCCESS FEEDBACK
+            const alertBox = document.getElementById("alert");
+            alertBox.innerText = "✨ AI Generated (" + kg + "kg " + type + ")";
+            alertBox.style.color = "var(--primary)";
+            alertBox.style.backgroundColor = "rgba(99, 102, 241, 0.1)";
+
+            // Update recipe name to include kg and type
+            document.getElementById("recipeName").value = 
+                document.getElementById("searchRecipe").value + " (" + kg + "kg, " + type.toUpperCase() + ")";
+        }
 
         // ADD INGREDIENT
         function addIngredient() {
@@ -98,10 +343,17 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             const container = document.getElementById("ingredients");
             container.innerHTML = "";
 
+            if (ingredients.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:32px; color:var(--text-muted); font-size:0.9rem; border:1px dashed var(--border); border-radius:12px;">
+                    Search for a cake above or manually add items to start.
+                </div>`;
+                return;
+            }
+
             ingredients.forEach((item, i) => {
                 const div = document.createElement('div');
                 div.className = "row";
-                div.style = "display: grid; grid-template-columns: 2fr 1fr 1fr 40px; gap: 12px; align-items: center;";
+                div.style = "display: grid; grid-template-columns: 2fr 1fr 1fr 40px; gap: 12px; align-items: center; animation: slideDown 0.2s ease;";
                 div.innerHTML = `
                     <input type="text" placeholder="Ingredient" value="${item.name}" 
                         oninput="ingredients[${i}].name=this.value" 
@@ -115,7 +367,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                         oninput="ingredients[${i}].cost=this.value; calculate()"
                         style="background:rgba(255,255,255,0.05); border:1px solid var(--border); padding:10px; border-radius:8px; color:white; width:100%"/>
                     
-                    <button onclick="removeIngredient(${i})" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:1.2rem">×</button>
+                    <button onclick="removeIngredient(${i})" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:1.2rem; transition:0.2s;">×</button>
                 `;
                 container.appendChild(div);
             });
@@ -148,6 +400,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
 
         // AI PRICING ENGINE (SMART)
         function runAI(cost) {
+            if (cost <= 0) return;
             let margin;
             // AI logic (dynamic)
             if (cost < 200) {
@@ -186,7 +439,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             }
         }
 
-        // SAVE FUNCTION (FIXED)
+        // SAVE FUNCTION
         async function saveRecipe() {
             try {
                 const payload = {
@@ -200,7 +453,11 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
 
                 // VALIDATION
                 if (!payload.recipeName) {
-                    alert("Enter recipe name");
+                    alert("Enter or Generate recipe name first");
+                    return;
+                }
+                if (ingredients.length === 0) {
+                    alert("Add ingredients first");
                     return;
                 }
 
@@ -217,10 +474,12 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 const data = await res.json();
 
                 if (data.success) {
-                    alert("✅ Recipe Saved Successfully");
+                    alert("✅ Recipe Saved to Portfolio");
                     // RESET FORM
                     ingredients = [];
                     document.getElementById("recipeName").value = "";
+                    document.getElementById("searchRecipe").value = "";
+                    document.getElementById("configBox").style.display = "none";
                     render();
                     calculate();
                 } else {
