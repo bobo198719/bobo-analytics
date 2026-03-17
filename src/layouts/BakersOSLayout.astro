@@ -237,7 +237,7 @@ const { title = "Trivia" } = Astro.props;
                     websiteData.bizName = "Trivia";
                 }
                 const finalName = profileData.business || websiteData.bizName || "Trivia";
-                const finalLogo = websiteData.bizLogo || "/bakers-logo.png";
+                const finalLogo = profileData.logo || websiteData.bizLogo || "/bakers-logo.png";
 
                 const bn = document.getElementById('bizName');
                 if (bn) bn.innerText = finalName;
@@ -250,7 +250,7 @@ const { title = "Trivia" } = Astro.props;
                 
                 const bi = document.getElementById('bizInitial');
                 if (bi) {
-                    if (finalLogo && finalLogo.startsWith('http')) {
+                    if (finalLogo && (finalLogo.startsWith('http') || finalLogo.startsWith('/'))) {
                         bi.innerHTML = `<img src="${finalLogo}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
                     } else {
                         bi.innerText = finalName.charAt(0).toUpperCase();
