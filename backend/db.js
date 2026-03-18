@@ -188,6 +188,7 @@ const initDb = () => {
     expiry_date DATE,
     status VARCHAR(20) DEFAULT 'active',
     amount_paid INT DEFAULT 0,
+    renewal_date DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )`, (err) => {
     if (err) console.error("Error creating saas_users table:", err);
@@ -195,10 +196,35 @@ const initDb = () => {
 
   // Migrations for existing tables
   db.query(`ALTER TABLE saas_users ADD COLUMN IF NOT EXISTS plan_type VARCHAR(50) DEFAULT 'trial'`, (err) => {
-    if (err && err.errno !== 1060) console.warn("plan_type column check.");
+    if (err && err.errno !== 1060) console.warn("plan_type check.");
   });
   db.query(`ALTER TABLE saas_users ADD COLUMN IF NOT EXISTS amount_paid INT DEFAULT 0`, (err) => {
-    if (err && err.errno !== 1060) console.warn("amount_paid column check.");
+    if (err && err.errno !== 1060) console.warn("amount_paid check.");
+  });
+  db.query(`ALTER TABLE saas_users ADD COLUMN IF NOT EXISTS renewal_date DATE`, (err) => {
+    if (err && err.errno !== 1060) console.warn("renewal_date check.");
+  });
+
+  db.query(`CREATE TABLE IF NOT EXISTS staff_users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    business_id INT,
+    name VARCHAR(255),
+    email VARCHAR(255) UNIQUE,
+    password_hash TEXT,
+    role VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`, (err) => {
+    if (err) console.error("Error creating staff_users table:", err);
+  });
+
+  db.query(`CREATE TABLE IF NOT EXISTS ai_insights (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    business_id INT,
+    insight TEXT,
+    type VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`, (err) => {
+    if (err) console.error("Error creating ai_insights table:", err);
   });
 
   db.query(`CREATE TABLE IF NOT EXISTS saas_user_history (

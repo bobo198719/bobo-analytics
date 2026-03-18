@@ -14,6 +14,9 @@ const bakeryRoutes = require("./routes/bakery");
 const customerRoutes = require("./routes/customers");
 const recipeRoutes = require("./routes/recipes");
 const saasRoutes = require("./routes/saas");
+const staffRoutes = require("./routes/staff");
+const whatsappRoutes = require("./routes/whatsapp");
+const aiRoutes = require("./routes/ai");
 const { startExpiryCron } = require("./services/expiryCron");
 
 const fs = require('fs');
@@ -73,6 +76,9 @@ app.use("/api", bakeryRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/recipes", recipeRoutes);
 app.use("/api", saasRoutes);
+app.use("/api/staff", staffRoutes);
+app.use("/api/whatsapp", whatsappRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.get("/api/system-repair", async (req, res) => {
     try {

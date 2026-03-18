@@ -1,0 +1,84 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+---
+
+<MainLayout title="AI Business Insights | BoboAnalytics">
+  <div class="insights-wrapper">
+    <header class="page-header">
+      <h1>🧠 AI Business Intelligence</h1>
+      <p>Data-driven suggestions to grow your business.</p>
+    </header>
+
+    <div class="insights-grid">
+      <!-- Live Insight Card -->
+      <div class="insight-card focus">
+        <div class="card-badge">LIVE ANALYSIS</div>
+        <h2>Smart Recommendation</h2>
+        <div id="latest-insight" class="insight-text loading-shimmer">Analyzing your business data...</div>
+        <div class="card-meta">Based on recent sales performance</div>
+      </div>
+
+      <!-- Historical Insights -->
+      <div class="insight-card">
+        <h3>Previous Suggestions</h3>
+        <div id="insight-history" class="history-list">
+          <!-- History items here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .insights-wrapper { padding: 100px 40px; max-width: 1000px; margin: 0 auto; color: white; }
+    .page-header { margin-bottom: 40px; text-align: center; }
+    .page-header h1 { font-size: 2.8rem; font-weight: 900; background: linear-gradient(135deg, #fff 0%, #6366f1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    
+    .insights-grid { display: grid; grid-template-columns: 1fr; gap: 30px; }
+
+    .insight-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 40px; position: relative; overflow: hidden; }
+    .insight-card.focus { border-color: #6366f1; background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.1), transparent); }
+    
+    .card-badge { display: inline-block; background: #6366f1; color: white; font-size: 0.7rem; font-weight: 800; padding: 4px 12px; border-radius: 20px; margin-bottom: 20px; }
+    
+    .insight-text { font-size: 1.5rem; font-weight: 600; line-height: 1.6; margin: 20px 0; min-height: 80px; }
+    .card-meta { font-size: 0.85rem; opacity: 0.5; }
+
+    .history-list { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+    .history-item { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; font-size: 0.9rem; border-left: 4px solid #6366f1; }
+    .history-date { font-size: 0.75rem; opacity: 0.4; margin-bottom: 5px; }
+
+    .loading-shimmer { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
+    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+  </style>
+
+  <script>
+    async function loadInsights() {
+      // In a real app, businessId comes from login session
+      const mockBusinessId = 1; 
+
+      try {
+        const res = await fetch(`/api/ai/insights/${mockBusinessId}`);
+        const data = await res.json();
+        
+        const el = document.getElementById('latest-insight');
+        el.innerText = data.insight;
+        el.classList.remove('loading-shimmer');
+
+        const histRes = await fetch(`/api/ai/history/${mockBusinessId}`);
+        const history = await histRes.json();
+        const histEl = document.getElementById('insight-history');
+        histEl.innerHTML = history.map(h => `
+          <div class="history-item">
+            <div class="history-date">${new Date(h.created_at).toLocaleString()}</div>
+            <div class="history-content">${h.insight}</div>
+          </div>
+        `).join('') || '<p style="opacity:0.5">No historical data yet.</p>';
+
+      } catch (err) {
+        console.error("Insight loading failed");
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadInsights);
+  </script>
+</MainLayout>
