@@ -48,6 +48,20 @@ import MainLayout from "../layouts/MainLayout.astro";
         <h3>Grocery OS</h3>
         <p>Supply chain and POS hub for large grocery chains.</p>
         <button class="portal-btn">Access Workspace</button>
+      <!-- Staff Login -->
+      <div class="portal-card staff-card" onclick="openLogin('Staff')">
+        <div class="portal-icon">👔</div>
+        <h3>Staff Login</h3>
+        <p>Employee access for cashiers, managers, and warehouse staff.</p>
+        <button class="portal-btn">Sign In</button>
+      </div>
+
+      <!-- Admin Login -->
+      <div class="portal-card admin-card" onclick="openLogin('Admin')">
+        <div class="portal-icon">🛡️</div>
+        <h3>Admin Console</h3>
+        <p>Master control for system configuration and user management.</p>
+        <button class="portal-btn admin-btn">Login to Master</button>
       </div>
     </div>
   </div>
@@ -62,6 +76,14 @@ import MainLayout from "../layouts/MainLayout.astro";
     .portal-icon { font-size: 3rem; margin-bottom: 10px; }
     .portal-btn { background: #6366f1; color: white; padding: 12px 24px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; width: 100%; }
     .portal-btn:hover { background: #4f46e5; }
+
+    .admin-card { border-color: rgba(239, 68, 68, 0.2); }
+    .admin-card:hover { border-color: #ef4444; background: rgba(239, 68, 68, 0.05); }
+    .admin-btn { background: rgba(239, 68, 68, 0.8) !important; }
+    .admin-btn:hover { background: #ef4444 !important; }
+
+    .staff-card { border-color: rgba(255, 255, 255, 0.05); }
+    .staff-card:hover { border-color: #94a3b8; }
   </style>
 
   <script is:inline>

@@ -81,6 +81,7 @@ import MainLayout from "../layouts/MainLayout.astro";
           else if (ind === 'pharmacy') window.location.href = "/pharmacy-pos";
           else if (ind === 'retail') window.location.href = "/retail-crm";
           else if (ind === 'grocery') window.location.href = "/grocery-os";
+          else if (ind === 'admin') window.location.href = "/admin/saas";
           else window.location.href = "/dashboard";
         } else {
           errorMsg.innerText = data.message || "Invalid credentials for this industry portal.";
