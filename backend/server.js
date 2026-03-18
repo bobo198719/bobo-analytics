@@ -69,7 +69,7 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use("/api", uploadRoutes);
 app.use("/api", productRoutes);
 app.use("/api", orderRoutes);
-app.use("/api", authRoutes);
+app.use("/api/auth", authRoutes);
 app.use("/api", settingsRoutes);
 app.use("/api", followRoutes);
 app.use("/api", offerRoutes);
