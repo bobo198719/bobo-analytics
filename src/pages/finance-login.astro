@@ -1,0 +1,75 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+---
+
+<MainLayout title="Finance Login | Bobo Analytics">
+  <div class="login-wrapper">
+    <div class="login-card">
+      <div class="industry-badge">Financial Intelligence</div>
+      <h1>TRADEGUARD LOGIN</h1>
+      <p>Secure analytical portal for market risk and portfolio signals.</p>
+
+      <form id="loginForm" class="auth-form">
+        <div class="form-group">
+          <label>Account ID / Username</label>
+          <input type="text" id="username" placeholder="Trade ID" required />
+        </div>
+        <div class="form-group">
+          <label>Vault Passkey</label>
+          <input type="password" id="password" placeholder="••••••••" required />
+        </div>
+        <button type="submit" class="auth-btn">Authorize Terminal Access</button>
+      </form>
+
+      <div id="errorMsg" class="error-msg"></div>
+      
+      <div class="back-link">
+        <a href="/crm-login">← Back to Portal Selection</a>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .login-wrapper { padding: 100px 24px; display: flex; justify-content: center; align-items: center; min-height: 80vh; }
+    .login-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 50px; width: 100%; max-width: 480px; text-align: center; backdrop-filter: blur(10px); }
+    .industry-badge { background: #6366f1; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; display: inline-block; }
+    .login-card h1 { font-size: 2.2rem; font-weight: 900; margin-bottom: 10px; letter-spacing: -0.02em; }
+    .login-card p { opacity: 0.5; margin-bottom: 40px; }
+    .auth-form { text-align: left; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; opacity: 0.8; }
+    .form-group input { width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 14px; border-radius: 12px; color: white; transition: 0.3s; }
+    .auth-btn { width: 100%; background: #6366f1; color: white; padding: 16px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+    .auth-btn:hover { background: #4f46e5; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(99,102,241,0.2); }
+    .error-msg { color: #f87171; margin-top: 20px; font-weight: 600; font-size: 0.9rem; }
+    .back-link { margin-top: 30px; opacity: 0.5; font-size: 0.9rem; transition: 0.2s; }
+    .back-link a { color: white; text-decoration: none; }
+  </style>
+
+  <script is:inline>
+    const loginForm = document.getElementById("loginForm");
+    loginForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const errorMsg = document.getElementById("errorMsg");
+
+      try {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password, industry: 'Finance' })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          localStorage.setItem("user", JSON.stringify(data.user));
+          window.location.href = "/dashboard";
+        } else {
+          errorMsg.innerText = data.message;
+        }
+      } catch (err) {
+        errorMsg.innerText = "Connection failed.";
+      }
+    };
+  </script>
+</MainLayout>

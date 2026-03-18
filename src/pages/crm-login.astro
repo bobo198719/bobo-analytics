@@ -11,7 +11,7 @@ import MainLayout from "../layouts/MainLayout.astro";
 
     <div class="portal-grid">
       <!-- Pharmacy Card -->
-      <div class="portal-card" onclick="openLogin('Pharmacy')">
+      <div class="portal-card" onclick="openPortal('pharmacy')">
         <div class="portal-icon">💊</div>
         <h3>Pharmacy Portal</h3>
         <p>Access inventory, prescriptions, and retail health analytics.</p>
@@ -19,7 +19,7 @@ import MainLayout from "../layouts/MainLayout.astro";
       </div>
 
       <!-- Bakery Card -->
-      <div class="portal-card" onclick="openLogin('Bakery')">
+      <div class="portal-card" onclick="openPortal('baker')">
         <div class="portal-icon">🍰</div>
         <h3>Baker OS Portal</h3>
         <p>Manage orders, recipe costs, and bakery production.</p>
@@ -27,7 +27,7 @@ import MainLayout from "../layouts/MainLayout.astro";
       </div>
 
       <!-- Healthcare Card -->
-      <div class="portal-card" onclick="openLogin('Healthcare')">
+      <div class="portal-card" onclick="openPortal('healthcare')">
         <div class="portal-icon">🏥</div>
         <h3>Healthcare CRM</h3>
         <p>Patient analytics and clinical operation management.</p>
@@ -35,7 +35,7 @@ import MainLayout from "../layouts/MainLayout.astro";
       </div>
 
       <!-- Retail Card -->
-      <div class="portal-card" onclick="openLogin('Retail')">
+      <div class="portal-card" onclick="openPortal('retail')">
         <div class="portal-icon">🛒</div>
         <h3>Retail Intelligence</h3>
         <p>Consumer behavior, AI inventory, and sales growth center.</p>
@@ -43,13 +43,15 @@ import MainLayout from "../layouts/MainLayout.astro";
       </div>
 
       <!-- Grocery Card -->
-      <div class="portal-card" onclick="openLogin('Grocery')">
+      <div class="portal-card" onclick="openPortal('grocery')">
         <div class="portal-icon">🍎</div>
         <h3>Grocery OS</h3>
         <p>Supply chain and POS hub for large grocery chains.</p>
         <button class="portal-btn">Access Workspace</button>
+      </div>
+
       <!-- Staff Login -->
-      <div class="portal-card staff-card" onclick="openLogin('Staff')">
+      <div class="portal-card staff-card" onclick="openPortal('staff')">
         <div class="portal-icon">👔</div>
         <h3>Staff Login</h3>
         <p>Employee access for cashiers, managers, and warehouse staff.</p>
@@ -57,7 +59,7 @@ import MainLayout from "../layouts/MainLayout.astro";
       </div>
 
       <!-- Admin Login -->
-      <div class="portal-card admin-card" onclick="openLogin('Admin')">
+      <div class="portal-card admin-card" onclick="openPortal('admin')">
         <div class="portal-icon">🛡️</div>
         <h3>Admin Console</h3>
         <p>Master control for system configuration and user management.</p>
@@ -76,20 +78,24 @@ import MainLayout from "../layouts/MainLayout.astro";
     .portal-icon { font-size: 3rem; margin-bottom: 10px; }
     .portal-btn { background: #6366f1; color: white; padding: 12px 24px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; width: 100%; }
     .portal-btn:hover { background: #4f46e5; }
-
     .admin-card { border-color: rgba(239, 68, 68, 0.2); }
     .admin-card:hover { border-color: #ef4444; background: rgba(239, 68, 68, 0.05); }
     .admin-btn { background: rgba(239, 68, 68, 0.8) !important; }
     .admin-btn:hover { background: #ef4444 !important; }
-
     .staff-card { border-color: rgba(255, 255, 255, 0.05); }
     .staff-card:hover { border-color: #94a3b8; }
   </style>
 
   <script is:inline>
-    function openLogin(industry) {
-      localStorage.setItem("selectedIndustry", industry);
-      window.location.href = "/login";
+    function openPortal(type) {
+      if (type === 'pharmacy') window.location.href = "/pharmacy-login";
+      else if (type === 'grocery') window.location.href = "/grocery-login";
+      else if (type === 'staff') window.location.href = "/staff-login";
+      else if (type === 'admin') window.location.href = "/admin-login";
+      else if (type === 'baker') window.location.href = "/bakers-login";
+      else if (type === 'healthcare') window.location.href = "/healthcare-login";
+      else if (type === 'retail') window.location.href = "/retail-os-login";
+      else window.location.href = "/login";
     }
   </script>
 </MainLayout>

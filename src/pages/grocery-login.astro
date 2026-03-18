@@ -141,20 +141,21 @@ import MainLayout from "../layouts/MainLayout.astro";
   </style>
 
   <script is:inline>
-    const loginForm = document.getElementById('loginForm');
-    const authStatus = document.getElementById('auth-status');
-
-    loginForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const storeId = document.getElementById('storeId').value;
-      const pass = document.getElementById('password').value;
-
-      // Demo creds: grocery / bobo123
-      if (storeId === 'grocery' && pass === 'bobo123') {
-        localStorage.setItem('grocery_os_auth', 'true');
-        window.location.href = '/grocery-os';
-      } else {
-        authStatus.innerHTML = '<div class="error-msg">Invalid Terminal ID or Key.</div>';
+      try {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: storeId, password: pass, industry: 'Grocery' })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          localStorage.setItem('user', JSON.stringify(data.user));
+          window.location.href = '/grocery-os';
+        } else {
+          authStatus.innerHTML = `<div class="error-msg">${data.message || 'Invalid Terminal ID or Key.'}</div>`;
+        }
+      } catch (err) {
+        authStatus.innerHTML = '<div class="error-msg">Connection failed.</div>';
       }
     });
   </script>
