@@ -2,398 +2,272 @@
 import MainLayout from "../layouts/MainLayout.astro";
 ---
 
-<MainLayout title="Join Bobo Analytics | Activate Your Workspace">
-    <div class="signup-container">
-        <div class="signup-glass">
-            <div id="signup-wizard">
-                <!-- PROGRESS BAR -->
-                <div class="progress-bar-container">
-                    <div class="progress-steps">
-                        <div class="p-step active" data-step="1">Details</div>
-                        <div class="p-step" data-step="2">Industry</div>
-                        <div class="p-step" data-step="3">Plan</div>
-                        <div class="p-step" data-step="4">Activate</div>
-                    </div>
-                    <div class="progress-line"><div class="line-fill" id="progressFill"></div></div>
-                </div>
+<MainLayout title="SaaS Signup | Bobo Analytics">
+  <div class="signup-container">
+    <div class="signup-card">
+      <h1>🚀 Join Bobo Analytics</h1>
+      <p class="subtitle">Start your 30-day free trial today.</p>
+      
+      <form id="signupForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Industry</label>
+            <select name="industry" required>
+              <option value="Retail">Retail</option>
+              <option value="Bakery">Bakery</option>
+              <option value="Pharmacy">Pharmacy</option>
+              <option value="Finance">Finance</option>
+              <option value="Healthcare">Healthcare</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Business Name</label>
+            <input type="text" name="businessName" placeholder="e.g. Bobo Bakes" required />
+          </div>
 
-                <form id="publicSignupForm">
-                    <!-- STEP 1: Account -->
-                    <div class="signup-step active" data-step="1">
-                        <h1>Create Your Account</h1>
-                        <p>Let's start with the basics of your business.</p>
-                        <div class="form-grid">
-                            <div class="input-group">
-                                <label>Business Name</label>
-                                <input type="text" id="sBizName" placeholder="e.g. Apollo Pharmacy" required />
-                            </div>
-                            <div class="input-group">
-                                <label>Owner Name</label>
-                                <input type="text" id="sOwner" placeholder="Your full name" required />
-                            </div>
-                            <div class="input-group">
-                                <label>Business Email</label>
-                                <input type="email" id="sEmail" placeholder="name@business.com" required />
-                            </div>
-                            <div class="input-group">
-                                <label>Phone Number</label>
-                                <input type="text" id="sPhone" placeholder="+91..." required />
-                            </div>
-                            <div class="input-group full">
-                                <label>Password</label>
-                                <input type="password" id="sPass" placeholder="Create a secure password" required />
-                            </div>
-                        </div>
-                    </div>
+          <div class="form-group">
+            <label>Owner Name</label>
+            <input type="text" name="ownerName" placeholder="Your Full Name" required />
+          </div>
 
-                    <!-- STEP 2: Industry -->
-                    <div class="signup-step" data-step="2">
-                        <h1>Select Your Industry</h1>
-                        <p>We'll pre-configure your OS with industry-specific modules.</p>
-                        <div class="industry-grid">
-                            <label class="ind-card">
-                                <input type="radio" name="sInd" value="pharmacy" checked />
-                                <div class="card-inner">
-                                    <span class="icon">💊</span>
-                                    <strong>Pharmacy</strong>
-                                    <small>Medicine, Stock, GST</small>
-                                </div>
-                            </label>
-                            <label class="ind-card">
-                                <input type="radio" name="sInd" value="healthcare" />
-                                <div class="card-inner">
-                                    <span class="icon">🏥</span>
-                                    <strong>Healthcare</strong>
-                                    <small>Patients, Billing, CRM</small>
-                                </div>
-                            </label>
-                            <label class="ind-card">
-                                <input type="radio" name="sInd" value="retail" />
-                                <div class="card-inner">
-                                    <span class="icon">🛒</span>
-                                    <strong>Retail</strong>
-                                    <small>Billing, Inventory, CRM</small>
-                                </div>
-                            </label>
-                            <label class="ind-card">
-                                <input type="radio" name="sInd" value="finance" />
-                                <div class="card-inner">
-                                    <span class="icon">📈</span>
-                                    <strong>Finance</strong>
-                                    <small>Markets, Risk, Analysis</small>
-                                </div>
-                            </label>
-                            <label class="ind-card">
-                                <input type="radio" name="sInd" value="grocery" />
-                                <div class="card-inner">
-                                    <span class="icon">🍎</span>
-                                    <strong>Grocery</strong>
-                                    <small>Stock, POS, Barcode</small>
-                                </div>
-                            </label>
-                            <label class="ind-card">
-                                <input type="radio" name="sInd" value="fashion" />
-                                <div class="card-inner">
-                                    <span class="icon">👗</span>
-                                    <strong>Fashion</strong>
-                                    <small>Trends, Sizes, Inventory</small>
-                                </div>
-                            </label>
-                            <label class="ind-card">
-                                <input type="radio" name="sInd" value="bakers" />
-                                <div class="card-inner">
-                                    <span class="icon">🧁</span>
-                                    <strong>Home Bakers</strong>
-                                    <small>Orders, Gallery, Payments</small>
-                                </div>
-                            </label>
-                            <label class="ind-card">
-                                <input type="radio" name="sInd" value="tradeguard" />
-                                <div class="card-inner">
-                                    <span class="icon">🛡️</span>
-                                    <strong>TradeGuard</strong>
-                                    <small>Signals, Portfolio, Risk</small>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" name="email" placeholder="owner@business.com" required />
+          </div>
 
-                    <!-- STEP 3: Plan -->
-                    <div class="signup-step" data-step="3">
-                        <h1>Select a Scaling Plan</h1>
-                        <p>Start free for 14 days. No credit card required.</p>
-                        <div class="plan-grid">
-                            <label class="p-card">
-                                <input type="radio" name="sPlan" value="starter" />
-                                <div class="p-card-inner">
-                                    <h3>Starter</h3>
-                                    <div class="price">₹4,999<span>/mo</span></div>
-                                    <ul>
-                                        <li>3 Team Members</li>
-                                        <li>5GB Storage</li>
-                                        <li>Core Analytics</li>
-                                    </ul>
-                                </div>
-                            </label>
-                            <label class="p-card">
-                                <input type="radio" name="sPlan" value="professional" checked />
-                                <div class="p-card-inner highlight">
-                                    <span class="pop">POPULAR</span>
-                                    <h3>Professional</h3>
-                                    <div class="price">₹9,999<span>/mo</span></div>
-                                    <ul>
-                                        <li>10 Team Members</li>
-                                        <li>50GB Storage</li>
-                                        <li>Advanced AI Insights</li>
-                                    </ul>
-                                </div>
-                            </label>
-                            <label class="p-card">
-                                <input type="radio" name="sPlan" value="enterprise" />
-                                <div class="p-card-inner">
-                                    <h3>Enterprise</h3>
-                                    <div class="price">₹19,999<span>/mo</span></div>
-                                    <ul>
-                                        <li>Unlimited Members</li>
-                                        <li>Custom Storage</li>
-                                        <li>24/7 Dedicated Support</li>
-                                    </ul>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" name="phone" placeholder="9876543210" required />
+          </div>
 
-                    <!-- STEP 4: Checkout -->
-                    <div class="signup-step" data-step="4">
-                        <h1>Activate Workspace</h1>
-                        <div class="activation-summary">
-                            <div class="summary-item"><span>Workspace:</span> <strong id="sumDomain">...</strong></div>
-                            <div class="summary-item"><span>Selected Plan:</span> <strong id="sumPlan">...</strong></div>
-                            <div class="summary-item"><span>Status:</span> <span class="tag trial">14-DAY FREE TRIAL</span></div>
-                        </div>
-                        <div class="checkout-footer">
-                            <p>By clicking active, your isolated environment will be deployed instantly.</p>
-                        </div>
-                    </div>
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" name="username" placeholder="Choose a username" required />
+          </div>
 
-                    <div class="signup-nav">
-                        <button type="button" id="btnPrev" class="btn-secondary" style="display:none">Back</button>
-                        <button type="button" id="btnNext" class="btn-primary">Continue</button>
-                        <button type="submit" id="btnSubmit" class="btn-primary" style="display:none">Activate My OS</button>
-                    </div>
-                </form>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" placeholder="••••••••" required />
+          </div>
 
-                <div id="activationLoader" class="loader-overlay" style="display:none">
-                    <div class="loader-content">
-                        <div class="spinner"></div>
-                        <h2>Provisioning Your Tenant...</h2>
-                        <p>Setting up database, storage, and industry modules at the edge.</p>
-                    </div>
-                </div>
-            </div>
+          <div class="form-group">
+            <label>Subscription Plan</label>
+            <select name="plan" required>
+              <option value="Starter">Starter (Free Trial)</option>
+              <option value="Pro">Pro ($499/mo)</option>
+              <option value="Enterprise">Enterprise (Custom)</option>
+            </select>
+          </div>
         </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <span>Create My Account</span>
+          <div class="loader" id="loader"></div>
+        </button>
+      </form>
+
+      <div id="statusMessage" class="status-message"></div>
     </div>
+  </div>
 
-    <style>
-        .signup-container {
-            min-height: 100vh;
-            background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #05081a 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 20px;
-        }
+  <style>
+    .signup-container {
+      padding: 120px 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: calc(100vh - 80px);
+      background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15), transparent 400px),
+                  radial-gradient(circle at bottom left, rgba(239, 68, 68, 0.1), transparent 400px);
+    }
 
-        .signup-glass {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            width: 100%;
-            max-width: 900px;
-            border-radius: 32px;
-            padding: 60px;
-            position: relative;
-            overflow: hidden;
-        }
+    .signup-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 60px;
+      border-radius: 32px;
+      width: 100%;
+      max-width: 800px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
 
-        .progress-bar-container { margin-bottom: 50px; }
-        .progress-steps { display: flex; justify-content: space-between; margin-bottom: 12px; }
-        .p-step { font-size: 0.8rem; font-weight: 700; color: rgba(255,255,255,0.3); text-transform: uppercase; }
-        .p-step.active { color: #6366f1; }
-        .progress-line { height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; }
-        .line-fill { height: 100%; width: 25%; background: #6366f1; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px rgba(99,102,241,0.5); }
+    h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      text-align: center;
+      background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
 
-        h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 8px; }
-        p { color: rgba(255,255,255,0.6); margin-bottom: 32px; }
+    .subtitle {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 1.25rem;
+      margin-bottom: 48px;
+    }
 
-        .signup-step { display: none; animation: fadeIn 0.4s ease; }
-        .signup-step.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
 
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-        .input-group { display: flex; flex-direction: column; gap: 8px; }
-        .input-group.full { grid-column: span 2; }
-        .input-group label { font-size: 0.85rem; font-weight: 600; color: rgba(255,255,255,0.8); }
-        .input-group input { 
-            background: rgba(255,255,255,0.03); 
-            border: 1px solid rgba(255,255,255,0.1); 
-            padding: 14px 18px; 
-            border-radius: 12px; 
-            color: white; 
-            outline: none; 
-            transition: 0.2s;
-        }
-        .input-group input:focus { border-color: #6366f1; background: rgba(99,102,241,0.05); }
+    @media (max-width: 600px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .signup-card {
+        padding: 40px 24px;
+      }
+    }
 
-        .industry-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
-        .ind-card input { display: none; }
-        .card-inner { 
-            background: rgba(255,255,255,0.03); 
-            border: 1px solid rgba(255,255,255,0.1); 
-            padding: 24px 16px; 
-            border-radius: 20px; 
-            text-align: center; 
-            cursor: pointer; 
-            transition: 0.3s;
-        }
-        .ind-card:hover .card-inner { background: rgba(255,255,255,0.06); transform: translateY(-4px); }
-        .ind-card input:checked + .card-inner { border-color: #6366f1; background: rgba(99,102,241,0.1); box-shadow: 0 10px 30px rgba(99,102,241,0.2); }
-        .ind-card .icon { font-size: 2.5rem; display: block; margin-bottom: 12px; }
-        .ind-card strong { display: block; margin-bottom: 4px; }
-        .ind-card small { font-size: 0.7rem; color: rgba(255,255,255,0.5); }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
-        .plan-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .p-card input { display: none; }
-        .p-card-inner { 
-            background: rgba(255,255,255,0.03); 
-            border: 1px solid rgba(255,255,255,0.1); 
-            padding: 30px; 
-            border-radius: 24px; 
-            position: relative; 
-            text-align: center; 
-            cursor: pointer;
-            height: 100%;
-        }
-        .p-card-inner.highlight { border-color: #6366f1; background: rgba(99,102,241,0.05); }
-        .pop { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #6366f1; font-size: 0.65rem; font-weight: 800; padding: 4px 12px; border-radius: 20px; letter-spacing: 1px; }
-        .price { font-size: 2rem; font-weight: 800; margin: 16px 0; }
-        .price span { font-size: 1rem; color: rgba(255,255,255,0.5); font-weight: 500; }
-        .p-card-inner ul { list-style: none; padding: 0; text-align: left; font-size: 0.85rem; color: rgba(255,255,255,0.7); }
-        .p-card-inner li { margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-        .p-card-inner li::before { content: "✓"; color: #10b981; font-weight: 800; }
-        .p-card input:checked + .p-card-inner { border-color: #6366f1; box-shadow: 0 10px 40px rgba(99,102,241,0.25); }
+    label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.8);
+      margin-left: 4px;
+    }
 
-        .signup-nav { margin-top: 50px; display: flex; justify-content: flex-end; gap: 16px; }
-        .btn-primary { 
-            background: #6366f1; 
-            color: white; 
-            border: none; 
-            padding: 16px 40px; 
-            border-radius: 14px; 
-            font-weight: 700; 
-            font-size: 1rem; 
-            cursor: pointer; 
-            transition: 0.3s;
-            box-shadow: 0 4px 20px rgba(99,102,241,0.3);
-        }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(99,102,241,0.5); }
-        .btn-secondary { background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 16px 40px; border-radius: 14px; font-weight: 600; cursor: pointer; }
+    input, select {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 16px;
+      border-radius: 12px;
+      color: white;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
 
-        .loader-overlay { position: absolute; inset: 0; background: #05081a; z-index: 100; display: flex; align-items: center; justify-content: center; text-align: center; }
-        .spinner { width: 60px; height: 60px; border: 4px solid rgba(99,102,241,0.1); border-top-color: #6366f1; border-radius: 50%; animation: spin 1s infinite linear; margin: 0 auto 24px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #6366f1;
+      background: rgba(255, 255, 255, 0.07);
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
 
-        .activation-summary { background: rgba(255,255,255,0.05); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 24px; }
-        .summary-item { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 1.1rem; }
-        .summary-item span { color: rgba(255,255,255,0.5); }
-        .tag.trial { background: #451a03; color: #f59e0b; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; }
-    </style>
+    .submit-btn {
+      width: 100%;
+      margin-top: 40px;
+      padding: 20px;
+      border-radius: 14px;
+      border: none;
+      background: #6366f1;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+    }
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            let currentStep = 1;
-            const steps = document.querySelectorAll(".signup-step");
-            const fill = document.getElementById("progressFill");
+    .submit-btn:hover {
+      background: #4f46e5;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
+    }
 
-            function updateUI() {
-                steps.forEach(s => s.classList.remove("active"));
-                document.querySelector(`.signup-step[data-step="${currentStep}"]`).classList.add("active");
-                
-                document.querySelectorAll(".p-step").forEach(ps => {
-                    if(parseInt(ps.dataset.step) <= currentStep) ps.classList.add("active");
-                    else ps.classList.remove("active");
-                });
+    .submit-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
 
-                fill.style.width = (currentStep * 25) + "%";
+    .status-message {
+      margin-top: 24px;
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+      display: none;
+    }
 
-                document.getElementById("btnPrev").style.display = currentStep === 1 ? "none" : "block";
-                document.getElementById("btnNext").style.display = currentStep === 4 ? "none" : "block";
-                document.getElementById("btnSubmit").style.display = currentStep === 4 ? "block" : "none";
+    .status-message.success {
+      display: block;
+      background: rgba(34, 197, 94, 0.1);
+      color: #22c55e;
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
 
-                if(currentStep === 4) {
-                    const biz = document.getElementById("sBizName").value;
-                    const plan = document.querySelector('input[name="sPlan"]:checked').value;
-                    document.getElementById("sumDomain").innerText = biz.toLowerCase().replace(/\s+/g,'') + ".boboanalytics.com";
-                    document.getElementById("sumPlan").innerText = plan.charAt(0).toUpperCase() + plan.slice(1);
-                }
-            }
+    .status-message.error {
+      display: block;
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
 
-            document.getElementById("btnNext").addEventListener("click", () => {
-                // Basic validation for Step 1
-                if(currentStep === 1) {
-                    if(!document.getElementById('sBizName').value || !document.getElementById('sEmail').value) {
-                        alert("Please fill in your business details.");
-                        return;
-                    }
-                }
-                currentStep++;
-                updateUI();
-            });
+    .loader {
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      display: none;
+    }
 
-            document.getElementById("btnPrev").addEventListener("click", () => {
-                currentStep--;
-                updateUI();
-            });
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
 
-            document.getElementById("publicSignupForm").addEventListener("submit", async (e) => {
-                e.preventDefault();
-                document.getElementById("activationLoader").style.display = "flex";
+  <script>
+    const form = document.getElementById('signupForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const statusMessage = document.getElementById('statusMessage');
+    const loader = document.getElementById('loader');
 
-                const bizName = document.getElementById("sBizName").value;
-                const username = bizName.toLowerCase().replace(/\s+/g, '_') + '_admin';
-                const pass = document.getElementById("sPass").value;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+      
+      // UI State
+      submitBtn.disabled = true;
+      loader.style.display = 'block';
+      statusMessage.style.display = 'none';
 
-                const newTenant = {
-                    id: 'L-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
-                    businessName: bizName,
-                    ownerName: document.getElementById("sOwner").value,
-                    email: document.getElementById("sEmail").value,
-                    phone: document.getElementById("sPhone").value || 'N/A',
-                    industry: document.querySelector('input[name="sInd"]:checked').value,
-                    plan: document.querySelector('input[name="sPlan"]:checked').value,
-                    environment: 'trial',
-                    username: username,
-                    password: pass,
-                    status: 'Active',
-                    source: 'Organic Signup',
-                    type: 'Lead',
-                    created: new Date().toISOString()
-                };
-
-                // Simulate deployment
-                await new Promise(r => setTimeout(r, 4000));
-
-                let accounts = JSON.parse(localStorage.getItem('bobo_accounts') || '[]');
-                accounts.push(newTenant);
-                localStorage.setItem('bobo_accounts', JSON.stringify(accounts));
-
-                // Notify Super Admin
-                console.log("NOTIFY: New Lead Alert sent to System Master via WhatsApp & Email.");
-                
-                // Redirect to trial welcome
-                alert("Workspace Activated! Redirecting to your dashboard...");
-                window.location.href = "/portal/dashboard";
-            });
+      try {
+        const response = await fetch('/api/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
         });
-    </script>
+
+        const result = await response.json();
+
+        if (response.ok) {
+          statusMessage.textContent = "✅ Success! Welcome to Bobo Analytics. Redirecting...";
+          statusMessage.className = "status-message success";
+          statusMessage.style.display = 'block';
+          form.reset();
+          setTimeout(() => {
+            window.location.href = "/login";
+          }, 2000);
+        } else {
+          throw new Error(result.message || "Signup failed");
+        }
+      } catch (err) {
+        statusMessage.textContent = "❌ Error: " + err.message;
+        statusMessage.className = "status-message error";
+        statusMessage.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        loader.style.display = 'none';
+      }
+    });
+  </script>
 </MainLayout>

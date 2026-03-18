@@ -174,6 +174,23 @@ const initDb = () => {
   )`, (err) => {
     if (err) console.error("Error creating followers table:", err);
   });
+
+  db.query(`CREATE TABLE IF NOT EXISTS saas_users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    industry VARCHAR(50),
+    business_name VARCHAR(255),
+    owner_name VARCHAR(255),
+    email VARCHAR(255),
+    phone VARCHAR(20),
+    username VARCHAR(100),
+    password_hash TEXT,
+    plan VARCHAR(50),
+    expiry_date DATE,
+    status VARCHAR(20) DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`, (err) => {
+    if (err) console.error("Error creating saas_users table:", err);
+  });
 };
 
 

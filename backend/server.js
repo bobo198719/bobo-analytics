@@ -13,10 +13,15 @@ const offerRoutes = require("./routes/offers");
 const bakeryRoutes = require("./routes/bakery");
 const customerRoutes = require("./routes/customers");
 const recipeRoutes = require("./routes/recipes");
+const saasRoutes = require("./routes/saas");
+const { startExpiryCron } = require("./services/expiryCron");
 
 const fs = require('fs');
 
 const app = express();
+
+// Start Subscription Expiry Cron
+startExpiryCron();
 
 // Ensure uploads directory exists
 const uploadDir = path.join(__dirname, "public", "menu-images");
@@ -67,6 +72,7 @@ app.use("/api", offerRoutes);
 app.use("/api", bakeryRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/recipes", recipeRoutes);
+app.use("/api", saasRoutes);
 
 app.get("/api/system-repair", async (req, res) => {
     try {

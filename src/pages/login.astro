@@ -73,6 +73,10 @@ import MainLayout from "../layouts/MainLayout.astro";
         <div class="arrow">→</div>
       </a>
     </div>
+
+    <div class="signup-cta">
+      <p>New to Bobo Analytics? <a href="/signup">Join 30-Day Trial 🚀</a></p>
+    </div>
   </section>
 
   <style>
@@ -164,6 +168,30 @@ import MainLayout from "../layouts/MainLayout.astro";
 
     .option-card.admin .arrow {
       color: #ef4444;
+    }
+
+    .signup-cta {
+      margin-top: 60px;
+      padding: 24px;
+      background: rgba(99, 102, 241, 0.05);
+      border-radius: 20px;
+      border: 1px dashed rgba(99, 102, 241, 0.3);
+    }
+
+    .signup-cta p {
+      font-size: 1.1rem;
+      margin: 0;
+    }
+
+    .signup-cta a {
+      color: #6366f1;
+      font-weight: 700;
+      text-decoration: none;
+      margin-left: 8px;
+    }
+
+    .signup-cta a:hover {
+      text-decoration: underline;
     }
   </style>
 </MainLayout>
