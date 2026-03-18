@@ -5,40 +5,25 @@ const db = require("../db");
 /**
  * 6️⃣ AI BUSINESS INSIGHTS
  */
-router.get("/insights/:businessId", async (req, res) => {
+router.get("/insights", async (req, res) => {
   try {
-    const { businessId } = req.params;
+    const [[users]] = await db.query("SELECT COUNT(*) as total FROM saas_users");
+    const [[revenue]] = await db.query("SELECT SUM(amount) as total FROM payments");
 
-    // fetch total sales (adjusting according to your actual 'orders' schema)
-    // assuming orders has 'business_id' or 'tenant_id'
-    const [salesResult] = await db.query(
-      "SELECT SUM(amount) as total FROM orders WHERE customer_name IS NOT NULL", // Placeholder filter if businessId is missing in early schema
-      // [businessId] // Re-enable once 'orders' has business_id or tenant_id
-    );
-
-    const totalSales = salesResult[0].total || 0;
     let insight = "";
-    let type = "sales";
 
-    if (totalSales > 50000) {
-      insight = "🔥 Your sales are growing fast! Consider increasing stock levels and running loyalty programs. 🚀";
-    } else if (totalSales > 10000) {
-      insight = "📈 Steady growth! Offer limited-time discounts to push to the next milestone. 💪";
+    if (users.total > 10) {
+      insight = "🚀 Platform is growing fast. Consider multi-region expansion.";
     } else {
-      insight = "⚠️ Sales are slow. Boost engagement with promotional offers and social media campaigns. 📢";
+      insight = "⚠️ Growth is at early stage. Need more customer acquisition.";
     }
 
-    // save history
-    await db.query(
-      `INSERT INTO ai_insights 
-      (business_id, insight, type)
-      VALUES (?, ?, ?)`,
-      [businessId, insight, type]
-    );
+    if (revenue.total > 10000) {
+      insight += " | 💰 Revenue is strong. Reinvest in AI tools.";
+    }
 
-    res.json({ insight, totalSales });
+    res.json({ insight, totalUsers: users.total, totalRevenue: revenue.total || 0 });
   } catch (err) {
-    console.error("AI Insights Error:", err);
     res.status(500).json({ error: err.message });
   }
 });

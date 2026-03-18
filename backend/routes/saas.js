@@ -5,190 +5,148 @@ const bcrypt = require("bcrypt");
 const { sendWhatsAppAlert } = require("../services/alerts");
 
 /**
- * WhatsApp Alert for Admin
+ * 1️⃣ ADMIN: CREATE USER (PROVISIONING)
  */
-function notifyAdmin(user) {
-  const adminPhone = "91XXXXXXXXXX"; // Replace with your phone number
-  const msg = encodeURIComponent(
-    `🚀 New Signup Alert!\n\nBusiness: ${user.businessName}\nIndustry: ${user.industry}\nPlan: ${user.plan || 'trial'}\nOwner: ${user.ownerName}`
-  );
-  const url = `https://wa.me/${adminPhone}?text=${msg}`;
-  console.log("Admin WhatsApp Alert:", url);
-}
-
-/**
- * 2️⃣ SIGNUP (SAVE USER + NOTIFY ADMIN)
- */
-router.post("/signup", async (req, res) => {
+router.post("/admin/create-user", async (req, res) => {
   try {
-    const {
-      industry,
-      businessName,
-      ownerName,
-      email,
-      phone,
-      username,
-      password,
-      plan
-    } = req.body;
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const expiry = new Date();
-    expiry.setDate(expiry.getDate() + 30);
-
+    const { businessName, username, password, industry, planType } = req.body;
+    const hash = await bcrypt.hash(password, 10);
     const [result] = await db.query(
       `INSERT INTO saas_users 
-      (industry, business_name, owner_name, email, phone, username, password_hash, plan_type, expiry_date, amount_paid)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [industry, businessName, ownerName, email, phone, username, hashedPassword, plan || "trial", expiry, 0]
+      (business_name, username, password_hash, industry, plan_type, status, created_at)
+      VALUES (?, ?, ?, ?, ?, 'active', NOW())`,
+      [businessName, username, hash, industry, planType]
     );
-
-    const newUserId = result.insertId;
-
-    // Save History
-    await db.query(
-      `INSERT INTO saas_user_history 
-      (user_id, industry, business_name, username, plan_type, status, action)
-      VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [newUserId, industry, businessName, username, plan || "trial", "active", "created"]
-    );
-
-    // Alerts
-    sendWhatsAppAlert(phone, businessName);
-    notifyAdmin({ businessName, industry, plan, ownerName });
-
-    res.json({ message: "User Created", success: true, userId: newUserId });
+    res.json({ success: true, userId: result.insertId });
   } catch (err) {
-    console.error("Signup error:", err);
-    res.status(500).json({ message: "Failed to create user", error: err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 
 /**
- * 3️⃣ ADMIN USERS API
+ * 2️⃣ ADMIN: FETCH USERS
  */
 router.get("/admin/users", async (req, res) => {
   try {
     const [users] = await db.query(
-      "SELECT id, industry, business_name, owner_name, email, phone, username, plan_type, expiry_date, status, amount_paid, created_at FROM saas_users ORDER BY created_at DESC"
+      `SELECT id, business_name, username, industry, plan_type, status, created_at 
+      FROM saas_users 
+      ORDER BY created_at DESC`
     );
     res.json(users);
   } catch (err) {
-    res.status(500).json({ message: "Error fetching users", error: err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 
 /**
- * 4️⃣ ACTIVATE PLAN (UPGRADE USER)
+ * 3️⃣ SUBSCRIPTION PLANS
  */
-router.post("/admin/activate-plan", async (req, res) => {
+router.post("/admin/create-plan", async (req, res) => {
   try {
-    const { userId, plan, amount } = req.body;
-
+    const { name, price, duration, features } = req.body;
     await db.query(
-      `UPDATE saas_users 
-      SET plan_type=?, status='active', amount_paid=amount_paid + ?, expiry_date=DATE_ADD(NOW(), INTERVAL 30 DAY)
-      WHERE id=?`,
-      [plan, amount, userId]
-    );
-
-    // Save history
-    await db.query(
-      `INSERT INTO saas_user_history 
-      (user_id, plan_type, status, action)
+      `INSERT INTO plans (name, price, duration, features)
       VALUES (?, ?, ?, ?)`,
-      [userId, plan, "active", "plan_activated"]
+      [name, price, duration, JSON.stringify(features)]
     );
-
-    res.json({ message: "Plan Activated", success: true });
+    res.json({ success: true, message: "Plan Created" });
   } catch (err) {
-    res.status(500).json({ message: "Activation failed", error: err.message });
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/admin/plans", async (req, res) => {
+  try {
+    const [plans] = await db.query("SELECT * FROM plans");
+    res.json(plans);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
 /**
- * 5️⃣ ADMIN DASHBOARD (PRO ANALYTICS)
+ * 4️⃣ REVENUE & PAYMENTS
+ */
+router.post("/payment/manual", async (req, res) => {
+  try {
+    const { userId, amount, method } = req.body;
+    await db.query(
+      `INSERT INTO payments (user_id, amount, method, status)
+      VALUES (?, ?, ?, 'success')`,
+      [userId, amount, method]
+    );
+    await db.query(
+      `UPDATE saas_users SET amount_paid = amount_paid + ? WHERE id=?`,
+      [amount, userId]
+    );
+    res.json({ success: true, message: "Payment recorded" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/admin/revenue", async (req, res) => {
+  try {
+    const [[revenue]] = await db.query("SELECT SUM(amount) as total FROM payments");
+    const [records] = await db.query(
+      `SELECT p.*, u.business_name, u.plan_type 
+      FROM payments p
+      JOIN saas_users u ON p.user_id=u.id
+      ORDER BY p.created_at DESC`
+    );
+    res.json({ total: revenue.total || 0, records });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * 5️⃣ REGISTRATION QUEUE (LEADS)
+ */
+router.post("/public/signup", async (req, res) => {
+  try {
+    const { name, phone, industry } = req.body;
+    await db.query(
+      `INSERT INTO leads (name, phone, industry, status)
+      VALUES (?, ?, ?, 'pending')`,
+      [name, phone, industry]
+    );
+    res.json({ success: true, message: "Lead added" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/admin/leads", async (req, res) => {
+  try {
+    const [leads] = await db.query("SELECT * FROM leads ORDER BY created_at DESC");
+    res.json(leads);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * 6️⃣ EXISTING SAAS ROUTES (SYNCED)
  */
 router.get("/admin/dashboard", async (req, res) => {
   try {
     const [[totalResult]] = await db.query("SELECT COUNT(*) as total FROM saas_users");
     const [[activeResult]] = await db.query("SELECT COUNT(*) as active FROM saas_users WHERE status='active'");
-    const [[trialResult]] = await db.query("SELECT COUNT(*) as trial FROM saas_users WHERE plan_type='trial'");
-    const [[revenueResult]] = await db.query("SELECT SUM(amount_paid) as revenue FROM saas_users");
-
+    const [[revResult]] = await db.query("SELECT SUM(amount) as revenue FROM payments");
     res.json({
       total: totalResult.total,
       active: activeResult.active,
-      trial: trialResult.total,
-      revenue: revenueResult.revenue || 0
+      revenue: revResult.revenue || 0
     });
-  } catch (err) {
-    res.status(500).json({ message: "Dashboard error", error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-/**
- * 6️⃣ INDUSTRY ANALYTICS
- */
-router.get("/api/admin/industry-stats", async (req, res) => {
-  try {
-    const [data] = await db.query(
-      "SELECT industry, COUNT(*) as total FROM saas_users GROUP BY industry"
-    );
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-/**
- * 7️⃣ DAILY SIGNUPS
- */
-router.get("/admin/daily-signups", async (req, res) => {
-  try {
-    const [data] = await db.query(
-      `SELECT DATE(created_at) as date, COUNT(*) as count 
-      FROM saas_users 
-      GROUP BY DATE(created_at)
-      ORDER BY date DESC LIMIT 14`
-    );
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-/**
- * 8️⃣ CONVERSION RATE
- */
-router.get("/admin/conversion", async (req, res) => {
-  try {
-    const [[trial]] = await db.query("SELECT COUNT(*) as total FROM saas_users WHERE plan_type='trial'");
-    const [[paid]] = await db.query("SELECT COUNT(*) as total FROM saas_users WHERE plan_type != 'trial'");
-
-    const conversion = trial.total > 0 ? ((paid.total / (trial.total + paid.total)) * 100).toFixed(2) : "0.00";
-
-    res.json({
-      trial: trial.total,
-      paid: paid.total,
-      conversion: conversion
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Reuse existing status and delete routes (updated for plan_type)
 router.post("/admin/update-status", async (req, res) => {
   try {
     const { userId, status } = req.body;
     await db.query("UPDATE saas_users SET status=? WHERE id=?", [status, userId]);
-    const [[user]] = await db.query("SELECT * FROM saas_users WHERE id=?", [userId]);
-    await db.query(
-      `INSERT INTO saas_user_history (user_id, industry, business_name, username, plan_type, status, action)
-      VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [userId, user.industry, user.business_name, user.username, user.plan_type, status, "status_updated"]
-    );
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -196,13 +154,6 @@ router.post("/admin/update-status", async (req, res) => {
 router.post("/admin/delete-user", async (req, res) => {
   try {
     const { userId } = req.body;
-    const [[user]] = await db.query("SELECT * FROM saas_users WHERE id=?", [userId]);
-    if (!user) return res.status(404).json({ message: "Not found" });
-    await db.query(
-      `INSERT INTO saas_user_history (user_id, industry, business_name, username, plan_type, status, action)
-      VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [userId, user.industry, user.business_name, user.username, user.plan_type, "deleted", "deleted"]
-    );
     await db.query("DELETE FROM saas_users WHERE id=?", [userId]);
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -215,13 +166,17 @@ router.get("/admin/user-history", async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-router.post("/admin/reset-password", async (req, res) => {
-  try {
-    const { userId, newPassword } = req.body;
-    const hash = await bcrypt.hash(newPassword, 10);
-    await db.query("UPDATE saas_users SET password_hash=? WHERE id=?", [hash, userId]);
-    res.json({ success: true });
-  } catch (err) { res.status(500).json({ error: err.message }); }
+router.post("/signup", async (req, res) => {
+    // Existing signup logic for public direct registration
+    try {
+        const { industry, businessName, ownerName, email, phone, username, password, plan } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const [result] = await db.query(
+            "INSERT INTO saas_users (industry, business_name, owner_name, email, phone, username, password_hash, plan_type) VALUES (?,?,?,?,?,?,?,?)",
+            [industry, businessName, ownerName, email, phone, username, hashedPassword, plan || 'trial']
+        );
+        res.json({ success: true, userId: result.insertId });
+    } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 module.exports = router;

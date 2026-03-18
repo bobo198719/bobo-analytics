@@ -240,6 +240,38 @@ const initDb = () => {
   )`, (err) => {
     if (err) console.error("Error creating saas_user_history table:", err);
   });
+
+  db.query(`CREATE TABLE IF NOT EXISTS plans (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    price INT,
+    duration INT,
+    features TEXT
+  )`, (err) => {
+    if (err) console.error("Error creating plans table:", err);
+  });
+
+  db.query(`CREATE TABLE IF NOT EXISTS payments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    amount INT,
+    method VARCHAR(50),
+    status VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`, (err) => {
+    if (err) console.error("Error creating payments table:", err);
+  });
+
+  db.query(`CREATE TABLE IF NOT EXISTS leads (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255),
+    phone VARCHAR(20),
+    industry VARCHAR(50),
+    status VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`, (err) => {
+    if (err) console.error("Error creating leads table:", err);
+  });
 };
 
 
