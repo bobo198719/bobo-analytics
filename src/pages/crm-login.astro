@@ -1,0 +1,73 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+---
+
+<MainLayout title="CRM Portal | Bobo Analytics Secure Access">
+  <div class="portal-wrapper">
+    <header class="portal-header">
+      <h1>🔐 Secure CRM Portal</h1>
+      <p>Select your industry to access your dedicated business workspace.</p>
+    </header>
+
+    <div class="portal-grid">
+      <!-- Pharmacy Card -->
+      <div class="portal-card" onclick="openLogin('Pharmacy')">
+        <div class="portal-icon">💊</div>
+        <h3>Pharmacy Portal</h3>
+        <p>Access inventory, prescriptions, and retail health analytics.</p>
+        <button class="portal-btn">Access Workspace</button>
+      </div>
+
+      <!-- Bakery Card -->
+      <div class="portal-card" onclick="openLogin('Bakery')">
+        <div class="portal-icon">🍰</div>
+        <h3>Baker OS Portal</h3>
+        <p>Manage orders, recipe costs, and bakery production.</p>
+        <button class="portal-btn">Access Workspace</button>
+      </div>
+
+      <!-- Healthcare Card -->
+      <div class="portal-card" onclick="openLogin('Healthcare')">
+        <div class="portal-icon">🏥</div>
+        <h3>Healthcare CRM</h3>
+        <p>Patient analytics and clinical operation management.</p>
+        <button class="portal-btn">Access Workspace</button>
+      </div>
+
+      <!-- Retail Card -->
+      <div class="portal-card" onclick="openLogin('Retail')">
+        <div class="portal-icon">🛒</div>
+        <h3>Retail Intelligence</h3>
+        <p>Consumer behavior, AI inventory, and sales growth center.</p>
+        <button class="portal-btn">Access Workspace</button>
+      </div>
+
+      <!-- Grocery Card -->
+      <div class="portal-card" onclick="openLogin('Grocery')">
+        <div class="portal-icon">🍎</div>
+        <h3>Grocery OS</h3>
+        <p>Supply chain and POS hub for large grocery chains.</p>
+        <button class="portal-btn">Access Workspace</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .portal-wrapper { padding: 100px 24px; max-width: 1200px; margin: 0 auto; text-align: center; }
+    .portal-header { margin-bottom: 60px; }
+    .portal-header h1 { font-size: 3rem; font-weight: 900; margin-bottom: 16px; background: linear-gradient(135deg, #fff 0%, #6366f1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .portal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+    .portal-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 40px; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+    .portal-card:hover { transform: translateY(-10px); background: rgba(99, 102, 241, 0.05); border-color: #6366f1; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+    .portal-icon { font-size: 3rem; margin-bottom: 10px; }
+    .portal-btn { background: #6366f1; color: white; padding: 12px 24px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; width: 100%; }
+    .portal-btn:hover { background: #4f46e5; }
+  </style>
+
+  <script is:inline>
+    function openLogin(industry) {
+      localStorage.setItem("selectedIndustry", industry);
+      window.location.href = "/login";
+    }
+  </script>
+</MainLayout>

@@ -42,7 +42,16 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ success: false, message: "Invalid credentials" });
     }
 
-    // 3. Success
+    // 3. Industry Portal Verification
+    if (user.industry.toLowerCase() !== industry.toLowerCase()) {
+        await db.query(
+            "INSERT INTO login_logs (username, ip_address, device, status) VALUES (?, ?, ?, 'portal_denied')",
+            [username, ip, device]
+        );
+        return res.status(403).json({ success: false, message: `Access denied for the ${industry} portal.` });
+    }
+
+    // 4. Success Log & Response
     await db.query(
       "INSERT INTO login_logs (username, ip_address, device, status) VALUES (?, ?, ?, ?)",
       [username, ip, device, "success"]
