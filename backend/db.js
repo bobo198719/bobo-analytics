@@ -191,6 +191,20 @@ const initDb = () => {
   )`, (err) => {
     if (err) console.error("Error creating saas_users table:", err);
   });
+
+  db.query(`CREATE TABLE IF NOT EXISTS saas_user_history (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    industry VARCHAR(50),
+    business_name VARCHAR(255),
+    username VARCHAR(100),
+    plan_type VARCHAR(50),
+    status VARCHAR(20),
+    action VARCHAR(50),
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`, (err) => {
+    if (err) console.error("Error creating saas_user_history table:", err);
+  });
 };
 
 

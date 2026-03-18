@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const { sendWhatsAppAlert } = require("../services/alerts");
 
 /**
- * 2️⃣ SIGNUP (SAVE USER IN MASTER TABLE)
+ * 2️⃣ SIGNUP (SAVE USER IN MASTER TABLE + LOG HISTORY)
  */
 router.post("/signup", async (req, res) => {
   try {
@@ -26,7 +26,7 @@ router.post("/signup", async (req, res) => {
     const expiry = new Date();
     expiry.setDate(expiry.getDate() + 30);
 
-    await db.query(
+    const [result] = await db.query(
       `INSERT INTO saas_users 
       (industry, business_name, owner_name, email, phone, username, password_hash, plan, expiry_date)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -43,10 +43,28 @@ router.post("/signup", async (req, res) => {
       ]
     );
 
+    const newUserId = result.insertId;
+
+    // 2️⃣ SAVE HISTORY ON USER CREATION
+    await db.query(
+      `INSERT INTO saas_user_history 
+      (user_id, industry, business_name, username, plan_type, status, action)
+      VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        newUserId,
+        industry,
+        businessName,
+        username,
+        plan,
+        "active",
+        "created"
+      ]
+    );
+
     // WhatsApp Alert
     sendWhatsAppAlert(phone, businessName);
 
-    res.json({ message: "User Created", success: true });
+    res.json({ message: "User Created", success: true, userId: newUserId });
   } catch (err) {
     console.error("Signup error:", err);
     res.status(500).json({ message: "Failed to create user", error: err.message });
@@ -72,7 +90,6 @@ router.get("/admin/users", async (req, res) => {
  */
 router.get("/admin/dashboard", async (req, res) => {
   try {
-    // These queries return [rows, fields]
     const [[totalResult]] = await db.query("SELECT COUNT(*) as total FROM saas_users");
     const [[activeResult]] = await db.query("SELECT COUNT(*) as active FROM saas_users WHERE status='active'");
     const [[expiredResult]] = await db.query("SELECT COUNT(*) as expired FROM saas_users WHERE expiry_date < CURDATE()");
@@ -90,7 +107,107 @@ router.get("/admin/dashboard", async (req, res) => {
 });
 
 /**
- * 6️⃣ PASSWORD RESET (ADMIN CONTROL)
+ * 5️⃣ TRACK STATUS CHANGE
+ */
+router.post("/admin/update-status", async (req, res) => {
+  try {
+    const { userId, status } = req.body;
+
+    // update main table
+    await db.query(
+      "UPDATE saas_users SET status=? WHERE id=?",
+      [status, userId]
+    );
+
+    // fetch user details
+    const [[user]] = await db.query(
+      "SELECT * FROM saas_users WHERE id=?",
+      [userId]
+    );
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // save history
+    await db.query(
+      `INSERT INTO saas_user_history 
+      (user_id, industry, business_name, username, plan_type, status, action)
+      VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        userId,
+        user.industry,
+        user.business_name,
+        user.username,
+        user.plan,
+        status,
+        "status_updated"
+      ]
+    );
+
+    res.json({ message: "Status Updated", success: true });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update status", error: err.message });
+  }
+});
+
+/**
+ * 6️⃣ TRACK DELETE (VERY IMPORTANT)
+ */
+router.post("/admin/delete-user", async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    // get user before deleting
+    const [[user]] = await db.query(
+      "SELECT * FROM saas_users WHERE id=?",
+      [userId]
+    );
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // save history BEFORE delete
+    await db.query(
+      `INSERT INTO saas_user_history 
+      (user_id, industry, business_name, username, plan_type, status, action)
+      VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        userId,
+        user.industry,
+        user.business_name,
+        user.username,
+        user.plan,
+        "deleted",
+        "deleted"
+      ]
+    );
+
+    // delete user
+    await db.query(
+      "DELETE FROM saas_users WHERE id=?",
+      [userId]
+    );
+
+    res.json({ message: "User Deleted", success: true });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete user", error: err.message });
+  }
+});
+
+/**
+ * 7️⃣ ADMIN API — FULL HISTORY
+ */
+router.get("/admin/user-history", async (req, res) => {
+  try {
+    const [history] = await db.query(
+      "SELECT * FROM saas_user_history ORDER BY timestamp DESC"
+    );
+    res.json(history);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching history", error: err.message });
+  }
+});
+
+/**
+ * 8️⃣ PASSWORD RESET (ADMIN CONTROL)
  */
 router.post("/admin/reset-password", async (req, res) => {
   try {
