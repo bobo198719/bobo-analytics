@@ -8,10 +8,10 @@ import MainLayout from "../../layouts/MainLayout.astro";
       <div class="flex-row">
         <div>
           <h1>🛸 SaaS Master Engine</h1>
-          <p>Complete Provisioning, Billing & Lead Intelligence</p>
+          <p>Complete Provisioning, Billing & Security Intelligence</p>
         </div>
         <div class="ai-insight-box">
-          <span class="pulse silver"></span> AI Insight: <span id="master-ai-insight">Analyzing growth...</span>
+          <span class="pulse silver"></span> Security Guard: <span id="security-status-text">Scanning for threats...</span>
         </div>
       </div>
     </header>
@@ -33,10 +33,10 @@ import MainLayout from "../../layouts/MainLayout.astro";
         </div>
       </div>
       <div class="stat-card revenue">
-        <div class="stat-icon">💰</div>
+        <div class="stat-icon">🛡️</div>
         <div class="stat-info">
-          <h3>Total Revenue</h3>
-          <p id="stat-revenue" class="loading-shimmer">...</p>
+          <h3>Security Alerts</h3>
+          <p id="stat-alerts" class="loading-shimmer">0</p>
         </div>
       </div>
     </section>
@@ -46,6 +46,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
         <button class="tab-btn active" data-tab="provisioning">Provisioning</button>
         <button class="tab-btn" data-tab="plans">Pricing Plans</button>
         <button class="tab-btn" data-tab="revenue">Revenue Ledger</button>
+        <button class="tab-btn" data-tab="security">Security Radar</button>
         <button class="tab-btn" data-tab="leads">Leads Queue</button>
       </div>
 
@@ -94,6 +95,26 @@ import MainLayout from "../../layouts/MainLayout.astro";
                  <tr><th>Date</th><th>Client</th><th>Plan</th><th>Amount</th><th>Method</th></tr>
                </thead>
                <tbody id="revenueTableBody"></tbody>
+             </table>
+           </div>
+        </section>
+      </div>
+
+      <div class="tab-content" id="security">
+        <section class="table-container">
+           <div class="table-header">
+             <h2>Security & Login Logs</h2>
+             <div class="alert-pills" id="security-alerts-container">
+                <!-- Alerts will appear here -->
+             </div>
+           </div>
+           
+           <div class="table-scroll">
+             <table class="small-table">
+               <thead>
+                 <tr><th>User</th><th>IP Address</th><th>Device</th><th>Status</th><th>Time</th><th>Action</th></tr>
+               </thead>
+               <tbody id="loginLogsBody"></tbody>
              </table>
            </div>
         </section>
@@ -195,7 +216,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
     .stat-icon { font-size: 2rem; width: 60px; height: 60px; background: rgba(99, 102, 241, 0.1); border-radius: 16px; display: flex; justify-content: center; align-items: center; }
     .stat-info h3 { font-size: 0.85rem; opacity: 0.5; text-transform: uppercase; margin: 0 0 4px 0; }
     .stat-info p { font-size: 2.2rem; font-weight: 900; margin: 0; }
-    .revenue p { color: #22c55e; }
+    .revenue p { color: #f87171; }
 
     .tabs-nav { display: flex; gap: 10px; margin-bottom: 30px; background: rgba(255,255,255,0.03); padding: 5px; border-radius: 14px; width: fit-content; }
     .tab-btn { background: transparent; border: none; color: rgba(255,255,255,0.5); padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: 700; transition: 0.3s; }
@@ -209,6 +230,8 @@ import MainLayout from "../../layouts/MainLayout.astro";
     table { width: 100%; border-collapse: collapse; text-align: left; }
     th { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.8rem; opacity: 0.4; text-transform: uppercase; }
     td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.95rem; }
+    
+    .small-table td { padding: 10px; font-size: 0.85rem; }
 
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; }
     .modal-content { background: #0a0a0a; border: 1px solid rgba(255,255,255,0.15); padding: 40px; border-radius: 24px; width: 90%; max-width: 480px; }
@@ -216,11 +239,15 @@ import MainLayout from "../../layouts/MainLayout.astro";
     .form-group label { display: block; margin-bottom: 10px; font-size: 0.9rem; opacity: 0.7; }
     .form-group input, .form-group select { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 12px; color: #fff; }
     
-    .btn { padding: 12px 24px; border-radius: 12px; border: none; cursor: pointer; font-weight: 700; transition: 0.3s; }
+    .btn { padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer; font-weight: 700; transition: 0.3s; font-size: 0.85rem; }
     .btn-primary { background: #6366f1; color: white; }
     .btn-secondary { background: rgba(255,255,255,0.1); color: white; }
-    .btn-danger { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
+    .btn-danger { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
     .btn-danger:hover { background: #ef4444; color: white; }
+
+    .status-tag { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
+    .status-success { background: rgba(34,197,94,0.15); color: #22c55e; }
+    .status-failed { background: rgba(239,68,68,0.15); color: #ef4444; }
 
     .loading-shimmer { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; display: inline-block; min-width: 60px; }
     @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
@@ -230,8 +257,8 @@ import MainLayout from "../../layouts/MainLayout.astro";
   <script>
     async function init() {
       await loadStats();
-      await loadAI();
       await loadProvisioning();
+      await loadSecurity();
       await loadPlans();
       await loadRevenue();
       await loadLeads();
@@ -243,14 +270,43 @@ import MainLayout from "../../layouts/MainLayout.astro";
       const data = await res.json();
       document.getElementById('stat-total').innerText = data.total;
       document.getElementById('stat-active').innerText = data.active;
-      document.getElementById('stat-revenue').innerText = '₹' + data.revenue.toLocaleString();
+      
+      // Load security alerts count
+      const secRes = await fetch('/api/security/security-alerts');
+      const alerts = await secRes.json();
+      document.getElementById('stat-alerts').innerText = alerts.length;
+      document.getElementById('security-status-text').innerText = alerts.length > 0 ? `Detected ${alerts.length} threats` : "System Secure";
+      
       document.querySelectorAll('.loading-shimmer').forEach(el => el.classList.remove('loading-shimmer'));
     }
 
-    async function loadAI() {
-      const res = await fetch('/api/ai/insights');
+    async function loadSecurity() {
+      // Load Logs
+      const res = await fetch('/api/security/login-logs');
       const data = await res.json();
-      document.getElementById('master-ai-insight').innerText = data.insight;
+      const tbody = document.getElementById('loginLogsBody');
+      tbody.innerHTML = data.map(l => `
+        <tr>
+          <td><b>${l.username}</b></td>
+          <td><small>${l.ip_address}</small></td>
+          <td title="${l.device}"><div style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">${l.device}</div></td>
+          <td><span class="status-tag ${l.status==='success'?'status-success':'status-failed'}">${l.status}</span></td>
+          <td>${new Date(l.created_at).toLocaleString()}</td>
+          <td>
+             <button class="btn btn-danger" onclick="blockUser('${l.username}')">Block</button>
+          </td>
+        </tr>
+      `).join('');
+
+      // Load Alerts
+      const alertRes = await fetch('/api/security/security-alerts');
+      const alerts = await alertRes.json();
+      const alertBox = document.getElementById('security-alerts-container');
+      alertBox.innerHTML = alerts.map(a => `
+        <div style="background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#ef4444; padding:5px 15px; border-radius:20px; font-size:0.8rem; font-weight:700">
+           ⚠️ ${a.username}: ${a.attempts} Failed Attempts
+        </div>
+      `).join('');
     }
 
     async function loadProvisioning() {
@@ -320,9 +376,20 @@ import MainLayout from "../../layouts/MainLayout.astro";
           document.querySelectorAll('.tab-btn, .tab-content').forEach(el => el.classList.remove('active'));
           btn.classList.add('active');
           document.getElementById(btn.dataset.tab).classList.add('active');
+          if(btn.dataset.tab === 'security') loadSecurity();
         };
       });
     }
+
+    window.blockUser = async (username) => {
+      if(!confirm(`Block user ${username} permanently?`)) return;
+      await fetch('/api/security/block-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username })
+      });
+      init();
+    };
 
     // Modal Triggers
     window.openProvisionModal = () => document.getElementById('provisionModal').style.display='flex';
@@ -343,24 +410,6 @@ import MainLayout from "../../layouts/MainLayout.astro";
       });
       if (res.ok) {
         document.getElementById('provisionModal').style.display='none';
-        init();
-      }
-    };
-
-    document.getElementById('confirmPlan').onclick = async () => {
-      const body = {
-        name: document.getElementById('planName').value,
-        price: document.getElementById('planPrice').value,
-        duration: document.getElementById('planDuration').value,
-        features: ["Analytics", "Inventory", "WhatsApp"]
-      };
-      const res = await fetch('/api/admin/create-plan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-      if (res.ok) {
-        document.getElementById('planModal').style.display='none';
         init();
       }
     };

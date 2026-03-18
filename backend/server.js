@@ -17,6 +17,7 @@ const saasRoutes = require("./routes/saas");
 const staffRoutes = require("./routes/staff");
 const whatsappRoutes = require("./routes/whatsapp");
 const aiRoutes = require("./routes/ai");
+const securityRoutes = require("./routes/security");
 const { startExpiryCron } = require("./services/expiryCron");
 
 const fs = require('fs');
@@ -79,6 +80,7 @@ app.use("/api", saasRoutes);
 app.use("/api/staff", staffRoutes);
 app.use("/api/whatsapp", whatsappRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/security", securityRoutes);
 
 app.get("/api/system-repair", async (req, res) => {
     try {

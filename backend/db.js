@@ -272,6 +272,18 @@ const initDb = () => {
   )`, (err) => {
     if (err) console.error("Error creating leads table:", err);
   });
+
+  db.query(`CREATE TABLE IF NOT EXISTS login_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(100),
+    ip_address VARCHAR(50),
+    device VARCHAR(255),
+    status VARCHAR(20),
+    location VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`, (err) => {
+    if (err) console.error("Error creating login_logs table:", err);
+  });
 };
 
 
