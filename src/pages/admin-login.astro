@@ -54,25 +54,40 @@ import MainLayout from "../layouts/MainLayout.astro";
 
     form.onsubmit = async (e) => {
       e.preventDefault();
-      const username = document.getElementById("adminId").value;
-      const password = document.getElementById("password").value;
+      const username = document.getElementById("adminId").value.trim();
+      const password = document.getElementById("password").value.trim();
+      errorEl.innerText = "Authenticating with Master Core...";
 
-      try {
-        const res = await fetch("/api/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password, industry: 'Admin' })
-        });
-        const data = await res.json();
-        if (res.ok) {
+      const endpoints = [
+        "/api/auth/login",
+        "http://srv1449576.hstgr.cloud:5000/api/auth/login" 
+      ];
+
+      for (const url of endpoints) {
+        try {
+          const res = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password, industry: 'Admin' })
+          });
+          
+          if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            errorEl.innerText = data.message || `System Error (HTTP ${res.status})`;
+            return;
+          }
+
+          const data = await res.json();
           localStorage.setItem("user", JSON.stringify(data.user));
           window.location.href = "/admin/saas";
-        } else {
-          errorEl.innerText = data.message || "Unauthorized Master ID or Security Key.";
+          return;
+        } catch (err) {
+          console.warn(`Fetch to ${url} failed:`, err);
+          continue; // Try next endpoint
         }
-      } catch (err) {
-        errorEl.innerText = "System authentication unavailable.";
       }
+
+      errorEl.innerText = "Network Isolation: Could not reach Master Auth Engine.";
     };
   </script>
 </MainLayout>
