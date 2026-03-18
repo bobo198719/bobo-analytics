@@ -88,6 +88,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
         <section class="table-container">
            <div class="table-header">
              <h2>Revenue Ledger</h2>
+             <button class="btn-primary" onclick="openPaymentModal()">+ Record Manual Payment</button>
            </div>
            <div class="table-scroll">
              <table>
@@ -99,6 +100,33 @@ import MainLayout from "../../layouts/MainLayout.astro";
            </div>
         </section>
       </div>
+
+   <!-- Manual Payment Modal -->
+  <div id="paymentModal" class="modal">
+    <div class="modal-content">
+      <h2>💸 Record Manual Payment</h2>
+      <div class="form-group">
+        <label>Select Tenant</label>
+        <select id="payUserId"></select>
+      </div>
+      <div class="form-group">
+        <label>Amount (₹)</label>
+        <input type="number" id="payAmount" placeholder="e.g. 5000" />
+      </div>
+      <div class="form-group">
+        <label>Payment Method</label>
+        <select id="payMethod">
+          <option value="Manual / UPI">Manual / UPI</option>
+          <option value="Bank Transfer">Bank Transfer</option>
+          <option value="Cash">Cash</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button onclick="document.getElementById('paymentModal').style.display='none'" class="btn btn-secondary">Cancel</button>
+        <button id="confirmPayment" class="btn btn-primary">Lock Payment</button>
+      </div>
+    </div>
+  </div>
 
       <div class="tab-content" id="security">
         <section class="table-container">
@@ -313,18 +341,55 @@ import MainLayout from "../../layouts/MainLayout.astro";
       const res = await fetch('/api/admin/users');
       const data = await res.json();
       const tbody = document.getElementById('provisionTableBody');
+      const payUserSelect = document.getElementById('payUserId');
+      
       tbody.innerHTML = data.map(u => `
         <tr>
           <td><b>${u.business_name}</b><br/><small style="opacity:0.5">${u.username}</small></td>
           <td>${u.industry}</td>
           <td><span style="background:rgba(99,102,241,0.2); padding:4px 8px; border-radius:6px; font-size:0.8rem">${u.plan_type}</span></td>
-          <td style="color:${u.status==='active'?'#22c55e':'#ef4444'}">${u.status}</td>
-          <td>
-            <button class="btn btn-danger" onclick="deleteUser(${u.id})">Terminate</button>
+          <td style="color:${u.status==='active'?'#22c55e':'#ef4444'}">
+            <span class="status-tag ${u.status==='active'?'status-success':'status-failed'}">${u.status}</span>
+          </td>
+          <td class="action-cell">
+            <button class="btn btn-secondary btn-sm" onclick="toggleStatus(${u.id}, '${u.status}')">Toggle</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteUser(${u.id})">Terminate</button>
           </td>
         </tr>
       `).join('');
+
+      // Populate payment modal select
+      payUserSelect.innerHTML = data.map(u => `<option value="${u.id}">${u.business_name} (${u.industry})</option>`).join('');
     }
+
+    async function toggleStatus(id, current) {
+      const status = current === 'active' ? 'inactive' : 'active';
+      await fetch('/api/admin/update-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: id, status })
+      });
+      init();
+    }
+
+    window.openPaymentModal = () => document.getElementById('paymentModal').style.display = 'flex';
+
+    document.getElementById('confirmPayment').onclick = async () => {
+      const body = {
+        userId: document.getElementById('payUserId').value,
+        amount: document.getElementById('payAmount').value,
+        method: document.getElementById('payMethod').value
+      };
+      const res = await fetch('/api/payment/manual', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (res.ok) {
+        document.getElementById('paymentModal').style.display='none';
+        init();
+      }
+    };
 
     async function loadPlans() {
       const res = await fetch('/api/admin/plans');

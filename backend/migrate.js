@@ -1,4 +1,5 @@
 const mysql = require("mysql2/promise");
+const bcrypt = require("bcrypt");
 require("dotenv").config();
 
 async function migrate() {
@@ -10,96 +11,79 @@ async function migrate() {
     port: process.env.DB_PORT || 3306
   });
 
-  console.log("🚀 Starting Migration...");
+  console.log("🚀 Starting SaaS Ecosystem Migration...");
 
-  // Add initial users for each industry
+  // 1. Ensure saas_users table exists with correct schema (if not already handled)
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS saas_users (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      business_name VARCHAR(100),
+      owner_name VARCHAR(100),
+      email VARCHAR(100),
+      phone VARCHAR(20),
+      username VARCHAR(50) UNIQUE,
+      password_hash VARCHAR(255),
+      industry VARCHAR(50),
+      plan_type VARCHAR(50) DEFAULT 'trial',
+      status VARCHAR(20) DEFAULT 'active',
+      amount_paid DECIMAL(10,2) DEFAULT 0.00,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  // 2. Provision Initial Tenants & Master Admin
   const initialUsers = [
+    { username: "admin", password: "password123", business_name: "SaaS Master Console", industry: "admin", plan: "master" },
     { username: "pharmacy_admin", password: "password123", business_name: "City Pharmacy", industry: "pharmacy", plan: "enterprise" },
     { username: "health_admin", password: "password123", business_name: "Apollo Hospital", industry: "healthcare", plan: "pro" },
     { username: "retail_admin", password: "password123", business_name: "Big Bazaar", industry: "retail", plan: "enterprise" },
-    { username: "baker_admin", password: "password123", business_name: "Trivia Bakes", industry: "bakers", plan: "pro" },
-    { username: "cloth_admin", password: "BOBO_9FPOZI", business_name: "Fashion Hub", industry: "fashion", plan: "enterprise" }
+    { username: "baker_admin", password: "password123", business_name: "Trivia Bakes", industry: "bakery", plan: "pro" }
   ];
 
   for (const user of initialUsers) {
     try {
+      const hash = await bcrypt.hash(user.password, 10);
       await db.execute(
-        "INSERT INTO users (username, password, business_name, industry, plan) VALUES (?, ?, ?, ?, ?)",
-        [user.username, user.password, user.business_name, user.industry, user.plan]
+        "INSERT INTO saas_users (username, password_hash, business_name, industry, plan_type) VALUES (?, ?, ?, ?, ?)",
+        [user.username, hash, user.business_name, user.industry, user.plan]
       );
-      console.log(`✅ Created user: ${user.username}`);
+      console.log(`✅ Provisioned Tenant: ${user.username} (${user.industry})`);
     } catch (err) {
       if (err.code === 'ER_DUP_ENTRY') {
-        console.log(`⏭️ User ${user.username} already exists, skipping.`);
+        console.log(`⏭️ Tenant ${user.username} already exists, skipping.`);
       } else {
-        console.error(`❌ Error creating user ${user.username}:`, err.message);
+        console.error(`❌ Provisioning Error [${user.username}]:`, err.message);
       }
     }
   }
+
+  // 3. Seed Medicine Master (If JSON exists)
+  try {
+     const medicineData = require("./medicineMaster.json");
+     console.log("💊 Seeding Medicine Master...");
+     for (const med of medicineData.medicines) {
+       try {
+         await db.execute(
+           "INSERT INTO medicine_master (barcode, name, mrp, purchase_price, gst, category, manufacturer) VALUES (?, ?, ?, ?, ?, ?, ?)",
+           [med.barcode, med.name, med.mrp, med.purchasePrice, med.gst, med.category, med.manufacturer]
+         );
+       } catch (e) { /* skip dups */ }
+     }
+  } catch (e) { console.log("ℹ️ Medicine master JSON not found, skipping seed."); }
+
+  // 4. Sync Bakery Data
+  console.log("🍰 Syncing Bakery Products...");
+  try {
+     await db.execute(`
+       INSERT INTO bakery_products (name, description, price, category, image_url)
+       SELECT name, description, price, category, image_path FROM products 
+       WHERE (category LIKE '%Bake%' OR category LIKE '%Cake%')
+       ON DUPLICATE KEY UPDATE description=VALUES(description)
+     `);
+  } catch(e) { console.log("ℹ️ Bakery sync skipped (Legacy table missing)."); }
 
   await db.end();
-
-  // Seed Medicine Master
-  const db2 = await mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT || 3306
-  });
-
-  const medicineData = require("./medicineMaster.json");
-  console.log("💊 Seeding Medicine Master...");
-
-  for (const med of medicineData.medicines) {
-    try {
-      await db2.execute(
-        "INSERT INTO medicine_master (barcode, name, mrp, purchase_price, gst, category, manufacturer) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        [med.barcode, med.name, med.mrp, med.purchasePrice, med.gst, med.category, med.manufacturer]
-      );
-      console.log(`✅ Seeded medicine: ${med.name}`);
-    } catch (err) {
-      if (err.code === 'ER_DUP_ENTRY') {
-        console.log(`⏭️ Medicine ${med.name} already exists, skipping.`);
-      } else {
-        console.error(`❌ Error seeding medicine ${med.name}:`, err.message);
-      }
-    }
-  }
-
-  await db2.end();
-
-  // Part 1 Step 2 Repair: Restore cake images and sync tables
-  const db3 = await mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT || 3306
-  });
-
-  console.log("🍰 Syncing Bakery Products from legacy table...");
-  try {
-    const [legacyProducts] = await db3.execute("SELECT * FROM products WHERE category LIKE '%Bake%' OR category LIKE '%Cake%'");
-    for (const p of legacyProducts) {
-      const [existing] = await db3.execute("SELECT id FROM bakery_products WHERE name = ?", [p.name]);
-      if (existing.length === 0) {
-        // Step 1.2: Ensure column image_url contains valid path
-        const imageUrl = p.image_path || "";
-        await db3.execute(
-          "INSERT INTO bakery_products (name, description, price, category, image_url) VALUES (?, ?, ?, ?, ?)",
-          [p.name, p.description, p.price, p.category, imageUrl]
-        );
-        console.log(`✅ Restored cake: ${p.name}`);
-      }
-    }
-  } catch (err) {
-    console.error("❌ Legacy Sync Error:", err.message);
-  }
-  await db3.end();
-
   console.log("🏁 Migration Complete!");
 }
 
 migrate();
-

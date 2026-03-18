@@ -11,164 +11,68 @@ import MainLayout from "../layouts/MainLayout.astro";
         <p>Restricted access. Authorized personnel only.</p>
       </div>
 
-      <form class="login-form" id="adminLoginForm">
+      <form id="adminLoginForm" class="login-form">
         <div class="form-group">
           <label for="adminId">Admin ID</label>
-          <input 
-            type="text" 
-            id="adminId" 
-            placeholder="Enter Admin ID"
-            required
-            autocomplete="off"
-          />
+          <input type="text" id="adminId" placeholder="Enter Admin ID" required autocomplete="off" />
         </div>
 
         <div class="form-group">
           <label for="password">Security Key</label>
-          <input 
-            type="password" 
-            id="password" 
-            placeholder="••••••••••"
-            required
-          />
+          <input type="password" id="password" placeholder="••••••••••" required />
         </div>
 
-        <button type="submit" class="btn-login">
-          Authenticate
-        </button>
-        
+        <button type="submit" class="btn-login">Authenticate Master Console</button>
         <p id="error" class="error-msg"></p>
       </form>
+      
+      <div class="back-link">
+        <a href="/crm-login">← Back to Portal Selection</a>
+      </div>
     </div>
   </section>
 
   <style>
-    .admin-login-wrapper {
-      min-height: 80vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 60px 24px;
-      background: radial-gradient(circle at center, rgba(239, 68, 68, 0.05) 0%, transparent 70%);
-    }
-
-    .login-container {
-      width: 100%;
-      max-width: 440px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(239, 68, 68, 0.2);
-      border-radius: 24px;
-      padding: 40px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-    }
-
-    .login-header {
-      text-align: center;
-      margin-bottom: 32px;
-    }
-
-    .icon-circle {
-      width: 64px;
-      height: 64px;
-      background: rgba(239, 68, 68, 0.1);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      margin: 0 auto 20px;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-    }
-
-    .login-header h1 {
-      font-size: 2rem;
-      margin-bottom: 8px;
-    }
-
-    .login-header p {
-      color: rgba(255, 255, 255, 0.5);
-      font-size: 0.95rem;
-    }
-
-    .login-form {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .form-group label {
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: rgba(255, 255, 255, 0.8);
-    }
-
-    .form-group input {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 12px 16px;
-      border-radius: 10px;
-      color: white;
-      font-size: 1rem;
-      transition: all 0.2s ease;
-    }
-
-    .form-group input:focus {
-      outline: none;
-      border-color: #ef4444;
-      background: rgba(255, 255, 255, 0.08);
-      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
-    }
-
-    .btn-login {
-      background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
-      color: white;
-      padding: 14px;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: all 0.2s ease;
-    }
-
-    .btn-login:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
-    }
-
-    .error-msg {
-      color: #ef4444;
-      font-size: 0.9rem;
-      text-align: center;
-      min-height: 20px;
-    }
+    .admin-login-wrapper { min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 60px 24px; background: radial-gradient(circle at center, rgba(239, 68, 68, 0.05) 0%, transparent 70%); }
+    .login-container { width: 100%; max-width: 440px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 24px; padding: 40px; backdrop-filter: blur(10px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); text-align: center; }
+    .icon-circle { width: 64px; height: 64px; background: rgba(239, 68, 68, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 20px; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .login-header h1 { font-size: 2rem; margin-bottom: 8px; }
+    .login-form { display: flex; flex-direction: column; gap: 20px; text-align: left; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-group label { font-size: 0.9rem; font-weight: 500; opacity: 0.8; }
+    .form-group input { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 12px 16px; border-radius: 10px; color: white; transition: 0.3s; }
+    .form-group input:focus { border-color: #ef4444; }
+    .btn-login { background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: white; padding: 14px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 10px; }
+    .error-msg { color: #ef4444; font-size: 0.9rem; margin-top: 15px; min-height: 20px; }
+    .back-link { margin-top: 25px; opacity: 0.5; font-size: 0.9rem; }
+    .back-link a { color: white; text-decoration: none; }
   </style>
 
-  <script>
+  <script is:inline>
     const form = document.getElementById("adminLoginForm");
     const errorEl = document.getElementById("error");
 
-    form.addEventListener("submit", (e) => {
+    form.onsubmit = async (e) => {
       e.preventDefault();
-      
-      const adminId = document.getElementById("adminId").value;
-      const pwd = document.getElementById("password").value;
+      const username = document.getElementById("adminId").value;
+      const password = document.getElementById("password").value;
 
-      // Mock authentication for the admin login
-      if (adminId === "admin" && pwd === "bobo2026") {
-        localStorage.setItem("adminAuth", "true");
-        window.location.href = "/admin/control-panel";
-      } else {
-        errorEl.innerText = "Access denied. Invalid credentials.";
+      try {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password, industry: 'Admin' })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          localStorage.setItem("user", JSON.stringify(data.user));
+          window.location.href = "/admin/saas";
+        } else {
+          errorEl.innerText = data.message || "Unauthorized Master ID or Security Key.";
+        }
+      } catch (err) {
+        errorEl.innerText = "System authentication unavailable.";
       }
-    });
+    };
   </script>
 </MainLayout>
