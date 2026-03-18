@@ -1,0 +1,126 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import Dashboard from "../components/restaurant/Dashboard.jsx";
+import POS from "../components/restaurant/POS.jsx";
+import Tables from "../components/restaurant/Tables.jsx";
+import KDS from "../components/restaurant/KDS.jsx";
+import MenuManager from "../components/restaurant/MenuManager.jsx";
+import "../styles/restaurant.css";
+---
+
+<MainLayout title="Restaurant Master Dashboard | Bobo OS" hideNav={true}>
+  <!-- Main Application Frame -->
+  <div class="flex h-screen bg-[#05081a] overflow-hidden font-['Plus_Jakarta_Sans'] text-white">
+    
+    <!-- Sidebar -->
+    <aside class="w-20 md:w-24 border-r border-white/10 bg-[#05081a]/50 backdrop-blur-2xl flex flex-col justify-between py-10 items-center">
+      <div class="flex flex-col gap-8">
+        <div class="w-12 h-12 bg-orange-500 rounded-2xl flex items-center justify-center font-black text-white text-xl shadow-lg shadow-orange-500/20 italic">B</div>
+        <nav class="flex flex-col gap-6">
+           <!-- Dynamic Sidebar Items -->
+           <button class="nav-item group" data-section="dashboard">
+              <div class="p-4 text-orange-500 bg-orange-500/10 rounded-2xl transition-all group-hover:scale-110 shadow-lg shadow-orange-500/5">
+                <i class="lucide-layout-grid text-xl"></i>
+              </div>
+              <span class="sr-only">Dashboard</span>
+           </button>
+           <button class="nav-item group" data-section="tables">
+              <div class="p-4 text-white/30 hover:text-white hover:bg-white/5 rounded-2xl transition-all group-hover:scale-110">
+                <i class="lucide-layout text-xl"></i>
+              </div>
+              <span class="sr-only">Tables</span>
+           </button>
+           <button class="nav-item group" data-section="pos">
+              <div class="p-4 text-white/30 hover:text-white hover:bg-white/5 rounded-2xl transition-all group-hover:scale-110">
+                <i class="lucide-receipt text-xl"></i>
+              </div>
+              <span class="sr-only">POS</span>
+           </button>
+           <button class="nav-item group" data-section="kitchen">
+              <div class="p-4 text-white/30 hover:text-white hover:bg-white/5 rounded-2xl transition-all group-hover:scale-110">
+                <i class="lucide-chef-hat text-xl"></i>
+              </div>
+              <span class="sr-only">KDS</span>
+           </button>
+           <button class="nav-item group" data-section="menu">
+              <div class="p-4 text-white/30 hover:text-white hover:bg-white/5 rounded-2xl transition-all group-hover:scale-110">
+                <i class="lucide-book-open text-xl"></i>
+              </div>
+              <span class="sr-only">Menu</span>
+           </button>
+        </nav>
+      </div>
+
+      <div class="flex flex-col gap-6">
+         <a href="/crm-login" class="p-4 text-white/20 hover:text-rose-400 hover:bg-rose-400/10 rounded-2xl transition-all"><i class="lucide-log-out text-xl"></i></a>
+      </div>
+    </aside>
+
+    <!-- Content Workspace -->
+    <main class="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-12" id="mainWorkspace">
+       
+       <!-- Dynamic Section Container -->
+       <div id="dashboardSection" class="section active animate-in fade-in transition-all">
+          <Dashboard client:load />
+       </div>
+
+       <div id="posSection" class="section hidden animate-in fade-in transition-all">
+          <POS client:load />
+       </div>
+
+       <div id="tablesSection" class="section hidden animate-in fade-in transition-all">
+          <Tables client:load />
+       </div>
+
+       <div id="kitchenSection" class="section hidden animate-in fade-in transition-all">
+          <KDS client:load />
+       </div>
+
+       <div id="menuSection" class="section hidden animate-in fade-in transition-all">
+          <MenuManager client:load />
+       </div>
+
+    </main>
+
+  </div>
+
+  <script is:inline>
+     // Intelligent Navigation Handler
+     document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.addEventListener('click', () => {
+           const target = btn.dataset.section;
+
+           // Update UI Active State
+           document.querySelectorAll('.nav-item div').forEach(div => {
+              div.className = "p-4 text-white/30 hover:text-white hover:bg-white/5 rounded-2xl transition-all group-hover:scale-110";
+           });
+           btn.querySelector('div').className = "p-4 text-orange-500 bg-orange-500/10 rounded-2xl transition-all group-hover:scale-110 shadow-lg shadow-orange-500/5";
+
+           // Switch Sections
+           document.querySelectorAll('.section').forEach(sec => sec.classList.add('hidden'));
+           document.getElementById(target + 'Section').classList.remove('hidden');
+        });
+     });
+
+     // Auth Guard (Mock)
+     if (localStorage.getItem('restaurant_auth') !== 'true') {
+        window.location.href = "/restaurant-login";
+     }
+  </script>
+
+  <style is:global>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap');
+    
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #05081a; }
+    
+    .section.hidden { display: none; }
+    .section.active { display: block; }
+
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.01); }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
+  </style>
+
+  <!-- Lucide Icon Support -->
+  <link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css">
+</MainLayout>

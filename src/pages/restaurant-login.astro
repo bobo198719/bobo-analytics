@@ -1,130 +1,80 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
+import "../styles/restaurant.css";
 ---
 
-<MainLayout title="Restaurant CRM Login | Bobo Analytics">
-  <div class="auth-page px-6">
-    <div class="login-card max-w-md w-full relative group">
-      <div class="absolute -top-10 -left-10 w-32 h-32 bg-orange-500 rounded-full blur-[80px] opacity-20 group-hover:opacity-30 transition-opacity"></div>
-      
-      <div class="brand text-center relative z-10">
-        <div class="logo-orb mx-auto bg-gradient-to-br from-orange-400 to-rose-600 shadow-2xl shadow-orange-500/20">🍽️</div>
-        <h1 class="text-3xl font-black italic mt-6 uppercase tracking-tight">Restaurant CRM</h1>
-        <p class="text-white/40 text-xs font-bold uppercase tracking-widest mt-2">Gastronomy Management Engine</p>
-      </div>
+<MainLayout title="Restaurant CRM Login | Bobo Analytics" hideNav={true}>
+  <div class="auth-page bg-[#05081a] min-h-screen flex items-center justify-center p-6 relative font-['Plus_Jakarta_Sans']">
+    <div class="absolute inset-0 pointer-events-none opacity-20">
+       <div class="absolute top-0 left-0 w-[800px] h-[800px] bg-orange-500/10 blur-[150px] -ml-96 -mt-96 animate-pulse"></div>
+    </div>
 
-      <div class="auth-status mt-8" id="authStatus"></div>
+    <div class="login-card max-w-lg w-full bg-white/5 border border-white/10 p-12 md:p-16 rounded-[64px] shadow-2xl backdrop-blur-xl relative z-10 group transition-all hover:bg-white/[0.08]">
+       <div class="text-center mb-12">
+          <div class="w-20 h-20 bg-gradient-to-br from-orange-400 to-rose-600 rounded-3xl flex items-center justify-center text-4xl mx-auto mb-8 shadow-2xl shadow-orange-500/20 group-hover:scale-110 group-hover:rotate-3 transition-transform">🍽️</div>
+          <h1 class="text-4xl font-black italic text-white uppercase tracking-tighter">Restaurant CRM Login</h1>
+          <p class="text-white/40 text-[10px] font-black uppercase tracking-[0.3em] mt-2">Authenticated Cloud Terminal | Provisioned v4.0</p>
+       </div>
 
-      <form class="auth-form mt-8 space-y-6 relative z-10" id="loginForm">
-        <div class="input-group">
-          <label class="text-[10px] font-black uppercase text-white/30 tracking-widest block mb-3">Kitchen/Admin ID</label>
-          <input 
-            type="text" 
-            id="username" 
-            placeholder="e.g. rest_admin" 
-            required 
-            class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-orange-500 focus:bg-white/[0.08] transition-all text-sm font-bold placeholder:text-white/10"
-          />
-        </div>
-        <div class="input-group">
-          <label class="text-[10px] font-black uppercase text-white/30 tracking-widest block mb-3">Security Key</label>
-          <input 
-            type="password" 
-            id="password" 
-            placeholder="••••••••" 
-            required 
-            class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-orange-500 focus:bg-white/[0.08] transition-all text-sm font-bold placeholder:text-white/10"
-          />
-        </div>
+       <form id="restaurantLoginForm" class="space-y-8">
+          <div class="space-y-3">
+             <label class="text-[10px] font-black uppercase text-white/30 tracking-[0.2em] ml-2 italic">Admin Identifier</label>
+             <input type="text" id="adminId" placeholder="e.g. rest_admin" required class="w-full bg-[#05081a]/80 border border-white/10 p-5 rounded-2xl outline-none focus:border-orange-500 transition-all font-black" />
+          </div>
+          <div class="space-y-3">
+             <label class="text-[10px] font-black uppercase text-white/30 tracking-[0.2em] ml-2 italic">Security Key</label>
+             <input type="password" id="password" placeholder="••••••••" required class="w-full bg-[#05081a]/80 border border-white/10 p-5 rounded-2xl outline-none focus:border-orange-500 transition-all font-black" />
+          </div>
 
-        <button type="submit" class="w-full bg-gradient-to-r from-orange-500 to-rose-600 py-5 rounded-3xl font-black italic uppercase tracking-widest text-sm shadow-2xl shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all">
-          Launch Intelligence
-        </button>
-      </form>
+          <div id="errorBox" class="text-rose-500 text-xs font-black uppercase tracking-widest text-center min-h-[1rem]"></div>
 
-      <div class="auth-footer mt-10 text-center opacity-40 text-[10px] font-black uppercase tracking-widest">
-          <a href="/crm-login" class="hover:text-orange-500 transition-colors">← Back to Portal Selection</a>
-      </div>
+          <button type="submit" class="w-full py-6 bg-gradient-to-r from-orange-500 to-rose-600 rounded-3xl text-white font-black italic uppercase tracking-[0.2em] text-sm shadow-2xl shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all">
+             Enter Restaurant Dashboard
+          </button>
+       </form>
+
+       <footer class="mt-12 text-center">
+          <a href="/crm-login" class="text-white/20 hover:text-white font-bold text-xs transition-colors italic uppercase tracking-widest">Abort & Exit Terminal</a>
+       </footer>
     </div>
   </div>
 
-  <style>
-    .auth-page {
-      min-height: 90vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(circle at top left, rgba(249, 115, 22, 0.05), transparent),
-                  radial-gradient(circle at bottom right, rgba(225, 29, 72, 0.05), transparent);
-    }
-
-    .login-card {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 48px;
-      padding: 56px;
-      backdrop-filter: blur(40px);
-      box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.8);
-    }
-
-    .logo-orb {
-      width: 80px;
-      height: 80px;
-      border-radius: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.2rem;
-    }
-
-    .error-msg {
-      background: rgba(239, 68, 68, 0.1);
-      color: #ef4444;
-      padding: 16px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 800;
-      text-align: center;
-      border: 1px solid rgba(239, 68, 68, 0.2);
-    }
-  </style>
-
   <script is:inline>
-    const form = document.getElementById('loginForm');
-    const authStatus = document.getElementById('authStatus');
+    const form = document.getElementById("restaurantLoginForm");
+    const errorBox = document.getElementById("errorBox");
 
     form.onsubmit = async (e) => {
-      e.preventDefault();
-      const user = document.getElementById('username').value.trim();
-      const pass = document.getElementById('password').value.trim();
-      
-      authStatus.innerHTML = '<div class="text-[10px] font-black uppercase tracking-widest text-orange-500 text-center animate-pulse">Establishing Secure Uplink...</div>';
+       e.preventDefault();
+       const id = document.getElementById("adminId").value.trim();
+       const pass = document.getElementById("password").value.trim();
 
-      try {
-        const res = await fetch("/api/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ 
-            username: user, 
-            password: pass, 
-            industry: 'restaurant' 
-          })
-        });
-        
-        const data = await res.json();
-        
-        if (res.ok) {
-           authStatus.innerHTML = '<div class="text-[10px] font-black uppercase tracking-widest text-emerald-500 text-center">Auth Success. Provisioning OS Environment...</div>';
-           localStorage.setItem('user', JSON.stringify(data.user));
-           setTimeout(() => {
-              window.location.href = '/restaurant-os';
-           }, 1000);
-        } else {
-           authStatus.innerHTML = `<div class="error-msg">${data.message || 'Unauthorized Terminal Access.'}</div>`;
-        }
-      } catch (err) {
-        authStatus.innerHTML = '<div class="error-msg">Network Isolation: Master Core Unreachable.</div>';
-      }
+       // Hardcoded as per USER_REQUEST Rule
+       if (id === 'rest_admin' && pass === 'password123') {
+          errorBox.innerText = "Provisioning Master Dashboard...";
+          errorBox.style.color = "#10b981";
+          
+          // Fake Auth Persistence
+          localStorage.setItem('restaurant_auth', 'true');
+          
+          setTimeout(() => {
+             window.location.href = "/restaurant-dashboard";
+          }, 800);
+       } else {
+          errorBox.innerText = "Invalid credentials";
+          errorBox.style.color = "#f43f5e";
+          
+          // Animation shake
+          form.style.animation = "shake 0.4s ease";
+          setTimeout(() => form.style.animation = "", 400);
+       }
     };
   </script>
+
+  <style is:global>
+    @keyframes shake {
+       0%, 100% { transform: translateX(0); }
+       25% { transform: translateX(-8px); }
+       75% { transform: translateX(8px); }
+    }
+  </style>
 </MainLayout>

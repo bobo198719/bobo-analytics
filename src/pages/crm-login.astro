@@ -1,114 +1,54 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
+import "../styles/restaurant.css";
 ---
 
-<MainLayout title="CRM Portal | Bobo Analytics Secure Access">
-  <div class="portal-wrapper">
-    <header class="portal-header">
-      <h1>🔐 Secure CRM Portal</h1>
-      <p>Select your industry to access your dedicated business workspace.</p>
-    </header>
+<MainLayout title="Secure CRM Portal | Bobo Analytics Master Selection" hideNav={true}>
+  <div class="portal-page bg-[#05081a] min-h-screen font-['Plus_Jakarta_Sans'] flex items-center justify-center p-6 relative overflow-hidden">
+    <!-- Ambient Background Lighting -->
+    <div class="absolute top-0 left-0 w-full h-full pointer-events-none">
+       <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px] -mr-64 -mt-64"></div>
+       <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-orange-600/10 rounded-full blur-[120px] -ml-64 -mb-64"></div>
+    </div>
 
-    <div class="portal-grid">
-      <!-- Restaurant Card -->
-      <div class="portal-card restaurant-card" onclick="openPortal('restaurant')">
-        <div class="portal-icon">🍽️</div>
-        <h3>Restaurant CRM</h3>
-        <p>Full-stack OS for dining, KDS, POS, and digital menu management.</p>
-        <button class="portal-btn rest-btn">Access Kitchen</button>
-      </div>
+    <div class="max-w-4xl w-full relative z-10 text-center">
+       <header class="mb-16">
+          <h1 class="text-4xl md:text-6xl font-black italic tracking-tighter text-white mb-4">Secure CRM Portal</h1>
+          <p class="text-white/40 text-sm md:text-lg font-bold uppercase tracking-widest italic">Select your industry to access your dedicated business workspace.</p>
+       </header>
 
-      <!-- Pharmacy Card -->
-      <div class="portal-card" onclick="openPortal('pharmacy')">
-        <div class="portal-icon">💊</div>
-        <h3>Pharmacy Portal</h3>
-        <p>Access inventory, prescriptions, and retail health analytics.</p>
-        <button class="portal-btn">Access Workspace</button>
-      </div>
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+          
+          <!-- Pharmacy Portal Card -->
+          <a href="/pharmacy-login" class="portal-card group relative p-12 bg-white/5 border border-white/10 rounded-[48px] overflow-hidden transition-all hover:border-indigo-500 hover:scale-[1.03] active:scale-95 shadow-2xl">
+             <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+             <div class="relative z-10 flex flex-col items-center">
+                <div class="w-20 h-20 bg-indigo-500/20 rounded-3xl flex items-center justify-center text-4xl mb-8 group-hover:scale-110 group-hover:rotate-6 transition-transform shadow-lg shadow-indigo-500/10">💊</div>
+                <h3 class="text-2xl font-black italic text-white mb-4 uppercase tracking-tight">Pharmacy Portal</h3>
+                <p class="text-white/40 text-sm font-medium leading-relaxed italic">Access inventory, prescriptions, and retail health analytics.</p>
+                <div class="mt-10 px-10 py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] opacity-0 group-hover:opacity-100 transition-all">Access Workspace</div>
+             </div>
+          </a>
 
-      <!-- Bakery Card -->
-      <div class="portal-card" onclick="openPortal('baker')">
-        <div class="portal-icon">🍰</div>
-        <h3>Baker OS Portal</h3>
-        <p>Manage orders, recipe costs, and bakery production.</p>
-        <button class="portal-btn">Access Workspace</button>
-      </div>
+          <!-- Restaurant Portal Card -->
+          <a href="/restaurant-login" class="portal-card group relative p-12 bg-white/5 border border-white/10 rounded-[48px] overflow-hidden transition-all hover:border-orange-500 hover:scale-[1.03] active:scale-95 shadow-2xl">
+              <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div class="relative z-10 flex flex-col items-center">
+                 <div class="w-20 h-20 bg-orange-500/20 rounded-3xl flex items-center justify-center text-4xl mb-8 group-hover:scale-110 group-hover:-rotate-6 transition-transform shadow-lg shadow-orange-500/10">🍽️</div>
+                 <h3 class="text-2xl font-black italic text-white mb-4 uppercase tracking-tight">Restaurant CRM</h3>
+                 <p class="text-white/40 text-sm font-medium leading-relaxed italic">Manage tables, menu, kitchen orders, POS billing and business analytics.</p>
+                 <div class="mt-10 px-10 py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] opacity-0 group-hover:opacity-100 transition-all">Access Workspace</div>
+              </div>
+           </a>
+       </div>
 
-      <!-- Healthcare Card -->
-      <div class="portal-card" onclick="openPortal('healthcare')">
-        <div class="portal-icon">🏥</div>
-        <h3>Healthcare CRM</h3>
-        <p>Patient analytics and clinical operation management.</p>
-        <button class="portal-btn">Access Workspace</button>
-      </div>
-
-      <!-- Retail Card -->
-      <div class="portal-card" onclick="openPortal('retail')">
-        <div class="portal-icon">🛒</div>
-        <h3>Retail Intelligence</h3>
-        <p>Consumer behavior, AI inventory, and sales growth center.</p>
-        <button class="portal-btn">Access Workspace</button>
-      </div>
-
-      <!-- Grocery Card -->
-      <div class="portal-card" onclick="openPortal('grocery')">
-        <div class="portal-icon">🍎</div>
-        <h3>Grocery OS</h3>
-        <p>Supply chain and POS hub for large grocery chains.</p>
-        <button class="portal-btn">Access Workspace</button>
-      </div>
-
-      <!-- Staff Login -->
-      <div class="portal-card staff-card" onclick="openPortal('staff')">
-        <div class="portal-icon">👔</div>
-        <h3>Staff Login</h3>
-        <p>Employee access for cashiers, managers, and warehouse staff.</p>
-        <button class="portal-btn">Sign In</button>
-      </div>
-
-      <!-- Admin Login -->
-      <div class="portal-card admin-card" onclick="openPortal('admin')">
-        <div class="portal-icon">🛡️</div>
-        <h3>Admin Console</h3>
-        <p>Master control for system configuration and user management.</p>
-        <button class="portal-btn admin-btn">Login to Master</button>
-      </div>
+       <footer class="mt-20 opacity-20 text-[10px] font-black uppercase tracking-[0.5em] italic">Bobo Analytics Enterprise Engine | Secure Directory</footer>
     </div>
   </div>
 
-  <style>
-    .portal-wrapper { padding: 100px 24px; max-width: 1200px; margin: 0 auto; text-align: center; }
-    .portal-header { margin-bottom: 60px; }
-    .portal-header h1 { font-size: 3rem; font-weight: 900; margin-bottom: 16px; background: linear-gradient(135deg, #fff 0%, #6366f1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .portal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-    .portal-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 40px; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 15px; }
-    .portal-card:hover { transform: translateY(-10px); background: rgba(99, 102, 241, 0.05); border-color: #6366f1; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
-    .portal-icon { font-size: 3rem; margin-bottom: 10px; }
-    .portal-btn { background: #6366f1; color: white; padding: 12px 24px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; width: 100%; }
-    .portal-btn:hover { background: #4f46e5; }
-    .admin-card { border-color: rgba(239, 68, 68, 0.2); }
-    .admin-card:hover { border-color: #ef4444; background: rgba(239, 68, 68, 0.05); }
-    .admin-btn { background: rgba(239, 68, 68, 0.8) !important; }
-    .admin-btn:hover { background: #ef4444 !important; }
-    .staff-card { border-color: rgba(255, 255, 255, 0.05); }
-    .staff-card:hover { border-color: #94a3b8; }
-    .restaurant-card { border-color: rgba(249, 115, 22, 0.2); }
-    .restaurant-card:hover { border-color: #f97316; background: rgba(249, 115, 22, 0.05); }
-    .rest-btn { background: #f97316 !important; }
-    .rest-btn:hover { background: #ea580c !important; }
+  <style is:global>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap');
+    
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
   </style>
-
-  <script is:inline>
-    function openPortal(type) {
-      if (type === 'pharmacy') window.location.href = "/pharmacy-login";
-      else if (type === 'grocery') window.location.href = "/grocery-login";
-      else if (type === 'staff') window.location.href = "/staff-login";
-      else if (type === 'admin') window.location.href = "/admin-login";
-      else if (type === 'baker') window.location.href = "/bakers-login";
-      else if (type === 'healthcare') window.location.href = "/healthcare-login";
-      else if (type === 'retail') window.location.href = "/retail-os-login";
-      else if (type === 'restaurant') window.location.href = "/restaurant-login";
-      else window.location.href = "/login";
-    }
-  </script>
 </MainLayout>
