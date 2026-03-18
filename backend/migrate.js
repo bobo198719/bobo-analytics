@@ -121,7 +121,8 @@ async function migrate() {
     { username: "pharmacy_admin", password: "password123", business_name: "City Pharmacy", industry: "pharmacy", plan: "enterprise", role: "owner" },
     { username: "health_admin", password: "password123", business_name: "Apollo Hospital", industry: "healthcare", plan: "pro", role: "owner" },
     { username: "retail_admin", password: "password123", business_name: "Big Bazaar", industry: "retail", plan: "enterprise", role: "owner" },
-    { username: "baker_admin", password: "password123", business_name: "Trivia Bakes", industry: "bakery", plan: "pro", role: "owner" }
+    { username: "baker_admin", password: "password123", business_name: "Trivia Bakes", industry: "bakery", plan: "pro", role: "owner" },
+    { username: "rest_admin", password: "password123", business_name: "The Royal Kitchen", industry: "restaurant", plan: "pro", role: "owner" }
   ];
 
   for (const user of initialUsers) {

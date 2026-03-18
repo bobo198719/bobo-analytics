@@ -10,6 +10,14 @@ import MainLayout from "../layouts/MainLayout.astro";
     </header>
 
     <div class="portal-grid">
+      <!-- Restaurant Card -->
+      <div class="portal-card restaurant-card" onclick="openPortal('restaurant')">
+        <div class="portal-icon">🍽️</div>
+        <h3>Restaurant CRM</h3>
+        <p>Full-stack OS for dining, KDS, POS, and digital menu management.</p>
+        <button class="portal-btn rest-btn">Access Kitchen</button>
+      </div>
+
       <!-- Pharmacy Card -->
       <div class="portal-card" onclick="openPortal('pharmacy')">
         <div class="portal-icon">💊</div>
@@ -84,6 +92,10 @@ import MainLayout from "../layouts/MainLayout.astro";
     .admin-btn:hover { background: #ef4444 !important; }
     .staff-card { border-color: rgba(255, 255, 255, 0.05); }
     .staff-card:hover { border-color: #94a3b8; }
+    .restaurant-card { border-color: rgba(249, 115, 22, 0.2); }
+    .restaurant-card:hover { border-color: #f97316; background: rgba(249, 115, 22, 0.05); }
+    .rest-btn { background: #f97316 !important; }
+    .rest-btn:hover { background: #ea580c !important; }
   </style>
 
   <script is:inline>
@@ -95,6 +107,7 @@ import MainLayout from "../layouts/MainLayout.astro";
       else if (type === 'baker') window.location.href = "/bakers-login";
       else if (type === 'healthcare') window.location.href = "/healthcare-login";
       else if (type === 'retail') window.location.href = "/retail-os-login";
+      else if (type === 'restaurant') window.location.href = "/restaurant-login";
       else window.location.href = "/login";
     }
   </script>
