@@ -184,12 +184,21 @@ const initDb = () => {
     phone VARCHAR(20),
     username VARCHAR(100),
     password_hash TEXT,
-    plan VARCHAR(50),
+    plan_type VARCHAR(50) DEFAULT 'trial',
     expiry_date DATE,
     status VARCHAR(20) DEFAULT 'active',
+    amount_paid INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )`, (err) => {
     if (err) console.error("Error creating saas_users table:", err);
+  });
+
+  // Migrations for existing tables
+  db.query(`ALTER TABLE saas_users ADD COLUMN IF NOT EXISTS plan_type VARCHAR(50) DEFAULT 'trial'`, (err) => {
+    if (err && err.errno !== 1060) console.warn("plan_type column check.");
+  });
+  db.query(`ALTER TABLE saas_users ADD COLUMN IF NOT EXISTS amount_paid INT DEFAULT 0`, (err) => {
+    if (err && err.errno !== 1060) console.warn("amount_paid column check.");
   });
 
   db.query(`CREATE TABLE IF NOT EXISTS saas_user_history (
