@@ -11,12 +11,23 @@ router.post("/admin/create-user", async (req, res) => {
   try {
     const { businessName, username, password, industry, planType } = req.body;
     const hash = await bcrypt.hash(password, 10);
+    
+    // 1. Create Tenant (Primary Storage)
     const [result] = await db.query(
       `INSERT INTO saas_users 
       (business_name, username, password_hash, industry, plan_type, status, created_at)
       VALUES (?, ?, ?, ?, ?, 'active', NOW())`,
       [businessName, username, hash, industry, planType]
     );
+
+    // 2. Mirror in Admin Tracking System (Admin Portal Central Table)
+    await db.query(
+      `INSERT INTO admin_users 
+      (username, password_hash, industry, role, status)
+      VALUES (?, ?, ?, ?, 'active')`,
+      [username, hash, industry, 'owner']
+    );
+
     res.json({ success: true, userId: result.insertId });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -156,6 +167,33 @@ router.post("/admin/delete-user", async (req, res) => {
     const { userId } = req.body;
     await db.query("DELETE FROM saas_users WHERE id=?", [userId]);
     res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.get("/admin/logins", async (req, res) => {
+  try {
+    const [users] = await db.query(
+      `SELECT id, username, industry, role, status, created_at 
+      FROM admin_users 
+      ORDER BY created_at DESC`
+    );
+    res.json(users);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.post("/admin/suspend-user", async (req, res) => {
+  try {
+    const { id } = req.body;
+    await db.query("UPDATE admin_users SET status='suspended' WHERE id=?", [id]);
+    res.json({ success: true, message: "User Suspended" });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.post("/admin/delete-master-user", async (req, res) => {
+  try {
+    const { id } = req.body;
+    await db.query("DELETE FROM admin_users WHERE id=?", [id]);
+    res.json({ success: true, message: "Credential Entry Removed" });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 

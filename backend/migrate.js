@@ -13,14 +13,11 @@ async function migrate() {
 
   console.log("🚀 Starting SaaS Ecosystem Migration...");
 
-  // 1. Ensure saas_users table exists with correct schema (if not already handled)
+  // 1. Ensure tables exist
   await db.execute(`
     CREATE TABLE IF NOT EXISTS saas_users (
       id INT AUTO_INCREMENT PRIMARY KEY,
       business_name VARCHAR(100),
-      owner_name VARCHAR(100),
-      email VARCHAR(100),
-      phone VARCHAR(20),
       username VARCHAR(50) UNIQUE,
       password_hash VARCHAR(255),
       industry VARCHAR(50),
@@ -31,23 +28,44 @@ async function migrate() {
     )
   `);
 
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS admin_users (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      username VARCHAR(100) UNIQUE,
+      password_hash TEXT,
+      industry VARCHAR(50),
+      role VARCHAR(50),
+      status VARCHAR(20) DEFAULT 'active',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
   // 2. Provision Initial Tenants & Master Admin
   const initialUsers = [
-    { username: "admin", password: "password123", business_name: "SaaS Master Console", industry: "admin", plan: "master" },
-    { username: "pharmacy_admin", password: "password123", business_name: "City Pharmacy", industry: "pharmacy", plan: "enterprise" },
-    { username: "health_admin", password: "password123", business_name: "Apollo Hospital", industry: "healthcare", plan: "pro" },
-    { username: "retail_admin", password: "password123", business_name: "Big Bazaar", industry: "retail", plan: "enterprise" },
-    { username: "baker_admin", password: "password123", business_name: "Trivia Bakes", industry: "bakery", plan: "pro" }
+    { username: "admin", password: "password123", business_name: "SaaS Master Console", industry: "admin", plan: "master", role: "super_admin" },
+    { username: "pharmacy_admin", password: "password123", business_name: "City Pharmacy", industry: "pharmacy", plan: "enterprise", role: "owner" },
+    { username: "health_admin", password: "password123", business_name: "Apollo Hospital", industry: "healthcare", plan: "pro", role: "owner" },
+    { username: "retail_admin", password: "password123", business_name: "Big Bazaar", industry: "retail", plan: "enterprise", role: "owner" },
+    { username: "baker_admin", password: "password123", business_name: "Trivia Bakes", industry: "bakery", plan: "pro", role: "owner" }
   ];
 
   for (const user of initialUsers) {
     try {
       const hash = await bcrypt.hash(user.password, 10);
+      
+      // Mirror in saas_users
       await db.execute(
         "INSERT INTO saas_users (username, password_hash, business_name, industry, plan_type) VALUES (?, ?, ?, ?, ?)",
         [user.username, hash, user.business_name, user.industry, user.plan]
       );
-      console.log(`✅ Provisioned Tenant: ${user.username} (${user.industry})`);
+
+      // Mirror in admin_users
+      await db.execute(
+        "INSERT INTO admin_users (username, password_hash, industry, role) VALUES (?, ?, ?, ?)",
+        [user.username, hash, user.industry, user.role]
+      );
+
+      console.log(`✅ Provisioned & Tracked: ${user.username} (${user.industry})`);
     } catch (err) {
       if (err.code === 'ER_DUP_ENTRY') {
         console.log(`⏭️ Tenant ${user.username} already exists, skipping.`);
@@ -69,7 +87,7 @@ async function migrate() {
          );
        } catch (e) { /* skip dups */ }
      }
-  } catch (e) { console.log("ℹ️ Medicine master JSON not found, skipping seed."); }
+  } catch (e) { /* skip silently if file not found */ }
 
   // 4. Sync Bakery Data
   console.log("🍰 Syncing Bakery Products...");
@@ -80,7 +98,7 @@ async function migrate() {
        WHERE (category LIKE '%Bake%' OR category LIKE '%Cake%')
        ON DUPLICATE KEY UPDATE description=VALUES(description)
      `);
-  } catch(e) { console.log("ℹ️ Bakery sync skipped (Legacy table missing)."); }
+  } catch(e) { /* skip silently if tables missing */ }
 
   await db.end();
   console.log("🏁 Migration Complete!");

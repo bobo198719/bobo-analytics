@@ -47,7 +47,27 @@ import MainLayout from "../../layouts/MainLayout.astro";
         <button class="tab-btn" data-tab="plans">Pricing Plans</button>
         <button class="tab-btn" data-tab="revenue">Revenue Ledger</button>
         <button class="tab-btn" data-tab="security">Security Radar</button>
+        <button class="tab-btn" data-tab="logins">Login Access</button>
         <button class="tab-btn" data-tab="leads">Leads Queue</button>
+      </div>
+
+      <!-- Tab Content: Logins Tracking (New) -->
+      <div class="tab-content" id="logins">
+        <section class="table-container">
+           <div class="table-header">
+             <h2>Central Login Tracking</h2>
+             <p>Credentials repository for all Industry Owners & Master Admins.</p>
+           </div>
+           
+           <div class="table-scroll">
+             <table>
+               <thead>
+                 <tr><th>Username</th><th>Industry</th><th>Role</th><th>Status</th><th>Created</th><th>Actions</th></tr>
+               </thead>
+               <tbody id="loginTableBody"></tbody>
+             </table>
+           </div>
+        </section>
       </div>
 
       <div class="tab-content active" id="provisioning">
@@ -287,11 +307,51 @@ import MainLayout from "../../layouts/MainLayout.astro";
       await loadStats();
       await loadProvisioning();
       await loadSecurity();
+      await loadLogins();
       await loadPlans();
       await loadRevenue();
       await loadLeads();
       setupTabs();
     }
+
+    async function loadLogins() {
+      const res = await fetch('/api/admin/logins');
+      const data = await res.json();
+      const tbody = document.getElementById('loginTableBody');
+      tbody.innerHTML = data.map(u => `
+        <tr>
+          <td><code style="background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:6px">${u.username}</code></td>
+          <td>${u.industry}</td>
+          <td>${u.role}</td>
+          <td><span class="status-tag ${u.status === 'active' ? 'status-success' : 'status-failed'}">${u.status}</span></td>
+          <td>${new Date(u.created_at).toLocaleDateString()}</td>
+          <td>
+            <button class="btn btn-secondary btn-sm" onclick="suspendUser(${u.id})">Suspend</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteMasterUser(${u.id})">Clear</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    window.suspendUser = async (id) => {
+      if(!confirm("Suspend access for this credential set?")) return;
+      await fetch('/api/admin/suspend-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      init();
+    };
+
+    window.deleteMasterUser = async (id) => {
+      if(!confirm("Are you sure? This only removes the credential tracking entry, not the tenant business.")) return;
+      await fetch('/api/admin/delete-master-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      init();
+    };
 
     async function loadStats() {
       const res = await fetch('/api/admin/dashboard');
