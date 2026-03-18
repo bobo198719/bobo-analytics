@@ -1,0 +1,262 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+
+export function getStaticPaths() {
+  return [
+    { params: { id: 'baker' } },
+    { params: { id: 'pharmacy' } },
+    { params: { id: 'healthcare' } },
+    { params: { id: 'retail' } },
+    { params: { id: 'finance' } },
+    { params: { id: 'grocery' } },
+  ];
+}
+
+const { id } = Astro.params;
+
+const industryData = {
+  baker: {
+    title: "Baker OS",
+    tagline: "The #1 Software for Modern Artisan Bakers",
+    description: "Complete bakery management platform designed for modern dessert businesses and artisan shops.",
+    icon: "🍰",
+    benefits: [
+      "Recipe costing automation (Save 5h per week)",
+      "Order & delivery tracking",
+      "Real-time profit margin insights",
+      "Customer repeat analytics & automated WhatsApp marketing"
+    ],
+    comparison: [
+      ["Inventory", "Real-time smart tracking", "Manual stock cards"],
+      ["Orders", "Automated POS workflow", "Manual notebook entry"],
+      ["Production", "Waste reduction AI", "Guessing volumes"],
+      ["Analytics", "Growth intelligence", "No data insights"]
+    ]
+  },
+  pharmacy: {
+    title: "Pharmacy Intelligence",
+    tagline: "Compliant. Automated. Profitable.",
+    description: "Smart pharmacy system with stock intelligence, automated billing, and compliance monitoring.",
+    icon: "💊",
+    benefits: [
+      "Automated Expiry Alerts",
+      "1-Click WhatsApp Billing",
+      "AI Stock replenishment engine",
+      "Prescription forensic tracking"
+    ],
+    comparison: [
+      ["Billing", "3-second checkout", "Slow manual billing"],
+      ["Compliance", "Auto-audit ready", "High risk manual logs"],
+      ["Expiry", "90-day predictive alerts", "Checking boxes manually"],
+      ["Efficiency", "Reduced operational overhead", "High wastage/loss"]
+    ]
+  },
+  healthcare: {
+    title: "Healthcare CRM",
+    tagline: "Patient Care Powered by AI Analytics",
+    description: "Patient data and hospital analytics platform for clinics and medical centers.",
+    icon: "🏥",
+    benefits: [
+      "Patient lifecycle tracking",
+      "Intelligent Appointment System",
+      "Clincial outcomes insights",
+      "Operational staff efficiency analytics"
+    ],
+    comparison: [
+      ["Patient Data", "Centralized & Accessible", "Scattered paper files"],
+      ["Waiting Times", "Optimized by AI", "Unpredictable delays"],
+      ["Billing", "Integrated medical billing", "Disconnected workflows"],
+      ["Security", "Enterprise HIPAA-style logs", "Low-security records"]
+    ]
+  },
+  retail: {
+    title: "Retail Intelligence",
+    tagline: "From Footfalls to Loyal Fans",
+    description: "Consumer behavior and sales insights for modern retail networks and big brands.",
+    icon: "🛒",
+    benefits: [
+      "Consumer heatmap analytics",
+      "AI-driven product placement",
+      "Loyalty program automation",
+      "Real-time supply chain mapping"
+    ],
+    comparison: [
+      ["Stock", "JIT Inventory Control", "Overstocking issues"],
+      ["Marketing", "Personalized AI offers", "Generic mass promos"],
+      ["Sales", "Footfall correlation", "Unknown performance metrics"],
+      ["Returns", "Predictive return analysis", "Reactive policy"]
+    ]
+  },
+  finance: {
+     title: "Finance Suite",
+     tagline: "Market Intelligence for Decision Makers",
+     description: "Real-time market analysis and risk assessment tools for financial firms.",
+     icon: "📈",
+     benefits: [
+        "Portfolio risk guardrails",
+        "Real-time market signals",
+        "Automated compliance reporting",
+        "Historical trend forecasting"
+     ],
+     comparison: [
+        ["Risk Management", "Automated stop-loss logic", "Slow human reaction"],
+        ["Signals", "Millisecond data alerts", "Lagging market news"],
+        ["Reporting", "Instant PDF exports", "Days of manual compilation"]
+     ]
+  },
+  grocery: {
+     title: "Grocery OS",
+     tagline: "Fresh Stock, Optimized Profits",
+     description: "Supply chain, stock optimization, and AI-driven POS for grocery chains.",
+     icon: "🍎",
+     benefits: [
+        "Fresh-item expiry management",
+        "Smart shelf replenishment",
+        "Vendor performance tracking",
+        "Real-time bulk billing"
+     ],
+     comparison: [
+        ["Spoilage", "Reduced by 35% with AI", "High wastage costs"],
+        ["Checkouts", "Multi-terminal sync", "Individual POS lag"],
+        ["Sourcing", "Demand-based ordering", "Bulk buying blind"]
+     ]
+  }
+};
+
+const data = industryData[id] || industryData.baker;
+---
+
+<MainLayout title={`${data.title} | Bobo Analytics Solutions`}>
+  <div class="industry-detail-page">
+    <header class="industry-hero">
+      <div class="badge-icon">{data.icon}</div>
+      <h1>{data.title}</h1>
+      <p class="tagline">{data.tagline}</p>
+      <p class="description">{data.description}</p>
+      <div class="header-actions">
+        <a href="/crm-login" class="btn-primary">Access {data.title} Portal</a>
+        <a href="#benefits" class="btn-ghost">View Benefits</a>
+      </div>
+    </header>
+
+    <section id="benefits" class="benefits-section">
+      <div class="section-title">
+        <h2>🔥 Key Business Benefits</h2>
+        <p>Why industry leaders choose Bobo for their {data.title.toLowerCase()} operations.</p>
+      </div>
+      <div class="benefits-grid">
+        {data.benefits.map(b => (
+          <div class="benefit-card">
+            <span class="check">✓</span>
+            <p>{b}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="comparison-section">
+      <div class="section-title">
+        <h2>🚀 Bobo vs. Traditional Methods</h2>
+        <p>Experience the quantum leap in efficiency and intelligence.</p>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th class="highlight">Bobo {data.title}</th>
+              <th>Legacy Software</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.comparison.map(c => (
+              <tr>
+                <td><b>{c[0]}</b></td>
+                <td class="high-val">{c[1]}</td>
+                <td>{c[2]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Visual UI Showcase -->
+    <section class="visual-showcase">
+       <div class="visual-block">
+        <div class="visual-text">
+          <h2>Unified Dashboard</h2>
+          <p>Get a bird's-eye view of your {data.title.toLowerCase()} from one terminal. Automated, real-time, and mobile-ready.</p>
+        </div>
+        <div class="visual-frame">
+          <img src={`https://images.unsplash.com/photo-1551288049-bbda38a5f452?auto=format&fit=crop&q=80&w=1000`} alt="Dashboard Preview" />
+        </div>
+      </div>
+
+       <div class="visual-block reverse">
+        <div class="visual-text">
+          <h2>AI Growth Radar</h2>
+          <p>Our proprietary algorithms scan your sales data to identify growth opportunities and stock leakages before they happen.</p>
+        </div>
+        <div class="visual-frame">
+          <img src={`https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1000`} alt="Analytics Preview" />
+        </div>
+      </div>
+    </section>
+
+    <footer class="bottom-cta">
+       <h3>Ready to transform your {data.title.toLowerCase()}?</h3>
+       <a href="/crm-login" class="btn-primary">Get Started Now</a>
+    </footer>
+  </div>
+</MainLayout>
+
+<style>
+  .industry-detail-page { padding: 120px 24px; max-width: 1100px; margin: 0 auto; color: white; }
+  
+  .industry-hero { text-align: center; margin-bottom: 100px; }
+  .badge-icon { font-size: 4rem; margin-bottom: 20px; }
+  .industry-hero h1 { font-size: 4rem; font-weight: 900; background: linear-gradient(135deg, #fff 0%, #6366f1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 15px; }
+  .tagline { color: #6366f1; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; font-size: 1.1rem; margin-bottom: 25px; }
+  .description { font-size: 1.4rem; color: rgba(255,255,255,0.7); max-width: 800px; margin: 0 auto 40px; line-height: 1.6; }
+  
+  .header-actions { display: flex; gap: 20px; justify-content: center; }
+  .btn-primary { background: #6366f1; color: white; padding: 16px 32px; border-radius: 14px; font-weight: 700; text-decoration: none; transition: 0.3s; }
+  .btn-ghost { border: 1px solid rgba(255,255,255,0.1); color: white; padding: 16px 32px; border-radius: 14px; font-weight: 700; text-decoration: none; transition: 0.3s; }
+  .btn-primary:hover { background: #4f46e5; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(99,102,241,0.2); }
+
+  .section-title { text-align: center; margin-bottom: 60px; }
+  .section-title h2 { font-size: 2.5rem; margin-bottom: 10px; }
+  .section-title p { opacity: 0.5; font-size: 1.1rem; }
+
+  .benefits-section { margin-bottom: 120px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 100px; }
+  .benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+  .benefit-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 30px; border-radius: 20px; display: flex; align-items: flex-start; gap: 15px; }
+  .check { color: #22c55e; font-weight: 900; font-size: 1.2rem; }
+  .benefit-card p { font-weight: 600; font-size: 1rem; line-height: 1.4; margin: 0; }
+
+  .comparison-section { margin-bottom: 120px; }
+  .table-container { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 20px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; text-align: left; }
+  th { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.05em; opacity: 0.6; }
+  td { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .highlight { color: #6366f1; font-weight: 900; background: rgba(99,102,241,0.05); }
+  .high-val { color: #6366f1; font-weight: 700; }
+
+  .visual-block { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; margin-bottom: 100px; }
+  .visual-block.reverse { direction: rtl; }
+  .visual-block.reverse .visual-text { direction: ltr; }
+  .visual-text h2 { font-size: 2rem; margin-bottom: 20px; }
+  .visual-text p { font-size: 1.1rem; opacity: 0.6; line-height: 1.7; }
+  .visual-frame { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 24px; box-shadow: 0 40px 80px rgba(0,0,0,0.4); }
+  .visual-frame img { width: 100%; border-radius: 12px; }
+
+  .bottom-cta { text-align: center; background: rgba(99,102,241,0.05); border: 1px dashed rgba(99,102,241,0.3); padding: 60px; border-radius: 40px; margin-top: 100px; }
+  .bottom-cta h3 { font-size: 2rem; margin-bottom: 30px; }
+
+  @media (max-width: 768px) {
+    .visual-block { grid-template-columns: 1fr; gap: 30px; }
+    .industry-hero h1 { font-size: 2.5rem; }
+    .description { font-size: 1.1rem; }
+  }
+</style>

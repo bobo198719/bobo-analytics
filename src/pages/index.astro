@@ -51,46 +51,51 @@ if (isSubdomain) {
     </div>
     <div class="industry-container-alt">
       <!-- 1. BAKER -->
-      <div class="industry-card pink-glow">
+      <div class="industry-card pink-glow" onclick="openIndustry('baker')">
         <div class="card-icon">🍰 <span class="badge-new">NEW</span></div>
         <h3>Baker OS</h3>
         <p>Complete bakery management software for artisan bakers and dessert shops.</p>
-        <span class="launch-label">Showcase Only</span>
+        <span class="launch-label">Explore Solutions →</span>
       </div>
 
       <!-- 2. HEALTHCARE -->
-      <div class="industry-card">
+      <div class="industry-card" onclick="openIndustry('healthcare')">
         <div class="card-icon">🏥</div>
         <h3>Healthcare & Med</h3>
         <p>Patient data analytics and management for hospitals.</p>
+        <span class="launch-label">Explore Solutions →</span>
       </div>
 
       <!-- 3. PHARMACY -->
-      <div class="industry-card">
+      <div class="industry-card" onclick="openIndustry('pharmacy')">
         <div class="card-icon">💊</div>
         <h3>Pharmacy</h3>
         <p>Inventory and prescription tracking for large networks.</p>
+        <span class="launch-label">Explore Solutions →</span>
       </div>
 
       <!-- 4. RETAIL -->
-      <div class="industry-card">
+      <div class="industry-card" onclick="openIndustry('retail')">
         <div class="card-icon">🛒</div>
         <h3>Retail Intelligence</h3>
         <p>Consumer behavior and sales insights for big retail.</p>
+        <span class="launch-label">Explore Solutions →</span>
       </div>
 
       <!-- 5. FINANCE -->
-      <div class="industry-card">
+      <div class="industry-card" onclick="openIndustry('finance')">
         <div class="card-icon">📈</div>
         <h3>Finance</h3>
         <p>Market analysis and risk assessment tools.</p>
+        <span class="launch-label">Explore Solutions →</span>
       </div>
 
       <!-- 6. GROCERY -->
-      <div class="industry-card">
+      <div class="industry-card" onclick="openIndustry('grocery')">
         <div class="card-icon">🍎</div>
         <h3>Grocery OS</h3>
         <p>Supply chain, stock optimization, and AI-driven POS.</p>
+        <span class="launch-label">Explore Solutions →</span>
       </div>
 
       <!-- 7. FASHION -->
@@ -131,6 +136,11 @@ if (isSubdomain) {
       </div>
     </div>
   </section>
+  <script is:inline>
+    function openIndustry(industry) {
+      window.location.href = `/industry/${industry}`;
+    }
+  </script>
 </MainLayout>
 
 <style>
