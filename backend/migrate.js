@@ -40,6 +40,81 @@ async function migrate() {
     )
   `);
 
+  // --- RESTAURANT MODULE TABLES ---
+  
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS restaurants (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      owner_id INT,
+      name VARCHAR(100),
+      gst_number VARCHAR(100),
+      address TEXT,
+      phone VARCHAR(20),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS rest_tables (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      restaurant_id INT,
+      table_number VARCHAR(20),
+      capacity INT,
+      status ENUM('available', 'occupied', 'ordered') DEFAULT 'available',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS rest_categories (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      restaurant_id INT,
+      name VARCHAR(100),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS rest_menu_items (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      restaurant_id INT,
+      category_id INT,
+      name VARCHAR(100),
+      price DECIMAL(10,2),
+      gst DECIMAL(5,2),
+      type ENUM('veg', 'non-veg', 'beverage'),
+      description TEXT,
+      image_url VARCHAR(255),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS rest_orders (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      restaurant_id INT,
+      table_id INT NULL,
+      customer_id INT NULL,
+      type ENUM('dine-in', 'takeaway', 'delivery'),
+      status ENUM('pending', 'preparing', 'ready', 'completed', 'cancelled') DEFAULT 'pending',
+      total_amount DECIMAL(10,2),
+      gst_amount DECIMAL(10,2),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS rest_order_items (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      order_id INT,
+      item_id INT,
+      quantity INT,
+      price DECIMAL(10,2),
+      special_instructions TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
   // 2. Provision Initial Tenants & Master Admin
   const initialUsers = [
     { username: "admin", password: "password123", business_name: "SaaS Master Console", industry: "admin", plan: "master", role: "super_admin" },
