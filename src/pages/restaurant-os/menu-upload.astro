@@ -37,11 +37,11 @@ import "../../styles/restaurant.css";
           <div id="tab-image" class="tab-panel space-y-4">
             <div id="drop-zone" onclick="document.getElementById('img-input').click()"
               class="border-2 border-dashed border-white/15 hover:border-violet-500/50 hover:bg-violet-500/5 rounded-2xl p-8 text-center cursor-pointer transition-all">
-              <p class="text-4xl mb-3">📸</p>
-              <p class="text-white/60 font-black uppercase italic text-sm">Click or drag menu photo here</p>
-              <p class="text-white/25 text-xs mt-2 font-semibold">JPG · PNG · WEBP · PDF (screenshot)</p>
+              <p class="text-4xl mb-3">📄</p>
+              <p class="text-white/60 font-black uppercase italic text-sm">Click or drag menu photo or PDF here</p>
+              <p class="text-white/25 text-xs mt-2 font-semibold">JPG · PNG · WEBP · PDF (AI-Powered)</p>
             </div>
-            <input type="file" id="img-input" accept="image/*" class="hidden" onchange="handleImageUpload(event)" />
+            <input type="file" id="img-input" accept="image/*,application/pdf" class="hidden" onchange="handleImageUpload(event)" />
             <div id="img-preview-area" class="hidden space-y-3">
               <img id="img-preview" class="w-full rounded-2xl border border-white/10 max-h-40 object-contain" />
               <button onclick="parseImage()" id="parse-btn" class="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 rounded-xl font-black uppercase text-sm italic text-white hover:from-violet-500 transition-all shadow-lg">
@@ -151,6 +151,14 @@ import "../../styles/restaurant.css";
     function handleImageUpload(e) {
       const file = e.target.files[0];
       if (!file) return;
+      
+      if (file.type === 'application/pdf') {
+        document.getElementById('img-preview').src = 'https://cdn-icons-png.flaticon.com/512/337/337946.png'; // PDF Icon
+        document.getElementById('img-preview-area').classList.remove('hidden');
+        log('PDF loaded: ' + file.name + ' (' + (file.size/1024).toFixed(0) + 'KB). AI is analyzing pages...');
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = () => {
         document.getElementById('img-preview').src = reader.result;
@@ -359,7 +367,7 @@ import "../../styles/restaurant.css";
       let succeeded = 0;
       for (const item of selected) {
         try {
-          await fetch('/api/menu', {
+          await fetch('/api/v2/restaurant/menu', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: item.name, price: item.price, category: item.category, type: item.type, image_url: item.image_url })
