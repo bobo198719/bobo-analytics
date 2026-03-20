@@ -352,12 +352,19 @@ const { tableId } = Astro.params;
       };
 
       try {
-        // 🟢 MASTER SYNC (V25 - INVISIBLE FIX)
+        // 🟢 MASTER SYNC (V26 - LEGACY COMPATIBILITY)
+        // Merge notes into first item to bypass missing DB column
+        const finalPayload = { ...payload };
+        if (finalPayload.special_notes && finalPayload.items.length > 0) {
+            finalPayload.items[0].special_instructions = `${finalPayload.items[0].special_instructions || ''} [Note: ${finalPayload.special_notes}]`.trim();
+        }
+        delete finalPayload.special_notes; // Critical: Remove the field that causes the crash
+
         const orderUrl = '/api/v25-master-sync?v=' + Date.now();
         let res = await fetch(orderUrl, {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(payload)
+          body: JSON.stringify(finalPayload)
         });
         
         let data = await res.json();
