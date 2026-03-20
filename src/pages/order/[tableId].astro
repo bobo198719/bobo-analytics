@@ -126,30 +126,38 @@ const { tableId } = Astro.params;
     </div>
   </div>
 
-  <script define:vars={{ tableId }}>
+  <div id="table-id-data" data-id={tableId} style="display:none"></div>
+
+  <script is:inline>
+    // ── CONFIG ─────────────────────────────────────
+    const TABLE_ID = document.getElementById('table-id-data').dataset.id;
     let allItems = [];
-    let cart = {}; // { itemId: { item, qty } }
+    let cart = {}; // { itemId: { item, qty, notes } }
     let currentCategory = 'All';
 
-    const TABLE_ID = tableId;
-
     // ── FETCH MENU ─────────────────────────────────
-    async function loadMenu() {
+    window.loadMenu = async function() {
       try {
         const res = await fetch('/api/v2/restaurant/menu');
         const data = await res.json();
         // Take the 253 newest unique dishes
         allItems = [...data].sort((a,b) => b.id - a.id).slice(0, 253);
+        
+        // Update Table UI
+        const labelEl = document.getElementById('table-label');
+        if (labelEl) labelEl.textContent = '#' + TABLE_ID;
+        
         buildCategoryTabs();
         renderMenu(allItems);
-        document.getElementById('table-label').textContent = '#' + TABLE_ID;
+        
         document.getElementById('loading-screen').style.display = 'none';
         document.getElementById('app').style.display = 'block';
       } catch(e) {
+        console.error("Menu Load Failed:", e);
         document.getElementById('loading-screen').innerHTML = 
           '<p style="color:rgba(255,255,255,0.3);font-size:13px;text-align:center;padding:32px;">Menu temporarily unavailable.<br>Please ask your server.</p>';
       }
-    }
+    };
 
     // ── CATEGORIES ──────────────────────────────────
     function buildCategoryTabs() {
@@ -165,22 +173,22 @@ const { tableId } = Astro.params;
       });
     }
 
-    function filterCategory(cat, btn) {
-      currentCategory = cat;
-      document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      applyFilters();
-    }
-
-    function filterDishes() { applyFilters(); }
-
-    function applyFilters() {
+    window.applyFilters = function() {
       const search = document.getElementById('search-input').value.toLowerCase();
       let filtered = allItems;
       if (currentCategory !== 'All') filtered = filtered.filter(i => i.category === currentCategory);
       if (search) filtered = filtered.filter(i => i.name.toLowerCase().includes(search));
       renderMenu(filtered);
     }
+
+    window.filterCategory = function(cat, btn) {
+      currentCategory = cat;
+      document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyFilters();
+    }
+
+    window.filterDishes = function() { applyFilters(); }
 
     // ── IMAGE HANDLING ─────────────────────────────
     const KEYWORD_IMAGES = {
@@ -260,15 +268,15 @@ const { tableId } = Astro.params;
     }
 
     // ── CART ─────────────────────────────────────────
-    function addToCart(id) {
-      const item = allItems.find(i => i.id === id);
+    window.addToCart = function(id) {
+      const item = allItems.find(i => Number(i.id) === Number(id));
       if (!item) return;
       cart[id] = { item, qty: 1, notes: '' };
       updateCartBar();
       applyFilters();
     }
 
-    function changeQty(id, delta) {
+    window.changeQty = function(id, delta) {
       if (!cart[id]) return;
       cart[id].qty += delta;
       if (cart[id].qty <= 0) delete cart[id];
@@ -287,7 +295,7 @@ const { tableId } = Astro.params;
     }
 
     // ── CHECKOUT ─────────────────────────────────────
-    function openCheckout() {
+    window.openCheckout = function() {
         const items = Object.values(cart);
         const container = document.getElementById('checkout-items');
         container.innerHTML = items.map(({item, qty, notes}, i) => `
@@ -298,18 +306,18 @@ const { tableId } = Astro.params;
                 </div>
                 <input type="text" placeholder="Instructions (e.g. no spice)" 
                     value="${notes || ''}"
-                    onchange="updateItemNotes(${item.id}, this.value)"
+                    onchange="window.updateItemNotes(${item.id}, this.value)"
                     style="width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:8px 12px; color:rgba(255,255,255,0.6); font-size:11px; font-weight:600; outline:none;" />
             </div>
         `).join('');
         document.getElementById('checkout-modal').style.display = 'flex';
     }
 
-    function closeCheckout() {
+    window.closeCheckout = function() {
         document.getElementById('checkout-modal').style.display = 'none';
     }
 
-    function updateItemNotes(id, val) {
+    window.updateItemNotes = function(id, val) {
         if(cart[id]) cart[id].notes = val;
     }
 
@@ -317,7 +325,7 @@ const { tableId } = Astro.params;
     let activeOrderId = null;
     let trackInterval = null;
 
-    async function submitOrder() {
+    window.submitOrder = async function() {
       const items = Object.values(cart);
       if (items.length === 0) return;
 
@@ -420,7 +428,7 @@ const { tableId } = Astro.params;
         }
     }
 
-    function resetOrder() {
+    window.resetOrder = function() {
       if(trackInterval) clearInterval(trackInterval);
       activeOrderId = null;
       cart = {};

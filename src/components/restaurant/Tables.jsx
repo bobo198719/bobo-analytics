@@ -89,8 +89,8 @@ const Tables = () => {
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 pb-20">
         {tables.map((table) => {
           const config = getStatusConfig(table.status);
-          const qrUrl = `${window.location.origin}/order/table/${table.table_number}`;
-          const qrImgSrc = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrUrl)}&bgcolor=0b0f1a&color=ffffff&margin=16`;
+          const qrUrl = `${window.location.host.includes('localhost') ? 'http://' : 'https://'}${window.location.host}/order/${table.table_number}`;
+          const qrImgSrc = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrUrl)}&bgcolor=111827&color=ffffff&margin=16`;
           return (
             <div key={table.id} className="group relative bg-white/5 border border-white/10 rounded-[48px] overflow-hidden shadow-2xl transition-all hover:border-orange-500/30 hover:bg-white/[0.07]">
               {/* Main clickable area */}
