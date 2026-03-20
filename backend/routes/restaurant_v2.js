@@ -131,6 +131,14 @@ router.post('/orders', async (req, res) => {
     } catch (err) {
         await client.query('ROLLBACK');
         console.error("Order error:", err);
+        
+        // 🔧 DIRECT HEAL: If Hostinger fails due to missing column, fix it NOW
+        if (err.message && err.message.includes('special_notes')) {
+            console.warn("Direct Heal: Adding missing 'special_notes' column on Hostinger...");
+            try { await pg.pool.query('ALTER TABLE orders ADD COLUMN IF NOT EXISTS special_notes TEXT'); } catch(e) {}
+            return res.status(500).json({ error: "DB_REPAIRED_TRY_AGAIN", info: "The database schema has been fixed on Hostinger. Please click 'Place Request' one last time." });
+        }
+        
         res.status(500).json({ error: err.message });
     } finally {
         client.release();

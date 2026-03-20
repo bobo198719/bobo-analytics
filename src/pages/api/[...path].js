@@ -1,13 +1,14 @@
 export const prerender = false;
 const hostingerUrl = process.env.HOSTINGER_BACKEND_URL || "http://srv1449576.hstgr.cloud:5000";
 
-// UNIFIED MASTER PROXY (V20) - FORCED SSR & ABSOLUTE RELAY
+// FINAL MASTER SYNCHRONIZER (V22)
 export async function ALL({ request }) {
     const url = new URL(request.url);
     const pathname = url.pathname;
     const searchParams = url.searchParams.toString();
-    
-    // Setup headers
+    const apiPath = pathname.replace('/api/', '');
+
+    // Setup headers once
     const relayHeaders = new Headers();
     request.headers.forEach((v, k) => {
         if (k.toLowerCase() !== 'host' && k.toLowerCase() !== 'cookie') {
@@ -16,77 +17,35 @@ export async function ALL({ request }) {
     });
     relayHeaders.set("origin", "http://srv1449576.hstgr.cloud:5000");
 
-    // CRITICAL: Consuming the body ONLY once at the top level
-    let requestBodyBuffer = undefined;
+    let requestBody = undefined;
     if (request.method !== 'GET' && request.method !== 'HEAD') {
-        try { requestBodyBuffer = await request.arrayBuffer(); } catch(e) {}
+        try { requestBody = await request.arrayBuffer(); } catch(e) {}
     }
 
-    // 🟢 MASTER RELAY: Order Hijack (V20 - Ultra Aggressive Match)
-    const isRelayPath = pathname.includes('relay-order') || pathname.includes('customer-order') || pathname.includes('v20-master-fix-relay');
-    if (isRelayPath && request.method === 'POST') {
-        try {
-            console.log("Master Relay V20: Hijacking Relay Request...");
-            const bodyText = new TextDecoder().decode(requestBodyBuffer || new Uint8Array());
-            const bodyJson = JSON.parse(bodyText);
-            const { table_id, items, special_notes, order_source = "QR" } = bodyJson;
-            
-            // Relocate notes to first item
-            const processedItems = (items || []).map((it, idx) => ({
-                ...it,
-                special_instructions: idx === 0 ? `${it.special_instructions || ''} [Note: ${special_notes || ''}]`.trim() : it.special_instructions
-            }));
-
-            const relayRes = await fetch(`${hostingerUrl}/api/v2/restaurant/orders`, {
-                method: 'POST',
-                headers: relayHeaders,
-                body: JSON.stringify({ table_id, items: processedItems, order_source, status: 'pending_waiter' })
-            });
-
-            const relayData = await relayRes.arrayBuffer();
-            return new Response(relayData, {
-                status: relayRes.status,
-                headers: { 
-                    ...Object.fromEntries(relayRes.headers.entries()), 
-                    'Access-Control-Allow-Origin': '*', 
-                    'X-Relay-Status': 'V20-Success' 
-                }
-            });
-        } catch(e) { 
-            console.error("Relay processing failed, falling back to proxy:", e); 
-        }
-    }
-
-    // 🟡 PROXY FETCH
     try {
-        const apiPath = pathname.replace('/api/', '');
-        const targetUrl = `${hostingerUrl}/api/${apiPath}${searchParams ? '?' + searchParams : ''}`;
+        const vpsUrl = `${hostingerUrl}/api/${apiPath}${searchParams ? '?' + searchParams : ''}`;
 
-        const response = await fetch(targetUrl, {
+        const response = await fetch(vpsUrl, {
             method: request.method,
             headers: relayHeaders,
-            body: requestBodyBuffer
+            body: requestBody
         });
 
         const responseData = await response.arrayBuffer();
-
-        // Standard response with CORS
         return new Response(responseData, {
             status: response.status,
             headers: {
                 ...Object.fromEntries(response.headers.entries()),
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+                'X-Master-Sync': 'V22-Ready'
             }
         });
     } catch (err) {
-        return new Response(JSON.stringify({ error: err.message, v: "V20-System-Fail" }), { 
+        return new Response(JSON.stringify({ error: err.message, v: "V22-Fail" }), { 
             status: 500, headers: { 'Content-Type': 'application/json' }
         });
     }
 }
 
-// 🌐 EXPORT FOR VERCEL
 export const GET = ALL; export const POST = ALL; export const PUT = ALL;
 export const DELETE = ALL; export const PATCH = ALL; export const OPTIONS = ALL;
