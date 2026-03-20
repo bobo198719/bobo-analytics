@@ -19,6 +19,7 @@ const whatsappRoutes = require("./routes/whatsapp");
 const aiRoutes = require("./routes/ai");
 const securityRoutes = require("./routes/security");
 const restaurantRoutes = require("./routes/restaurant");
+const restaurantV2Routes = require("./routes/restaurant_v2");
 const { startExpiryCron } = require("./services/expiryCron");
 
 const fs = require('fs');
@@ -83,6 +84,48 @@ app.use("/api/whatsapp", whatsappRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/security", securityRoutes);
 app.use("/api", restaurantRoutes);
+app.use("/api/v2/restaurant", restaurantV2Routes);
+
+app.get("/", (req, res) => {
+    res.send(`
+    <html>
+    <head>
+      <title>Bobo OS | Diagnostic Control</title>
+      <style>
+        body { background:#05081a; color:white; font-family:'Plus Jakarta Sans', sans-serif; text-align:center; padding:50px; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1000px; margin: 40px auto; }
+        .card { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:30px; border-radius:32px; backdrop-blur:xl; }
+        h1 { font-family: 'Italic', sans-serif; font-weight: 900; font-style: italic; text-transform: uppercase; letter-spacing: -1px; }
+        h3 { color:rgba(255,255,255,0.3); text-transform: uppercase; font-size: 10px; letter-spacing: 2px; }
+        h2 { font-size: 32px; color: #f97316; margin: 10px 0; }
+        button { background:#ea580c; color:white; border:none; padding:15px 40px; border-radius:20px; font-weight:900; text-transform:uppercase; cursor:pointer; }
+      </style>
+    </head>
+    <body>
+      <h1>Bobo OS Intelligence Node</h1>
+      <div class="grid">
+        <div class="card"><h3>Revenue</h3><h2 id="rev">0</h2></div>
+        <div class="card"><h3>Active Orders</h3><h2 id="ord">0</h2></div>
+        <div class="card"><h3>Tables</h3><h2 id="tab">0</h2></div>
+        <div class="card"><h3>Kitchen</h3><h2 id="kit">0</h2></div>
+      </div>
+      <button onclick="seed()">Execute Diagnostic Seed</button>
+      <script>
+        function loadData() {
+          fetch('/api/v2/restaurant/dashboard').then(r=>r.json()).then(d=>{
+            document.getElementById('rev').innerText = '₹' + d.total_revenue;
+            document.getElementById('ord').innerText = d.orders_today;
+            document.getElementById('tab').innerText = d.active_tables;
+            document.getElementById('kit').innerText = d.kitchen_queue;
+          });
+        }
+        function seed() { fetch('/api/v2/restaurant/seed').then(()=>loadData()); }
+        loadData(); setInterval(loadData, 3000);
+      </script>
+    </body>
+    </html>
+    `);
+});
 
 app.get("/api/system-repair", async (req, res) => {
     try {
