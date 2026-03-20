@@ -16,7 +16,7 @@ export async function ALL({ params, request }) {
         const pathStr = Array.isArray(path) ? path.join('/') : path;
 
         // 🟢 MASTER RELAY: Special handling for orders to bypass DB schema issues
-        if (pathStr === 'customer-order' && request.method === 'POST') {
+        if (pathStr === 'v3-relay-order' && request.method === 'POST') {
             try {
                 const originalBody = JSON.parse(new TextDecoder().decode(body));
                 const { table_id, items, special_notes, order_source = "QR" } = originalBody;
