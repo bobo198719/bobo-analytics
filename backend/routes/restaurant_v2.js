@@ -32,21 +32,20 @@ router.post('/orders', async (req, res) => {
         await client.query('BEGIN');
         const { table_id, items, special_notes, status = 'pending_waiter' } = req.body;
 
-        // 🛠️ CHECK FOR REPAIR (MIGRATION)
         try { await client.query('ALTER TABLE orders ADD COLUMN IF NOT EXISTS special_notes TEXT'); } catch(e) {}
 
         const db_table_id = parseInt(table_id);
         const processedItems = items.map(it => ({
             ...it,
-            price: parseFloat(it.price || it.menu_item_price),
-            total: (it.quantity || it.qty) * parseFloat(it.price || it.menu_item_price),
-            id: it.menu_item_id || it.id
+            price: parseFloat(it.price || it.menu_item_price || it.total / (it.quantity || 1)),
+            total: (it.quantity || it.qty) * parseFloat(it.price || it.menu_item_price || it.total / (it.quantity || 1)),
+            id: it.menu_item_id || it.id,
+            menu_name: it.menu_name || it.name
         }));
 
         const total = processedItems.reduce((acc, it) => acc + it.total, 0);
         const gst = total * 0.05;
 
-        // 🟢 ATTEMPT HIGH-MODERN INSERT
         let orderRows;
         try {
             const resInsert = await client.query(
@@ -55,19 +54,15 @@ router.post('/orders', async (req, res) => {
             );
             orderRows = resInsert.rows;
         } catch (err) {
-            if (err.message.includes('special_notes')) {
-                console.warn("V24_FAILOVER: Stripping special_notes and retrying...");
-                const resFallback = await client.query(
-                    'INSERT INTO orders (table_id, status, total_amount, gst_amount, items) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-                    [db_table_id, status, total + gst, gst, JSON.stringify(processedItems)]
-                );
-                orderRows = resFallback.rows;
-            } else { throw err; }
+            console.warn("V24_FAILOVER: Schema mismatch. Stripping notes.");
+            const resFallback = await client.query(
+                'INSERT INTO orders (table_id, status, total_amount, gst_amount, items) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+                [db_table_id, status, total + gst, gst, JSON.stringify(processedItems)]
+            );
+            orderRows = resFallback.rows;
         }
 
         const orderId = orderRows[0].id;
-
-        // Create Order Items
         for (const pItem of processedItems) {
             await client.query(
                 'INSERT INTO order_items (order_id, menu_item_id, quantity, price, total, special_instructions) VALUES ($1, $2, $3, $4, $5, $6)',
@@ -78,23 +73,65 @@ router.post('/orders', async (req, res) => {
         await client.query("UPDATE tables SET status = 'occupied' WHERE id = $1", [db_table_id]);
         await client.query('COMMIT');
 
-        // Broadcast
         if (global.broadcastNewOrder) {
-            global.broadcastNewOrder({ ...orderRows[0], items: processedItems });
+            global.broadcastNewOrder({ ...orderRows[0], items: processedItems, table_number: table_id });
         }
 
         res.json({ success: true, orderId, total: total + gst, status: orderRows[0].status });
     } catch (err) {
         await client.query('ROLLBACK');
-        console.error("V24_CRITICAL_FAIL:", err);
+        console.error("V24_FAIL:", err);
         res.status(500).json({ error: err.message });
     } finally {
         client.release();
     }
 });
 
-// GET Dashboards and other routes...
-// (I'll keep the rest of the file as is)
+/**
+ * 3. ORDER FETCH & STATUS (RESTORED)
+ */
+router.get('/orders', async (req, res) => {
+    try {
+        const { status } = req.query;
+        let query = 'SELECT o.*, t.table_number FROM orders o JOIN tables t ON o.table_id = t.id';
+        const params = [];
+        if (status) {
+            query += ' WHERE o.status = $1';
+            params.push(status);
+        }
+        query += ' ORDER BY o.created_at DESC';
+        const { rows } = await pg.query(query, params);
+        res.json(rows);
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.put('/orders/:id/status', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+        const { rows } = await pg.query(
+            'UPDATE orders SET status = $1 WHERE id = $2 RETURNING *',
+            [status, id]
+        );
+        
+        if (status === 'completed' || status === 'rejected') {
+            await pg.query("UPDATE tables SET status = 'available' WHERE id = (SELECT table_id FROM orders WHERE id = $1)", [id]);
+        }
+        
+        res.json(rows[0]);
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+/**
+ * 4. TABLES & DASHBOARD
+ */
+router.get('/tables', async (req, res) => {
+    try {
+        const { rows } = await pg.query('SELECT * FROM tables ORDER BY table_number ASC');
+        res.json(rows);
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 router.get('/dashboard', async (req, res) => {
     try {
         const { rows } = await pg.query("SELECT * FROM orders WHERE created_at::date = CURRENT_DATE");
@@ -102,15 +139,8 @@ router.get('/dashboard', async (req, res) => {
             total_revenue: rows.reduce((acc, o) => acc + parseFloat(o.total_amount), 0).toFixed(2),
             orders_today: rows.length,
             active_tables: (await pg.query("SELECT COUNT(*) FROM tables WHERE status = 'occupied'")).rows[0].count,
-            kitchen_queue: rows.filter(o => o.status === 'pending_waiter').length
+            kitchen_queue: rows.filter(o => o.status === 'pending_waiter' || o.status === 'confirmed').length
         });
-    } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-router.get('/orders', async (req, res) => {
-    try {
-        const { rows } = await pg.query('SELECT o.*, t.table_number FROM orders o JOIN tables t ON o.table_id = t.id ORDER BY o.created_at DESC');
-        res.json(rows);
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
