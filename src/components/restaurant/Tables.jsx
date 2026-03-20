@@ -21,7 +21,7 @@ const Tables = () => {
 
   const fetchTables = async () => {
     try {
-      const res = await fetch('/api/tables');
+      const res = await fetch('/api/v2/restaurant/tables');
       const data = await res.json();
       setTables(data);
       setLoading(false);
@@ -50,7 +50,7 @@ const Tables = () => {
     const num = prompt("Enter Table Number:");
     if (!num) return;
     try {
-        await fetch('/api/tables', {
+        await fetch('/api/v2/restaurant/tables', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ table_number: num })

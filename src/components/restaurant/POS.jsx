@@ -51,8 +51,8 @@ const POS = () => {
   const fetchData = async () => {
     try {
       const [menuRes, tablesRes] = await Promise.all([
-        fetch('/api/menu'),
-        fetch('/api/tables')
+        fetch('/api/v2/restaurant/menu'),
+        fetch('/api/v2/restaurant/tables')
       ]);
       
       if (!menuRes.ok || !tablesRes.ok) {
@@ -116,7 +116,7 @@ const POS = () => {
     
     setIsSubmitting(true);
     try {
-        const res = await fetch('/api/orders', {
+        const res = await fetch('/api/v2/restaurant/orders', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

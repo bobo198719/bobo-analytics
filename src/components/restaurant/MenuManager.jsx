@@ -36,7 +36,7 @@ const MenuManager = () => {
 
   const fetchItems = async () => {
     try {
-      const res = await fetch('/api/menu');
+      const res = await fetch('/api/v2/restaurant/menu');
       if (!res.ok) throw new Error("Catalog Matrix Offline");
       const data = await res.json();
       const sorted = [...data].sort((a, b) => b.id - a.id);
@@ -67,7 +67,7 @@ const MenuManager = () => {
   const handleAddItem = async () => {
     if (!formData.name || !formData.price || !formData.category) return alert("Please fill all fields");
     try {
-        const res = await fetch('/api/menu', {
+        const res = await fetch('/api/v2/restaurant/menu', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)
@@ -84,7 +84,7 @@ const MenuManager = () => {
     if (!window.confirm(`Delete "${item.name}"? This cannot be undone.`)) return;
     setDeletingId(item.id);
     try {
-      const res = await fetch(`/api/menu/${item.id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/v2/restaurant/menu/${item.id}`, { method: 'DELETE' });
       if (res.ok || res.status === 404) {
         // Remove from local state immediately for responsive UI
         setItems(prev => prev.filter(it => it.id !== item.id));
@@ -115,13 +115,13 @@ const MenuManager = () => {
     if (!editForm.name || !editForm.price) return alert('Please fill all required fields');
     try {
       // Try PUT first, then PATCH
-      let res = await fetch(`/api/menu/${editItem.id}`, {
+      let res = await fetch(`/api/v2/restaurant/menu/${editItem.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editForm)
       });
       if (!res.ok) {
-        res = await fetch(`/api/menu/${editItem.id}`, {
+        res = await fetch(`/api/v2/restaurant/menu/${editItem.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(editForm)

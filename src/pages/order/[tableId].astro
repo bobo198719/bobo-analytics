@@ -107,7 +107,7 @@ const { tableId } = Astro.params;
     // ── FETCH MENU ─────────────────────────────────
     async function loadMenu() {
       try {
-        const res = await fetch('/api/menu');
+        const res = await fetch('/api/v2/restaurant/menu');
         const data = await res.json();
         // Take the 253 newest unique dishes
         allItems = [...data].sort((a,b) => b.id - a.id).slice(0, 253);

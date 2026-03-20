@@ -13,7 +13,7 @@ export async function POST({ request }) {
     }
 
     // Post order to backend
-    const res = await fetch(`${hostingerUrl}/api/orders`, {
+    const res = await fetch(`${hostingerUrl}/api/v2/restaurant/orders`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ table_id, items, order_source, status: 'pending' })

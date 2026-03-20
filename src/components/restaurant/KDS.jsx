@@ -19,7 +19,7 @@ const KDS = () => {
   const fetchOrders = async () => {
     try {
       // Phase 5: Polling every 3s. Removing filter to allow status mapping.
-      const res = await fetch('/api/orders?all=true');
+      const res = await fetch('/api/v2/restaurant/orders?all=true');
       if (!res.ok) throw new Error("KDS HUB OFFLINE");
       const data = await res.json();
       // Only show non-completed for primary queue
@@ -53,7 +53,7 @@ const KDS = () => {
 
   const updateStatus = async (orderId, nextStatus) => {
     try {
-        const res = await fetch(`/api/orders/${orderId}/status`, {
+        const res = await fetch(`/api/v2/restaurant/orders/${orderId}/status`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status: nextStatus })

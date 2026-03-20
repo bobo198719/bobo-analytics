@@ -29,7 +29,7 @@ const Dashboard = () => {
 
   const fetchStats = async () => {
     try {
-      const res = await fetch(`/api/dashboard?v=${Date.now()}`);
+      const res = await fetch(`/api/v2/restaurant/dashboard?v=${Date.now()}`);
       if (!res.ok) throw new Error("ANALYTICS HUB OFFLINE");
       const data = await res.json();
       
