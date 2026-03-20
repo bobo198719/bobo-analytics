@@ -144,6 +144,9 @@ router.post('/orders', async (req, res) => {
  */
 router.get('/orders', async (req, res) => {
     try {
+        // 🔧 AUTO-REPAIR: Add column if missing during dashboard visit
+        try { await pg.pool.query('ALTER TABLE orders ADD COLUMN IF NOT EXISTS special_notes TEXT'); } catch(e) {}
+
         const { status } = req.query;
         console.log("Orders Fetch Request:", status);
         
