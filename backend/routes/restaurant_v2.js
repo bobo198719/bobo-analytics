@@ -33,7 +33,7 @@ router.post('/orders', async (req, res) => {
     const client = await pg.pool.connect();
     try {
         await client.query('BEGIN');
-        const { table_id, items, customer_id } = req.body;
+        const { table_id, items, customer_id, special_notes, status = 'pending_waiter' } = req.body;
 
         // 1. Calculate Totals
         let total = 0;
@@ -48,21 +48,26 @@ router.post('/orders', async (req, res) => {
             
             total += itemTotal;
             gst += itemGst;
-            processedItems.push({ ...mItem, quantity: item.quantity, total: itemTotal });
+            processedItems.push({ 
+                ...mItem, 
+                quantity: item.quantity, 
+                total: itemTotal, 
+                special_instructions: item.special_instructions 
+            });
         }
 
         // 2. Create Order
         const { rows: orderRows } = await client.query(
-            'INSERT INTO orders (table_id, customer_id, status, total_amount, gst_amount) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [table_id, customer_id || null, 'pending', total + gst, gst]
+            'INSERT INTO orders (table_id, customer_id, status, total_amount, gst_amount, special_notes, items) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+            [table_id, customer_id || null, status, total + gst, gst, special_notes, JSON.stringify(processedItems)]
         );
         const orderId = orderRows[0].id;
 
         // 3. Create Order Items
         for (const pItem of processedItems) {
             await client.query(
-                'INSERT INTO order_items (order_id, menu_item_id, quantity, price, total) VALUES ($1, $2, $3, $4, $5)',
-                [orderId, pItem.id, pItem.quantity, pItem.price, pItem.total]
+                'INSERT INTO order_items (order_id, menu_item_id, quantity, price, total, special_instructions) VALUES ($1, $2, $3, $4, $5, $6)',
+                [orderId, pItem.id, pItem.quantity, pItem.price, pItem.total, pItem.special_instructions]
             );
         }
 
@@ -76,9 +81,10 @@ router.post('/orders', async (req, res) => {
             global.broadcastNewOrder({ ...orderRows[0], items: processedItems });
         }
 
-        res.json({ success: true, orderId, total: total + gst });
+        res.json({ success: true, orderId, total: total + gst, status: orderRows[0].status });
     } catch (err) {
         await client.query('ROLLBACK');
+        console.error("Order error:", err);
         res.status(500).json({ error: err.message });
     } finally {
         client.release();
@@ -95,19 +101,33 @@ router.get('/orders', async (req, res) => {
         const { status } = req.query;
         let sql = `
             SELECT o.*, t.table_number, 
-            (SELECT json_agg(oi.*) FROM order_items oi JOIN menu_items mi ON oi.menu_item_id = mi.id WHERE oi.order_id = o.id) as items
+            (SELECT json_agg(oi.*) FROM 
+                (SELECT oi_inner.*, mi.name as menu_name FROM order_items oi_inner 
+                 JOIN menu_items mi ON oi_inner.menu_item_id = mi.id 
+                 WHERE oi_inner.order_id = o.id) oi
+            ) as items
             FROM orders o
             JOIN tables t ON o.table_id = t.id
         `;
         const params = [];
+
         if (status) {
-            sql += ' WHERE o.status = $1';
+            sql += ` WHERE o.status = $1`;
             params.push(status);
         }
-        sql += ' ORDER BY o.created_at DESC';
-        
+
+        sql += ` ORDER BY o.id DESC`;
         const { rows } = await pg.query(sql, params);
         res.json(rows);
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.get('/orders/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { rows } = await pg.query('SELECT status, created_at FROM orders WHERE id = $1', [id]);
+        if (rows.length === 0) return res.status(404).json({ error: "Order not found" });
+        res.json(rows[0]);
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -118,9 +138,13 @@ router.get('/orders', async (req, res) => {
 router.put('/orders/:id/status', async (req, res) => {
     try {
         const { id } = req.params;
-        const { status } = req.body;
+        const { status, waiter_id } = req.body;
 
-        await pg.query('UPDATE orders SET status = $1 WHERE id = $2', [status, id]);
+        if (waiter_id) {
+            await pg.query('UPDATE orders SET status = $1, waiter_id = $2 WHERE id = $3', [status, waiter_id, id]);
+        } else {
+            await pg.query('UPDATE orders SET status = $1 WHERE id = $2', [status, id]);
+        }
 
         if (status === 'completed') {
             const { rows } = await pg.query('SELECT table_id FROM orders WHERE id = $1', [id]);
@@ -182,7 +206,7 @@ router.get('/dashboard', async (req, res) => {
         });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: "Dashboard error" });
+        res.status(500).json({ error: "Dashboard error", details: err.message, stack: err.stack });
     }
 });
 
@@ -193,23 +217,23 @@ router.get('/seed', async (req, res) => {
     try {
       await pg.query(`
         INSERT INTO tables (table_number, status)
-        VALUES (1,'available'),(2,'occupied'),(3,'ordered'),(4,'available')
+        VALUES ('1','available'),('2','occupied'),('3','ordered'),('4','available')
         ON CONFLICT (table_number) DO NOTHING;
       `);
   
       await pg.query(`
-        INSERT INTO orders (table_id, status, total_amount, created_at)
+        INSERT INTO orders (table_id, status, total_amount, gst_amount, created_at)
         VALUES
-        (2,'completed',1200,NOW()),
-        (3,'pending',800,NOW()),
-        (3,'preparing',600,NOW())
+        (2,'completed',1260,60,NOW()),
+        (3,'pending',840,40,NOW()),
+        (4,'preparing',630,30,NOW())
         ON CONFLICT DO NOTHING;
       `);
   
       res.json({ message: "Seed data added" });
     } catch (err) {
       console.log(err);
-      res.status(500).json({ error: "Seed error" });
+      res.status(500).json({ error: "Seed error", details: err.message, stack: err.stack });
     }
 });
 

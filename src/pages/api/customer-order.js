@@ -4,7 +4,7 @@ const hostingerUrl = process.env.HOSTINGER_BACKEND_URL || "http://srv1449576.hst
 export async function POST({ request }) {
   try {
     const body = await request.json();
-    const { table_id, items, order_source = "QR" } = body;
+    const { table_id, items, special_notes, order_source = "QR" } = body;
 
     if (!table_id || !items || !Array.isArray(items) || items.length === 0) {
       return new Response(JSON.stringify({ error: "Missing table_id or items" }), {
@@ -16,7 +16,7 @@ export async function POST({ request }) {
     const res = await fetch(`${hostingerUrl}/api/v2/restaurant/orders`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ table_id, items, order_source, status: 'pending' })
+      body: JSON.stringify({ table_id, items, special_notes, order_source, status: 'pending_waiter' })
     });
 
     const data = await res.json();

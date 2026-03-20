@@ -44,9 +44,12 @@ const initTables = async () => {
                 id SERIAL PRIMARY KEY,
                 table_id INT REFERENCES tables(id),
                 customer_id INT REFERENCES customers(id),
-                status VARCHAR(20) DEFAULT 'pending',
+                status VARCHAR(20) DEFAULT 'pending_waiter',
                 total_amount DECIMAL(12, 2) NOT NULL,
                 gst_amount DECIMAL(12, 2) NOT NULL,
+                special_notes TEXT,
+                items JSONB,
+                waiter_id INT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
             
@@ -56,7 +59,8 @@ const initTables = async () => {
                 menu_item_id INT REFERENCES menu_items(id),
                 quantity INT NOT NULL,
                 price DECIMAL(10, 2) NOT NULL,
-                total DECIMAL(12, 2) NOT NULL
+                total DECIMAL(12, 2) NOT NULL,
+                special_instructions TEXT
             );
         `);
         console.log("✅ Restaurant PostgreSQL Tables Ready.");

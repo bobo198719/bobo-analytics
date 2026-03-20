@@ -32,22 +32,51 @@ const { tableId } = Astro.params;
   </style>
 </head>
 <body>
-  <!-- SUCCESS SCREEN -->
+  <!-- TRACKING / SUCCESS SCREEN -->
   <div id="order-success">
-    <div style="font-size:80px;">🎉</div>
-    <div style="text-align:center;">
-      <h1 style="font-size:28px;font-weight:900;font-style:italic;text-transform:uppercase;margin-bottom:8px;">Order Placed!</h1>
-      <p style="color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;">Your food is being prepared 🍳</p>
-      <p id="success-order-id" style="color:#f97316;font-size:11px;font-weight:900;margin-top:8px;font-style:italic;"></p>
+    <div id="status-icon" style="font-size:80px;">⏳</div>
+    <div style="text-align:center; padding: 0 20px;">
+      <h1 id="status-title" style="font-size:24px;font-weight:900;font-style:italic;text-transform:uppercase;margin-bottom:8px;">Request Sent</h1>
+      <p id="status-desc" style="color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;line-height:1.5;">Waiting for waiter to confirm your order...</p>
+      <div id="status-badge" style="display:inline-block; margin-top: 12px; padding: 6px 16px; border-radius: 50px; background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.2); color: #f97316; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; font-style: italic;">
+        🟡 Pending Waiter
+      </div>
     </div>
-    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:24px;max-width:280px;width:100%;text-align:center;">
-      <p style="color:rgba(255,255,255,0.5);font-size:12px;font-weight:700;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.1em;">Your Order Summary</p>
-      <div id="success-items" style="space-y:8px;"></div>
+    
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:24px;padding:20px;max-width:320px;width:90%; animation: slideUp 0.4s ease;">
+      <p style="color:rgba(255,255,255,0.2);font-size:10px;font-weight:900;margin-bottom:16px;text-transform:uppercase;letter-spacing:0.2em;text-align:center;">Order Items</p>
+      <div id="success-items" style="max-height: 200px; overflow-y: auto; padding-right: 4px;"></div>
       <div style="height:1px;background:rgba(255,255,255,0.07);margin:16px 0;"></div>
-      <p id="success-total" style="font-size:22px;font-weight:900;color:#f97316;font-style:italic;"></p>
+      <div style="display:flex; justify-content: space-between; align-items: center;">
+        <span style="font-size:11px; font-weight: 800; color: rgba(255,255,255,0.3); text-transform: uppercase;">Total Request</span>
+        <p id="success-total" style="font-size:20px;font-weight:900;color:#f97316;font-style:italic;"></p>
+      </div>
     </div>
-    <p style="color:rgba(255,255,255,0.2);font-size:11px;text-align:center;padding:0 32px;">Sit back & relax! A team member will bring your order shortly.</p>
-    <button onclick="resetOrder()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);border-radius:50px;padding:12px 32px;font-size:12px;font-weight:800;font-style:italic;text-transform:uppercase;cursor:pointer;">Order More</button>
+
+    <div style="display:flex; flex-direction: column; gap: 12px; width: 100%; max-width: 320px; padding: 0 20px;">
+        <button onclick="resetOrder()" style="width: 100%; background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border-radius:20px;padding:16px;font-size:12px;font-weight:900;font-style:italic;text-transform:uppercase;cursor:pointer;">Add More Items</button>
+        <p style="color:rgba(255,255,255,0.2);font-size:9px;text-align:center;font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Auto-refreshing every 3s</p>
+    </div>
+  </div>
+
+  <!-- CHECKOUT MODAL -->
+  <div id="checkout-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter:blur(10px); z-index:500; align-items:flex-end;">
+    <div style="background:#0f172a; border-top: 1px solid rgba(255,255,255,0.1); width:100%; border-radius:32px 32px 0 0; padding:32px 24px; animation: slideUp 0.3s ease-out;">
+        <div style="width:40px; height:4px; background:rgba(255,255,255,0.1); border-radius:2px; margin:0 auto 24px;"></div>
+        <h2 style="font-size:20px; font-weight:900; font-style:italic; text-transform:uppercase; margin-bottom:20px;">Review Request</h2>
+        
+        <div id="checkout-items" style="max-height: 250px; overflow-y: auto; margin-bottom: 24px; padding-right: 4px;"></div>
+        
+        <div style="margin-bottom: 24px;">
+            <p style="font-size:10px; font-weight:900; color:rgba(255,255,255,0.3); text-transform:uppercase; margin-bottom:8px; letter-spacing:1px;">Global Notes (Optional)</p>
+            <textarea id="global-notes" placeholder="e.g. Bring extra napkins, less spicy..." style="width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:12px; color:white; font-size:13px; font-family:inherit; resize:none;" rows="2"></textarea>
+        </div>
+
+        <button id="final-confirm-btn" onclick="submitOrder()" style="width:100%; background:linear-gradient(135deg,#f97316,#e11d48); border:none; color:white; border-radius:20px; padding:18px; font-size:14px; font-weight:900; font-style:italic; text-transform:uppercase; box-shadow:0 8px 32px rgba(249,115,22,0.3);">
+            Confirm Request →
+        </button>
+        <button onclick="closeCheckout()" style="width:100%; background:transparent; border:none; color:rgba(255,255,255,0.3); font-size:11px; font-weight:900; text-transform:uppercase; margin-top:16px;">Go Back</button>
+    </div>
   </div>
 
   <!-- LOADING SCREEN -->
@@ -91,8 +120,8 @@ const { tableId } = Astro.params;
         <p style="font-size:10px;color:rgba(255,255,255,0.3);font-weight:800;text-transform:uppercase;letter-spacing:0.15em;">Your Order</p>
         <p id="cart-summary" style="font-size:18px;font-weight:900;font-style:italic;margin-top:2px;"></p>
       </div>
-      <button id="place-order-btn" onclick="placeOrder()" style="background:linear-gradient(135deg,#f97316,#e11d48);border:none;color:white;border-radius:50px;padding:14px 28px;font-size:13px;font-weight:900;font-style:italic;text-transform:uppercase;cursor:pointer;letter-spacing:0.05em;box-shadow:0 4px 20px rgba(249,115,22,0.4);transition:transform 0.15s;">
-        Place Order →
+      <button id="place-order-btn" onclick="openCheckout()" style="background:linear-gradient(135deg,#f97316,#e11d48);border:none;color:white;border-radius:50px;padding:14px 28px;font-size:13px;font-weight:900;font-style:italic;text-transform:uppercase;cursor:pointer;letter-spacing:0.05em;box-shadow:0 4px 20px rgba(249,115,22,0.4);transition:transform 0.15s;">
+        Place Request →
       </button>
     </div>
   </div>
@@ -234,7 +263,7 @@ const { tableId } = Astro.params;
     function addToCart(id) {
       const item = allItems.find(i => i.id === id);
       if (!item) return;
-      cart[id] = { item, qty: 1 };
+      cart[id] = { item, qty: 1, notes: '' };
       updateCartBar();
       applyFilters();
     }
@@ -254,52 +283,152 @@ const { tableId } = Astro.params;
       bar.classList.remove('hidden');
       const total = items.reduce((s, {item, qty}) => s + (parseFloat(item.price) * qty), 0);
       const count = items.reduce((s, {qty}) => s + qty, 0);
-      document.getElementById('cart-summary').textContent = `${count} item${count>1?'s':''} · ₹${total.toFixed(0)}`;
+      document.getElementById('cart-summary').textContent = `${count} items · ₹${total.toFixed(0)}`;
     }
 
-    // ── PLACE ORDER ─────────────────────────────────
-    async function placeOrder() {
+    // ── CHECKOUT ─────────────────────────────────────
+    function openCheckout() {
+        const items = Object.values(cart);
+        const container = document.getElementById('checkout-items');
+        container.innerHTML = items.map(({item, qty, notes}, i) => `
+            <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:16px; padding:12px; margin-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <span style="font-size:13px; font-weight:800; font-style:italic; text-transform:uppercase;">${item.name} × ${qty}</span>
+                    <span style="font-size:13px; font-weight:900; color:#f97316;">₹${(item.price * qty).toFixed(0)}</span>
+                </div>
+                <input type="text" placeholder="Instructions (e.g. no spice)" 
+                    value="${notes || ''}"
+                    onchange="updateItemNotes(${item.id}, this.value)"
+                    style="width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:8px 12px; color:rgba(255,255,255,0.6); font-size:11px; font-weight:600; outline:none;" />
+            </div>
+        `).join('');
+        document.getElementById('checkout-modal').style.display = 'flex';
+    }
+
+    function closeCheckout() {
+        document.getElementById('checkout-modal').style.display = 'none';
+    }
+
+    function updateItemNotes(id, val) {
+        if(cart[id]) cart[id].notes = val;
+    }
+
+    // ── STATUS TRACKING ──────────────────────────────
+    let activeOrderId = null;
+    let trackInterval = null;
+
+    async function submitOrder() {
       const items = Object.values(cart);
       if (items.length === 0) return;
 
-      const btn = document.getElementById('place-order-btn');
-      btn.textContent = 'Placing...';
+      const btn = document.getElementById('final-confirm-btn');
+      btn.textContent = '⏱ Processing Request...';
       btn.disabled = true;
 
       const payload = {
         table_id: TABLE_ID,
-        items: items.map(({item, qty}) => ({ menu_item_id: item.id, name: item.name, price: item.price, quantity: qty })),
+        items: items.map(({item, qty, notes}) => ({ 
+            menu_item_id: item.id, 
+            quantity: qty,
+            special_instructions: notes
+        })),
+        special_notes: document.getElementById('global-notes').value,
         order_source: 'QR',
-        total: items.reduce((s,{item,qty}) => s+(parseFloat(item.price)*qty), 0)
+        status: 'pending_waiter'
       };
 
       try {
-        await fetch('/api/customer-order', {
+        const res = await fetch('/api/customer-order', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(payload)
         });
-      } catch(e) { /* Graceful — show success anyway */ }
+        const data = await res.json();
+        if(data.success) {
+            activeOrderId = data.order.id || data.order.orderId;
+            startTracking();
+        }
+      } catch(e) { /* Error handling */ }
 
-      // Show success
-      const successEl = document.getElementById('order-success');
-      document.getElementById('success-order-id').textContent = 'Order #' + Date.now().toString().slice(-6);
-      document.getElementById('success-total').textContent = '₹' + payload.total.toFixed(0) + ' Total';
-      const itemsEl = document.getElementById('success-items');
-      itemsEl.innerHTML = items.map(({item,qty}) => 
-        `<div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:13px;">
-          <span style="font-weight:700;color:rgba(255,255,255,0.7);">${item.name} × ${qty}</span>
-          <span style="color:#f97316;font-weight:800;">₹${(item.price*qty).toFixed(0)}</span>
+      // Update Result View
+      const total = items.reduce((s,{item,qty}) => s+(parseFloat(item.price)*qty), 0);
+      document.getElementById('success-total').textContent = '₹' + total.toFixed(0);
+      document.getElementById('success-items').innerHTML = items.map(({item,qty,notes}) => 
+        `<div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:12px;">
+            <span style="font-weight:800;color:white;text-transform:uppercase;font-style:italic;">${item.name} × ${qty}</span>
+            <span style="color:#f97316;font-weight:900;">₹${(item.price*qty).toFixed(0)}</span>
+          </div>
+          ${notes ? `<p style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:700;margin-top:2px;">↳ ${notes}</p>` : ''}
         </div>`
       ).join('');
-      successEl.classList.add('show');
+      
+      closeCheckout();
+      document.getElementById('order-success').classList.add('show');
+    }
+
+    function startTracking() {
+        if(trackInterval) clearInterval(trackInterval);
+        trackInterval = setInterval(pollStatus, 3000);
+        pollStatus();
+    }
+
+    async function pollStatus() {
+        if(!activeOrderId) return;
+        try {
+            const res = await fetch(`/api/v2/restaurant/orders/${activeOrderId}`);
+            const data = await res.json();
+            updateStatusUI(data.status);
+        } catch(e) {}
+    }
+
+    function updateStatusUI(status) {
+        const icon = document.getElementById('status-icon');
+        const title = document.getElementById('status-title');
+        const desc = document.getElementById('status-desc');
+        const badge = document.getElementById('status-badge');
+
+        switch(status) {
+            case 'pending_waiter':
+                icon.textContent = '⏳';
+                title.textContent = 'Request Sent';
+                desc.textContent = 'Waiting for waiter to confirm your order...';
+                badge.textContent = '🟡 Pending Waiter';
+                badge.style.color = '#f97316';
+                break;
+            case 'confirmed':
+                icon.textContent = '✅';
+                title.textContent = 'Confirmed!';
+                desc.textContent = 'Waiter has confirmed your order. Sending to kitchen...';
+                badge.textContent = '🟢 Confirmed';
+                badge.style.color = '#10b981';
+                break;
+            case 'preparing':
+                icon.textContent = '👨‍🍳';
+                title.textContent = 'Preparing';
+                desc.textContent = 'Our chefs are crafting your meal with love.';
+                badge.textContent = '🔥 In Kitchen';
+                badge.style.color = '#f43f5e';
+                break;
+            case 'ready':
+                icon.textContent = '🍽️';
+                title.textContent = 'Order Ready';
+                desc.textContent = 'Your food is ready! It will be at your table any second.';
+                badge.textContent = '⚡️ Ready to Serve';
+                badge.style.color = '#8b5cf6';
+                break;
+        }
     }
 
     function resetOrder() {
+      if(trackInterval) clearInterval(trackInterval);
+      activeOrderId = null;
       cart = {};
       document.getElementById('order-success').classList.remove('show');
       document.getElementById('cart-bar').classList.add('hidden');
       document.getElementById('search-input').value = '';
+      document.getElementById('final-confirm-btn').disabled = false;
+      document.getElementById('final-confirm-btn').textContent = 'Confirm Request →';
       filterCategory('All', document.querySelector('.cat-tab'));
     }
 

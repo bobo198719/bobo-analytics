@@ -1,0 +1,15 @@
+---
+import RestaurantOSLayout from "../layouts/RestaurantOSLayout.astro";
+import WaiterDashboard from "../components/restaurant/WaiterDashboard.jsx";
+import "../styles/restaurant.css";
+---
+
+<RestaurantOSLayout title="Waiter Intel Terminal | Bobo OS">
+   <div id="waiterSection" class="section active animate-in fade-in transition-all">
+      <WaiterDashboard client:load />
+   </div>
+</RestaurantOSLayout>
+
+<style is:global>
+  .section.hidden { display: none; }
+</style>

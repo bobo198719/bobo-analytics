@@ -19,11 +19,12 @@ const KDS = () => {
   const fetchOrders = async () => {
     try {
       // Phase 5: Polling every 3s. Removing filter to allow status mapping.
-      const res = await fetch('/api/v2/restaurant/orders?all=true');
+      const res = await fetch('/api/v2/restaurant/orders');
       if (!res.ok) throw new Error("KDS HUB OFFLINE");
       const data = await res.json();
-      // Only show non-completed for primary queue
-      setOrders(data.filter(o => o.status !== 'completed'));
+      // Show confirmed, preparing, ready orders
+      const activeStates = ['confirmed', 'preparing', 'ready'];
+      setOrders(data.filter(o => activeStates.includes(o.status)));
       setError(null);
       setLoading(false);
     } catch (err) { 
@@ -65,13 +66,13 @@ const KDS = () => {
   // Phase 2: Kitchen Status Colors
   const getStatusConfig = (status) => {
     switch (status) {
-      case 'pending':
+      case 'confirmed':
         return { 
           bg: 'bg-[#facc15]/10', 
           border: 'border-[#facc15]/40', 
           text: 'text-[#facc15]', 
           glow: 'shadow-[#facc15]/20',
-          label: 'Inbound'
+          label: 'Pending Confirmed'
         };
       case 'preparing':
         return { 
@@ -116,17 +117,17 @@ const KDS = () => {
           </div>
           <div className="flex gap-6 relative z-10">
              <div className="bg-white/5 p-6 rounded-3xl border border-white/10 flex items-center gap-6 shadow-2xl backdrop-blur-xl">
-                <div className="w-14 h-14 bg-yellow-500/20 rounded-2xl flex items-center justify-center text-yellow-500 font-black italic text-2xl shadow-xl shadow-yellow-500/10">{orders.filter(o => o.status === 'pending').length}</div>
+                <div className="w-14 h-14 bg-yellow-500/20 rounded-2xl flex items-center justify-center text-yellow-500 font-black italic text-2xl shadow-xl shadow-yellow-500/10">{orders.filter(o => o.status === 'confirmed').length}</div>
                 <div>
                    <p className="text-[8px] font-black uppercase text-white/20 tracking-widest italic">Inbound KOTs</p>
-                   <p className="text-xs font-black italic uppercase">Critical Queue</p>
+                   <p className="text-xs font-black italic uppercase">Confirmed Queue</p>
                 </div>
              </div>
              <div className="bg-white/5 p-6 rounded-3xl border border-white/10 flex items-center gap-6 shadow-2xl backdrop-blur-xl">
-                <div className="w-14 h-14 bg-orange-500/20 rounded-2xl flex items-center justify-center text-orange-500 font-black italic text-2xl shadow-xl shadow-orange-500/10">{orders.filter(o => o.status === 'preparing').length}</div>
+                <div className="w-14 h-14 bg-orange-500/20 rounded-2xl flex items-center justify-center text-orange-500 font-black italic text-2xl shadow-xl shadow-orange-500/10">{orders.filter(o => o.status === 'preparing' || o.status === 'ready').length}</div>
                 <div>
                    <p className="text-[8px] font-black uppercase text-white/20 tracking-widest italic">Station Activity</p>
-                   <p className="text-xs font-black italic uppercase">Active Prepping</p>
+                   <p className="text-xs font-black italic uppercase">In-Progress</p>
                 </div>
              </div>
           </div>
@@ -161,15 +162,28 @@ const KDS = () => {
                      </div>
                   </div>
 
-                  <div className="flex-1 overflow-y-auto custom-scrollbar pr-4 mb-10 relative z-10 space-y-4">
+                   <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 mb-6 relative z-10 space-y-3">
                       {order.items?.map((item, idx) => (
-                         <div key={idx} className="flex items-center gap-5 p-5 bg-white/5 rounded-3xl border border-white/5 hover:border-white/20 transition-all hover:bg-white/10">
-                            <div className={`w-2 h-2 rounded-full ${cfg.text} animate-pulse`}></div>
-                            <p className="font-black italic text-sm tracking-tight text-white/80">
-                              {item.quantity}x {item.name || `Item ${item.menu_item_id}`}
-                            </p>
+                         <div key={idx} className="p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/10 transition-all hover:bg-white/10">
+                            <div className="flex items-center gap-3">
+                              <div className={`w-2 h-2 rounded-full ${cfg.text} animate-pulse`}></div>
+                              <p className="font-black italic text-sm tracking-tight text-white/90">
+                                {item.quantity}x {item.menu_name || `Item ${item.menu_item_id}`}
+                              </p>
+                            </div>
+                            {item.special_instructions && (
+                              <p className="text-[10px] text-rose-400 font-bold italic mt-2 ml-5 leading-relaxed">
+                                ↳ "{item.special_instructions}"
+                              </p>
+                            )}
                          </div>
                       ))}
+                      {order.special_notes && (
+                         <div className="p-4 bg-orange-500/10 border border-orange-500/20 rounded-2xl mt-4">
+                            <p className="text-[9px] font-black uppercase text-orange-500 tracking-widest mb-1 italic">Order Note</p>
+                            <p className="text-[11px] text-white/70 italic leading-relaxed">"{order.special_notes}"</p>
+                         </div>
+                      )}
                   </div>
 
                   <div className="pt-8 border-t border-white/5 relative z-10 flex flex-col gap-6">
@@ -177,12 +191,12 @@ const KDS = () => {
                         <div className="flex items-center gap-2"><Clock className="w-3.5 h-3.5" /> Pipeline Signal: Active</div>
                      </div>
 
-                     {order.status === 'pending' && (
+                     {order.status === 'confirmed' && (
                        <button 
                          onClick={() => updateStatus(order.id, 'preparing')}
-                         className="w-full py-6 bg-[#fb923c] rounded-3xl font-black italic uppercase tracking-[0.3em] text-[10px] shadow-2xl shadow-orange-600/30 hover:scale-[1.05] active:scale-95 transition-all text-white"
+                         className="w-full py-6 bg-orange-500 rounded-3xl font-black italic uppercase tracking-[0.3em] text-[10px] shadow-2xl shadow-orange-600/30 hover:scale-[1.05] active:scale-95 transition-all text-white"
                        >
-                         Commence Matrix
+                         Commence Prep
                        </button>
                      )}
 
