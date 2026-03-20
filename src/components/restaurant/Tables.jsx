@@ -89,8 +89,8 @@ const Tables = () => {
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 pb-20">
         {tables.map((table) => {
           const config = getStatusConfig(table.status);
-          const qrUrl = `${window.location.host.includes('localhost') ? 'http://' : 'https://'}${window.location.host}/order/${table.table_number}`;
-          const qrImgSrc = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrUrl)}&bgcolor=111827&color=ffffff&margin=16`;
+          const qrUrl = `${window.location.origin}/order/${table.table_number}`;
+          const qrImgSrc = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrUrl)}&bgcolor=ffffff&color=000000&margin=20`;
           return (
             <div key={table.id} className="group relative bg-white/5 border border-white/10 rounded-[48px] overflow-hidden shadow-2xl transition-all hover:border-orange-500/30 hover:bg-white/[0.07]">
               {/* Main clickable area */}
@@ -137,7 +137,7 @@ const Tables = () => {
 
       {/* QR MODAL */}
       {qrModal && (
-        <div className="fixed inset-0 bg-[#05081a]/95 backdrop-blur-3xl z-[99999] flex items-center justify-center p-6" onClick={() => setQrModal(null)}>
+        <div className="fixed inset-0 bg-[#05081a]/95 backdrop-blur-3xl z-[100000] flex items-center justify-center p-6" onClick={() => setQrModal(null)}>
           <div onClick={e => e.stopPropagation()} className="bg-[#0b0f24] border border-orange-500/20 rounded-[48px] p-10 max-w-sm w-full text-center shadow-[0_0_80px_rgba(249,115,22,0.15)] relative">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-rose-500 rounded-t-[48px]"></div>
             <button onClick={() => setQrModal(null)} className="absolute top-5 right-5 w-9 h-9 bg-white/5 rounded-full flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all"><X className="w-4 h-4" /></button>
@@ -147,7 +147,12 @@ const Tables = () => {
             
             {/* QR Code */}
             <div className="bg-white rounded-3xl p-4 flex items-center justify-center mx-auto mb-6" style={{width:'220px',height:'220px'}}>
-              <img src={qrModal.qrImgSrc} alt="QR Code" className="w-full h-full" />
+              <img 
+                src={qrModal.qrImgSrc} 
+                alt="QR Code" 
+                className="w-full h-full" 
+                onError={(e) => { e.target.style.display='none'; e.target.parentNode.innerHTML='<div class="text-black font-black text-[10px] uppercase">Service Error: QR API Offline</div>'; }}
+              />
             </div>
 
             <p className="text-[9px] text-white/20 font-mono mb-6 bg-white/5 rounded-xl px-3 py-2 break-all">{qrModal.qrUrl}</p>
