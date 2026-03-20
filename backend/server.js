@@ -127,6 +127,16 @@ app.get("/", (req, res) => {
     `);
 });
 
+app.get("/api/db-repair", async (req, res) => {
+    try {
+        const pg = require("./pg_db");
+        await pg.pool.query('ALTER TABLE orders ADD COLUMN IF NOT EXISTS special_notes TEXT');
+        res.json({ success: true, message: "Orders schema repaired. special_notes added." });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
 app.get("/api/system-repair", async (req, res) => {
     try {
         const { exec } = require('child_process');

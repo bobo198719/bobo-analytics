@@ -155,7 +155,12 @@ const { tableId } = Astro.params;
       } catch(e) {
         console.error("Menu Load Failed:", e);
         document.getElementById('loading-screen').innerHTML = 
-          '<p style="color:rgba(255,255,255,0.3);font-size:13px;text-align:center;padding:32px;">Menu temporarily unavailable.<br>Please ask your server.</p>';
+          `<div style="color:rgba(255,255,255,0.4);font-size:12px;text-align:center;padding:32px;">
+            <p style="font-size:24px;margin-bottom:12px;">🚧</p>
+            <p style="font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:white;margin-bottom:8px;">Menu Sync Failure</p>
+            <p style="font-size:10px;font-family:monospace;margin-bottom:16px;color:#f43f5e;">${e.message}</p>
+            <button onclick="location.reload()" style="background:white/10;border:1px solid white/20;color:white;padding:8px 16px;border-radius:12px;font-size:10px;font-weight:900;text-transform:uppercase;">Try Reconnect</button>
+          </div>`;
       }
     };
 
