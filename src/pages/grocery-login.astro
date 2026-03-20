@@ -141,6 +141,16 @@ import MainLayout from "../layouts/MainLayout.astro";
   </style>
 
   <script is:inline>
+    const loginForm = document.getElementById('loginForm');
+    const authStatus = document.getElementById('auth-status');
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const storeId = document.getElementById('storeId').value;
+      const pass = document.getElementById('password').value;
+      
+      authStatus.innerHTML = '<div class="text-xs text-white/50 text-center mb-4 italic animate-pulse tracking-widest uppercase font-black">Validating Terminal...</div>';
+
       try {
         const res = await fetch("/api/auth/login", {
           method: "POST",
@@ -155,7 +165,7 @@ import MainLayout from "../layouts/MainLayout.astro";
           authStatus.innerHTML = `<div class="error-msg">${data.message || 'Invalid Terminal ID or Key.'}</div>`;
         }
       } catch (err) {
-        authStatus.innerHTML = '<div class="error-msg">Connection failed.</div>';
+        authStatus.innerHTML = '<div class="error-msg">Connection failed. Check terminal uplink.</div>';
       }
     });
   </script>

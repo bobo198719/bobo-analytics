@@ -29,6 +29,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                     <div class="file-upload-wrapper">
                         <input type="file" id="biz-logo-file" accept="image/*" onchange="handleFileUpload(this, 'biz-logo')" />
                         <div class="file-preview" id="biz-logo-preview"></div>
+                        <button class="remove-img-btn" id="remove-biz-logo" onclick="removeImage('biz-logo')" style="display:none;">Remove Photo</button>
                     </div>
                 </div>
             </section>
@@ -48,6 +49,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                     <div class="file-upload-wrapper">
                         <input type="file" id="hero-bg-file" accept="image/*" capture="environment" onchange="handleFileUpload(this, 'hero-bg')" />
                         <div class="file-preview" id="hero-bg-preview"></div>
+                        <button class="remove-img-btn" id="remove-hero-bg" onclick="removeImage('hero-bg')" style="display:none;">Remove Photo</button>
                     </div>
                 </div>
             </section>
@@ -67,6 +69,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                     <div class="file-upload-wrapper">
                         <input type="file" id="about-img-file" accept="image/*" capture="environment" onchange="handleFileUpload(this, 'about-img')" />
                         <div class="file-preview" id="about-img-preview"></div>
+                        <button class="remove-img-btn" id="remove-about-img" onclick="removeImage('about-img')" style="display:none;">Remove Photo</button>
                     </div>
                 </div>
             </section>
@@ -152,6 +155,17 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             border-radius: 8px;
             display: none;
             margin-top: 10px;
+        }
+        .remove-img-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            margin-top: 8px;
+            cursor: pointer;
+            font-weight: 700;
         }
 
         .editor-sidebar { display: flex; flex-direction: column; gap: 24px; }
@@ -260,7 +274,28 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 preview.style.display = 'none';
             } finally {
                 isUploading = false;
+                updateRemoveButtons();
             }
+        }
+
+        window.removeImage = (key) => {
+            uploadedImages[key] = ''; // Clear the reference
+            const preview = document.getElementById(key + '-preview');
+            preview.style.display = 'none';
+            preview.style.backgroundImage = '';
+            
+            // Also clear the file input
+            const input = document.getElementById(key + '-file');
+            if (input) input.value = '';
+            
+            updateRemoveButtons();
+        }
+
+        function updateRemoveButtons() {
+            ['biz-logo', 'hero-bg', 'about-img'].forEach(key => {
+                const btn = document.getElementById('remove-' + key);
+                if (btn) btn.style.display = uploadedImages[key] ? 'inline-block' : 'none';
+            });
         }
 
         const host = window.location.host;
@@ -271,7 +306,8 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
 
         async function loadData() {
             try {
-                const response = await fetch(`${API_BASE}/settings/${tenantId}`);
+                // Add cache busting to ensure we get latest server state
+                const response = await fetch(`${API_BASE}/settings/${tenantId}?t=${Date.now()}`);
                 if (response.ok) {
                     const data = await response.json();
                     applyDataToForm(data);
@@ -314,6 +350,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 ap.style.display = 'block';
                 uploadedImages['about-img'] = data.aboutImg;
             }
+            updateRemoveButtons();
         }
 
         window.saveWebsiteData = async () => {

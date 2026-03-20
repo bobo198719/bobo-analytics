@@ -1,0 +1,496 @@
+---
+// Restaurant Pricing Page — Module 8
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Restaurant OS Pricing | Bobo SaaS</title>
+  <meta name="description" content="Choose the perfect plan for your restaurant. Start with a 7-day free trial."/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700;1,800;1,900&display=swap" rel="stylesheet"/>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html,body{background:#05081a;color:white;font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;}
+    ::-webkit-scrollbar{width:4px} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:4px}
+    .plan-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:32px;padding:40px;transition:all 0.3s;position:relative;overflow:hidden;}
+    .plan-card.popular{background:rgba(249,115,22,0.06);border-color:rgba(249,115,22,0.3);transform:scale(1.03);}
+    .plan-card:hover{border-color:rgba(249,115,22,0.4);background:rgba(249,115,22,0.05);}
+    .feature-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px;color:rgba(255,255,255,0.7);font-weight:600;}
+    .feature-item:last-child{border-bottom:none;}
+    .check{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#10b981,#059669);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;}
+    .cross{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;opacity:0.4;}
+    .btn-primary{width:100%;padding:16px;border:none;border-radius:20px;font-size:14px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:0.05em;cursor:pointer;transition:all 0.2s;}
+    .btn-orange{background:linear-gradient(135deg,#f97316,#e11d48);color:white;box-shadow:0 8px 32px rgba(249,115,22,0.35);}
+    .btn-orange:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(249,115,22,0.5);}
+    .btn-outline{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.15);}
+    .btn-outline:hover{background:rgba(255,255,255,0.1);color:white;}
+    .badge{display:inline-block;padding:4px 12px;border-radius:50px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;}
+    .toast{position:fixed;top:24px;right:24px;z-index:9999;background:#0f172a;border:1px solid rgba(249,115,22,0.4);border-radius:16px;padding:16px 24px;font-size:13px;font-weight:700;color:white;transform:translateY(-80px);transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);max-width:320px;}
+    .toast.show{transform:translateY(0);}
+    .faq-item{border-bottom:1px solid rgba(255,255,255,0.07);padding:20px 0;}
+    .faq-q{font-size:15px;font-weight:800;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+    .faq-a{font-size:13px;color:rgba(255,255,255,0.5);margin-top:12px;line-height:1.7;display:none;}
+    .faq-item.open .faq-a{display:block;}
+    .faq-item.open .faq-arrow{transform:rotate(180deg);}
+    .faq-arrow{transition:transform 0.2s;}
+  </style>
+</head>
+<body>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<!-- HERO -->
+<section style="text-align:center;padding:80px 24px 60px;position:relative;overflow:hidden;">
+  <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:600px;height:300px;background:radial-gradient(ellipse,rgba(249,115,22,0.15) 0%,transparent 70%);pointer-events:none;"></div>
+  <a href="/restaurant-login" style="display:inline-flex;align-items:center;gap:8px;color:rgba(255,255,255,0.4);font-size:12px;font-weight:700;text-decoration:none;margin-bottom:32px;transition:color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">
+    ← Back to Login
+  </a>
+  <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3);border-radius:50px;padding:6px 16px;margin-bottom:24px;">
+    <span style="width:8px;height:8px;border-radius:50%;background:#f97316;animation:pulse 1.5s infinite;display:inline-block;"></span>
+    <span style="font-size:11px;font-weight:900;color:#f97316;text-transform:uppercase;letter-spacing:0.15em;">7-Day Free Trial — No Credit Card Needed</span>
+  </div>
+  <h1 style="font-size:clamp(36px,6vw,72px);font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:-0.03em;line-height:1;margin-bottom:20px;">
+    Simple, Honest<br/><span style="background:linear-gradient(135deg,#f97316,#e11d48);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Pricing</span>
+  </h1>
+  <p style="font-size:16px;color:rgba(255,255,255,0.45);font-weight:600;max-width:480px;margin:0 auto 40px;">
+    Scale your restaurant with powerful tools. Start free, upgrade when you're ready. All plans include full Restaurant OS access.
+  </p>
+  <!-- Toggle Monthly/Annual -->
+  <div style="display:inline-flex;align-items:center;gap:16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:50px;padding:6px 8px;">
+    <button id="monthly-btn" onclick="setBilling('monthly')" style="padding:8px 20px;border-radius:50px;border:none;font-size:12px;font-weight:900;text-transform:uppercase;cursor:pointer;background:linear-gradient(135deg,#f97316,#e11d48);color:white;transition:all 0.2s;">Monthly</button>
+    <button id="annual-btn" onclick="setBilling('annual')" style="padding:8px 20px;border-radius:50px;border:none;font-size:12px;font-weight:900;text-transform:uppercase;cursor:pointer;background:transparent;color:rgba(255,255,255,0.4);transition:all 0.2s;">Annual <span style="color:#10b981;font-size:10px;">Save 20%</span></button>
+  </div>
+</section>
+
+<!-- PLANS -->
+<section style="max-width:1100px;margin:0 auto;padding:0 24px 80px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;align-items:start;">
+
+  <!-- STARTER -->
+  <div class="plan-card">
+    <div style="margin-bottom:24px;">
+      <span class="badge" style="background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);margin-bottom:12px;">Starter</span>
+      <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px;">
+        <span style="font-size:44px;font-weight:900;font-style:italic;">₹<span id="starter-price">999</span></span>
+        <span style="color:rgba(255,255,255,0.3);font-size:13px;font-weight:700;">/month</span>
+      </div>
+      <p style="font-size:13px;color:rgba(255,255,255,0.4);font-weight:600;">Perfect for small restaurants just getting started.</p>
+    </div>
+    <div style="margin-bottom:28px;">
+      <div class="feature-item"><div class="check">✓</div>POS Terminal</div>
+      <div class="feature-item"><div class="check">✓</div>Dashboard & Analytics</div>
+      <div class="feature-item"><div class="check">✓</div>Menu Management</div>
+      <div class="feature-item"><div class="check">✓</div>Max 5 Tables</div>
+      <div class="feature-item"><div class="cross">✕</div><span style="opacity:0.3;">Kitchen Display (KDS)</span></div>
+      <div class="feature-item"><div class="cross">✕</div><span style="opacity:0.3;">QR Ordering</span></div>
+      <div class="feature-item"><div class="cross">✕</div><span style="opacity:0.3;">Smart Menu Upload</span></div>
+      <div class="feature-item"><div class="cross">✕</div><span style="opacity:0.3;">Multi-location</span></div>
+    </div>
+    <button class="btn-primary btn-outline" onclick="startTrial('starter')">Start Free Trial →</button>
+    <p style="text-align:center;font-size:10px;color:rgba(255,255,255,0.2);margin-top:10px;font-weight:600;">Then ₹<span class="starter-price-tag">999</span>/month · Cancel anytime</p>
+  </div>
+
+  <!-- GROWTH (POPULAR) -->
+  <div class="plan-card popular">
+    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f97316,#e11d48);"></div>
+    <div style="position:absolute;top:16px;right:20px;">
+      <span class="badge" style="background:linear-gradient(135deg,#f97316,#e11d48);color:white;">⭐ Most Popular</span>
+    </div>
+    <div style="margin-bottom:24px;">
+      <span class="badge" style="background:rgba(249,115,22,0.15);color:#f97316;margin-bottom:12px;">Growth</span>
+      <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px;">
+        <span style="font-size:44px;font-weight:900;font-style:italic;background:linear-gradient(135deg,#f97316,#e11d48);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">₹<span id="growth-price">1999</span></span>
+        <span style="color:rgba(255,255,255,0.3);font-size:13px;font-weight:700;">/month</span>
+      </div>
+      <p style="font-size:13px;color:rgba(255,255,255,0.4);font-weight:600;">For growing restaurants that need full control.</p>
+    </div>
+    <div style="margin-bottom:28px;">
+      <div class="feature-item"><div class="check">✓</div>Everything in Starter</div>
+      <div class="feature-item"><div class="check">✓</div>Kitchen Display System</div>
+      <div class="feature-item"><div class="check">✓</div>QR Table Ordering</div>
+      <div class="feature-item"><div class="check">✓</div>Smart Menu Upload (AI)</div>
+      <div class="feature-item"><div class="check">✓</div>Max 15 Tables</div>
+      <div class="feature-item"><div class="check">✓</div>Customer CRM</div>
+      <div class="feature-item"><div class="cross">✕</div><span style="opacity:0.3;">Multi-location</span></div>
+      <div class="feature-item"><div class="cross">✕</div><span style="opacity:0.3;">Custom Branding</span></div>
+    </div>
+    <button class="btn-primary btn-orange" onclick="startTrial('growth')">Start Free Trial →</button>
+    <p style="text-align:center;font-size:10px;color:rgba(255,255,255,0.2);margin-top:10px;font-weight:600;">Then ₹<span class="growth-price-tag">1999</span>/month · Cancel anytime</p>
+  </div>
+
+  <!-- PRO -->
+  <div class="plan-card">
+    <div style="margin-bottom:24px;">
+      <span class="badge" style="background:rgba(168,85,247,0.15);color:#a855f7;margin-bottom:12px;">Pro</span>
+      <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px;">
+        <span style="font-size:44px;font-weight:900;font-style:italic;background:linear-gradient(135deg,#a855f7,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">₹<span id="pro-price">2999</span></span>
+        <span style="color:rgba(255,255,255,0.3);font-size:13px;font-weight:700;">/month</span>
+      </div>
+      <p style="font-size:13px;color:rgba(255,255,255,0.4);font-weight:600;">The complete Restaurant OS for serious operators.</p>
+    </div>
+    <div style="margin-bottom:28px;">
+      <div class="feature-item"><div class="check" style="background:linear-gradient(135deg,#a855f7,#6366f1);">✓</div>Everything in Growth</div>
+      <div class="feature-item"><div class="check" style="background:linear-gradient(135deg,#a855f7,#6366f1);">✓</div>Unlimited Tables</div>
+      <div class="feature-item"><div class="check" style="background:linear-gradient(135deg,#a855f7,#6366f1);">✓</div>Multi-location Support</div>
+      <div class="feature-item"><div class="check" style="background:linear-gradient(135deg,#a855f7,#6366f1);">✓</div>Custom Branding</div>
+      <div class="feature-item"><div class="check" style="background:linear-gradient(135deg,#a855f7,#6366f1);">✓</div>Priority Support (24/7)</div>
+      <div class="feature-item"><div class="check" style="background:linear-gradient(135deg,#a855f7,#6366f1);">✓</div>White-label Reports</div>
+      <div class="feature-item"><div class="check" style="background:linear-gradient(135deg,#a855f7,#6366f1);">✓</div>API Access</div>
+      <div class="feature-item"><div class="check" style="background:linear-gradient(135deg,#a855f7,#6366f1);">✓</div>Dedicated Account Manager</div>
+    </div>
+    <button class="btn-primary" style="background:linear-gradient(135deg,#a855f7,#6366f1);color:white;box-shadow:0 8px 32px rgba(168,85,247,0.35);" onclick="startTrial('pro')">Start Free Trial →</button>
+    <p style="text-align:center;font-size:10px;color:rgba(255,255,255,0.2);margin-top:10px;font-weight:600;">Then ₹<span class="pro-price-tag">2999</span>/month · Cancel anytime</p>
+  </div>
+
+</section>
+
+<!-- TRUST STRIP -->
+<section style="max-width:900px;margin:0 auto 80px;padding:0 24px;">
+  <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:24px;padding:32px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:24px;text-align:center;">
+    {[
+      {n:'500+',l:'Restaurants'},
+      {n:'₹2Cr+',l:'Orders Processed'},
+      {n:'99.9%',l:'Uptime'},
+      {n:'2min',l:'Avg Setup Time'},
+    ].map(s => (
+      <div>
+        <p style="font-size:32px;font-weight:900;font-style:italic;color:#f97316;">{s.n}</p>
+        <p style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.1em;margin-top:4px;">{s.l}</p>
+      </div>
+    ))}
+  </div>
+</section>
+
+<!-- COMPARISON TABLE -->
+<section style="max-width:900px;margin:0 auto 80px;padding:0 24px;">
+  <h2 style="text-align:center;font-size:32px;font-weight:900;font-style:italic;text-transform:uppercase;margin-bottom:40px;">Full <span style="color:#f97316;">Feature</span> Comparison</h2>
+  <div style="overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead>
+        <tr style="border-bottom:2px solid rgba(255,255,255,0.1);">
+          <th style="text-align:left;padding:16px;color:rgba(255,255,255,0.4);font-size:11px;text-transform:uppercase;font-weight:900;letter-spacing:0.1em;">Feature</th>
+          <th style="text-align:center;padding:16px;color:rgba(255,255,255,0.7);font-weight:900;">Starter</th>
+          <th style="text-align:center;padding:16px;color:#f97316;font-weight:900;">Growth ⭐</th>
+          <th style="text-align:center;padding:16px;color:#a855f7;font-weight:900;">Pro</th>
+        </tr>
+      </thead>
+      <tbody id="compare-body"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section style="max-width:700px;margin:0 auto 80px;padding:0 24px;">
+  <h2 style="text-align:center;font-size:32px;font-weight:900;font-style:italic;text-transform:uppercase;margin-bottom:40px;">Common <span style="color:#f97316;">Questions</span></h2>
+  <div id="faq-list"></div>
+</section>
+
+<!-- CTA FOOTER -->
+<section style="text-align:center;padding:80px 24px;background:linear-gradient(180deg,transparent,rgba(249,115,22,0.08));border-top:1px solid rgba(255,255,255,0.05);">
+  <h2 style="font-size:40px;font-weight:900;font-style:italic;text-transform:uppercase;margin-bottom:16px;">Ready to <span style="color:#f97316;">Serve</span> More?</h2>
+  <p style="color:rgba(255,255,255,0.4);font-size:15px;margin-bottom:32px;">Start your 7-day free trial today. No credit card required.</p>
+  <button onclick="startTrial('growth')" style="padding:18px 48px;background:linear-gradient(135deg,#f97316,#e11d48);border:none;border-radius:50px;color:white;font-size:16px;font-weight:900;font-style:italic;text-transform:uppercase;cursor:pointer;box-shadow:0 12px 40px rgba(249,115,22,0.4);transition:all 0.2s;">
+    Get Started Free →
+  </button>
+  <p style="color:rgba(255,255,255,0.2);font-size:12px;margin-top:16px;">Then from ₹999/month. Cancel anytime.</p>
+</section>
+
+<!-- PAYMENT MODAL -->
+<div id="payment-modal" style="display:none;position:fixed;inset:0;background:rgba(5,8,26,0.95);backdrop-filter:blur(20px);z-index:9999;align-items:center;justify-content:center;padding:24px;">
+  <div style="background:#0b0f24;border:1px solid rgba(249,115,22,0.3);border-radius:40px;padding:40px;max-width:480px;width:100%;position:relative;">
+    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f97316,#e11d48);border-radius:40px 40px 0 0;"></div>
+    <h2 style="font-size:24px;font-weight:900;font-style:italic;text-transform:uppercase;text-align:center;margin-bottom:8px;">Complete <span style="color:#f97316;">Purchase</span></h2>
+    <p id="modal-plan-label" style="text-align:center;color:rgba(255,255,255,0.3);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:32px;"></p>
+
+    <div style="space-y:16px;margin-bottom:24px;">
+      <div style="margin-bottom:16px;">
+        <label style="font-size:10px;font-weight:900;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.2em;display:block;margin-bottom:8px;">Restaurant Name</label>
+        <input id="pay-restaurant-name" type="text" placeholder="Eg: Sharma's Kitchen" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:white;border-radius:16px;padding:14px;font-size:14px;font-weight:600;outline:none;"/>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="font-size:10px;font-weight:900;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.2em;display:block;margin-bottom:8px;">Email</label>
+        <input id="pay-email" type="email" placeholder="owner@restaurant.com" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:white;border-radius:16px;padding:14px;font-size:14px;font-weight:600;outline:none;"/>
+      </div>
+      <div>
+        <label style="font-size:10px;font-weight:900;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.2em;display:block;margin-bottom:8px;">Phone</label>
+        <input id="pay-phone" type="tel" placeholder="+91 9876543210" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:white;border-radius:16px;padding:14px;font-size:14px;font-weight:600;outline:none;"/>
+      </div>
+    </div>
+
+    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:20px;margin-bottom:24px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+        <span style="color:rgba(255,255,255,0.5);font-size:13px;font-weight:600;">Plan</span>
+        <span id="modal-plan-name" style="font-weight:800;color:white;font-size:13px;text-transform:capitalize;"></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+        <span style="color:rgba(255,255,255,0.5);font-size:13px;font-weight:600;">Billing</span>
+        <span id="modal-billing-cycle" style="font-weight:800;color:rgba(255,255,255,0.7);font-size:13px;"></span>
+      </div>
+      <div style="height:1px;background:rgba(255,255,255,0.07);margin:12px 0;"></div>
+      <div style="display:flex;justify-content:space-between;">
+        <span style="font-weight:900;font-size:15px;">Total</span>
+        <span id="modal-amount" style="font-weight:900;font-size:18px;font-style:italic;color:#f97316;"></span>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;">
+      <button onclick="closePaymentModal()" style="flex:1;padding:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;color:rgba(255,255,255,0.5);font-weight:900;font-size:12px;text-transform:uppercase;cursor:pointer;">Cancel</button>
+      <button id="pay-now-btn" onclick="proceedToPayment()" style="flex:2;padding:14px;background:linear-gradient(135deg,#f97316,#e11d48);border:none;border-radius:16px;color:white;font-weight:900;font-size:13px;font-style:italic;text-transform:uppercase;cursor:pointer;box-shadow:0 6px 24px rgba(249,115,22,0.4);">Pay Now →</button>
+    </div>
+    <p style="text-align:center;font-size:10px;color:rgba(255,255,255,0.2);margin-top:12px;">🔒 Secured by Razorpay · 256-bit SSL</p>
+  </div>
+</div>
+
+<script>
+  const PLANS = {
+    starter: { name: 'Starter', monthly: 999, annual: 799 },
+    growth:  { name: 'Growth',  monthly: 1999, annual: 1599 },
+    pro:     { name: 'Pro',     monthly: 2999, annual: 2399 },
+  };
+
+  // Razorpay Key — Replace with your live key when going live
+  const RAZORPAY_KEY = 'rzp_test_YOUR_KEY_HERE';
+
+  let currentBilling = 'monthly';
+  let selectedPlan = null;
+
+  // ── BILLING TOGGLE ──────────────────────────────
+  function setBilling(type) {
+    currentBilling = type;
+    const mb = document.getElementById('monthly-btn');
+    const ab = document.getElementById('annual-btn');
+    const active = 'background:linear-gradient(135deg,#f97316,#e11d48);color:white;';
+    const inactive = 'background:transparent;color:rgba(255,255,255,0.4);';
+    mb.style.cssText += type==='monthly' ? active : inactive;
+    ab.style.cssText += type==='annual' ? active : inactive;
+    updatePrices();
+  }
+
+  function updatePrices() {
+    Object.entries(PLANS).forEach(([key, plan]) => {
+      const price = currentBilling === 'annual' ? plan.annual : plan.monthly;
+      const el = document.getElementById(key + '-price');
+      if (el) el.textContent = price;
+    });
+    document.querySelectorAll('.starter-price-tag').forEach(e => e.textContent = currentBilling==='annual' ? PLANS.starter.annual : PLANS.starter.monthly);
+    document.querySelectorAll('.growth-price-tag').forEach(e => e.textContent = currentBilling==='annual' ? PLANS.growth.annual : PLANS.growth.monthly);
+    document.querySelectorAll('.pro-price-tag').forEach(e => e.textContent = currentBilling==='annual' ? PLANS.pro.annual : PLANS.pro.monthly);
+  }
+
+  // ── TRIAL START ──────────────────────────────────
+  function startTrial(planKey) {
+    // Check if already logged in
+    const auth = localStorage.getItem('restaurant_auth');
+    if (auth === 'true') {
+      activateTrial(planKey);
+    } else {
+      // Show signup/payment modal
+      selectedPlan = planKey;
+      openPaymentModal(planKey, true);
+    }
+  }
+
+  function activateTrial(planKey) {
+    const trialExpiry = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 days
+    localStorage.setItem('restaurant_auth', 'true');
+    localStorage.setItem('restaurant_plan', planKey);
+    localStorage.setItem('subscription_status', 'trial');
+    localStorage.setItem('trial_expiry', trialExpiry.toString());
+    localStorage.setItem('subscription_expiry', trialExpiry.toString());
+    showToast('✅ 7-day trial activated for ' + PLANS[planKey].name + ' plan!');
+    setTimeout(() => window.location.href = '/restaurant-dashboard', 1500);
+  }
+
+  // ── PAYMENT MODAL ────────────────────────────────
+  let isTrialFlow = false;
+
+  function openPaymentModal(planKey, isTrial = false) {
+    selectedPlan = planKey;
+    isTrialFlow = isTrial;
+    const plan = PLANS[planKey];
+    const price = currentBilling === 'annual' ? plan.annual : plan.monthly;
+    document.getElementById('payment-modal').style.display = 'flex';
+    document.getElementById('modal-plan-label').textContent = plan.name + ' · ' + (currentBilling === 'annual' ? 'Annual' : 'Monthly');
+    document.getElementById('modal-plan-name').textContent = plan.name;
+    document.getElementById('modal-billing-cycle').textContent = currentBilling === 'annual' ? 'Annual (billed yearly)' : 'Monthly';
+    document.getElementById('modal-amount').textContent = '₹' + price + (currentBilling === 'annual' ? '/mo (₹' + (price*12) + '/yr)' : '/month');
+
+    if (isTrial) {
+      document.getElementById('pay-now-btn').textContent = 'Start Free Trial →';
+      document.getElementById('pay-now-btn').onclick = () => {
+        const name = document.getElementById('pay-restaurant-name').value.trim();
+        const email = document.getElementById('pay-email').value.trim();
+        if (!name || !email) { showToast('❌ Please fill restaurant name and email'); return; }
+        localStorage.setItem('restaurant_name', name);
+        localStorage.setItem('restaurant_email', email);
+        localStorage.setItem('restaurant_phone', document.getElementById('pay-phone').value.trim());
+        closePaymentModal();
+        activateTrial(planKey);
+      };
+    } else {
+      document.getElementById('pay-now-btn').textContent = 'Pay Now →';
+      document.getElementById('pay-now-btn').onclick = proceedToPayment;
+    }
+  }
+
+  function closePaymentModal() {
+    document.getElementById('payment-modal').style.display = 'none';
+  }
+
+  // ── RAZORPAY PAYMENT ─────────────────────────────
+  async function proceedToPayment() {
+    const name = document.getElementById('pay-restaurant-name').value.trim();
+    const email = document.getElementById('pay-email').value.trim();
+    const phone = document.getElementById('pay-phone').value.trim();
+    if (!name || !email) { showToast('❌ Please fill restaurant name and email'); return; }
+
+    const plan = PLANS[selectedPlan];
+    const amount = currentBilling === 'annual' ? plan.annual * 12 : plan.monthly;
+
+    const btn = document.getElementById('pay-now-btn');
+    btn.textContent = 'Creating Order...';
+    btn.disabled = true;
+
+    try {
+      // Create Razorpay order via our API
+      const res = await fetch('/api/create-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: selectedPlan, amount, billing: currentBilling, email, name, phone })
+      });
+      const order = await res.json();
+
+      const options = {
+        key: RAZORPAY_KEY,
+        amount: amount * 100, // paise
+        currency: 'INR',
+        name: 'Bobo Restaurant OS',
+        description: plan.name + ' Plan — ' + currentBilling,
+        image: 'https://bobo-analytics.vercel.app/favicon.ico',
+        order_id: order.razorpay_order_id || undefined,
+        prefill: { name, email, contact: phone },
+        theme: { color: '#f97316' },
+        handler: async (response) => {
+          // Verify payment
+          await fetch('/api/verify-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...response, plan: selectedPlan, billing: currentBilling, email, name, phone })
+          });
+          // Activate subscription locally
+          activateSubscription(selectedPlan, response.razorpay_payment_id);
+        },
+        modal: {
+          ondismiss: () => {
+            btn.textContent = 'Pay Now →';
+            btn.disabled = false;
+          }
+        }
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+      closePaymentModal();
+    } catch(e) {
+      console.error(e);
+      // Demo mode — activate without payment when Razorpay key not set
+      if (RAZORPAY_KEY.includes('YOUR_KEY') || RAZORPAY_KEY === '') {
+        showToast('⚡ Demo Mode: Activating subscription (add Razorpay key for live payments)');
+        activateSubscription(selectedPlan, 'DEMO_' + Date.now());
+        closePaymentModal();
+      } else {
+        showToast('❌ Payment failed. Please try again.');
+      }
+    }
+    btn.textContent = 'Pay Now →';
+    btn.disabled = false;
+  }
+
+  function activateSubscription(planKey, paymentId) {
+    const expiry = Date.now() + (30 * 24 * 60 * 60 * 1000); // 30 days
+    localStorage.setItem('restaurant_auth', 'true');
+    localStorage.setItem('restaurant_plan', planKey);
+    localStorage.setItem('subscription_status', 'active');
+    localStorage.setItem('subscription_expiry', expiry.toString());
+    localStorage.setItem('last_payment_id', paymentId);
+    // Save payment history
+    const history = JSON.parse(localStorage.getItem('payment_history') || '[]');
+    history.push({ id: paymentId, plan: planKey, amount: PLANS[planKey][currentBilling], date: new Date().toISOString(), status: 'paid' });
+    localStorage.setItem('payment_history', JSON.stringify(history));
+    showToast('🎉 Subscription activated! Redirecting...');
+    setTimeout(() => window.location.href = '/restaurant-dashboard', 1800);
+  }
+
+  // ── TOAST ────────────────────────────────────────
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  // ── COMPARISON TABLE ─────────────────────────────
+  const compareRows = [
+    ['POS Terminal', true, true, true],
+    ['Dashboard & Analytics', true, true, true],
+    ['Menu Hub', true, true, true],
+    ['Max Tables', '5', '15', 'Unlimited'],
+    ['Kitchen Display (KDS)', false, true, true],
+    ['QR Ordering', false, true, true],
+    ['Smart Menu Upload (AI)', false, true, true],
+    ['Customer CRM', false, true, true],
+    ['Multi-location', false, false, true],
+    ['Custom Branding', false, false, true],
+    ['API Access', false, false, true],
+    ['Priority Support', false, false, true],
+    ['White-label Reports', false, false, true],
+  ];
+
+  const tbody = document.getElementById('compare-body');
+  compareRows.forEach(([feat, s, g, p]) => {
+    const cell = (v, clr) => {
+      if (v === true) return `<td style="text-align:center;padding:14px;"><span style="color:#10b981;font-size:18px;">✓</span></td>`;
+      if (v === false) return `<td style="text-align:center;padding:14px;color:rgba(255,255,255,0.15);font-size:18px;">—</td>`;
+      return `<td style="text-align:center;padding:14px;font-weight:800;color:${clr};">${v}</td>`;
+    };
+    tbody.innerHTML += `<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+      <td style="padding:14px;font-size:13px;font-weight:600;color:rgba(255,255,255,0.6);">${feat}</td>
+      ${cell(s,'rgba(255,255,255,0.6)')}${cell(g,'#f97316')}${cell(p,'#a855f7')}
+    </tr>`;
+  });
+
+  // ── FAQ ──────────────────────────────────────────
+  const faqs = [
+    ['Do I need a credit card to start the trial?', 'No! Your 7-day free trial starts instantly with just your restaurant name and email. No payment info required.'],
+    ['Can I switch plans later?', 'Yes, you can upgrade or downgrade your plan at any time from the Billing section in your dashboard.'],
+    ['What payment methods do you accept?', 'We accept all major credit/debit cards, UPI (Google Pay, PhonePe, Paytm), net banking, and wallets via Razorpay.'],
+    ['Is my data secure?', 'Absolutely. All data is encrypted in transit (SSL) and at rest. Razorpay handles all payment processing — we never store card details.'],
+    ['What happens when my subscription expires?', 'Your account is locked (read-only). You can still view your data but POS and Kitchen operations are paused until you renew.'],
+    ['Can multiple staff use the same account?', 'Yes! All plans support unlimited staff logins under a single restaurant account.'],
+    ['Do you offer refunds?', 'We offer a full refund within 7 days of payment if you\'re not satisfied. Contact support@bobo.com.'],
+  ];
+
+  const faqList = document.getElementById('faq-list');
+  faqs.forEach(([q, a]) => {
+    faqList.innerHTML += `<div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">${q}<span class="faq-arrow" style="font-size:18px;color:rgba(255,255,255,0.3);">▾</span></div>
+      <div class="faq-a">${a}</div>
+    </div>`;
+  });
+
+  // Check if already has active subscription
+  const status = localStorage.getItem('subscription_status');
+  if (status === 'active') {
+    showToast('You already have an active subscription!');
+  }
+
+  // Pulse animation
+  const style = document.createElement('style');
+  style.textContent = '@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}';
+  document.head.appendChild(style);
+</script>
+
+</body>
+</html>

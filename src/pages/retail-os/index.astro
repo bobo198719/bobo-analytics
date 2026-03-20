@@ -9,367 +9,140 @@ const aiInsights = [
 ];
 
 const stats = [
-  { label: "Today's Revenue", value: "₹84,250", trend: "+12.5%", color: "var(--primary)" },
-  { label: "Active Orders", value: "42", trend: "Normal", color: "#fbbf24" },
-  { label: "Total Visits", value: "318", trend: "+8.2%", color: "#10b981" },
-  { label: "New Customers", value: "14", trend: "+5.1%", color: "#ec4899" }
+  { label: "Today's Revenue", value: "₹84,250", trend: "+12.5%", color: "#6366f1", icon: "lucide-trending-up" },
+  { label: "Active Orders", value: "42", trend: "Steady", color: "#22d3ee", icon: "lucide-shopping-bag" },
+  { label: "Live Visits", value: "318", trend: "+8.2%", color: "#10b981", icon: "lucide-users" },
+  { label: "Predictive LTV", value: "₹4.2k", trend: "+5.1%", color: "#f472b6", icon: "lucide-sparkles" }
 ];
 ---
 
-<RetailOSLayout title="Dashboard | Bobo Retail OS">
-  <div class="dashboard-header-flex">
-    <div>
-        <h1 style="font-size: 2rem; margin-bottom: 8px;">Store Overview</h1>
-        <p style="color: var(--text-muted);">Welcome back, Jane. Here's what's happening today at <span style="color: white; font-weight: bold;">South City Mall</span>.</p>
-    </div>
-    <div class="date-range">
-        <button class="date-btn active">Today</button>
-        <button class="date-btn">Weekly</button>
-        <button class="date-btn">Monthly</button>
-    </div>
-  </div>
+<RetailOSLayout title="Retail Intelligence Dashboard | Bobo Analytics">
+   <!-- Ambient Glow -->
+   <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-600/5 rounded-full blur-[120px] -mr-64 -mt-64 pointer-events-none"></div>
 
-  <div class="stats-grid">
-    {stats.map(stat => (
-      <div class="stat-card">
-        <div class="stat-label-row">
-            <span class="stat-label">{stat.label}</span>
-            <span class="trend" style={stat.trend.startsWith('+') ? 'color: var(--success);' : 'color: var(--text-muted);'}>{stat.trend}</span>
-        </div>
-        <div class="stat-value" style={`color: ${stat.color}`}>{stat.value}</div>
-        <div class="stat-chart-sparkline"></div>
+   <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+      <div>
+         <h1 class="text-3xl font-black italic uppercase tracking-tighter">Retail Intelligence</h1>
+         <p class="text-white/40 text-xs font-bold uppercase tracking-[0.2em] mt-2 italic">Workspace: South City Mall Terminal</p>
       </div>
-    ))}
-  </div>
+      <div class="flex items-center gap-4">
+         <div class="px-6 py-3 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-4">
+            <div class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
+            <span class="text-[10px] font-black uppercase tracking-widest text-white/60">Live Engine Active</span>
+         </div>
+         <button class="w-12 h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-all text-white/40 hover:text-white">
+            <i class="lucide-bell text-lg"></i>
+         </button>
+      </div>
+   </header>
 
-  <div class="main-grid">
-    <!-- AI Insights Section -->
-    <div class="grid-col-1">
-        <div class="panel ai-panel">
-            <div class="panel-header">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="ai-icon">✨</div>
-                    <span style="font-weight: 700;">AI Retail Intelligence</span>
-                </div>
-                <button class="refresh-btn">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-                </button>
+   <!-- Stats Grid -->
+   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      {stats.map(stat => (
+         <div class="bg-white/5 border border-white/10 p-8 rounded-[40px] group hover:bg-white/[0.08] transition-all relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+               <i class={`${stat.icon} text-6xl`}></i>
             </div>
-            <div class="insights-list">
-                {aiInsights.map(insight => (
-                    <div class="insight-item">
-                        <div class={`insight-dot ${insight.type}`}></div>
-                        <p>{insight.message}</p>
-                    </div>
-                ))}
+            <div class="relative z-10">
+               <div class="flex items-center justify-between mb-4">
+                  <span class="text-[10px] font-black uppercase tracking-widest text-white/30 italic">{stat.label}</span>
+                  <span class="text-[10px] font-black text-emerald-400 italic bg-emerald-500/10 px-2 py-1 rounded-lg">{stat.trend}</span>
+               </div>
+               <div class="text-4xl font-black italic tracking-tighter" style={`color: ${stat.color}`}>{stat.value}</div>
             </div>
-        </div>
+         </div>
+      ))}
+   </div>
 
-        <div class="panel sales-chart-panel">
-            <div class="panel-header">
-                <span style="font-weight: 700;">Hourly Sales Distribution</span>
+   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- AI Insights Section -->
+      <div class="lg:col-span-2 space-y-8">
+         <section class="bg-white/5 border border-white/10 rounded-[48px] p-10 relative overflow-hidden group">
+            <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent"></div>
+            <div class="flex items-center justify-between mb-8 relative z-10">
+               <h2 class="text-lg font-black italic uppercase tracking-tight flex items-center gap-3">
+                  <span class="p-2 bg-indigo-500/20 rounded-xl text-indigo-400"><i class="lucide-sparkles"></i></span>
+                  Retail AI Intelligence
+               </h2>
+               <button class="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors italic">Refresh Analysis</button>
             </div>
-            <div class="chart-container-mock">
-                <!-- Bars of different heights -->
-                <div class="bar" style="height: 40%"></div>
-                <div class="bar" style="height: 60%"></div>
-                <div class="bar" style="height: 30%"></div>
-                <div class="bar active" style="height: 90%"></div>
-                <div class="bar" style="height: 70%"></div>
-                <div class="bar" style="height: 50%"></div>
-                <div class="bar" style="height: 85%"></div>
-                <div class="bar" style="height: 45%"></div>
+
+            <div class="space-y-4 relative z-10">
+               {aiInsights.map(insight => (
+                  <div class="p-6 bg-white/5 border border-white/5 rounded-3xl flex items-center gap-6 group/item hover:border-indigo-500/30 transition-all">
+                     <div class={`w-2 h-2 rounded-full ${insight.type === 'velocity' ? 'bg-indigo-500' : insight.type === 'forecast' ? 'bg-cyan-500' : 'bg-rose-500'} shadow-[0_0_15px_rgba(255,255,255,0.2)]`}></div>
+                     <p class="text-sm font-bold text-white/80 italic leading-relaxed">{insight.message}</p>
+                  </div>
+               ))}
             </div>
-        </div>
-    </div>
+         </section>
 
-    <!-- Right Side: Low Stock & Best Sellers -->
-    <div class="grid-col-2">
-        <div class="panel">
-            <div class="panel-header">
-                <span style="font-weight: 700;">Omnichannel Breakdown</span>
+         <section class="bg-white/5 border border-white/10 rounded-[48px] p-10">
+            <h2 class="text-lg font-black italic uppercase tracking-tight mb-8">Hourly Distribution</h2>
+            <div class="h-48 flex items-end gap-3 px-4">
+               {[40, 60, 30, 90, 70, 50, 85, 45, 65, 80, 55, 75].map((h, i) => (
+                  <div class="flex-1 group relative">
+                     <div class={`w-full bg-indigo-500/20 rounded-t-xl group-hover:bg-indigo-500 transition-all cursor-pointer ${h === 90 ? 'bg-indigo-500 shadow-lg shadow-indigo-500/20' : ''}`} style={`height: ${h}%`}></div>
+                     <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-transform px-2 py-1 bg-white text-black text-[10px] font-black rounded-lg">₹{(h * 1.5).toFixed(1)}k</div>
+                  </div>
+               ))}
             </div>
-            <div class="channel-distribution">
-                <div class="channel-row">
-                    <span style="width: 80px;">POS</span>
-                    <div class="progress-bar"><div class="fill" style="width: 65%; background: var(--primary);"></div></div>
-                    <span style="width: 40px; text-align: right;">65%</span>
-                </div>
-                <div class="channel-row">
-                    <span style="width: 80px;">Online</span>
-                    <div class="progress-bar"><div class="fill" style="width: 25%; background: var(--secondary);"></div></div>
-                    <span style="width: 40px; text-align: right;">25%</span>
-                </div>
-                <div class="channel-row">
-                    <span style="width: 80px;">WhatsApp</span>
-                    <div class="progress-bar"><div class="fill" style="width: 10%; background: var(--success);"></div></div>
-                    <span style="width: 40px; text-align: right;">10%</span>
-                </div>
+            <div class="flex justify-between mt-6 px-4 text-[10px] font-black uppercase tracking-widest text-white/20">
+               <span>09:00</span>
+               <span>12:00</span>
+               <span>15:00</span>
+               <span>18:00</span>
+               <span>21:00</span>
             </div>
-        </div>
+         </section>
+      </div>
 
-        <div class="panel inventory-alert">
-            <div class="panel-header">
-                <span style="font-weight: 700;">Critical Low Stock Items</span>
-                <a href="/retail-os/inventory" style="font-size: 0.75rem; color: var(--primary);">View All</a>
+      <!-- Fast Action Panel -->
+      <div class="space-y-8">
+         <section class="bg-white/5 border border-white/10 rounded-[48px] p-10">
+            <h2 class="text-lg font-black italic uppercase tracking-tight mb-8">Channel Pulse</h2>
+            <div class="space-y-8">
+               {[
+                  { name: 'Direct POS', val: 65, color: 'bg-indigo-500' },
+                  { name: 'Online Hub', val: 25, color: 'bg-cyan-500' },
+                  { name: 'WhatsApp', val: 10, color: 'bg-emerald-500' }
+               ].map(ch => (
+                  <div class="space-y-3">
+                     <div class="flex justify-between text-[10px] font-black uppercase tracking-widest italic">
+                        <span>{ch.name}</span>
+                        <span class="text-white/40">{ch.val}%</span>
+                     </div>
+                     <div class="h-3 w-full bg-white/5 rounded-full overflow-hidden">
+                        <div class={`h-full ${ch.color} rounded-full transition-all duration-1000`} style={`width: ${ch.val}%`}></div>
+                     </div>
+                  </div>
+               ))}
             </div>
-            <div class="stock-list">
-                <div class="stock-item">
-                    <div class="item-img-small" style="background: #1e293b;"></div>
-                    <div style="flex: 1;">
-                        <span class="item-name">Men's Linen Shirt (White/L)</span>
-                        <span class="item-stock">2 Units left</span>
-                    </div>
-                    <button class="reorder-btn">PO</button>
-                </div>
-                <div class="stock-item">
-                    <div class="item-img-small" style="background: #1e293b;"></div>
-                    <div style="flex: 1;">
-                        <span class="item-name">Slim Fit Jeans (32/Blue)</span>
-                        <span class="item-stock">1 Unit left</span>
-                    </div>
-                    <button class="reorder-btn">PO</button>
-                </div>
+         </section>
+
+         <section class="bg-white/5 border border-white/10 rounded-[48px] p-10">
+            <div class="flex items-center justify-between mb-8">
+               <h2 class="text-lg font-black italic uppercase tracking-tight">Stock Alerts</h2>
+               <a href="#" class="text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-white transition-colors italic">Inventory Hub</a>
             </div>
-        </div>
-    </div>
-  </div>
+            <div class="space-y-4">
+               {[
+                  { name: "Linen Shirt (White)", stock: 2, price: 1200 },
+                  { name: "Slim Fit Jeans", stock: 1, price: 2400 }
+               ].map(item => (
+                  <div class="p-5 bg-white/5 border border-white/5 rounded-3xl flex items-center gap-4 group hover:border-rose-500/30 transition-all">
+                     <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-xl">📦</div>
+                     <div class="flex-1">
+                        <h4 class="text-sm font-black italic text-white/80">{item.name}</h4>
+                        <p class="text-[10px] font-black text-rose-500 uppercase tracking-widest mt-1">{item.stock} Units Left</p>
+                     </div>
+                     <button class="p-3 text-white/20 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-xl transition-all"><i class="lucide-refresh-cw text-lg"></i></button>
+                  </div>
+               ))}
+            </div>
+         </section>
+      </div>
 
-  <style>
-    .dashboard-header-flex {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 32px;
-    }
-
-    .date-range {
-        display: flex;
-        background: var(--bg-glass);
-        padding: 4px;
-        border-radius: 10px;
-        border: 1px solid var(--border);
-    }
-
-    .date-btn {
-        background: transparent;
-        border: none;
-        color: var(--text-muted);
-        padding: 6px 16px;
-        border-radius: 8px;
-        font-size: 0.85rem;
-        cursor: pointer;
-        transition: 0.2s;
-    }
-
-    .date-btn.active {
-        background: var(--primary);
-        color: white;
-    }
-
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 20px;
-        margin-bottom: 24px;
-    }
-
-    .stat-card {
-        background: var(--bg-glass);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 20px;
-        backdrop-filter: blur(10px);
-    }
-
-    .stat-label-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 12px;
-    }
-
-    .stat-label {
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        font-weight: 500;
-    }
-
-    .stat-value {
-        font-size: 1.75rem;
-        font-weight: 800;
-        font-family: 'Outfit', sans-serif;
-    }
-
-    .trend {
-        font-size: 0.8rem;
-        font-weight: 600;
-    }
-
-    .main-grid {
-        display: grid;
-        grid-template-columns: 1fr 340px;
-        gap: 20px;
-    }
-
-    .panel {
-        background: var(--bg-glass);
-        border: 1px solid var(--border);
-        border-radius: 20px;
-        padding: 24px;
-        margin-bottom: 20px;
-    }
-
-    .panel-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-
-    .ai-panel {
-        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
-        border: 1px solid rgba(99, 102, 241, 0.2);
-    }
-
-    .ai-icon {
-        width: 32px;
-        height: 32px;
-        background: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.2rem;
-    }
-
-    .insights-list {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-    }
-
-    .insight-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        background: rgba(255, 255, 255, 0.05);
-        padding: 12px 16px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .insight-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-    }
-
-    .insight-dot.velocity { background: var(--primary); box-shadow: 0 0 8px var(--primary); }
-    .insight-dot.forecast { background: var(--warning); box-shadow: 0 0 8px var(--warning); }
-    .insight-dot.quality { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
-
-    .insight-item p {
-        font-size: 0.9rem;
-        font-weight: 500;
-        color: rgba(255, 255, 255, 0.8);
-    }
-
-    .refresh-btn {
-        background: transparent;
-        border: none;
-        color: var(--text-muted);
-        cursor: pointer;
-    }
-
-    .chart-container-mock {
-        height: 200px;
-        display: flex;
-        align-items: flex-end;
-        gap: 20px;
-        padding-top: 20px;
-    }
-
-    .bar {
-        flex: 1;
-        background: rgba(99, 102, 241, 0.2);
-        border-radius: 6px 6px 0 0;
-        min-width: 30px;
-        transition: 0.3s;
-    }
-
-    .bar:hover, .bar.active {
-        background: var(--primary);
-        box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
-    }
-
-    .channel-distribution {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-    }
-
-    .channel-row {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-size: 0.85rem;
-    }
-
-    .progress-bar {
-        flex: 1;
-        height: 8px;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 4px;
-        overflow: hidden;
-    }
-
-    .fill {
-        height: 100%;
-        border-radius: 4px;
-    }
-
-    .stock-list {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .stock-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 10px;
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: 12px;
-    }
-
-    .item-img-small {
-        width: 40px;
-        height: 40px;
-        border-radius: 8px;
-    }
-
-    .item-name {
-        display: block;
-        font-size: 0.85rem;
-        font-weight: 600;
-    }
-
-    .item-stock {
-        font-size: 0.75rem;
-        color: #ef4444;
-    }
-
-    .reorder-btn {
-        background: rgba(99, 102, 241, 0.2);
-        color: var(--primary);
-        border: 1px solid var(--primary);
-        padding: 4px 10px;
-        border-radius: 6px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        cursor: pointer;
-    }
-  </style>
+   </div>
 </RetailOSLayout>

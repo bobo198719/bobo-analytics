@@ -1,0 +1,390 @@
+---
+import RestaurantOSLayout from "../../layouts/RestaurantOSLayout.astro";
+import "../../styles/restaurant.css";
+---
+<RestaurantOSLayout title="Smart Menu Upload | Bobo Restaurant OS">
+  <div class="space-y-8 animate-in fade-in duration-500 font-['Plus_Jakarta_Sans']">
+
+    <!-- Header -->
+    <header class="bg-white/5 border border-white/10 p-8 rounded-3xl relative overflow-hidden">
+      <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-violet-500 via-orange-500 to-rose-500"></div>
+      <div class="relative z-10">
+        <h1 class="text-3xl font-black italic uppercase tracking-tighter text-white">
+          Smart Menu <span class="bg-gradient-to-r from-violet-400 to-orange-400 bg-clip-text text-transparent">Upload</span>
+        </h1>
+        <p class="text-white/30 mt-2 uppercase text-[10px] font-black tracking-[0.4em] italic">AI-Powered Menu Parser · Auto Category Detection · Auto Image Assignment</p>
+      </div>
+    </header>
+
+    <!-- Upload Zone + Parsed Preview (side by side on desktop) -->
+    <div class="grid md:grid-cols-2 gap-6">
+
+      <!-- LEFT: Upload Options -->
+      <div class="space-y-6">
+
+        <!-- Upload Area -->
+        <div class="bg-white/5 border border-white/10 rounded-3xl p-6 space-y-5">
+          <h2 class="text-sm font-black italic uppercase text-white/60 tracking-widest">1 · Upload Menu File</h2>
+
+          <!-- Tabs -->
+          <div class="flex gap-2 p-1 bg-white/5 rounded-2xl border border-white/10" id="upload-tabs">
+            <button class="upload-tab active flex-1 py-2 rounded-xl text-[11px] font-black uppercase tracking-wide" onclick="switchTab('image',this)">📷 Image/Scan</button>
+            <button class="upload-tab flex-1 py-2 rounded-xl text-[11px] font-black uppercase tracking-wide" onclick="switchTab('csv',this)">📊 CSV/Excel</button>
+            <button class="upload-tab flex-1 py-2 rounded-xl text-[11px] font-black uppercase tracking-wide" onclick="switchTab('manual',this)">✍️ Manual</button>
+          </div>
+
+          <!-- IMAGE TAB -->
+          <div id="tab-image" class="tab-panel space-y-4">
+            <div id="drop-zone" onclick="document.getElementById('img-input').click()"
+              class="border-2 border-dashed border-white/15 hover:border-violet-500/50 hover:bg-violet-500/5 rounded-2xl p-8 text-center cursor-pointer transition-all">
+              <p class="text-4xl mb-3">📸</p>
+              <p class="text-white/60 font-black uppercase italic text-sm">Click or drag menu photo here</p>
+              <p class="text-white/25 text-xs mt-2 font-semibold">JPG · PNG · WEBP · PDF (screenshot)</p>
+            </div>
+            <input type="file" id="img-input" accept="image/*" class="hidden" onchange="handleImageUpload(event)" />
+            <div id="img-preview-area" class="hidden space-y-3">
+              <img id="img-preview" class="w-full rounded-2xl border border-white/10 max-h-40 object-contain" />
+              <button onclick="parseImage()" id="parse-btn" class="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 rounded-xl font-black uppercase text-sm italic text-white hover:from-violet-500 transition-all shadow-lg">
+                🤖 Parse Menu with AI
+              </button>
+            </div>
+          </div>
+
+          <!-- CSV TAB -->
+          <div id="tab-csv" class="tab-panel hidden space-y-4">
+            <div onclick="document.getElementById('csv-input').click()"
+              class="border-2 border-dashed border-white/15 hover:border-emerald-500/50 hover:bg-emerald-500/5 rounded-2xl p-8 text-center cursor-pointer transition-all">
+              <p class="text-4xl mb-3">📊</p>
+              <p class="text-white/60 font-black uppercase italic text-sm">Upload CSV / Excel file</p>
+              <p class="text-white/25 text-xs mt-2 font-semibold">Columns: Name · Price · Category · Type</p>
+            </div>
+            <input type="file" id="csv-input" accept=".csv,.xlsx,.xls" class="hidden" onchange="handleCSV(event)" />
+            <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+              <p class="text-[10px] text-white/30 font-black uppercase tracking-widest mb-2">CSV Format Example:</p>
+              <code class="text-[10px] text-emerald-400 font-mono leading-relaxed">
+                Name,Price,Category,Type<br/>
+                Butter Chicken,280,Main Course,non-veg<br/>
+                Paneer Tikka,220,Starters,veg<br/>
+                Mango Lassi,80,Beverages,veg
+              </code>
+            </div>
+          </div>
+
+          <!-- MANUAL TAB -->
+          <div id="tab-manual" class="tab-panel hidden space-y-4">
+            <p class="text-[10px] text-white/30 font-black uppercase tracking-widest">Paste your menu text — AI will structure it</p>
+            <textarea id="manual-text" rows="8" placeholder="Paneer Butter Masala - ₹240&#10;Butter Chicken - 280&#10;Tandoori Roti - 30&#10;Cold Coffee - 100&#10;Gulab Jamun - 60"
+              class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white font-mono outline-none focus:border-violet-500 transition-all resize-none leading-relaxed"></textarea>
+            <button onclick="parseManualText()" class="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 rounded-xl font-black uppercase text-sm italic text-white hover:from-violet-500 transition-all shadow-lg">
+              🤖 Parse & Structure
+            </button>
+          </div>
+        </div>
+
+        <!-- Status Log -->
+        <div class="bg-black/30 border border-white/5 rounded-2xl p-5 space-y-2 min-h-[100px]" id="status-log">
+          <p class="text-[10px] font-black text-white/20 uppercase tracking-widest">Parser Log</p>
+          <p class="text-[11px] text-white/30 font-mono" id="log-text">Waiting for upload...</p>
+        </div>
+      </div>
+
+      <!-- RIGHT: Parsed Items Preview & Import -->
+      <div class="bg-white/5 border border-white/10 rounded-3xl p-6 space-y-5">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-black italic uppercase text-white/60 tracking-widest">2 · Review & Import</h2>
+          <span id="parsed-count" class="text-[10px] font-black text-orange-400 italic hidden bg-orange-500/10 border border-orange-500/20 px-3 py-1 rounded-full">0 items</span>
+        </div>
+
+        <div id="parsed-empty" class="py-16 text-center text-white/20">
+          <p class="text-4xl mb-3">📋</p>
+          <p class="text-sm font-black uppercase italic">Parsed items appear here</p>
+          <p class="text-xs mt-1">Upload a file or paste text to begin</p>
+        </div>
+
+        <div id="parsed-list" class="space-y-3 max-h-[420px] overflow-y-auto pr-1 hidden"></div>
+
+        <div id="import-actions" class="hidden space-y-3 pt-4 border-t border-white/10">
+          <div class="flex gap-3">
+            <button onclick="selectAll()" class="flex-1 py-2.5 bg-white/5 border border-white/10 rounded-xl text-[11px] font-black uppercase text-white/50 hover:text-white hover:bg-white/10 transition-all">Select All</button>
+            <button onclick="clearParsed()" class="flex-1 py-2.5 bg-white/5 border border-white/10 rounded-xl text-[11px] font-black uppercase text-white/50 hover:text-white hover:bg-white/10 transition-all">Clear</button>
+          </div>
+          <button onclick="importSelected()" id="import-btn"
+            class="w-full py-4 bg-gradient-to-r from-orange-600 to-rose-500 rounded-2xl font-black uppercase text-sm italic text-white shadow-xl hover:from-orange-500 transition-all">
+            🚚 Import Selected to Menu Hub
+          </button>
+          <div id="import-progress" class="hidden">
+            <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+              <div id="import-bar" class="h-full bg-gradient-to-r from-orange-500 to-rose-500 transition-all duration-300" style="width:0%"></div>
+            </div>
+            <p id="import-status" class="text-[10px] text-white/40 text-center mt-2 font-mono"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .upload-tab { color: rgba(255,255,255,0.3); transition: all 0.2s; }
+    .upload-tab.active { background: linear-gradient(135deg,#7c3aed,#a855f7); color: white; box-shadow: 0 4px 16px rgba(124,58,237,0.3); }
+    .parsed-item { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 12px 14px; transition: all 0.2s; }
+    .parsed-item:has(.item-check:checked) { border-color: rgba(249,115,22,0.4); background: rgba(249,115,22,0.05); }
+    .item-check { width: 18px; height: 18px; accent-color: #f97316; cursor: pointer; flex-shrink: 0; }
+  </style>
+
+  <script>
+    let parsedItems = [];
+
+    // ── TAB SWITCHING ───────────────────────────────
+    function switchTab(name, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+      document.querySelectorAll('.upload-tab').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + name).classList.remove('hidden');
+      btn.classList.add('active');
+    }
+
+    // ── LOG ─────────────────────────────────────────
+    function log(msg) {
+      document.getElementById('log-text').textContent = '▶ ' + msg;
+    }
+
+    // ── IMAGE UPLOAD ────────────────────────────────
+    function handleImageUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        document.getElementById('img-preview').src = reader.result;
+        document.getElementById('img-preview-area').classList.remove('hidden');
+        log('Image loaded: ' + file.name + ' (' + (file.size/1024).toFixed(0) + 'KB). Click "Parse" to extract menu.');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Simulate OCR parsing (keyword-based since no server-side OCR)
+    function parseImage() {
+      log('Simulating OCR extraction...');
+      document.getElementById('parse-btn').textContent = '⏳ Parsing...';
+      setTimeout(() => {
+        const sampleItems = generateSampleMenu();
+        setParsedItems(sampleItems);
+        document.getElementById('parse-btn').textContent = '🤖 Parse Menu with AI';
+        log('Extracted ' + sampleItems.length + ' items. Review and import below.');
+      }, 1800);
+    }
+
+    // ── CSV PARSER ───────────────────────────────────
+    function handleCSV(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      log('Parsing CSV: ' + file.name + '...');
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const lines = ev.target.result.split('\n').filter(l => l.trim());
+        const items = [];
+        // Skip header
+        for (let i = 1; i < lines.length; i++) {
+          const cols = lines[i].split(',').map(c => c.trim().replace(/"/g,''));
+          if (cols.length < 2) continue;
+          const name = cols[0];
+          const price = parseFloat(cols[1].replace(/[^\d.]/g,'')) || 0;
+          const category = cols[2] || autoCategory(name);
+          const type = cols[3] || autoType(name);
+          if (name && price) items.push({ name, price, category, type, image_url: autoImage(name, category) });
+        }
+        if (items.length === 0) { log('No valid rows found. Check CSV format.'); return; }
+        setParsedItems(items);
+        log('Parsed ' + items.length + ' items from CSV. Review and import.');
+      };
+      reader.readAsText(file);
+    }
+
+    // ── MANUAL TEXT PARSER ──────────────────────────
+    function parseManualText() {
+      const text = document.getElementById('manual-text').value.trim();
+      if (!text) return;
+      log('Parsing menu text...');
+      const lines = text.split('\n').filter(l => l.trim());
+      const items = [];
+      lines.forEach(line => {
+        // Match "Dish Name - ₹240" or "Dish Name 240" or "Dish Name : 240"  
+        const priceMatch = line.match(/[₹$]?\s*(\d+(?:\.\d{1,2})?)/);
+        if (!priceMatch) return;
+        const price = parseFloat(priceMatch[1]);
+        const name = line.replace(/[\-\:\|]\s*[₹$]?\s*\d+(?:\.\d{1,2})?/, '')
+                        .replace(/[₹$]?\s*\d+(?:\.\d{1,2})?\s*[\-\:\|]/, '')
+                        .trim();
+        if (!name || price <= 0) return;
+        const category = autoCategory(name);
+        const type = autoType(name);
+        items.push({ name, price, category, type, image_url: autoImage(name, category) });
+      });
+      if (items.length === 0) { log('Could not parse any items. Check format.'); return; }
+      setParsedItems(items);
+      log('Structured ' + items.length + ' items. Review and import below.');
+    }
+
+    // ── AUTO DETECTION ──────────────────────────────
+    function autoCategory(name) {
+      const n = name.toLowerCase();
+      if (/ice cream|kulfi|gulab|halwa|kheer|barfi|ladoo|cake|brownie|pudding|dessert|sweet|rasgulla|jalebi|pahad|payasam|crepe|tart|mousse|tiramisu|parfait|panna|cobbler/.test(n)) return 'Desserts';
+      if (/juice|lassi|chai|tea|coffee|shake|smoothie|soda|cola|water|lemonade|mojito|milk|cappuccino|latte|espresso|frappe|punch|drink|beverage|cooler|squash/.test(n)) return 'Beverages';
+      if (/tikka|tandoor|starter|appetizer|kebab|wings|nugget|soup|finger|chaat|papdi|bhel|pani puri|samosa|pakora|fritter|spring roll|bruschetta|nachos|dip/.test(n)) return 'Starters';
+      if (/rice|biryani|dal|curry|masala|gravy|sabzi|korma|paneer|roti|naan|bread|pulao|fried rice|pasta|pizza|burger|noodle|sandwich|wrap|fish|chicken|mutton|prawn|lamb|keema|bhurji|pav/.test(n)) return 'Main Course';
+      return 'Others';
+    }
+
+    function autoType(name) {
+      const n = name.toLowerCase();
+      if (/chicken|mutton|fish|prawn|lamb|beef|pork|egg|meat|non.?veg|kheema|keema|seafood|tuna|salmon|bacon|ham|turkey/.test(n)) return 'non-veg';
+      return 'veg';
+    }
+
+    const KEYWORD_IMAGES = {
+      chicken: 'https://images.unsplash.com/photo-1598103442097-8b74394b95c8?w=400',
+      paneer: 'https://images.unsplash.com/photo-1567188040759-fbcd18884932?w=400',
+      pizza: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400',
+      burger: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400',
+      biryani: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=400',
+      noodles: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400',
+      coffee: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400',
+      tea: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400',
+      juice: 'https://images.unsplash.com/photo-1543362906-acfc16c67564?w=400',
+      cake: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400',
+      lassi: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400',
+      dosa: 'https://images.unsplash.com/photo-1630383249896-424e482df921?w=400',
+      fish: 'https://images.unsplash.com/photo-1580476262798-bddd9f4b7369?w=400',
+      salad: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400',
+      kulfi: 'https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=400',
+      dal: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400',
+      roti: 'https://images.unsplash.com/photo-1601050690117-94f5f6fa8bd7?w=400',
+      soup: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=400',
+      samosa: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400',
+    };
+
+    function autoImage(name, category) {
+      const n = name.toLowerCase();
+      for (const [kw, url] of Object.entries(KEYWORD_IMAGES)) {
+        if (n.includes(kw)) return url;
+      }
+      const catMap = {
+        'Starters': 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400',
+        'Main Course': 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400',
+        'Beverages': 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400',
+        'Desserts': 'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=400',
+        'Others': 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400',
+      };
+      return catMap[category] || catMap['Others'];
+    }
+
+    // ── SAMPLE for image parse sim ──────────────────
+    function generateSampleMenu() {
+      return [
+        { name: 'Butter Chicken', price: 280, category: 'Main Course', type: 'non-veg', image_url: autoImage('chicken', 'Main Course') },
+        { name: 'Paneer Tikka', price: 220, category: 'Starters', type: 'veg', image_url: autoImage('paneer', 'Starters') },
+        { name: 'Dal Makhani', price: 160, category: 'Main Course', type: 'veg', image_url: autoImage('dal', 'Main Course') },
+        { name: 'Tandoori Roti', price: 30, category: 'Main Course', type: 'veg', image_url: autoImage('roti', 'Main Course') },
+        { name: 'Mango Lassi', price: 80, category: 'Beverages', type: 'veg', image_url: autoImage('lassi', 'Beverages') },
+        { name: 'Gulab Jamun', price: 60, category: 'Desserts', type: 'veg', image_url: autoImage('gulab', 'Desserts') },
+        { name: 'Chicken Biryani', price: 340, category: 'Main Course', type: 'non-veg', image_url: autoImage('biryani', 'Main Course') },
+        { name: 'Veg Fried Rice', price: 180, category: 'Main Course', type: 'veg', image_url: autoImage('rice', 'Main Course') },
+        { name: 'Cold Coffee', price: 120, category: 'Beverages', type: 'veg', image_url: autoImage('coffee', 'Beverages') },
+      ];
+    }
+
+    // ── RENDER PARSED ITEMS ─────────────────────────
+    function setParsedItems(items) {
+      parsedItems = items;
+      const list = document.getElementById('parsed-list');
+      const empty = document.getElementById('parsed-empty');
+      const actions = document.getElementById('import-actions');
+      const count = document.getElementById('parsed-count');
+
+      if (items.length === 0) { empty.classList.remove('hidden'); list.classList.add('hidden'); actions.classList.add('hidden'); count.classList.add('hidden'); return; }
+
+      empty.classList.add('hidden');
+      list.classList.remove('hidden');
+      actions.classList.remove('hidden');
+      count.classList.remove('hidden');
+      count.textContent = items.length + ' items parsed';
+
+      const CATS = ['All', 'Starters', 'Main Course', 'Beverages', 'Desserts', 'Others'];
+      list.innerHTML = items.map((item, i) => `
+        <div class="parsed-item">
+          <div style="display:flex;gap:12px;align-items:center;">
+            <input type="checkbox" class="item-check" checked id="chk-${i}" />
+            <img src="${item.image_url}" alt="${item.name}" style="width:48px;height:48px;border-radius:12px;object-fit:cover;flex-shrink:0;background:rgba(255,255,255,0.05);" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100'" />
+            <div style="flex:1;min-width:0;">
+              <input value="${item.name}" onchange="parsedItems[${i}].name=this.value" style="background:transparent;border:none;color:white;font-size:13px;font-weight:800;font-style:italic;text-transform:uppercase;width:100%;outline:none;margin-bottom:4px;" />
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                <span style="font-size:14px;font-weight:900;color:#f97316;font-style:italic;">₹</span>
+                <input type="number" value="${item.price}" onchange="parsedItems[${i}].price=parseFloat(this.value)||0" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#f97316;font-size:14px;font-weight:900;width:70px;border-radius:8px;padding:2px 6px;outline:none;" />
+                <select onchange="parsedItems[${i}].category=this.value;parsedItems[${i}].image_url=autoImage(parsedItems[${i}].name,this.value);" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);font-size:10px;font-weight:800;border-radius:8px;padding:2px 6px;outline:none;text-transform:uppercase;">
+                  ${CATS.filter(c=>c!=='All').map(c=>`<option style="background:#0b0f24;" value="${c}" ${item.category===c?'selected':''}>${c}</option>`).join('')}
+                </select>
+                <select onchange="parsedItems[${i}].type=this.value" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);font-size:10px;font-weight:800;border-radius:8px;padding:2px 6px;outline:none;">
+                  <option style="background:#0b0f24;" value="veg" ${item.type==='veg'?'selected':''}>🟢 Veg</option>
+                  <option style="background:#0b0f24;" value="non-veg" ${item.type==='non-veg'?'selected':''}>🔴 Non-Veg</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectAll() {
+      document.querySelectorAll('.item-check').forEach(c => c.checked = true);
+    }
+    function clearParsed() {
+      parsedItems = [];
+      setParsedItems([]);
+    }
+
+    // ── IMPORT TO DB ─────────────────────────────────
+    async function importSelected() {
+      const checkboxes = document.querySelectorAll('.item-check');
+      const selected = parsedItems.filter((_, i) => checkboxes[i]?.checked);
+      if (selected.length === 0) { alert('Select at least one item to import.'); return; }
+
+      const btn = document.getElementById('import-btn');
+      const prog = document.getElementById('import-progress');
+      const bar = document.getElementById('import-bar');
+      const status = document.getElementById('import-status');
+
+      btn.disabled = true;
+      btn.textContent = '⏳ Importing...';
+      prog.classList.remove('hidden');
+
+      let done = 0;
+      let succeeded = 0;
+      for (const item of selected) {
+        try {
+          await fetch('/api/menu', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: item.name, price: item.price, category: item.category, type: item.type, image_url: item.image_url })
+          });
+          succeeded++;
+        } catch(e) { /* skip */ }
+        done++;
+        const pct = Math.round((done / selected.length) * 100);
+        bar.style.width = pct + '%';
+        status.textContent = `Importing ${done}/${selected.length} · ${item.name}`;
+        await new Promise(r => setTimeout(r, 120)); // Rate limit
+      }
+
+      status.textContent = `✅ Imported ${succeeded}/${selected.length} items to Menu Hub!`;
+      btn.textContent = '✅ Import Complete!';
+      btn.style.background = 'linear-gradient(135deg,#10b981,#059669)';
+      log('Import complete: ' + succeeded + ' items added to Menu Hub.');
+
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.textContent = '🚚 Import Selected to Menu Hub';
+        btn.style.background = '';
+        prog.classList.add('hidden');
+        bar.style.width = '0%';
+      }, 4000);
+    }
+  </script>
+</RestaurantOSLayout>

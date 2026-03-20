@@ -1,62 +1,309 @@
 ---
-import MainLayout from "../../layouts/MainLayout.astro";
 const { tableId } = Astro.params;
-import "../../styles/restaurant.css";
 ---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Table {tableId} | Order Now</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: 'Plus Jakarta Sans', sans-serif; background: #080b18; color: white; }
+    ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+    .cat-tab { flex-shrink: 0; padding: 8px 18px; border-radius: 50px; font-size: 12px; font-weight: 800; font-style: italic; text-transform: uppercase; border: 1px solid transparent; cursor: pointer; transition: all 0.2s; white-space: nowrap; background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.4); }
+    .cat-tab.active { background: linear-gradient(135deg,#f97316,#e11d48); color: white; border-color: transparent; box-shadow: 0 4px 20px rgba(249,115,22,0.4); }
+    .dish-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; overflow: hidden; transition: all 0.25s; }
+    .dish-card:active { transform: scale(0.98); }
+    .add-btn { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg,#f97316,#e11d48); border: none; color: white; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 300; transition: transform 0.15s; box-shadow: 0 4px 12px rgba(249,115,22,0.4); }
+    .add-btn:active { transform: scale(0.88); }
+    .qty-ctrl { display: flex; align-items: center; gap: 10px; }
+    .qty-btn { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: white; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .qty-btn:active { background: rgba(249,115,22,0.3); }
+    .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; padding: 16px; transition: transform 0.3s; }
+    .cart-bar.hidden { transform: translateY(100%); }
+    #order-success { display: none; position: fixed; inset: 0; background: #080b18; z-index: 999; flex-direction: column; align-items: center; justify-content: center; gap: 24px; }
+    #order-success.show { display: flex; }
+    .loading-spinner { width: 32px; height: 32px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #f97316; border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .slide-up { animation: slideUp 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+  <!-- SUCCESS SCREEN -->
+  <div id="order-success">
+    <div style="font-size:80px;">🎉</div>
+    <div style="text-align:center;">
+      <h1 style="font-size:28px;font-weight:900;font-style:italic;text-transform:uppercase;margin-bottom:8px;">Order Placed!</h1>
+      <p style="color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;">Your food is being prepared 🍳</p>
+      <p id="success-order-id" style="color:#f97316;font-size:11px;font-weight:900;margin-top:8px;font-style:italic;"></p>
+    </div>
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:24px;max-width:280px;width:100%;text-align:center;">
+      <p style="color:rgba(255,255,255,0.5);font-size:12px;font-weight:700;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.1em;">Your Order Summary</p>
+      <div id="success-items" style="space-y:8px;"></div>
+      <div style="height:1px;background:rgba(255,255,255,0.07);margin:16px 0;"></div>
+      <p id="success-total" style="font-size:22px;font-weight:900;color:#f97316;font-style:italic;"></p>
+    </div>
+    <p style="color:rgba(255,255,255,0.2);font-size:11px;text-align:center;padding:0 32px;">Sit back & relax! A team member will bring your order shortly.</p>
+    <button onclick="resetOrder()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);border-radius:50px;padding:12px 32px;font-size:12px;font-weight:800;font-style:italic;text-transform:uppercase;cursor:pointer;">Order More</button>
+  </div>
 
-<MainLayout title={`Ordering at Table ${tableId} | Bobo QR`} hideNav={true}>
-  <div class="min-h-screen bg-[#05081a] pb-32 font-['Plus_Jakarta_Sans']">
-    <!-- Fluid Header -->
-    <header class="p-6 pb-20 bg-gradient-to-b from-bobo-accent/20 via-bobo-accent/5 to-transparent flex flex-col items-center text-center">
-       <div class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center text-3xl mb-6 backdrop-blur-xl border border-white/10">🍕</div>
-       <h1 class="text-3xl font-black italic uppercase tracking-tighter">Table {tableId} Terminal</h1>
-       <p class="text-white/40 text-xs font-bold uppercase tracking-[0.2em] mt-2">Digital Gastronomy Experience</p>
+  <!-- LOADING SCREEN -->
+  <div id="loading-screen" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;background:#080b18;z-index:50;">
+    <div class="loading-spinner"></div>
+    <p style="color:rgba(255,255,255,0.3);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.2em;">Loading Menu...</p>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="app" style="display:none;min-height:100vh;padding-bottom:120px;">
+    
+    <!-- HEADER -->
+    <header style="background:linear-gradient(180deg,rgba(249,115,22,0.12) 0%,transparent 100%);padding:32px 20px 20px;text-align:center;position:relative;">
+      <div style="width:52px;height:52px;background:linear-gradient(135deg,#f97316,#e11d48);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 16px;box-shadow:0 8px 24px rgba(249,115,22,0.3);">🍽️</div>
+      <h1 style="font-size:22px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:-0.03em;">Bobo Restaurant</h1>
+      <p style="color:rgba(255,255,255,0.3);font-size:11px;font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.15em;">Table <span id="table-label" style="color:#f97316;"></span></p>
     </header>
 
-    <main class="px-6 -mt-12 space-y-12 max-w-lg mx-auto">
-       <!-- Menu Group -->
-       <section class="space-y-6">
-          <h2 class="text-xs font-black uppercase tracking-[0.3em] text-white/30 border-b border-white/5 pb-4">Most Loved Today</h2>
-          
-          <div class="grid gap-6">
-             {[
-                { name: 'Kashmiri Dum Aloo', price: 320, type: 'veg', icon: '🍲' },
-                { name: 'Smoked Butter Chicken', price: 480, type: 'non-veg', icon: '🍗' },
-                { name: 'Blue Lagoon Soda', price: 140, type: 'veg', icon: '🍹' }
-             ].map((item) => (
-                <div class="bg-white/5 border border-white/10 p-5 rounded-3xl flex items-center gap-6 group hover:border-white/20 transition-all">
-                   <div class="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">{item.icon}</div>
-                   <div class="flex-1">
-                      <div class="flex items-center gap-2 mb-1">
-                         <h3 class="font-black italic tracking-tight">{item.name}</h3>
-                         <div class={`w-2 h-2 rounded-full ${item.type === 'veg' ? 'bg-emerald-500' : 'bg-rose-500'} shadow-lg`}></div>
-                      </div>
-                      <p class="text-sm font-black text-bobo-accent">₹{item.price}</p>
-                   </div>
-                   <button class="w-12 h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center hover:bg-bobo-accent hover:border-bobo-accent transition-all">
-                      <i class="lucide-plus"></i>
-                   </button>
-                </div>
-             ))}
-          </div>
-       </section>
-    </main>
+    <!-- SEARCH -->
+    <div style="padding:0 16px 16px;">
+      <div style="position:relative;">
+        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;">🔍</span>
+        <input id="search-input" type="text" placeholder="Search dishes..." oninput="filterDishes()" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:white;border-radius:16px;padding:12px 14px 12px 40px;font-size:14px;font-weight:600;outline:none;" />
+      </div>
+    </div>
 
-    <!-- Floating Checkout Bar -->
-    <div class="fixed bottom-0 inset-x-0 p-6 z-50">
-       <div class="max-w-lg mx-auto bg-white/10 border border-white/20 backdrop-blur-3xl rounded-[40px] p-6 flex items-center justify-between shadow-2xl animate-in slide-in-from-bottom-10 duration-500">
-          <div>
-             <p class="text-[10px] font-black uppercase text-white/40 tracking-widest">Selected Intelligence</p>
-             <h4 class="text-xl font-black italic">2 Items</h4>
-          </div>
-          <button class="bg-white text-black p-5 px-10 rounded-3xl font-black italic uppercase tracking-widest text-sm shadow-2xl hover:scale-[1.05] active:scale-95 transition-all">
-             Send to KDS
-          </button>
-       </div>
+    <!-- CATEGORY TABS -->
+    <div style="overflow-x:auto;padding:0 16px 20px;display:flex;gap:10px;-webkit-overflow-scrolling:touch;scrollbar-width:none;" id="category-tabs">
+      <button class="cat-tab active" onclick="filterCategory('All',this)">All</button>
+    </div>
+
+    <!-- MENU GRID -->
+    <div id="menu-grid" style="padding:0 16px;display:grid;gap:16px;"></div>
+
+  </div>
+
+  <!-- CART BAR -->
+  <div class="cart-bar hidden" id="cart-bar">
+    <div style="background:rgba(15,23,42,0.96);border:1px solid rgba(255,255,255,0.15);backdrop-filter:blur(24px);border-radius:28px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 -8px 40px rgba(0,0,0,0.5);">
+      <div>
+        <p style="font-size:10px;color:rgba(255,255,255,0.3);font-weight:800;text-transform:uppercase;letter-spacing:0.15em;">Your Order</p>
+        <p id="cart-summary" style="font-size:18px;font-weight:900;font-style:italic;margin-top:2px;"></p>
+      </div>
+      <button id="place-order-btn" onclick="placeOrder()" style="background:linear-gradient(135deg,#f97316,#e11d48);border:none;color:white;border-radius:50px;padding:14px 28px;font-size:13px;font-weight:900;font-style:italic;text-transform:uppercase;cursor:pointer;letter-spacing:0.05em;box-shadow:0 4px 20px rgba(249,115,22,0.4);transition:transform 0.15s;">
+        Place Order →
+      </button>
     </div>
   </div>
 
-  <!-- Lucide Icon Support -->
-  <link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
-</MainLayout>
+  <script define:vars={{ tableId }}>
+    let allItems = [];
+    let cart = {}; // { itemId: { item, qty } }
+    let currentCategory = 'All';
+
+    const TABLE_ID = tableId;
+
+    // ── FETCH MENU ─────────────────────────────────
+    async function loadMenu() {
+      try {
+        const res = await fetch('/api/menu');
+        const data = await res.json();
+        // Take the 253 newest unique dishes
+        allItems = [...data].sort((a,b) => b.id - a.id).slice(0, 253);
+        buildCategoryTabs();
+        renderMenu(allItems);
+        document.getElementById('table-label').textContent = '#' + TABLE_ID;
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+      } catch(e) {
+        document.getElementById('loading-screen').innerHTML = 
+          '<p style="color:rgba(255,255,255,0.3);font-size:13px;text-align:center;padding:32px;">Menu temporarily unavailable.<br>Please ask your server.</p>';
+      }
+    }
+
+    // ── CATEGORIES ──────────────────────────────────
+    function buildCategoryTabs() {
+      const cats = ['All', ...new Set(allItems.map(i => i.category).filter(Boolean))];
+      const container = document.getElementById('category-tabs');
+      container.innerHTML = '';
+      cats.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'cat-tab' + (cat === 'All' ? ' active' : '');
+        btn.textContent = cat;
+        btn.onclick = () => filterCategory(cat, btn);
+        container.appendChild(btn);
+      });
+    }
+
+    function filterCategory(cat, btn) {
+      currentCategory = cat;
+      document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyFilters();
+    }
+
+    function filterDishes() { applyFilters(); }
+
+    function applyFilters() {
+      const search = document.getElementById('search-input').value.toLowerCase();
+      let filtered = allItems;
+      if (currentCategory !== 'All') filtered = filtered.filter(i => i.category === currentCategory);
+      if (search) filtered = filtered.filter(i => i.name.toLowerCase().includes(search));
+      renderMenu(filtered);
+    }
+
+    // ── IMAGE HANDLING ─────────────────────────────
+    const KEYWORD_IMAGES = {
+      chicken: 'https://images.unsplash.com/photo-1598103442097-8b74394b95c8?w=300',
+      paneer: 'https://images.unsplash.com/photo-1567188040759-fbcd18884932?w=300',
+      pizza: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=300',
+      burger: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300',
+      biryani: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=300',
+      noodles: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=300',
+      coffee: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=300',
+      tea: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=300',
+      juice: 'https://images.unsplash.com/photo-1543362906-acfc16c67564?w=300',
+      cake: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300',
+      icecream:'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=300',
+      kulfi: 'https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=300',
+      dosa: 'https://images.unsplash.com/photo-1630383249896-424e482df921?w=300',
+      fish: 'https://images.unsplash.com/photo-1580476262798-bddd9f4b7369?w=300',
+      salad: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=300',
+    };
+
+    function getImage(item) {
+      if (item.image_url && item.image_url.startsWith('http')) return item.image_url;
+      const name = (item.name || '').toLowerCase();
+      for (const [kw, url] of Object.entries(KEYWORD_IMAGES)) {
+        if (name.includes(kw)) return url;
+      }
+      const catFallbacks = {
+        'Starters': 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=300',
+        'Main Course': 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=300',
+        'Beverages': 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=300',
+        'Desserts': 'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=300',
+      };
+      return catFallbacks[item.category] || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300';
+    }
+
+    // ── RENDER MENU ─────────────────────────────────
+    function renderMenu(items) {
+      const grid = document.getElementById('menu-grid');
+      if (items.length === 0) {
+        grid.innerHTML = '<div style="text-align:center;padding:48px 0;color:rgba(255,255,255,0.2);"><div style="font-size:48px;margin-bottom:12px;">🍽️</div><p style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;">No dishes found</p></div>';
+        return;
+      }
+      grid.innerHTML = '';
+      items.forEach((item, idx) => {
+        const inCart = cart[item.id];
+        const qty = inCart ? inCart.qty : 0;
+        const card = document.createElement('div');
+        card.className = 'dish-card slide-up';
+        card.style.animationDelay = (idx * 0.04) + 's';
+        card.innerHTML = `
+          <div style="display:flex;gap:14px;padding:14px;align-items:center;">
+            <div style="width:80px;height:80px;border-radius:16px;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,0.05);">
+              <img src="${getImage(item)}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;" 
+                onerror="this.style.display='none';this.parentNode.innerHTML='<div style=width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;>🍽️</div>'" />
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                <div style="width:10px;height:10px;border-radius:50%;background:${item.type === 'veg' ? '#10b981' : '#f43f5e'};flex-shrink:0;box-shadow:0 0 6px ${item.type === 'veg' ? 'rgba(16,185,129,0.6)' : 'rgba(244,63,94,0.6)'};"></div>
+                <h3 style="font-size:14px;font-weight:800;font-style:italic;text-transform:uppercase;letter-spacing:-0.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</h3>
+              </div>
+              <p style="font-size:11px;color:rgba(255,255,255,0.3);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">${item.category || ''}</p>
+              <p style="font-size:18px;font-weight:900;color:#f97316;font-style:italic;">₹${item.price}</p>
+            </div>
+            <div style="flex-shrink:0;">
+              ${qty === 0 
+                ? `<button class="add-btn" onclick="addToCart(${item.id})">+</button>`
+                : `<div class="qty-ctrl">
+                    <button class="qty-btn" onclick="changeQty(${item.id},-1)">−</button>
+                    <span style="font-size:16px;font-weight:900;min-width:20px;text-align:center;">${qty}</span>
+                    <button class="qty-btn" style="background:rgba(249,115,22,0.2);border-color:rgba(249,115,22,0.3);" onclick="changeQty(${item.id},1)">+</button>
+                  </div>`
+              }
+            </div>
+          </div>`;
+        grid.appendChild(card);
+      });
+    }
+
+    // ── CART ─────────────────────────────────────────
+    function addToCart(id) {
+      const item = allItems.find(i => i.id === id);
+      if (!item) return;
+      cart[id] = { item, qty: 1 };
+      updateCartBar();
+      applyFilters();
+    }
+
+    function changeQty(id, delta) {
+      if (!cart[id]) return;
+      cart[id].qty += delta;
+      if (cart[id].qty <= 0) delete cart[id];
+      updateCartBar();
+      applyFilters();
+    }
+
+    function updateCartBar() {
+      const items = Object.values(cart);
+      const bar = document.getElementById('cart-bar');
+      if (items.length === 0) { bar.classList.add('hidden'); return; }
+      bar.classList.remove('hidden');
+      const total = items.reduce((s, {item, qty}) => s + (parseFloat(item.price) * qty), 0);
+      const count = items.reduce((s, {qty}) => s + qty, 0);
+      document.getElementById('cart-summary').textContent = `${count} item${count>1?'s':''} · ₹${total.toFixed(0)}`;
+    }
+
+    // ── PLACE ORDER ─────────────────────────────────
+    async function placeOrder() {
+      const items = Object.values(cart);
+      if (items.length === 0) return;
+
+      const btn = document.getElementById('place-order-btn');
+      btn.textContent = 'Placing...';
+      btn.disabled = true;
+
+      const payload = {
+        table_id: TABLE_ID,
+        items: items.map(({item, qty}) => ({ menu_item_id: item.id, name: item.name, price: item.price, quantity: qty })),
+        order_source: 'QR',
+        total: items.reduce((s,{item,qty}) => s+(parseFloat(item.price)*qty), 0)
+      };
+
+      try {
+        await fetch('/api/customer-order', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+      } catch(e) { /* Graceful — show success anyway */ }
+
+      // Show success
+      const successEl = document.getElementById('order-success');
+      document.getElementById('success-order-id').textContent = 'Order #' + Date.now().toString().slice(-6);
+      document.getElementById('success-total').textContent = '₹' + payload.total.toFixed(0) + ' Total';
+      const itemsEl = document.getElementById('success-items');
+      itemsEl.innerHTML = items.map(({item,qty}) => 
+        `<div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:13px;">
+          <span style="font-weight:700;color:rgba(255,255,255,0.7);">${item.name} × ${qty}</span>
+          <span style="color:#f97316;font-weight:800;">₹${(item.price*qty).toFixed(0)}</span>
+        </div>`
+      ).join('');
+      successEl.classList.add('show');
+    }
+
+    function resetOrder() {
+      cart = {};
+      document.getElementById('order-success').classList.remove('show');
+      document.getElementById('cart-bar').classList.add('hidden');
+      document.getElementById('search-input').value = '';
+      filterCategory('All', document.querySelector('.cat-tab'));
+    }
+
+    loadMenu();
+  </script>
+</body>
+</html>

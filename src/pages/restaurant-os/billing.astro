@@ -1,0 +1,291 @@
+---
+import RestaurantOSLayout from "../../layouts/RestaurantOSLayout.astro";
+import "../../styles/restaurant.css";
+---
+<RestaurantOSLayout title="Billing & Subscription | Bobo Restaurant OS">
+  <div class="space-y-8 animate-in fade-in duration-500 font-['Plus_Jakarta_Sans']">
+
+    <!-- Header -->
+    <header class="bg-white/5 border border-white/10 p-8 rounded-3xl relative overflow-hidden">
+      <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 via-violet-500 to-rose-500"></div>
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <h1 class="text-3xl font-black italic uppercase tracking-tighter">Billing &amp; <span class="text-orange-400">Subscription</span></h1>
+          <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.4em] mt-2 italic">Plan Management · Payment History · Upgrade</p>
+        </div>
+        <div id="plan-badge" class="flex items-center gap-3 bg-orange-500/10 border border-orange-500/20 px-6 py-3 rounded-2xl w-fit">
+          <div class="w-2 h-2 rounded-full bg-orange-400 animate-pulse"></div>
+          <span id="current-plan-label" class="font-black uppercase text-sm italic text-orange-400">Loading...</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- SUBSCRIPTION EXPIRED OVERLAY (hidden by default) -->
+    <div id="expired-overlay" style="display:none;" class="fixed inset-0 bg-[#05081a]/95 backdrop-blur-3xl z-[99998] flex items-center justify-center p-6">
+      <div class="text-center max-w-md">
+        <div class="text-6xl mb-6">⏰</div>
+        <h2 class="text-4xl font-black italic uppercase tracking-tighter mb-4">Subscription <span class="text-rose-400">Expired</span></h2>
+        <p class="text-white/40 mb-8 font-semibold">Your subscription has expired. Renew now to continue using Restaurant OS.</p>
+        <a href="/restaurant-pricing" class="block w-full py-4 bg-gradient-to-r from-orange-600 to-rose-500 rounded-2xl font-black uppercase text-sm italic text-center text-white hover:from-orange-500 transition-all shadow-xl">
+          Renew Subscription →
+        </a>
+      </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="grid md:grid-cols-3 gap-6">
+
+      <!-- Current Subscription -->
+      <div class="md:col-span-2 bg-white/5 border border-white/10 rounded-3xl p-8 space-y-6">
+        <h2 class="text-sm font-black italic uppercase text-white/50 tracking-widest">Current Subscription</h2>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div class="bg-white/5 rounded-2xl p-5">
+            <p class="text-[9px] font-black uppercase tracking-widest text-white/25 mb-2">Plan</p>
+            <p id="info-plan" class="text-xl font-black italic text-orange-400">—</p>
+          </div>
+          <div class="bg-white/5 rounded-2xl p-5">
+            <p class="text-[9px] font-black uppercase tracking-widest text-white/25 mb-2">Status</p>
+            <p id="info-status" class="text-xl font-black italic">—</p>
+          </div>
+          <div class="bg-white/5 rounded-2xl p-5">
+            <p class="text-[9px] font-black uppercase tracking-widest text-white/25 mb-2">Expires</p>
+            <p id="info-expiry" class="text-xl font-black italic text-white/70">—</p>
+          </div>
+          <div class="bg-white/5 rounded-2xl p-5">
+            <p class="text-[9px] font-black uppercase tracking-widest text-white/25 mb-2">Restaurant</p>
+            <p id="info-name" class="text-sm font-black italic text-white/70 truncate">—</p>
+          </div>
+          <div class="bg-white/5 rounded-2xl p-5">
+            <p class="text-[9px] font-black uppercase tracking-widest text-white/25 mb-2">Email</p>
+            <p id="info-email" class="text-xs font-bold text-white/50 truncate">—</p>
+          </div>
+          <div class="bg-white/5 rounded-2xl p-5">
+            <p class="text-[9px] font-black uppercase tracking-widest text-white/25 mb-2">Days Left</p>
+            <p id="info-days" class="text-xl font-black italic text-emerald-400">—</p>
+          </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="space-y-2">
+          <div class="flex justify-between text-[10px] font-black uppercase text-white/30">
+            <span>Subscription Period</span>
+            <span id="progress-label">— days remaining</span>
+          </div>
+          <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+            <div id="progress-bar" class="h-full bg-gradient-to-r from-orange-500 to-rose-500 transition-all duration-700 rounded-full" style="width:0%"></div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex gap-4 flex-wrap">
+          <a href="/restaurant-pricing" class="px-6 py-3 bg-gradient-to-r from-orange-600 to-rose-500 rounded-2xl font-black uppercase text-[11px] italic text-white hover:from-orange-500 transition-all shadow-lg">
+            🔼 Upgrade Plan
+          </a>
+          <button onclick="renewSubscription()" class="px-6 py-3 bg-white/5 border border-white/10 rounded-2xl font-black uppercase text-[11px] italic text-white/50 hover:text-white hover:bg-white/10 transition-all">
+            🔄 Renew Now
+          </button>
+          <button onclick="cancelSubscription()" class="px-6 py-3 bg-rose-500/10 border border-rose-500/20 rounded-2xl font-black uppercase text-[11px] italic text-rose-400/60 hover:text-rose-400 hover:bg-rose-500/20 transition-all">
+            Cancel Subscription
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Upgrade Promo -->
+      <div class="bg-gradient-to-br from-orange-500/10 to-rose-500/10 border border-orange-500/20 rounded-3xl p-8 space-y-5">
+        <h2 class="text-sm font-black italic uppercase text-orange-400 tracking-widest">Upgrade Perks</h2>
+        <div class="space-y-3">
+          {[
+            '🍽️ Unlimited Tables',
+            '📱 QR Customer Ordering',
+            '👨‍🍳 Kitchen Display',
+            '🤖 AI Menu Upload',
+            '📊 Advanced Analytics',
+            '🔗 API Access',
+            '🎨 Custom Branding'
+          ].map(f => (
+            <div class="flex items-center gap-2 text-xs font-bold text-white/60 py-1.5 border-b border-white/5">{f}</div>
+          ))}
+        </div>
+        <a href="/restaurant-pricing" class="block text-center py-3 bg-gradient-to-r from-orange-600 to-rose-500 rounded-2xl font-black uppercase text-[11px] italic text-white hover:from-orange-500 transition-all shadow-lg">
+          View All Plans →
+        </a>
+      </div>
+    </div>
+
+    <!-- Payment History -->
+    <div class="bg-white/5 border border-white/10 rounded-3xl p-8">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-sm font-black italic uppercase text-white/50 tracking-widest">Payment History</h2>
+        <button onclick="exportHistory()" class="text-[10px] font-black uppercase text-orange-400 hover:text-orange-300 transition-colors italic">Export CSV</button>
+      </div>
+
+      <div id="payment-history" class="space-y-3">
+        <p class="text-white/20 text-sm font-bold text-center py-8">No payments recorded yet.</p>
+      </div>
+    </div>
+
+    <!-- Plan Features Comparison mini -->
+    <div class="bg-white/5 border border-white/10 rounded-3xl p-8">
+      <h2 class="text-sm font-black italic uppercase text-white/50 tracking-widest mb-6">What's Included in Your Plan</h2>
+      <div id="plan-features" class="grid sm:grid-cols-2 md:grid-cols-4 gap-4"></div>
+    </div>
+
+  </div>
+
+  <script>
+    const PLAN_FEATURES = {
+      starter: [
+        {icon:'🖥️',name:'POS Terminal',ok:true},
+        {icon:'📊',name:'Dashboard',ok:true},
+        {icon:'📋',name:'Menu Hub',ok:true},
+        {icon:'🍽️',name:'Max 5 Tables',ok:true},
+        {icon:'👨‍🍳',name:'Kitchen Display',ok:false},
+        {icon:'📱',name:'QR Ordering',ok:false},
+        {icon:'🤖',name:'AI Menu Upload',ok:false},
+        {icon:'🌍',name:'Multi-location',ok:false},
+      ],
+      growth: [
+        {icon:'🖥️',name:'POS Terminal',ok:true},
+        {icon:'📊',name:'Dashboard',ok:true},
+        {icon:'📋',name:'Menu Hub',ok:true},
+        {icon:'🍽️',name:'Max 15 Tables',ok:true},
+        {icon:'👨‍🍳',name:'Kitchen Display',ok:true},
+        {icon:'📱',name:'QR Ordering',ok:true},
+        {icon:'🤖',name:'AI Menu Upload',ok:true},
+        {icon:'🌍',name:'Multi-location',ok:false},
+      ],
+      pro: [
+        {icon:'🖥️',name:'POS Terminal',ok:true},
+        {icon:'📊',name:'Dashboard',ok:true},
+        {icon:'📋',name:'Menu Hub',ok:true},
+        {icon:'🍽️',name:'Unlimited Tables',ok:true},
+        {icon:'👨‍🍳',name:'Kitchen Display',ok:true},
+        {icon:'📱',name:'QR Ordering',ok:true},
+        {icon:'🤖',name:'AI Menu Upload',ok:true},
+        {icon:'🌍',name:'Multi-location',ok:true},
+      ],
+      trial: [
+        {icon:'🖥️',name:'POS Terminal',ok:true},
+        {icon:'📊',name:'Dashboard',ok:true},
+        {icon:'📋',name:'Menu Hub',ok:true},
+        {icon:'🍽️',name:'Max 5 Tables',ok:true},
+        {icon:'👨‍🍳',name:'Kitchen Display',ok:true},
+        {icon:'📱',name:'QR Ordering',ok:true},
+        {icon:'🤖',name:'AI Menu Upload',ok:true},
+        {icon:'⏰',name:'7-Day Trial',ok:true},
+      ],
+    };
+
+    const PLAN_NAMES = { starter: 'Starter', growth: 'Growth', pro: 'Pro', trial: 'Free Trial' };
+    const PLAN_PRICES = { starter: '₹999/mo', growth: '₹1,999/mo', pro: '₹2,999/mo', trial: 'Free' };
+
+    function loadBillingInfo() {
+      const plan = localStorage.getItem('restaurant_plan') || 'trial';
+      const status = localStorage.getItem('subscription_status') || 'trial';
+      const expiry = parseInt(localStorage.getItem('subscription_expiry') || (Date.now() + 7*24*60*60*1000).toString());
+      const name = localStorage.getItem('restaurant_name') || 'My Restaurant';
+      const email = localStorage.getItem('restaurant_email') || 'admin@restaurant.com';
+
+      const now = Date.now();
+      const daysLeft = Math.max(0, Math.ceil((expiry - now) / (24 * 60 * 60 * 1000)));
+      const totalDays = status === 'trial' ? 7 : 30;
+      const progressPct = Math.max(5, Math.min(100, (daysLeft / totalDays) * 100));
+
+      // Check if expired
+      if (expiry < now && status !== 'trial') {
+        // Mark as expired but don't show overlay here (only OS layout does that)
+        localStorage.setItem('subscription_status', 'expired');
+      }
+
+      // Update UI
+      document.getElementById('current-plan-label').textContent = (PLAN_NAMES[plan] || plan).toUpperCase() + ' PLAN';
+      document.getElementById('info-plan').textContent = PLAN_NAMES[plan] || plan;
+      
+      const statusEl = document.getElementById('info-status');
+      statusEl.textContent = status === 'active' ? '✅ Active' : status === 'trial' ? '🔔 Trial' : '❌ Expired';
+      statusEl.className = 'text-xl font-black italic ' + (status === 'active' ? 'text-emerald-400' : status === 'trial' ? 'text-orange-400' : 'text-rose-400');
+
+      document.getElementById('info-expiry').textContent = new Date(expiry).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'});
+      document.getElementById('info-name').textContent = name;
+      document.getElementById('info-email').textContent = email;
+
+      const daysEl = document.getElementById('info-days');
+      daysEl.textContent = daysLeft + ' days';
+      daysEl.className = 'text-xl font-black italic ' + (daysLeft > 10 ? 'text-emerald-400' : daysLeft > 3 ? 'text-orange-400' : 'text-rose-400');
+
+      document.getElementById('progress-label').textContent = daysLeft + ' days remaining';
+      document.getElementById('progress-bar').style.width = progressPct + '%';
+      const bar = document.getElementById('progress-bar');
+      bar.style.background = daysLeft > 10 ? 'linear-gradient(90deg,#10b981,#059669)' : daysLeft > 3 ? 'linear-gradient(90deg,#f97316,#ea580c)' : 'linear-gradient(90deg,#f43f5e,#e11d48)';
+
+      // Plan features
+      const features = PLAN_FEATURES[plan] || PLAN_FEATURES.trial;
+      document.getElementById('plan-features').innerHTML = features.map(f => `
+        <div style="display:flex;align-items:center;gap:10px;background:${f.ok?'rgba(16,185,129,0.06)':'rgba(255,255,255,0.03)'};border:1px solid ${f.ok?'rgba(16,185,129,0.2)':'rgba(255,255,255,0.06)'};border-radius:16px;padding:14px;">
+          <span style="font-size:20px;">${f.icon}</span>
+          <div>
+            <p style="font-size:12px;font-weight:800;color:${f.ok?'rgba(255,255,255,0.8)':'rgba(255,255,255,0.25)'};">${f.name}</p>
+            <p style="font-size:9px;font-weight:900;text-transform:uppercase;color:${f.ok?'#10b981':'rgba(255,255,255,0.15)'};">${f.ok?'Included':'Not Available'}</p>
+          </div>
+        </div>
+      `).join('');
+
+      // Payment history
+      const history = JSON.parse(localStorage.getItem('payment_history') || '[]');
+      const histEl = document.getElementById('payment-history');
+      if (history.length === 0) {
+        histEl.innerHTML = '<div style="text-align:center;padding:40px;"><p style="color:rgba(255,255,255,0.15);font-size:13px;font-weight:700;">No payment records yet.</p><p style="color:rgba(255,255,255,0.1);font-size:11px;margin-top:4px;">Payments appear here after your trial ends.</p></div>';
+      } else {
+        histEl.innerHTML = history.reverse().map(p => `
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:16px 20px;">
+            <div style="display:flex;align-items:center;gap:14px;">
+              <div style="width:40px;height:40px;border-radius:12px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);display:flex;align-items:center;justify-content:center;font-size:18px;">💳</div>
+              <div>
+                <p style="font-size:13px;font-weight:800;color:rgba(255,255,255,0.8);text-transform:capitalize;">${p.plan || 'Plan'} Plan</p>
+                <p style="font-size:10px;color:rgba(255,255,255,0.3);font-weight:600;">${new Date(p.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</p>
+                ${p.id ? `<p style="font-size:9px;color:rgba(255,255,255,0.2);font-family:monospace;">${p.id.slice(0,20)}...</p>` : ''}
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <p style="font-size:16px;font-weight:900;font-style:italic;color:#10b981;">₹${p.amount?.toLocaleString() || '—'}</p>
+              <span style="display:inline-block;padding:2px 10px;border-radius:50px;font-size:9px;font-weight:900;text-transform:uppercase;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:#10b981;">${p.status || 'paid'}</span>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function renewSubscription() { window.location.href = '/restaurant-pricing'; }
+
+    function cancelSubscription() {
+      if (confirm('Are you sure? You\'ll lose access when your subscription period ends.')) {
+        localStorage.setItem('subscription_status', 'cancelled');
+        showToast('Subscription cancelled. Access continues until expiry date.');
+        loadBillingInfo();
+      }
+    }
+
+    function exportHistory() {
+      const history = JSON.parse(localStorage.getItem('payment_history') || '[]');
+      if (history.length === 0) { showToast('No payment history to export.'); return; }
+      const csv = 'Date,Plan,Amount,Payment ID,Status\n' + history.map(p => 
+        `${new Date(p.date).toLocaleDateString()},${p.plan},${p.amount},${p.id},${p.status}`
+      ).join('\n');
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+      a.download = 'payment_history.csv';
+      a.click();
+    }
+
+    function showToast(msg) {
+      const t = document.createElement('div');
+      t.textContent = msg;
+      t.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:99999;background:#0f172a;border:1px solid rgba(249,115,22,0.4);border-radius:16px;padding:14px 20px;font-size:13px;font-weight:700;color:white;box-shadow:0 8px 32px rgba(0,0,0,0.5);';
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3500);
+    }
+
+    loadBillingInfo();
+  </script>
+</RestaurantOSLayout>

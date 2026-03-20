@@ -1,5 +1,6 @@
 ---
-import RetailOSLayout from "../layouts/RetailOSLayout.astro";
+import MainLayout from "../layouts/MainLayout.astro";
+import "../styles/restaurant.css";
 
 // Mock data for products
 const products = [
@@ -10,7 +11,7 @@ const products = [
     barcode: "8901234567890",
     price: 999,
     category: "Shirts",
-    image: "/images/pos/shirt.png",
+    image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&q=80&w=200",
     variants: {
       sizes: ["S", "M", "L", "XL"],
       colors: ["Black", "Midnight Blue"]
@@ -23,7 +24,7 @@ const products = [
     barcode: "8901234567891",
     price: 1999,
     category: "Jeans",
-    image: "/images/pos/jeans.png",
+    image: "https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&q=80&w=200",
     variants: {
       sizes: ["30", "32", "34", "36"],
       colors: ["Blue", "Dark Denim"]
@@ -36,7 +37,7 @@ const products = [
     barcode: "8901234567892",
     price: 1499,
     category: "Ethnic",
-    image: "/images/pos/kurti.png",
+    image: "https://images.unsplash.com/photo-1583391733956-6c78276477e2?auto=format&fit=crop&q=80&w=200",
     variants: {
       sizes: ["M", "L", "XL"],
       colors: ["Red", "Maroon"]
@@ -49,7 +50,7 @@ const products = [
     barcode: "8901234567893",
     price: 599,
     category: "T-Shirts",
-    image: "/images/pos/tshirt.png",
+    image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=200",
     variants: {
       sizes: ["S", "M", "L", "XL"],
       colors: ["White", "Black"]
@@ -58,1217 +59,316 @@ const products = [
 ];
 ---
 
-<RetailOSLayout title="POS | Bobo Retail OS">
-  <div class="pos-container">
-    <!-- Top Bar / Dashboard Widgets -->
-    <header class="pos-header">
-      <div class="search-section">
-        <label for="barcode-search" class="sr-only">Search Product / Scan Barcode</label>
-        <div class="search-input-wrapper">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          <input type="text" id="barcode-search" placeholder="Search Product, Scan Barcode, SKU or Category..." />
-          <span class="scanner-dot"></span>
-        </div>
+<MainLayout title="Omnichannel POS Terminal | Bobo OS" hideNav={true}>
+  <div class="flex h-screen bg-[#05081a] overflow-hidden font-['Plus_Jakarta_Sans'] text-white">
+    
+    <!-- Sidebar -->
+    <aside class="w-20 md:w-24 border-r border-white/10 bg-[#05081a]/50 backdrop-blur-2xl flex flex-col justify-between py-10 items-center">
+      <div class="flex flex-col gap-8">
+        <div class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center font-black text-white text-xl shadow-lg shadow-indigo-600/20 italic">B</div>
+        <nav class="flex flex-col gap-6">
+           <a href="/retail-os" class="p-4 text-white/20 hover:text-white hover:bg-white/5 rounded-2xl transition-all">
+              <i class="lucide-layout-grid text-xl"></i>
+           </a>
+           <a href="/retail-os/inventory" class="p-4 text-white/20 hover:text-white hover:bg-white/5 rounded-2xl transition-all">
+              <i class="lucide-box text-xl"></i>
+           </a>
+           <a href="/pos-clothing" class="p-4 text-indigo-400 bg-indigo-500/10 rounded-2xl transition-all shadow-lg shadow-indigo-500/5 font-bold">
+              <i class="lucide-receipt text-xl"></i>
+           </a>
+           <a href="/retail-os/customers" class="p-4 text-white/20 hover:text-white hover:bg-white/5 rounded-2xl transition-all">
+              <i class="lucide-users-2 text-xl"></i>
+           </a>
+           <a href="/retail-os/analytics" class="p-4 text-white/20 hover:text-white hover:bg-white/5 rounded-2xl transition-all">
+              <i class="lucide-bar-chart-3 text-xl"></i>
+           </a>
+        </nav>
       </div>
-      
-      <div class="dashboard-widgets">
-        <div class="stat-widget">
-          <span class="stat-label">Shift Sales</span>
-          <span class="stat-value">₹14,250</span>
-        </div>
-        <div class="stat-widget">
-          <span class="stat-label">Stock Status</span>
-          <span class="stat-value" style="color: var(--success);">OPTIMAL</span>
-        </div>
-      </div>
-    </header>
 
-    <main class="pos-main">
-      <!-- Left Side: Product Grid -->
-      <section class="catalog-section">
-        <div class="section-header">
-          <h2>Omnichannel Product Catalog</h2>
-          <div class="category-tabs">
-            <button class="tab active" data-category="all">All</button>
-            <button class="tab" data-category="shirts">Shirts</button>
-            <button class="tab" data-category="jeans">Jeans</button>
-            <button class="tab" data-category="ethnic">Ethnic</button>
+      <div class="flex flex-col gap-6">
+         <a href="/crm-login" class="p-4 text-white/20 hover:text-rose-400 hover:bg-rose-400/10 rounded-2xl transition-all"><i class="lucide-log-out text-xl"></i></a>
+      </div>
+    </aside>
+
+    <!-- Content Workspace -->
+    <main class="flex-1 overflow-hidden flex flex-col p-6 md:p-8 relative">
+       
+       <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+          <div class="flex-1 max-w-2xl relative group">
+             <i class="lucide-search absolute left-5 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-indigo-500 transition-colors"></i>
+             <input type="text" id="barcode-search" placeholder="SCAN BARCODE OR QUERY SKU..." class="w-full bg-white/5 border border-white/10 p-5 pl-14 rounded-2xl outline-none focus:border-indigo-500 transition-all font-black text-[10px] uppercase tracking-widest" />
+             <div class="absolute right-6 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] animate-pulse"></div>
           </div>
-        </div>
+          <div class="flex items-center gap-4">
+             <div class="px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-center">
+                <div class="text-[8px] font-black uppercase text-white/30 tracking-widest italic">Shift Total</div>
+                <div class="text-xl font-black italic tracking-tighter">₹14,250</div>
+             </div>
+          </div>
+       </header>
 
-        <div class="product-grid" id="product-grid">
-          {products.map(product => (
-            <div class="product-card" data-id={product.id} data-category={product.category.toLowerCase()}>
-              <div class="product-image">
-                <img src={product.image} alt={product.name} />
-              </div>
-              <div class="product-info">
-                <h3>{product.name}</h3>
-                <p class="sku">{product.sku}</p>
-                <div class="product-footer">
-                  <span class="price">₹{product.price}</span>
-                  <button class="add-to-cart-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-                  </button>
+       <div class="flex-1 flex gap-8 min-h-0">
+          
+          <!-- Catalog Section -->
+          <section class="flex-[1.5] flex flex-col gap-6 min-w-0">
+             <div class="flex items-center justify-between">
+                <div class="flex gap-2">
+                   {['All', 'Shirts', 'Jeans', 'Ethnic'].map((cat, idx) => (
+                      <button class={`px-4 py-2 rounded-xl text-[8px] font-black uppercase tracking-widest border transition-all ${idx === 0 ? 'bg-indigo-600 border-indigo-400' : 'bg-white/5 border-white/10 hover:border-white/20'}`}>{cat}</button>
+                   ))}
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+             </div>
 
-      <!-- Right Side: Cart / Billing -->
-      <aside class="billing-section">
-        <!-- Customer Selection -->
-        <div class="customer-selection">
-          <div class="search-input-wrapper">
-             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-             <input type="text" placeholder="Search VIP/Member..." id="customer-search" />
-             <button class="add-customer-btn">+</button>
-          </div>
-          <div id="selected-customer" class="selected-customer" style="display: none;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <div>
-                <strong><span id="cust-name"></span></strong>
-                <div id="cust-phone" style="font-size: 0.75rem; color: var(--text-muted);"></div>
-              </div>
-              <div class="loyalty-badge">
-                 PTs: 1,240
-              </div>
-            </div>
-          </div>
-        </div>
+             <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto custom-scrollbar pr-4 pb-8">
+                {products.map(product => (
+                   <div class="bg-white/5 border border-white/10 rounded-[32px] overflow-hidden group hover:bg-white/[0.08] transition-all cursor-pointer product-card" data-id={product.id}>
+                      <div class="h-40 bg-black/20 relative overflow-hidden">
+                         <img src={product.image} alt={product.name} class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-60" />
+                         <div class="absolute top-4 right-4 bg-black/60 backdrop-blur-md border border-white/10 rounded-xl px-2 py-1 text-[8px] font-black italic text-indigo-400">{product.sku}</div>
+                      </div>
+                      <div class="p-5">
+                         <h3 class="text-xs font-black italic uppercase tracking-tight mb-4 line-clamp-1">{product.name}</h3>
+                         <div class="flex justify-between items-center">
+                            <span class="text-lg font-black italic text-white/90">₹{product.price}</span>
+                            <div class="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-600/20"><i class="lucide-plus text-xs"></i></div>
+                         </div>
+                      </div>
+                   </div>
+                ))}
+             </div>
+          </section>
 
-        <div class="cart-container">
-          <div class="cart-header">
-            <span>Selected Items</span>
-            <div style="display: flex; gap: 8px;">
-                <button class="extra-action-btn" id="exchange-mode">Exchange</button>
-                <button class="clear-cart">Clear</button>
-            </div>
-          </div>
+          <!-- Billing Section -->
+          <aside class="flex-1 flex flex-col gap-6 min-w-[380px]">
+             
+             <!-- VIP Hub -->
+             <div class="bg-white/5 border border-white/10 rounded-[32px] p-5 relative overflow-hidden group">
+                <div class="flex items-center gap-4">
+                   <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-cyan-500 rounded-2xl flex items-center justify-center font-black italic text-xs">V</div>
+                   <div class="flex-1">
+                      <div class="text-[8px] font-black uppercase tracking-widest text-indigo-400 italic">VIP IDENTIFIED</div>
+                      <div class="text-xs font-black italic">RAHUL SHARMA</div>
+                   </div>
+                   <div class="text-right">
+                      <div class="text-[8px] font-black uppercase tracking-widest text-white/20 italic">Loyalty PTs</div>
+                      <div class="text-xs font-black italic text-emerald-400">1,240</div>
+                   </div>
+                </div>
+                <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-600/5 blur-[50px] -z-10"></div>
+             </div>
 
-          <div class="cart-items" id="cart-items">
-            <!-- Cart items will be injected here -->
-            <div class="empty-cart-message">
-              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-              <p>Ready to Scan</p>
-            </div>
-          </div>
+             <!-- Cart List -->
+             <div class="flex-1 bg-white/5 border border-white/10 rounded-[32px] flex flex-col min-h-0">
+                <div class="p-6 border-b border-white/5 flex justify-between items-center">
+                   <h3 class="text-sm font-black italic uppercase tracking-widest">Active Basket</h3>
+                   <button class="text-[8px] font-black uppercase text-rose-500/50 hover:text-rose-500 transition-all font-mono" id="clear-cart">PURGE :: [C]</button>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-4" id="cart-items">
+                   <!-- Empty State -->
+                   <div class="h-full flex flex-col items-center justify-center text-center opacity-20">
+                      <i class="lucide-qr-code text-5xl mb-4"></i>
+                      <div class="text-[10px] font-black uppercase tracking-[0.2em] italic">Awaiting Scan Instance</div>
+                   </div>
+                </div>
 
-          <div class="cart-totals">
-            <div class="discount-section">
-              <button class="discount-btn" id="discount-percent-btn">% Disc.</button>
-              <button class="discount-btn" id="discount-fixed-btn">₹ Disc.</button>
-              <button class="discount-btn" id="loyalty-btn">Use PTs</button>
-            </div>
-            
-            <div class="totals-breakdown">
-              <div class="total-row">
-                <span>Subtotal</span>
-                <span id="subtotal">₹0.00</span>
-              </div>
-              <div class="total-row">
-                <span>GST (18%)</span>
-                <span id="gst-amount">₹0.00</span>
-              </div>
-              <div class="total-row grand-total">
-                <span>TOTAL</span>
-                <span id="grand-total">₹0.00</span>
-              </div>
-            </div>
-          </div>
+                <div class="p-8 bg-black/20 space-y-4 rounded-b-[32px]">
+                   <div class="space-y-2">
+                      <div class="flex justify-between text-[10px] font-black uppercase text-white/30 italic">
+                         <span>Subtotal</span>
+                         <span id="subtotal">₹0.00</span>
+                      </div>
+                      <div class="flex justify-between text-[10px] font-black uppercase text-indigo-400 italic">
+                         <span>TAX (GST 18%)</span>
+                         <span id="gst-amount">₹0.00</span>
+                      </div>
+                   </div>
+                   <div class="flex justify-between items-end border-t border-white/5 pt-4">
+                      <div>
+                         <div class="text-[8px] font-black uppercase text-white/20 tracking-widest">Grand Total</div>
+                         <div class="text-3xl font-black italic tracking-tighter text-indigo-400" id="grand-total">₹0.00</div>
+                      </div>
+                      <button class="bg-indigo-600 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-600/30 hover:scale-[1.05] transition-all italic">GENERATE INVOICE</button>
+                   </div>
+                </div>
+             </div>
 
-          <div class="payment-section">
-            <div class="payment-grid">
-              <button class="payment-btn" data-method="cash">CASH</button>
-              <button class="payment-btn" data-method="upi">UPI/GPay</button>
-              <button class="payment-btn" data-method="card">CARD</button>
-              <button class="payment-btn secondary" data-method="wallet">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M12 11h4v2h-4z"/></svg>
-                STORE WALLET
-              </button>
-              <button class="payment-btn secondary" data-method="split">SPLIT PAYMENT</button>
-            </div>
-          </div>
+             <div class="grid grid-cols-3 gap-4">
+                {['CASH', 'UPI', 'CARD'].map(method => (
+                   <button class="py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:border-indigo-500 transition-all italic opacity-60 hover:opacity-100">{method}</button>
+                ))}
+             </div>
 
-          <div class="quick-actions">
-            <button class="action-btn" id="new-sale">New Sale</button>
-            <button class="action-btn" id="hold-bill">Hold Bill</button>
-            <button class="action-btn" id="print-invoice">Invoice</button>
-            <button class="action-btn" id="gift-bill">Gift Receipt</button>
-          </div>
-        </div>
-      </aside>
+          </aside>
+       </div>
+
     </main>
   </div>
 
-  <!-- Variant Selection Modal -->
-  <div id="variant-modal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Select Variant</h2>
-        <button class="close-modal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="product-preview">
-          <img id="modal-product-image" src="" alt="" />
-          <div>
-            <h3 id="modal-product-name"></h3>
-            <p id="modal-product-price"></p>
-          </div>
+  <!-- Variant Modal -->
+  <div id="variant-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6 backdrop-blur-3xl bg-black/80 font-['Plus_Jakarta_Sans']">
+     <div class="bg-[#05081a] border border-white/10 w-full max-w-lg rounded-[48px] overflow-hidden shadow-2xl shadow-indigo-600/10">
+        <div class="p-10">
+           <div class="flex items-center gap-6 mb-10">
+              <div class="w-24 h-24 rounded-3xl overflow-hidden bg-white/5 border border-white/10">
+                 <img id="modal-product-image" src="" alt="" class="w-full h-full object-cover opacity-60" />
+              </div>
+              <div>
+                 <h2 id="modal-product-name" class="text-xl font-black italic uppercase tracking-tight"></h2>
+                 <div id="modal-product-price" class="text-2xl font-black italic text-indigo-400 mt-2"></div>
+              </div>
+           </div>
+
+           <div class="space-y-8">
+              <div>
+                 <label class="text-[10px] font-black uppercase tracking-widest text-white/30 italic mb-4 block">Select Size Variant</label>
+                 <div id="size-chips" class="flex flex-wrap gap-3"></div>
+              </div>
+              <div>
+                 <label class="text-[10px] font-black uppercase tracking-widest text-white/30 italic mb-4 block">Select Colorway</label>
+                 <div id="color-chips" class="flex flex-wrap gap-3"></div>
+              </div>
+           </div>
+
+           <div class="mt-12 flex gap-4">
+              <button class="flex-1 py-5 bg-white/5 border border-white/10 rounded-3xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/20 transition-all italic" onclick="document.getElementById('variant-modal').classList.add('hidden')">Cancel Instance</button>
+              <button class="flex-1 py-5 bg-indigo-600 rounded-3xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-indigo-600/30 hover:scale-[1.02] transition-all italic confirm-add-btn">Append to Basket</button>
+           </div>
         </div>
-        
-        <div class="variant-options">
-          <div class="option-group">
-            <label>Size</label>
-            <div class="option-chips" id="size-chips">
-              <!-- Chips injected here -->
-            </div>
-          </div>
-          <div class="option-group">
-            <label>Color</label>
-            <div class="option-chips" id="color-chips">
-              <!-- Chips injected here -->
-            </div>
-          </div>
-        </div>
-        
-        <button class="confirm-add-btn">Add to Cart</button>
-      </div>
-    </div>
+     </div>
   </div>
-
-  <!-- Held Bills Modal -->
-  <div id="hold-modal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Held Bills</h2>
-        <button class="close-modal">&times;</button>
-      </div>
-      <div class="modal-body" id="held-bills-list">
-        <!-- List of held bills -->
-      </div>
-    </div>
-  </div>
-
-  <style>
-    :root {
-      --primary: #6366f1;
-      --primary-hover: #4f46e5;
-      --secondary: #a855f7;
-      --bg-pos: #05081a;
-      --card-bg: rgba(255, 255, 255, 0.05);
-      --border: rgba(255, 255, 255, 0.1);
-      --text: #ffffff;
-      --text-muted: rgba(255, 255, 255, 0.6);
-      --success: #10b981;
-      --danger: #ef4444;
-      --glass: rgba(255, 255, 255, 0.03);
-    }
-
-    .pos-container {
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-      height: calc(100vh - 80px); /* Subtracting navbar height roughly */
-      overflow: hidden;
-    }
-
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
-    }
-
-    /* Header Styles */
-    .pos-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 40px;
-    }
-
-    .search-section {
-      flex: 1;
-      max-width: 600px;
-    }
-
-    .search-input-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 16px;
-      color: var(--text-muted);
-    }
-
-    .search-input-wrapper input {
-      width: 100%;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      padding: 12px 16px 12px 48px;
-      border-radius: 12px;
-      color: var(--text);
-      font-size: 1rem;
-      transition: all 0.3s ease;
-    }
-
-    .search-input-wrapper input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-    }
-
-    .scanner-dot {
-      position: absolute;
-      right: 16px;
-      width: 8px;
-      height: 8px;
-      background: var(--success);
-      border-radius: 50%;
-      box-shadow: 0 0 8px var(--success);
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(0.95); opacity: 0.5; }
-      50% { transform: scale(1.1); opacity: 1; }
-      100% { transform: scale(0.95); opacity: 0.5; }
-    }
-
-    .dashboard-widgets {
-      display: flex;
-      gap: 16px;
-    }
-
-    .stat-widget {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      padding: 12px 24px;
-      border-radius: 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-width: 140px;
-      backdrop-filter: blur(8px);
-    }
-
-    .stat-label {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .stat-value {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    /* Main Layout */
-    .pos-main {
-      display: grid;
-      grid-template-columns: 1fr 400px;
-      gap: 24px;
-      flex: 1;
-      overflow: hidden;
-    }
-
-    /* Catalog Section */
-    .catalog-section {
-      background: var(--glass);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      overflow: hidden;
-    }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .section-header h2 {
-      font-size: 1.5rem;
-      margin: 0;
-    }
-
-    .category-tabs {
-      display: flex;
-      gap: 8px;
-    }
-
-    .tab {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 6px 16px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: all 0.2s;
-    }
-
-    .tab.active {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: white;
-    }
-
-    .product-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 20px;
-      overflow-y: auto;
-      padding-right: 8px;
-    }
-
-    /* Custom Scrollbar */
-    .product-grid::-webkit-scrollbar,
-    .cart-items::-webkit-scrollbar {
-      width: 6px;
-    }
-    .product-grid::-webkit-scrollbar-thumb,
-    .cart-items::-webkit-scrollbar-thumb {
-      background: var(--border);
-      border-radius: 10px;
-    }
-
-    .product-card {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      cursor: pointer;
-    }
-
-    .product-card:hover {
-      transform: translateY(-4px);
-      background: rgba(255, 255, 255, 0.08);
-      border-color: var(--primary);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    }
-
-    .product-image {
-      height: 200px;
-      background: #1a1c2e;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    .product-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.5s ease;
-    }
-
-    .product-card:hover .product-image img {
-      transform: scale(1.05);
-    }
-
-    .product-info {
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .product-info h3 {
-      font-size: 1rem;
-      margin: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .sku {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin: 0;
-    }
-
-    .product-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 12px;
-    }
-
-    .price {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    .add-to-cart-btn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .add-to-cart-btn:hover {
-      background: var(--primary-hover);
-      transform: scale(1.1);
-    }
-
-    /* Billing Section */
-    .billing-section {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      overflow: hidden;
-    }
-
-    .customer-selection {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 12px;
-    }
-
-    .add-customer-btn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      margin-left: 8px;
-      cursor: pointer;
-      font-size: 1.2rem;
-    }
-
-    .selected-customer {
-      margin-top: 8px;
-      padding: 8px;
-      background: rgba(99, 102, 241, 0.1);
-      border-radius: 8px;
-      font-size: 0.9rem;
-    }
-
-    .cart-container {
-      flex: 1;
-      background: var(--glass);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      backdrop-filter: blur(12px);
-    }
-
-    .cart-header {
-      padding: 16px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: 600;
-    }
-
-    .clear-cart {
-      background: transparent;
-      border: none;
-      color: var(--danger);
-      font-size: 0.8rem;
-      cursor: pointer;
-      opacity: 0.7;
-      transition: 0.2s;
-    }
-
-    .clear-cart:hover {
-      opacity: 1;
-      text-decoration: underline;
-    }
-
-    .cart-items {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .cart-item {
-      display: flex;
-      gap: 12px;
-      padding: 12px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      animation: slideIn 0.3s ease-out;
-    }
-
-    @keyframes slideIn {
-      from { transform: translateX(20px); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    .item-img {
-      width: 50px;
-      height: 50px;
-      border-radius: 8px;
-      object-fit: cover;
-      background: #1a1c2e;
-    }
-
-    .item-details {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .item-name {
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-
-    .item-variant {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-
-    .item-controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 8px;
-    }
-
-    .qty-controls {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 8px;
-      padding: 2px 8px;
-    }
-
-    .qty-btn {
-      background: transparent;
-      border: none;
-      color: var(--text);
-      cursor: pointer;
-      font-size: 1.2rem;
-      line-height: 1;
-      padding: 0 4px;
-    }
-
-    .qty-val {
-      font-size: 0.9rem;
-      min-width: 20px;
-      text-align: center;
-    }
-
-    .item-price {
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    .empty-cart-message {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-muted);
-      gap: 12px;
-    }
-
-    .cart-totals {
-      padding: 16px;
-      background: rgba(0, 0, 0, 0.2);
-      border-top: 1px solid var(--border);
-    }
-
-    .discount-section {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-
-    .discount-btn {
-      flex: 1;
-      background: rgba(168, 85, 247, 0.1);
-      border: 1px dashed var(--secondary);
-      color: var(--secondary);
-      padding: 8px;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .discount-btn:hover {
-      background: rgba(168, 85, 247, 0.2);
-    }
-
-    .totals-breakdown {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .total-row {
-      display: flex;
-      justify-content: space-between;
-      color: var(--text-muted);
-      font-size: 0.9rem;
-    }
-
-    .negative {
-      color: var(--danger);
-    }
-
-    .grand-total {
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px solid var(--border);
-      color: var(--text);
-      font-size: 1.4rem;
-      font-weight: 800;
-    }
-
-    .grand-total span:last-child {
-      color: var(--primary);
-    }
-
-    .payment-section {
-      padding: 16px;
-    }
-
-    .payment-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
-    .payment-btn {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 12px 8px;
-      border-radius: 10px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .payment-btn:hover {
-      background: var(--primary);
-      border-color: var(--primary);
-      transform: translateY(-2px);
-    }
-
-    .loyalty-badge {
-      background: rgba(168, 85, 247, 0.2);
-      color: var(--secondary);
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      border: 1px solid rgba(168, 85, 247, 0.3);
-    }
-
-    .extra-action-btn {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 4px 10px;
-      border-radius: 8px;
-      font-size: 0.7rem;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .extra-action-btn:hover, .extra-action-btn.active {
-      background: var(--warning);
-      color: black;
-      border-color: var(--warning);
-    }
-
-    .quick-actions {
-      padding: 16px;
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      border-top: 1px solid var(--border);
-    }
-
-    .action-btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 8px;
-      border-radius: 8px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .action-btn:hover {
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--text);
-    }
-
-    /* Modal Styles */
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(8px);
-      z-index: 2000;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal.active {
-      display: flex;
-    }
-
-    .modal-content {
-      background: #0b112d;
-      border: 1px solid var(--border);
-      width: 100%;
-      max-width: 500px;
-      border-radius: 24px;
-      overflow: hidden;
-      animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    @keyframes modalPop {
-      from { transform: scale(0.9); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    .modal-header {
-      padding: 24px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .modal-header h2 { margin: 0; font-size: 1.5rem; }
-
-    .close-modal {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 2rem;
-      cursor: pointer;
-    }
-
-    .modal-body {
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    .product-preview {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-    }
-
-    .product-preview img {
-      width: 80px;
-      height: 80px;
-      border-radius: 12px;
-      object-fit: cover;
-    }
-
-    .variant-options {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .option-group label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: var(--text-muted);
-      font-size: 0.9rem;
-    }
-
-    .option-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .chip {
-      padding: 8px 16px;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-
-    .chip:hover {
-      border-color: var(--primary);
-    }
-
-    .chip.selected {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: white;
-    }
-
-    .confirm-add-btn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 16px;
-      border-radius: 12px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .confirm-add-btn:hover {
-      background: var(--primary-hover);
-      transform: translateY(-2px);
-    }
-
-    /* Held Bill List */
-    .held-bill-item {
-      padding: 16px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: var(--card-bg);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
-    .restore-btn {
-      background: var(--success);
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-  </style>
 
   <script is:inline>
-    // POS State
-    let cart = [];
-    let selectedCustomer = null;
-    let heldBills = [];
-    let discount = { type: 'none', value: 0 };
-    let currentEditingProduct = null;
-    let selectedSize = null;
-    let selectedColor = null;
+     // Mock Data Sync
+     const products = [
+       { id: 1, name: "Premium Black Shirt", sku: "SH-BL-001", price: 999, image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&q=80&w=200", variants: { sizes: ["S", "M", "L", "XL"], colors: ["Black", "Midnight Blue"] } },
+       { id: 2, name: "Classic Blue Jeans", sku: "JN-BL-002", price: 1999, image: "https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&q=80&w=200", variants: { sizes: ["30", "32", "34", "36"], colors: ["Blue", "Dark Denim"] } },
+       { id: 3, name: "Designer Red Kurti", sku: "KR-RD-003", price: 1499, image: "https://images.unsplash.com/photo-1583391733956-6c78276477e2?auto=format&fit=crop&q=80&w=200", variants: { sizes: ["M", "L", "XL"], colors: ["Red", "Maroon"] } },
+       { id: 4, name: "Classic White T-Shirt", sku: "TS-WH-004", price: 599, image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=200", variants: { sizes: ["S", "M", "L", "XL"], colors: ["White", "Black"] } }
+     ];
 
-    // DOM Elements
-    const productGrid = document.getElementById('product-grid');
-    const cartItemsList = document.getElementById('cart-items');
-    const variantModal = document.getElementById('variant-modal');
-    const subtotalEl = document.getElementById('subtotal');
-    const discountEl = document.getElementById('discount-amount');
-    const gstEl = document.getElementById('gst-amount');
-    const grandTotalEl = document.getElementById('grand-total');
+     let cart = [];
+     let currentEditingProduct = null;
+     let selectedSize = null;
+     let selectedColor = null;
 
-    // Products Data (Passed from Astro to JS)
-    const products = [
-      { id: 1, name: "Premium Black Shirt", sku: "SH-BL-001", price: 999, image: "/images/pos/shirt.png", variants: { sizes: ["S", "M", "L", "XL"], colors: ["Black", "Midnight Blue"] } },
-      { id: 2, name: "Classic Blue Jeans", sku: "JN-BL-002", price: 1999, image: "/images/pos/jeans.png", variants: { sizes: ["30", "32", "34", "36"], colors: ["Blue", "Dark Denim"] } },
-      { id: 3, name: "Designer Red Kurti", sku: "KR-RD-003", price: 1499, image: "/images/pos/kurti.png", variants: { sizes: ["M", "L", "XL"], colors: ["Red", "Maroon"] } },
-      { id: 4, name: "Classic White T-Shirt", sku: "TS-WH-004", price: 599, image: "/images/pos/tshirt.png", variants: { sizes: ["S", "M", "L", "XL"], colors: ["White", "Black"] } }
-    ];
+     const modal = document.getElementById('variant-modal');
 
-    // Functions
-    function updateCartUI() {
-      if (cart.length === 0) {
-        cartItemsList.innerHTML = `
-          <div class="empty-cart-message">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-            <p>Cart is empty</p>
-          </div>
-        `;
-      } else {
-        cartItemsList.innerHTML = cart.map((item, index) => `
-          <div class="cart-item">
-            <img src="${item.image}" class="item-img" />
-            <div class="item-details">
-              <span class="item-name">${item.name}</span>
-              <span class="item-variant">${item.size} / ${item.color}</span>
-              <div class="item-controls">
-                <div class="qty-controls">
-                  <button class="qty-btn" onclick="updateQty(${index}, -1)">-</button>
-                  <span class="qty-val">${item.qty}</span>
-                  <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
-                </div>
-                <span class="item-price">₹${item.price * item.qty}</span>
+     function updateCartUI() {
+       const basket = document.getElementById('cart-items');
+       if (cart.length === 0) {
+         basket.innerHTML = `
+           <div class="h-full flex flex-col items-center justify-center text-center opacity-20">
+              <i class="lucide-qr-code text-5xl mb-4"></i>
+              <div class="text-[10px] font-black uppercase tracking-[0.2em] italic">Awaiting Scan Instance</div>
+           </div>`;
+       } else {
+         basket.innerHTML = cart.map((item, idx) => `
+           <div class="bg-white/5 border border-white/5 p-4 rounded-2xl flex items-center gap-4 animate-in slide-in-from-right duration-300">
+              <div class="w-12 h-12 rounded-xl overflow-hidden grayscale">
+                 <img src="${item.image}" class="w-full h-full object-cover opacity-50" />
               </div>
-            </div>
-          </div>
-        `).join('');
-      }
-      calculateTotals();
-    }
+              <div class="flex-1">
+                 <div class="text-[10px] font-black italic uppercase tracking-tight">${item.name}</div>
+                 <div class="text-[8px] font-black uppercase text-white/30 italic">${item.size} / ${item.color}</div>
+              </div>
+              <div class="text-right">
+                 <div class="text-xs font-black italic">₹${item.price * item.qty}</div>
+                 <div class="flex items-center gap-2 mt-1">
+                    <button class="w-5 h-5 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[10px] hover:bg-rose-500/20" onclick="updateQty(${idx}, -1)">-</button>
+                    <span class="text-[8px] font-black">${item.qty}</span>
+                    <button class="w-5 h-5 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[10px] hover:bg-emerald-500/20" onclick="updateQty(${idx}, 1)">+</button>
+                 </div>
+              </div>
+           </div>
+         `).join('');
+       }
+       calculateTotals();
+     }
 
-    function calculateTotals() {
-      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-      let discVal = 0;
-      if (discount.type === 'percent') {
-        discVal = subtotal * (discount.value / 100);
-      } else if (discount.type === 'fixed') {
-        discVal = discount.value;
-      }
-      
-      const afterDiscount = subtotal - discVal;
-      const gst = afterDiscount * 0.18;
-      const total = afterDiscount + gst;
+     function calculateTotals() {
+       const subtotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+       const gst = subtotal * 0.18;
+       const total = subtotal + gst;
 
-      subtotalEl.innerText = `₹${subtotal.toFixed(2)}`;
-      discountEl.innerText = `-₹${discVal.toFixed(2)}`;
-      gstEl.innerText = `₹${gst.toFixed(2)}`;
-      grandTotalEl.innerText = `₹${total.toFixed(2)}`;
-    }
+       document.getElementById('subtotal').innerText = '₹' + subtotal.toFixed(2);
+       document.getElementById('gst-amount').innerText = '₹' + gst.toFixed(2);
+       document.getElementById('grand-total').innerText = '₹' + total.toFixed(2);
+     }
 
-    window.updateQty = (index, delta) => {
-      cart[index].qty += delta;
-      if (cart[index].qty <= 0) {
-        cart.splice(index, 1);
-      }
-      updateCartUI();
-    };
+     window.updateQty = (idx, delta) => {
+       cart[idx].qty += delta;
+       if(cart[idx].qty <= 0) cart.splice(idx, 1);
+       updateCartUI();
+     }
 
-    function showVariantModal(product) {
-      currentEditingProduct = product;
-      document.getElementById('modal-product-image').src = product.image;
-      document.getElementById('modal-product-name').innerText = product.name;
-      document.getElementById('modal-product-price').innerText = `₹${product.price}`;
-      
-      const sizeList = document.getElementById('size-chips');
-      sizeList.innerHTML = product.variants.sizes.map(size => 
-        `<div class="chip" onclick="selectVariant('size', '${size}', this)">${size}</div>`
-      ).join('');
-      
-      const colorList = document.getElementById('color-chips');
-      colorList.innerHTML = product.variants.colors.map(color => 
-        `<div class="chip" onclick="selectVariant('color', '${color}', this)">${color}</div>`
-      ).join('');
-      
-      selectedSize = null;
-      selectedColor = null;
-      variantModal.classList.add('active');
-    }
+     function showModal(product) {
+       currentEditingProduct = product;
+       document.getElementById('modal-product-image').src = product.image;
+       document.getElementById('modal-product-name').innerText = product.name;
+       document.getElementById('modal-product-price').innerText = '₹' + product.price;
 
-    window.selectVariant = (type, val, el) => {
-      const p = el.parentElement;
-      p.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
-      el.classList.add('selected');
-      if (type === 'size') selectedSize = val;
-      if (type === 'color') selectedColor = val;
-    };
+       const sList = document.getElementById('size-chips');
+       sList.innerHTML = product.variants.sizes.map(s => `
+         <button class="chip px-6 py-3 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:border-indigo-500 transition-all italic" onclick="selectV('size', '${s}', this)">${s}</button>
+       `).join('');
 
-    // Event Listeners
-    document.querySelectorAll('.product-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const id = parseInt(card.dataset.id);
-        const product = products.find(p => p.id === id);
-        showVariantModal(product);
-      });
-    });
+       const cList = document.getElementById('color-chips');
+       cList.innerHTML = product.variants.colors.map(c => `
+         <button class="chip px-6 py-3 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:border-indigo-500 transition-all italic" onclick="selectV('color', '${c}', this)">${c}</button>
+       `).join('');
 
-    document.querySelector('.close-modal').addEventListener('click', () => {
-      variantModal.classList.remove('active');
-    });
+       selectedSize = null; selectedColor = null;
+       modal.classList.remove('hidden');
+     }
 
-    document.querySelector('.confirm-add-btn').addEventListener('click', () => {
-      if (!selectedSize || !selectedColor) {
-        alert('Please select size and color');
-        return;
-      }
-      
-      const existing = cart.find(item => 
-        item.id === currentEditingProduct.id && 
-        item.size === selectedSize && 
-        item.color === selectedColor
-      );
+     window.selectV = (type, val, el) => {
+       el.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('bg-indigo-600', 'border-indigo-400'));
+       el.classList.add('bg-indigo-600', 'border-indigo-400');
+       if(type==='size') selectedSize = val;
+       if(type==='color') selectedColor = val;
+     }
 
-      if (existing) {
-        existing.qty++;
-      } else {
-        cart.push({
-          ...currentEditingProduct,
-          size: selectedSize,
-          color: selectedColor,
-          qty: 1
-        });
-      }
-      
-      variantModal.classList.remove('active');
-      updateCartUI();
-    });
+     document.querySelectorAll('.product-card').forEach(card => {
+       card.addEventListener('click', () => {
+         const id = parseInt(card.dataset.id);
+         const p = products.find(p => p.id === id);
+         showModal(p);
+       });
+     });
 
-    // Discount Buttons
-    document.getElementById('discount-percent-btn').addEventListener('click', () => {
-      const val = prompt('Enter Discount Percentage:');
-      if (val !== null) {
-        discount = { type: 'percent', value: parseFloat(val) || 0 };
-        calculateTotals();
-      }
-    });
+     document.querySelector('.confirm-add-btn').addEventListener('click', () => {
+       if(!selectedSize || !selectedColor) return;
+       const exists = cart.find(i => i.id === currentEditingProduct.id && i.size === selectedSize && i.color === selectedColor);
+       if(exists) exists.qty++;
+       else cart.push({...currentEditingProduct, size: selectedSize, color: selectedColor, qty: 1});
+       modal.classList.add('hidden');
+       updateCartUI();
+     });
 
-    document.getElementById('discount-fixed-btn').addEventListener('click', () => {
-      const val = prompt('Enter Discount Amount (₹):');
-      if (val !== null) {
-        discount = { type: 'fixed', value: parseFloat(val) || 0 };
-        calculateTotals();
-      }
-    });
+     document.getElementById('clear-cart').addEventListener('click', () => {
+       if(confirm('PURGE CURRENT BASKET?')) { cart = []; updateCartUI(); }
+     });
 
-    // Barcode Search Logic (Faked)
-    document.getElementById('barcode-search').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        const val = e.target.value.trim();
-        const product = products.find(p => p.barcode === val || p.sku.includes(val) || p.name.toLowerCase().includes(val.toLowerCase()));
-        if (product) {
-          showVariantModal(product);
-          e.target.value = '';
-        }
-      }
-    });
-
-    // Quick Actions
-    document.getElementById('new-sale').addEventListener('click', () => {
-      if (confirm('Are you sure you want to start a new sale?')) {
-        cart = [];
-        discount = { type: 'none', value: 0 };
-        updateCartUI();
-      }
-    });
-
-    const holdModal = document.getElementById('hold-modal');
-    
-    document.getElementById('hold-bill').addEventListener('click', () => {
-      if (cart.length === 0) {
-        // If cart is empty, show the list of held bills
-        showHeldBills();
-        return;
-      }
-      const billName = prompt('Enter name for this bill:');
-      if (billName) {
-        heldBills.push({ id: Date.now(), name: billName, cart: [...cart], discount: {...discount}, date: new Date() });
-        cart = [];
-        updateCartUI();
-        alert('Bill held successfully');
-      }
-    });
-
-    function showHeldBills() {
-      const list = document.getElementById('held-bills-list');
-      if (heldBills.length === 0) {
-        list.innerHTML = '<p>No held bills found.</p>';
-      } else {
-        list.innerHTML = heldBills.map(bill => `
-          <div class="held-bill-item">
-            <div>
-              <strong>${bill.name}</strong><br/>
-              <small>${bill.date.toLocaleTimeString()}</small> - ${bill.cart.length} items
-            </div>
-            <button class="restore-btn" onclick="restoreBill(${bill.id})">Restore</button>
-          </div>
-        `).join('');
-      }
-      holdModal.classList.add('active');
-    }
-
-    window.restoreBill = (id) => {
-      const index = heldBills.findIndex(b => b.id === id);
-      if (index !== -1) {
-        const bill = heldBills[index];
-        if (cart.length > 0 && !confirm('Discard current cart and restore this bill?')) return;
-        cart = [...bill.cart];
-        discount = {...bill.discount};
-        heldBills.splice(index, 1);
-        updateCartUI();
-        holdModal.classList.remove('active');
-      }
-    };
-
-    document.querySelectorAll('.close-modal').forEach(btn => {
-      btn.addEventListener('click', () => {
-        variantModal.classList.remove('active');
-        holdModal.classList.remove('active');
-      });
-    });
-
-    document.getElementById('print-invoice').addEventListener('click', () => {
-      if (cart.length === 0) return alert('Cart is empty');
-      alert('Generating and Printing Invoice...');
-      // In a real app, this would generate a PDF or send to a thermal printer
-    });
-
-    // Category Tabs Logic
-    document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            const category = tab.dataset.category;
-            
-            document.querySelectorAll('.product-card').forEach(card => {
-                if (category === 'all' || card.dataset.category === category) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
-    });
-
-    // Customer Add Logic
-    document.querySelector('.add-customer-btn').addEventListener('click', () => {
-        const name = prompt("Customer Name:");
-        const phone = prompt("Customer Phone:");
-        if (name && phone) {
-            selectedCustomer = { name, phone };
-            document.getElementById('cust-name').innerText = name;
-            document.getElementById('cust-phone').innerText = phone;
-            document.getElementById('selected-customer').style.display = 'block';
-        }
-    });
   </script>
-</RetailOSLayout>
+
+  <script is:inline>
+     // Auth Guard
+     if (localStorage.getItem('retail_os_auth') !== 'true') {
+        window.location.href = "/retail-os-login";
+     }
+  </script>
+
+  <style is:global>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap');
+    
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #05081a; }
+
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.01); }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
+  </style>
+
+  <!-- Lucide Icon Support -->
+  <link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css">
+</MainLayout>

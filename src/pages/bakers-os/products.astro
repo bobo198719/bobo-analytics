@@ -708,14 +708,36 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 const result = await res.json();
                 
                 if (result.success) {
-                    // Update local state
+                    // Update local state and current uploaded reference
                     products[editingIndex].image_path = null;
                     products[editingIndex].image_url = null;
+                    products[editingIndex].high_res_url = null;
+                    products[editingIndex].medium_url = null;
+                    products[editingIndex].thumbnail_url = null;
+                    currentUploadedUrl = null;
                     
                     document.getElementById('p-image-preview').style.display = 'none';
                     document.getElementById('p-delete-image-btn').style.display = 'none';
                     
-                    alert('Image deleted successfully.');
+                    // CRITICAL: Persist the product update to the database now that image is gone
+                    const name = document.getElementById('p-name').value;
+                    const price = document.getElementById('p-price').value;
+                    
+                    const productData = {
+                        ...products[editingIndex],
+                        name,
+                        price: parseFloat(price),
+                        image_path: null,
+                        image_url: null
+                    };
+
+                    await fetch('/api/products', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(productData)
+                    });
+
+                    alert('✅ Image deleted and product updated successfully.');
                     renderProducts();
                 } else {
                     throw new Error(result.error || 'Delete failed');

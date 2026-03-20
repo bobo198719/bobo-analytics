@@ -13,9 +13,14 @@ export async function ALL({ params, request }) {
             ? await request.arrayBuffer() 
             : undefined;
 
+        const headers = new Headers(request.headers);
+        headers.delete("host");
+        headers.delete("cookie"); // Keep cookies local
+        headers.set("origin", "http://srv1449576.hstgr.cloud:5000");
+
         const response = await fetch(vpsUrl, {
             method: request.method,
-            headers: request.headers,
+            headers: headers,
             body
         });
 
@@ -31,7 +36,12 @@ export async function ALL({ params, request }) {
             }
         });
     } catch (error) {
-        return new Response(JSON.stringify({ error: error.message }), { 
+        console.error("PROXY_CRITICAL_FAILURE:", error);
+        return new Response(JSON.stringify({ 
+            error: error.message, 
+            url: vpsUrl,
+            stack: error.stack 
+        }), { 
             status: 500,
             headers: { 'Content-Type': 'application/json' }
         });

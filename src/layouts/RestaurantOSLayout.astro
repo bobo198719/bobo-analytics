@@ -1,0 +1,204 @@
+---
+interface Props {
+  title: string;
+}
+
+const { title = "Restaurant OS" } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style is:global>
+      * { box-sizing: border-box !important; }
+      
+      html, body {
+        width: 100% !important;
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #0b0f1a !important;
+        color: white !important;
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+        overflow-x: hidden !important;
+        overflow-y: visible !important;
+      }
+
+      /* HIDE CUSTOM SCROLLBARS FOR CLEAN OS LOOK */
+      .no-scrollbar::-webkit-scrollbar { display: none !important; }
+      .no-scrollbar { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+      
+      #restaurant-root-sidebar {
+        width: 256px !important;
+        min-width: 256px !important;
+        background: #0f172a !important;
+        z-index: 99999 !important;
+        border-right: 2px solid rgba(249, 115, 22, 0.4) !important; /* Bright orange border hint for confirmation */
+        display: flex !important;
+        flex-direction: column !important;
+      }
+
+      .nav-link {
+        display: flex !important;
+        align-items: center !important;
+        gap: 16px !important;
+        padding: 16px 20px !important;
+        color: rgba(255,255,255,0.4) !important;
+        text-decoration: none !important;
+        font-weight: 800 !important;
+        text-transform: uppercase !important;
+        font-style: italic !important;
+        font-size: 11px !important;
+        border-radius: 16px !important;
+      }
+      .nav-link:hover {
+        background: rgba(255,255,255,0.05) !important;
+        color: white !important;
+      }
+    </style>
+</head>
+<body class="bg-[#0b0f1a] text-white">
+
+  <!-- SIDEBAR (GLOBAL ROOT LEVEL CHILD OF BODY) -->
+  <aside id="restaurant-root-sidebar" class="fixed left-0 top-0 h-screen">
+    
+    <div style="padding: 32px; display: flex; align-items: center; gap: 12px;">
+      <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #f97316, #e11d48); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; color: white; font-size: 20px; font-style: italic; box-shadow: 0 10px 20px rgba(249, 115, 22, 0.2);">B</div>
+      <span style="font-size: 18px; font-weight: 900; letter-spacing: -0.05em; text-transform: uppercase; font-style: italic; color: white;">Bobo <span style="color: #f97316;">OS</span></span>
+    </div>
+
+    <nav class="no-scrollbar" style="flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto;">
+      <p style="padding: 0 16px; font-size: 10px; font-weight: 900; text-transform: uppercase; color: rgba(255,255,255,0.2); letter-spacing: 0.3em; margin: 16px 0; font-style: italic;">Matrix Terminal</p>
+      
+      <a href="/restaurant-dashboard#dashboard" class="nav-link" data-section="dashboard">
+        <i class="lucide-layout-grid"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="/restaurant-os/pos" class="nav-link" data-section="pos">
+        <i class="lucide-receipt"></i>
+        <span>POS Terminal</span>
+      </a>
+      <a href="/restaurant-os/tables" class="nav-link" data-section="tables">
+        <i class="lucide-layout"></i>
+        <span>Tables</span>
+      </a>
+      <a href="/restaurant-os/kitchen" class="nav-link" data-section="kitchen">
+        <i class="lucide-chef-hat"></i>
+        <span>Kitchen Hub</span>
+      </a>
+      <a href="/restaurant-os/menu" class="nav-link" data-section="menu">
+        <i class="lucide-book-open"></i>
+        <span>Menu Hub</span>
+      </a>
+      <a href="/restaurant-os/menu-upload" class="nav-link" data-section="menu-upload">
+        <i class="lucide-upload"></i>
+        <span>Smart Upload</span>
+      </a>
+
+      <div style="height: 1px; background: rgba(255,255,255,0.05); margin: 24px 16px;"></div>
+      
+      <a href="/restaurant-dashboard#customers" class="nav-link" data-section="customers">
+        <i class="lucide-users-2"></i>
+        <span>Customer CRM</span>
+      </a>
+      <a href="/restaurant-dashboard#analytics" class="nav-link" data-section="analytics">
+        <i class="lucide-bar-chart-3"></i>
+        <span>Analytics</span>
+      </a>
+      <a href="/restaurant-os/billing" class="nav-link" data-section="billing">
+        <i class="lucide-credit-card"></i>
+        <span>Billing & Plan</span>
+      </a>
+    </nav>
+
+    <div style="padding: 24px; border-top: 1px solid rgba(255,255,255,0.05);">
+       <a href="/crm-login" style="display: flex; align-items: center; gap: 12px; color: rgba(255,255,255,0.2); text-decoration: none; font-size: 10px; font-weight: 900; text-transform: uppercase; font-style: italic;">
+          <i class="lucide-log-out"></i>
+          <span>Exit Portal</span>
+       </a>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT (OFFSET BY SIDEBAR) -->
+  <main id="restaurant-main-view" style="margin-left: 256px !important; padding: 24px; min-height: 100vh; position: relative; z-index: 10; background: #0b0f1a;">
+     <slot />
+  </main>
+
+  <!-- OVERLAY FOR EXPIRED SUBSCRIPTIONS -->
+  <div id="global-expired-overlay" style="display:none; margin-left:256px;" class="fixed inset-0 bg-[#05081a]/95 backdrop-blur-3xl z-[99998] flex items-center justify-center p-6">
+    <div class="text-center max-w-md bg-[#0f172a] p-10 rounded-3xl border border-rose-500/20 shadow-2xl shadow-rose-500/10">
+      <div class="text-6xl mb-6 flex justify-center"><i class="lucide-lock text-rose-500"></i></div>
+      <h2 class="text-3xl font-black italic uppercase tracking-tighter mb-4 text-white">Subscription <span class="text-rose-500">Expired</span></h2>
+      <p class="text-white/40 mb-8 font-semibold text-sm">Your restaurant OS access has been locked due to subscription expiry. Renew your plan to resume full operations immediately.</p>
+      <a href="/restaurant-pricing" class="block w-full py-4 bg-gradient-to-r from-orange-600 to-rose-500 rounded-2xl font-black uppercase text-xs tracking-widest italic text-center text-white hover:from-orange-500 transition-all shadow-xl">
+        Renew Subscription →
+      </a>
+      <a href="/restaurant-os/billing" class="block mt-4 text-[10px] font-black uppercase tracking-widest text-white/30 hover:text-white/60 transition-colors">
+        View Billing History
+      </a>
+    </div>
+  </div>
+
+  <script is:inline>
+     // Final Sync for Active Link
+     // --- AUTH GUARD ---
+     function checkAuth() {
+       try {
+         if (localStorage.getItem('restaurant_auth') !== 'true') {
+            window.location.replace("/restaurant-login");
+            return;
+         }
+         
+         if (window.location.pathname !== '/restaurant-pricing' && window.location.pathname !== '/restaurant-os/billing') {
+            const status = localStorage.getItem('subscription_status');
+            const expiryStr = localStorage.getItem('subscription_expiry');
+            const expiry = expiryStr ? parseInt(expiryStr) : 0;
+            const now = Date.now();
+            
+            if (status === 'cancelled' && expiry < now) {
+                localStorage.setItem('subscription_status', 'expired');
+            }
+
+            if ((localStorage.getItem('subscription_status') === 'expired') || (expiry > 0 && expiry < now)) {
+                // Lock the UI
+                document.getElementById('restaurant-main-view').style.display = 'none';
+                const overlay = document.getElementById('global-expired-overlay');
+                if(overlay) overlay.style.display = 'flex';
+                // Update local storage so badges show expired correctly everywhere
+                localStorage.setItem('subscription_status', 'expired');
+            }
+         }
+       } catch (e) {
+         console.warn("Auth check failed:", e);
+       }
+     }
+     checkAuth();
+     function updateActiveLink() {
+        const hash = window.location.hash.substring(1) || 'dashboard';
+        const path = window.location.pathname;
+        document.querySelectorAll('.nav-link').forEach(link => {
+           const section = link.getAttribute('data-section');
+           if ((hash === section) || (path.includes(section))) {
+              link.style.backgroundColor = 'rgba(249, 115, 22, 0.1)';
+              link.style.border = '1px solid rgba(249, 115, 22, 0.1)';
+              link.style.color = '#f97316';
+           } else {
+              link.style.backgroundColor = 'transparent';
+              link.style.border = 'none';
+              link.style.color = 'rgba(255,255,255,0.4)';
+           }
+        });
+     }
+     window.addEventListener('hashchange', updateActiveLink);
+     window.addEventListener('load', updateActiveLink);
+     updateActiveLink();
+  </script>
+</body>
+</html>

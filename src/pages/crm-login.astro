@@ -1,54 +1,205 @@
 ---
-import MainLayout from "../layouts/MainLayout.astro";
-import "../styles/restaurant.css";
+// Premium CRM Portal | Vanilla CSS Version for Stability
 ---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure CRM Portal | Bobo OS</title>
+  <style>
+    :root {
+      --bg: #05081a;
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent: #6366f1;
+      --orange: #f97316;
+      --green: #10b981;
+      --rose: #f43f5e;
+    }
 
-<MainLayout title="Secure CRM Portal | Bobo Analytics Master Selection" hideNav={true}>
-  <div class="portal-page bg-[#05081a] min-h-screen font-['Plus_Jakarta_Sans'] flex items-center justify-center p-6 relative overflow-hidden">
-    <!-- Ambient Background Lighting -->
-    <div class="absolute top-0 left-0 w-full h-full pointer-events-none">
-       <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px] -mr-64 -mt-64"></div>
-       <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-orange-600/10 rounded-full blur-[120px] -ml-64 -mb-64"></div>
-    </div>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: white;
+      font-family: 'Inter', -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      padding: 40px 20px;
+    }
 
-    <div class="max-w-4xl w-full relative z-10 text-center">
-       <header class="mb-16">
-          <h1 class="text-4xl md:text-6xl font-black italic tracking-tighter text-white mb-4">Secure CRM Portal</h1>
-          <p class="text-white/40 text-sm md:text-lg font-bold uppercase tracking-widest italic">Select your industry to access your dedicated business workspace.</p>
-       </header>
+    .ambient-glow {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.1), transparent 70%);
+      filter: blur(80px);
+      z-index: -1;
+      top: -100px;
+      right: -100px;
+    }
 
-       <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-          
-          <!-- Pharmacy Portal Card -->
-          <a href="/pharmacy-login" class="portal-card group relative p-12 bg-white/5 border border-white/10 rounded-[48px] overflow-hidden transition-all hover:border-indigo-500 hover:scale-[1.03] active:scale-95 shadow-2xl">
-             <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-             <div class="relative z-10 flex flex-col items-center">
-                <div class="w-20 h-20 bg-indigo-500/20 rounded-3xl flex items-center justify-center text-4xl mb-8 group-hover:scale-110 group-hover:rotate-6 transition-transform shadow-lg shadow-indigo-500/10">💊</div>
-                <h3 class="text-2xl font-black italic text-white mb-4 uppercase tracking-tight">Pharmacy Portal</h3>
-                <p class="text-white/40 text-sm font-medium leading-relaxed italic">Access inventory, prescriptions, and retail health analytics.</p>
-                <div class="mt-10 px-10 py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] opacity-0 group-hover:opacity-100 transition-all">Access Workspace</div>
-             </div>
-          </a>
+    header {
+      text-align: center;
+      margin-bottom: 60px;
+      max-width: 600px;
+    }
 
-          <!-- Restaurant Portal Card -->
-          <a href="/restaurant-login" class="portal-card group relative p-12 bg-white/5 border border-white/10 rounded-[48px] overflow-hidden transition-all hover:border-orange-500 hover:scale-[1.03] active:scale-95 shadow-2xl">
-              <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div class="relative z-10 flex flex-col items-center">
-                 <div class="w-20 h-20 bg-orange-500/20 rounded-3xl flex items-center justify-center text-4xl mb-8 group-hover:scale-110 group-hover:-rotate-6 transition-transform shadow-lg shadow-orange-500/10">🍽️</div>
-                 <h3 class="text-2xl font-black italic text-white mb-4 uppercase tracking-tight">Restaurant CRM</h3>
-                 <p class="text-white/40 text-sm font-medium leading-relaxed italic">Manage tables, menu, kitchen orders, POS billing and business analytics.</p>
-                 <div class="mt-10 px-10 py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] opacity-0 group-hover:opacity-100 transition-all">Access Workspace</div>
-              </div>
-           </a>
-       </div>
+    h1 {
+      font-size: 3.5rem;
+      font-weight: 900;
+      margin: 0 0 10px 0;
+      font-style: italic;
+      letter-spacing: -2px;
+      text-transform: uppercase;
+    }
 
-       <footer class="mt-20 opacity-20 text-[10px] font-black uppercase tracking-[0.5em] italic">Bobo Analytics Enterprise Engine | Secure Directory</footer>
-    </div>
-  </div>
+    p.subtitle {
+      color: rgba(255, 255, 255, 0.3);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      margin: 0;
+    }
 
-  <style is:global>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap');
-    
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .matrix {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 40px;
+      padding: 48px 30px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+      backdrop-filter: blur(10px);
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin-bottom: 30px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: 0.3s;
+    }
+
+    .card:hover .icon { transform: scale(1.1); }
+
+    .card.restaurant .icon { color: var(--orange); background: rgba(249, 115, 22, 0.1); }
+    .card.pharmacy .icon { color: var(--green); background: rgba(16, 185, 129, 0.1); }
+    .card.retail .icon { color: var(--accent); background: rgba(99, 102, 241, 0.1); }
+    .card.baker .icon { color: var(--rose); background: rgba(244, 63, 94, 0.1); }
+
+    h3 {
+      font-size: 22px;
+      font-weight: 900;
+      margin: 0 0 10px 0;
+      text-transform: uppercase;
+      font-style: italic;
+    }
+
+    p.desc {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.3);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 1px;
+      line-height: 1.6;
+      margin: 0 0 32px 0;
+      max-width: 200px;
+    }
+
+    .btn {
+      padding: 14px 28px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-style: italic;
+      transition: 0.3s;
+      opacity: 0.5;
+    }
+
+    .card:hover .btn {
+      background: white;
+      color: black;
+      opacity: 1;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2.5rem; }
+      .matrix { grid-template-columns: 1fr; }
+    }
   </style>
-</MainLayout>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  
+  <header>
+    <h1>Secure <span style="color:rgba(255,255,255,0.4)">Portal</span></h1>
+    <p class="subtitle">Bobo OS Industry Matrix Gate</p>
+  </header>
+
+  <div class="matrix">
+    <a href="/restaurant-login" class="card restaurant">
+      <div class="icon">🍽️</div>
+      <h3>Restaurant CRM</h3>
+      <p class="desc">Manage tables, menu, kitchen, POS and analytics.</p>
+      <div class="btn">Connect Node</div>
+    </a>
+
+    <a href="/pharmacy-login" class="card pharmacy">
+      <div class="icon">💊</div>
+      <h3>Pharmacy Portal</h3>
+      <p class="desc">Inventory management and prescription control HUB.</p>
+      <div class="btn">Connect Node</div>
+    </a>
+
+    <a href="/retail-crm" class="card retail">
+      <div class="icon">🛒</div>
+      <h3>Retail CRM</h3>
+      <p class="desc">High-speed retail analytics and behavior tracking.</p>
+      <div class="btn">Connect Node</div>
+    </a>
+
+    <a href="/bakers-login" class="card baker">
+      <div class="icon">🍰</div>
+      <h3>Baker OS</h3>
+      <p class="desc">Artisanal production and custom order management.</p>
+      <div class="btn">Connect Node</div>
+    </a>
+  </div>
+</body>
+</html>

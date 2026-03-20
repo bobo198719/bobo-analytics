@@ -1,53 +1,9 @@
 ---
-import MainLayout from "../../layouts/MainLayout.astro";
+import RestaurantOSLayout from "../../layouts/RestaurantOSLayout.astro";
 import Tables from "../../components/restaurant/Tables.jsx";
 import "../../styles/restaurant.css";
 ---
 
-<MainLayout title="Table Management | Bobo Restaurant OS" hideNav={true}>
-  <div class="flex h-screen bg-[#05081a] overflow-hidden text-white font-['Plus_Jakarta_Sans'] leading-relaxed">
-    <!-- Sidebar -->
-    <aside class="w-20 md:w-24 border-r border-white/10 bg-[#05081a]/50 backdrop-blur-xl flex flex-col justify-between py-10 items-center">
-      <div class="flex flex-col gap-8">
-        <div class="w-12 h-12 bg-bobo-accent rounded-2xl flex items-center justify-center font-black text-white text-xl shadow-lg shadow-bobo-accent/20">B</div>
-        <nav class="flex flex-col gap-6">
-           <a href="/restaurant-os" class="p-3 text-white/30 hover:text-white hover:bg-white/5 rounded-2xl transition-all"><i class="lucide-layout-grid text-xl"></i></a>
-           <a href="/restaurant-os/pos" class="p-3 text-white/30 hover:text-white hover:bg-white/5 rounded-2xl transition-all"><i class="lucide-receipt text-xl"></i></a>
-           <a href="/restaurant-os/tables" class="p-3 text-bobo-accent bg-bobo-accent/10 rounded-2xl transition-all"><i class="lucide-layout text-xl"></i></a>
-           <a href="/restaurant-os/menu" class="p-3 text-white/30 hover:text-white hover:bg-white/5 rounded-2xl transition-all"><i class="lucide-chef-hat text-xl"></i></a>
-           <a href="/restaurant-os/crm" class="p-3 text-white/30 hover:text-white hover:bg-white/5 rounded-2xl transition-all"><i class="lucide-users-2 text-xl"></i></a>
-        </nav>
-      </div>
-      <div class="flex flex-col gap-6">
-         <a href="/crm-login" class="p-3 text-white/30 hover:text-rose-400 hover:bg-rose-400/10 rounded-2xl transition-all"><i class="lucide-log-out text-xl"></i></a>
-      </div>
-    </aside>
-
-    <!-- Main Workspace -->
-    <main class="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-12">
-      <Tables client:load />
-    </main>
-  </div>
-
-  <style is:global>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap');
-    
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 6px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.02);
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 10px;
-    }
-  </style>
-
-  <!-- Lucide Icon Support -->
-  <link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css">
-</MainLayout>
+<RestaurantOSLayout title="Table Management | Bobo Restaurant OS">
+   <Tables client:load />
+</RestaurantOSLayout>

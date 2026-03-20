@@ -3,38 +3,50 @@ import MainLayout from "../layouts/MainLayout.astro";
 import "../styles/restaurant.css";
 ---
 
-<MainLayout title="Restaurant CRM Login | Bobo Analytics" hideNav={true}>
-  <div class="auth-page bg-[#05081a] min-h-screen flex items-center justify-center p-6 relative font-['Plus_Jakarta_Sans']">
-    <div class="absolute inset-0 pointer-events-none opacity-20">
-       <div class="absolute top-0 left-0 w-[800px] h-[800px] bg-orange-500/10 blur-[150px] -ml-96 -mt-96 animate-pulse"></div>
+<MainLayout title="Restaurant CRM Login | Bobo OS" hideNav={true}>
+  <div class="auth-page bg-[#05081a] min-h-screen flex items-center justify-center p-6 relative font-['Plus_Jakarta_Sans'] text-white">
+    <!-- Ambient Background Lighting -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden">
+       <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-orange-600/10 rounded-full blur-[120px] -mr-64 -mt-64"></div>
+       <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-rose-600/10 rounded-full blur-[120px] -ml-64 -mb-64"></div>
     </div>
 
-    <div class="login-card max-w-lg w-full bg-white/5 border border-white/10 p-12 md:p-16 rounded-[64px] shadow-2xl backdrop-blur-xl relative z-10 group transition-all hover:bg-white/[0.08]">
+    <!-- Login Card -->
+    <div class="login-card max-w-lg w-full bg-white/5 border border-white/10 p-12 md:p-16 rounded-[64px] shadow-2xl backdrop-blur-3xl relative z-10 group transition-all hover:bg-white/[0.08] hover:border-orange-500/30 overflow-hidden">
+       <!-- Glow Element -->
+       <div class="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 blur-[60px] -z-10 group-hover:bg-orange-500/20 transition-all"></div>
+       
        <div class="text-center mb-12">
-          <div class="w-20 h-20 bg-gradient-to-br from-orange-400 to-rose-600 rounded-3xl flex items-center justify-center text-4xl mx-auto mb-8 shadow-2xl shadow-orange-500/20 group-hover:scale-110 group-hover:rotate-3 transition-transform">🍽️</div>
-          <h1 class="text-4xl font-black italic text-white uppercase tracking-tighter">Restaurant CRM Login</h1>
-          <p class="text-white/40 text-[10px] font-black uppercase tracking-[0.3em] mt-2">Authenticated Cloud Terminal | Provisioned v4.0</p>
+          <div class="w-24 h-24 bg-gradient-to-br from-orange-400 to-rose-600 rounded-3xl flex items-center justify-center text-5xl mx-auto mb-8 shadow-2xl shadow-orange-500/30 group-hover:scale-110 group-hover:rotate-3 transition-transform italic border border-white/10">B</div>
+          <h1 class="text-3xl md:text-4xl font-black italic text-white uppercase tracking-tighter leading-none">Restaurant <br /><span class="bg-gradient-to-r from-orange-500 to-rose-400 bg-clip-text text-transparent">Intelligence</span></h1>
+          <p class="text-white/40 text-[10px] font-black uppercase tracking-[0.4em] mt-4 italic">Provisioned Node v8.4.1 | Secure Cloud</p>
        </div>
 
        <form id="restaurantLoginForm" class="space-y-8">
           <div class="space-y-3">
-             <label class="text-[10px] font-black uppercase text-white/30 tracking-[0.2em] ml-2 italic">Admin Identifier</label>
-             <input type="text" id="adminId" placeholder="e.g. rest_admin" required class="w-full bg-[#05081a]/80 border border-white/10 p-5 rounded-2xl outline-none focus:border-orange-500 transition-all font-black" />
+             <label class="text-[10px] font-black uppercase text-white/30 tracking-[0.2em] ml-4 italic">Admin Identity</label>
+             <div class="relative">
+                <i class="lucide-user absolute left-5 top-1/2 -translate-y-1/2 text-white/20 text-xs"></i>
+                <input type="text" id="adminId" placeholder="REST_ADMIN" required class="w-full bg-white/5 border border-white/10 p-5 pl-12 rounded-2xl outline-none focus:border-orange-500 transition-all font-black text-xs uppercase" />
+             </div>
           </div>
           <div class="space-y-3">
-             <label class="text-[10px] font-black uppercase text-white/30 tracking-[0.2em] ml-2 italic">Security Key</label>
-             <input type="password" id="password" placeholder="••••••••" required class="w-full bg-[#05081a]/80 border border-white/10 p-5 rounded-2xl outline-none focus:border-orange-500 transition-all font-black" />
+             <label class="text-[10px] font-black uppercase text-white/30 tracking-[0.2em] ml-4 italic">Security Token</label>
+             <div class="relative">
+                <i class="lucide-lock absolute left-5 top-1/2 -translate-y-1/2 text-white/20 text-xs"></i>
+                <input type="password" id="password" placeholder="••••••••" required class="w-full bg-white/5 border border-white/10 p-5 pl-12 rounded-2xl outline-none focus:border-orange-500 transition-all font-black text-xs" />
+             </div>
           </div>
 
-          <div id="errorBox" class="text-rose-500 text-xs font-black uppercase tracking-widest text-center min-h-[1rem]"></div>
+          <div id="errorBox" class="text-rose-500 text-[10px] font-black uppercase tracking-widest text-center min-h-[1rem] italic"></div>
 
-          <button type="submit" class="w-full py-6 bg-gradient-to-r from-orange-500 to-rose-600 rounded-3xl text-white font-black italic uppercase tracking-[0.2em] text-sm shadow-2xl shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all">
-             Enter Restaurant Dashboard
+          <button type="submit" class="w-full py-6 bg-gradient-to-r from-orange-600 to-orange-500 rounded-3xl text-white font-black italic uppercase tracking-[0.3em] text-xs shadow-2xl shadow-orange-600/30 hover:scale-[1.03] active:scale-95 transition-all">
+             Initialize Interface
           </button>
        </form>
 
        <footer class="mt-12 text-center">
-          <a href="/crm-login" class="text-white/20 hover:text-white font-bold text-xs transition-colors italic uppercase tracking-widest">Abort & Exit Terminal</a>
+          <a href="/crm-login" class="text-white/10 hover:text-white font-black text-[8px] transition-colors italic uppercase tracking-[0.4em]">Abort Secure Handshake</a>
        </footer>
     </div>
   </div>
@@ -48,33 +60,38 @@ import "../styles/restaurant.css";
        const id = document.getElementById("adminId").value.trim();
        const pass = document.getElementById("password").value.trim();
 
-       // Hardcoded as per USER_REQUEST Rule
-       if (id === 'rest_admin' && pass === 'password123') {
-          errorBox.innerText = "Provisioning Master Dashboard...";
-          errorBox.style.color = "#10b981";
+       // Hardcoded Credentials
+       if ((id === 'rest_admin' || id === 'admin') && pass === 'password123') {
+          errorBox.innerText = "Provisioning Dashboard Matrix...";
+          errorBox.style.color = "#fb923c";
           
-          // Fake Auth Persistence
           localStorage.setItem('restaurant_auth', 'true');
           
           setTimeout(() => {
              window.location.href = "/restaurant-dashboard";
           }, 800);
        } else {
-          errorBox.innerText = "Invalid credentials";
+          errorBox.innerText = "Invalid Master Token Identified";
           errorBox.style.color = "#f43f5e";
-          
-          // Animation shake
-          form.style.animation = "shake 0.4s ease";
-          setTimeout(() => form.style.animation = "", 400);
+          form.classList.add('shake');
+          setTimeout(() => form.classList.remove('shake'), 400);
        }
     };
   </script>
 
   <style is:global>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap');
+    
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #05081a; }
+
+    .shake { animation: shake 0.4s ease; }
     @keyframes shake {
        0%, 100% { transform: translateX(0); }
        25% { transform: translateX(-8px); }
        75% { transform: translateX(8px); }
     }
   </style>
+
+  <!-- Lucide Icon Support -->
+  <link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css">
 </MainLayout>
