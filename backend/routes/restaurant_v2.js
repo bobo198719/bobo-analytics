@@ -48,7 +48,21 @@ router.post('/orders', async (req, res) => {
         let gst = 0;
         const processedItems = [];
 
-        for (const item of items) {
+        // Ensure items is iterable
+        let itemsList = items;
+        if (typeof items === 'string') {
+            try {
+                itemsList = JSON.parse(items);
+            } catch(e) {
+                throw new Error("Invalid items structure: " + items);
+            }
+        }
+        
+        if (!itemsList || !Array.isArray(itemsList)) {
+            throw new Error("Items must be a valid array. Received: " + typeof itemsList);
+        }
+
+        for (const item of itemsList) {
             const { rows } = await client.query('SELECT * FROM menu_items WHERE id = $1', [item.menu_item_id]);
             const mItem = rows[0];
             const itemTotal = mItem.price * item.quantity;

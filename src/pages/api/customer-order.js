@@ -20,6 +20,12 @@ export async function POST({ request }) {
     });
 
     const data = await res.json();
+    if (!res.ok) {
+        return new Response(JSON.stringify({ success: false, error: data.error || "Backend failed" }), {
+            status: res.status, headers: { 'Content-Type': 'application/json' }
+        });
+    }
+
     return new Response(JSON.stringify({ success: true, order: data }), {
       status: 200,
       headers: {
@@ -29,9 +35,8 @@ export async function POST({ request }) {
     });
   } catch (err) {
     console.error("Customer order error:", err);
-    // Return success anyway so customer sees confirmation
-    return new Response(JSON.stringify({ success: true, order: { id: Date.now() } }), {
-      status: 200,
+    return new Response(JSON.stringify({ success: false, error: err.message }), {
+      status: 500,
       headers: { 'Content-Type': 'application/json' }
     });
   }

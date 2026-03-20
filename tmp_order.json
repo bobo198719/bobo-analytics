@@ -1,0 +1,12 @@
+{
+  "table_id": "01",
+  "items": [
+    {
+      "menu_item_id": 1764,
+      "quantity": 1,
+      "special_instructions": "Extra spicy nachos"
+    }
+  ],
+  "special_notes": "AI System Verification Order",
+  "status": "pending_waiter"
+}
