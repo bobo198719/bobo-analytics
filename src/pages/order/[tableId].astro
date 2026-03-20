@@ -352,16 +352,34 @@ const { tableId } = Astro.params;
       };
 
       try {
-        // 🟢 MASTER RELAY ATTEMPT (V20-FIX)
+        // 🟢 MASTER RELAY ATTEMPT (V21)
         let res = await fetch('/api/v20-master-fix-relay?v=' + Date.now(), {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(payload)
         });
+        
+        // 🔴 FAILOVER: If Relay fails (404/500), try DIRECT MATRIX CONNECTION
+        if (!res.ok) {
+            console.warn("Cloud Relay disrupted. Activating Direct Failover...");
+            const { special_notes, ...failoverPayload } = payload;
+            
+            // Relocate notes for failover
+            if (special_notes && failoverPayload.items.length > 0) {
+                failoverPayload.items[0].special_instructions = `${failoverPayload.items[0].special_instructions || ''} [Note: ${special_notes}]`.trim();
+            }
+
+            res = await fetch('http://srv1449576.hstgr.cloud:5000/api/v2/restaurant/orders', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(failoverPayload)
+            });
+        }
+
         let data = await res.json();
         
-        if(data.success) {
-            activeOrderId = (data.order && (data.order.id || data.order.orderId)) || data.orderId;
+        if(data.success || data.id) {
+            activeOrderId = (data.order && (data.order.id || data.order.orderId)) || data.orderId || data.id;
             startTracking();
             
             // Update Result View
