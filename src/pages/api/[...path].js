@@ -13,6 +13,11 @@ export async function ALL({ params, request }) {
             ? await request.arrayBuffer() 
             : undefined;
 
+        const headers = new Headers(request.headers);
+        headers.delete("host");
+        headers.delete("cookie"); 
+        headers.set("origin", "http://srv1449576.hstgr.cloud:5000");
+
         const pathStr = Array.isArray(path) ? path.join('/') : path;
 
         // 🟢 MASTER RELAY: Special handling for orders to bypass DB schema issues
