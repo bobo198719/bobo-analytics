@@ -1,14 +1,12 @@
 export const prerender = false;
 const hostingerUrl = process.env.HOSTINGER_BACKEND_URL || "http://srv1449576.hstgr.cloud:5000";
 
-// UNIFIED MASTER PROXY (V19) - FORCED SSR & STREAM DURABILITY
+// UNIFIED MASTER PROXY (V20) - FORCED SSR & ABSOLUTE RELAY
 export async function ALL({ request }) {
     const url = new URL(request.url);
     const pathname = url.pathname;
     const searchParams = url.searchParams.toString();
-    const apiPath = pathname.replace('/api/', '').split('?')[0];
-    const vpsUrl = `${hostingerUrl}/api/${apiPath}${searchParams ? '?' + searchParams : ''}`;
-
+    
     // Setup headers
     const relayHeaders = new Headers();
     request.headers.forEach((v, k) => {
@@ -24,14 +22,17 @@ export async function ALL({ request }) {
         try { requestBodyBuffer = await request.arrayBuffer(); } catch(e) {}
     }
 
-    // 🟢 MASTER RELAY: Order Hijack (V19 - Absolute Match)
-    if ((apiPath === 'v3-relay-order' || apiPath.includes('relay-order')) && request.method === 'POST' && requestBodyBuffer) {
+    // 🟢 MASTER RELAY: Order Hijack (V20 - Ultra Aggressive Match)
+    const isRelayPath = pathname.includes('relay-order') || pathname.includes('customer-order');
+    if (isRelayPath && request.method === 'POST') {
         try {
-            const bodyJson = JSON.parse(new TextDecoder().decode(requestBodyBuffer));
+            console.log("Master Relay V20: Hijacking Relay Request...");
+            const bodyText = new TextDecoder().decode(requestBodyBuffer || new Uint8Array());
+            const bodyJson = JSON.parse(bodyText);
             const { table_id, items, special_notes, order_source = "QR" } = bodyJson;
             
             // Relocate notes to first item
-            const processedItems = items.map((it, idx) => ({
+            const processedItems = (items || []).map((it, idx) => ({
                 ...it,
                 special_instructions: idx === 0 ? `${it.special_instructions || ''} [Note: ${special_notes || ''}]`.trim() : it.special_instructions
             }));
@@ -45,14 +46,23 @@ export async function ALL({ request }) {
             const relayData = await relayRes.arrayBuffer();
             return new Response(relayData, {
                 status: relayRes.status,
-                headers: { ...Object.fromEntries(relayRes.headers.entries()), 'Access-Control-Allow-Origin': '*', 'X-Relay': 'V19-Success' }
+                headers: { 
+                    ...Object.fromEntries(relayRes.headers.entries()), 
+                    'Access-Control-Allow-Origin': '*', 
+                    'X-Relay-Status': 'V20-Success' 
+                }
             });
-        } catch(e) { console.error("Relay logic error:", e); }
+        } catch(e) { 
+            console.error("Relay processing failed, falling back to proxy:", e); 
+        }
     }
 
-    // 🟡 STANDARD PROXY
+    // 🟡 PROXY FETCH
     try {
-        const response = await fetch(vpsUrl, {
+        const apiPath = pathname.replace('/api/', '');
+        const targetUrl = `${hostingerUrl}/api/${apiPath}${searchParams ? '?' + searchParams : ''}`;
+
+        const response = await fetch(targetUrl, {
             method: request.method,
             headers: relayHeaders,
             body: requestBodyBuffer
@@ -66,11 +76,12 @@ export async function ALL({ request }) {
             headers: {
                 ...Object.fromEntries(response.headers.entries()),
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS'
+                'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization'
             }
         });
     } catch (err) {
-        return new Response(JSON.stringify({ error: err.message, v: "V19-Proxy-Fail" }), { 
+        return new Response(JSON.stringify({ error: err.message, v: "V20-System-Fail" }), { 
             status: 500, headers: { 'Content-Type': 'application/json' }
         });
     }
