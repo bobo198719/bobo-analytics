@@ -34,6 +34,7 @@ router.post('/orders', async (req, res) => {
     try {
         await client.query('BEGIN');
         const { table_id, items, customer_id, special_notes, status = 'pending_waiter' } = req.body;
+        console.log("Incoming Order:", req.body);
 
         // CRITICAL: Look up the real database ID for the table number provided
         const { rows: tableRows } = await client.query('SELECT id FROM tables WHERE table_number = $1', [table_id.toString()]);
@@ -106,6 +107,8 @@ router.post('/orders', async (req, res) => {
 router.get('/orders', async (req, res) => {
     try {
         const { status } = req.query;
+        console.log("Orders Fetch Request:", status);
+        
         let sql = `
             SELECT o.*, t.table_number, 
             (SELECT json_agg(oi.*) FROM 
@@ -116,17 +119,21 @@ router.get('/orders', async (req, res) => {
             FROM orders o
             JOIN tables t ON o.table_id = t.id
         `;
+        
         const params = [];
-
         if (status) {
             sql += ` WHERE o.status = $1`;
             params.push(status);
         }
+        
+        sql += ` ORDER BY o.created_at DESC`;
 
-        sql += ` ORDER BY o.id DESC`;
-        const { rows } = await pg.query(sql, params);
+        const { rows } = await pg.pool.query(sql, params);
         res.json(rows);
-    } catch (err) { res.status(500).json({ error: err.message }); }
+    } catch (err) {
+        console.error("Fetch orders error:", err);
+        res.status(500).json({ error: err.message });
+    }
 });
 
 router.get('/orders/:id', async (req, res) => {

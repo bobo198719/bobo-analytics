@@ -10,6 +10,7 @@ export default function WaiterDashboard() {
     try {
       const res = await fetch('/api/v2/restaurant/orders?status=pending_waiter');
       const data = await res.json();
+      console.log("Orders from API:", data);
       setOrders(data);
       setLoading(false);
       setLastUpdate(new Date());
