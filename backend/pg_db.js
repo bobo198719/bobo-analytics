@@ -63,9 +63,14 @@ const initTables = async () => {
                 special_instructions TEXT
             );
         `);
-        console.log("✅ Restaurant PostgreSQL Tables Ready.");
+        // Migration: Ensure special_notes exists in orders
+        try {
+            await pool.query('ALTER TABLE orders ADD COLUMN IF NOT EXISTS special_notes TEXT');
+        } catch(e) { console.log("Migration check: special_notes exists."); }
+
+        console.log("🐘 Postgres Multi-Industry Schema Initialized");
     } catch (err) {
-        console.error("❌ PostgreSQL Table Init Error:", err.message);
+        console.error("❌ Postgres Connection Error:", err);
     }
 };
 
