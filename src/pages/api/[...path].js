@@ -13,10 +13,44 @@ export async function ALL({ params, request }) {
             ? await request.arrayBuffer() 
             : undefined;
 
-        const headers = new Headers(request.headers);
-        headers.delete("host");
-        headers.delete("cookie"); // Keep cookies local
-        headers.set("origin", "http://srv1449576.hstgr.cloud:5000");
+        const pathStr = Array.isArray(path) ? path.join('/') : path;
+
+        // 🟢 MASTER RELAY: Special handling for orders to bypass DB schema issues
+        if (pathStr === 'customer-order' && request.method === 'POST') {
+            try {
+                const originalBody = JSON.parse(new TextDecoder().decode(body));
+                const { table_id, items, special_notes, order_source = "QR" } = originalBody;
+                
+                // Relocate notes to first item for 100% schema compatibility
+                const processedItems = items.map((it, idx) => ({
+                    ...it,
+                    special_instructions: idx === 0 ? `${it.special_instructions || ''} [Note: ${special_notes || ''}]`.trim() : it.special_instructions
+                }));
+
+                console.log("Master Relay: Processing high-compatibility order...");
+                
+                const relayResponse = await fetch(`${hostingerUrl}/api/v2/restaurant/orders`, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({
+                        table_id,
+                        items: processedItems,
+                        order_source,
+                        status: 'pending_waiter'
+                    })
+                });
+
+                const relayData = await relayResponse.arrayBuffer();
+                return new Response(relayData, {
+                    status: relayResponse.status,
+                    headers: {
+                        ...Object.fromEntries(relayResponse.headers.entries()),
+                        'Access-Control-Allow-Origin': '*',
+                        'X-Master-Relay': 'V13-Active'
+                    }
+                });
+            } catch(e) { console.error("Relay Fail:", e); }
+        }
 
         let response = await fetch(vpsUrl, {
             method: request.method,

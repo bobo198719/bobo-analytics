@@ -1,17 +1,7 @@
 ---
 import MainLayout from "../../layouts/MainLayout.astro";
 
-export function getStaticPaths() {
-  return [
-    { params: { id: 'baker' } },
-    { params: { id: 'pharmacy' } },
-    { params: { id: 'healthcare' } },
-    { params: { id: 'retail' } },
-    { params: { id: 'finance' } },
-    { params: { id: 'grocery' } },
-  ];
-}
-
+export const prerender = false;
 const { id } = Astro.params;
 
 const industryData = {

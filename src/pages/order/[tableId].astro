@@ -1,4 +1,5 @@
 ---
+export const prerender = false;
 const { tableId } = Astro.params;
 ---
 <!DOCTYPE html>
@@ -351,8 +352,8 @@ const { tableId } = Astro.params;
       };
 
       try {
-        // 🟢 UNSTOPPABLE V2 ATTEMPT
-        let res = await fetch('/api/customer-order-v2', {
+        // 🟢 MASTER RELAY ATTEMPT (V13)
+        let res = await fetch('/api/customer-order?v=' + Date.now(), {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(payload)
