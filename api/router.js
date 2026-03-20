@@ -1,7 +1,9 @@
 const hostingerUrl = process.env.HOSTINGER_BACKEND_URL || "http://srv1449576.hstgr.cloud:5000";
 
+// INVISIBLE CLOUD COMPATIBILITY ENGINE (V25)
+// This file FIXES the data before it hits the un-restarted Hostinger server
 export default async function handler(req, res) {
-    const { url, method, headers, query } = req;
+    const { url, method, headers } = req;
     const pathname = new URL(url, `http://${headers.host}`).pathname;
     const apiPath = pathname.replace('/api/', '');
     
@@ -10,37 +12,30 @@ export default async function handler(req, res) {
     delete relayHeaders.host;
     delete relayHeaders.cookie;
     relayHeaders.origin = "http://srv1449576.hstgr.cloud:5000";
+    relayHeaders['Content-Type'] = 'application/json';
 
-    // 🟢 MASTER RELAY: Order High-Compatibility Mode
-    if (pathname.includes('relay-order') && method === 'POST') {
+    // 🟢 DATA HIJACK: Clean order payload for old/unrestarted Hostinger servers
+    let finalBody = req.body;
+    if (method === 'POST' && (pathname.includes('order') || pathname.includes('relay'))) {
         try {
-            const { table_id, items, special_notes, order_source = "QR" } = req.body;
+            console.log("V25_CLOUDFIX: Cleaning payload for legacy server...");
+            const { special_notes, ...cleanBody } = req.body;
             
-            // Relocate notes
-            const processedItems = (items || []).map((it, idx) => ({
-                ...it,
-                special_instructions: idx === 0 ? `${it.special_instructions || ''} [Note: ${special_notes || ''}]`.trim() : it.special_instructions
-            }));
-
-            const relayRes = await fetch(`${hostingerUrl}/api/v2/restaurant/orders`, {
-                method: 'POST',
-                headers: { ...relayHeaders, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ table_id, items: processedItems, order_source, status: 'pending_waiter' })
-            });
-
-            const data = await relayRes.json();
-            res.setHeader('Access-Control-Allow-Origin', '*');
-            return res.status(relayRes.status).json(data);
-        } catch(e) { console.error("Relay Fail:", e); }
+            // Relocate notes to first item so they aren't lost
+            if (special_notes && cleanBody.items && cleanBody.items.length > 0) {
+                cleanBody.items[0].special_instructions = `${cleanBody.items[0].special_instructions || ''} [Note: ${special_notes}]`.trim();
+            }
+            finalBody = cleanBody;
+        } catch(e) { console.error("CloudFix Error:", e); }
     }
 
-    // 🟡 STANDARD PROXY
+    // 🟡 PROXY TO HOSTINGER
     try {
         const targetUrl = `${hostingerUrl}/api/${apiPath}`;
         const proxyRes = await fetch(targetUrl, {
             method: method,
             headers: relayHeaders,
-            body: method !== 'GET' ? JSON.stringify(req.body) : undefined
+            body: method !== 'GET' ? JSON.stringify(finalBody) : undefined
         });
 
         const data = await proxyRes.json();
@@ -48,6 +43,6 @@ export default async function handler(req, res) {
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
         return res.status(proxyRes.status).json(data);
     } catch (err) {
-        return res.status(500).json({ error: err.message, v: "ROOT-API-Fail" });
+        return res.status(500).json({ error: err.message, v: "V25-FAIL" });
     }
 }

@@ -4,6 +4,10 @@
   "buildCommand": "astro build",
   "rewrites": [
     {
+      "source": "/api/v25-master-sync",
+      "destination": "/api/router.js"
+    },
+    {
       "source": "/api/(.*)",
       "destination": "/api/router.js"
     },

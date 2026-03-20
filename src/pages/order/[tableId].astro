@@ -352,26 +352,16 @@ const { tableId } = Astro.params;
       };
 
       try {
-        // 🟢 MASTER SYNC (V22)
-        const orderUrl = '/api/v2/restaurant/orders?v=' + Date.now();
+        // 🟢 MASTER SYNC (V25 - INVISIBLE FIX)
+        const orderUrl = '/api/v25-master-sync?v=' + Date.now();
         let res = await fetch(orderUrl, {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(payload)
         });
         
-        // 🔧 AUTOMATED DB RECOVERY: If Hostinger repaired itself, retry once
         let data = await res.json();
-        if (data.error === 'DB_REPAIRED_TRY_AGAIN') {
-            console.log("Database repaired. Retrying order now...");
-            res = await fetch(orderUrl, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(payload)
-            });
-            data = await res.json();
-        }
-
+        
         if(data.success || data.id) {
             activeOrderId = (data.order && (data.order.id || data.order.orderId)) || data.id || data.orderId;
             startTracking();
