@@ -24,33 +24,6 @@ async function proxyHandler({ params, request }) {
 
     const pathStr = Array.isArray(path) ? path.join('/') : path;
 
-    // 🟢 MASTER RELAY (V16): Special Order Bypass
-    if (pathStr === 'v3-relay-order' && request.method === 'POST' && requestBody) {
-        try {
-            const bodyText = new TextDecoder().decode(requestBody);
-            const jsonBody = JSON.parse(bodyText);
-            const { table_id, items, special_notes, order_source = "QR" } = jsonBody;
-            
-            // Relocate notes
-            const processedItems = items.map((it, idx) => ({
-                ...it,
-                special_instructions: idx === 0 ? `${it.special_instructions || ''} [Note: ${special_notes || ''}]`.trim() : it.special_instructions
-            }));
-
-            const relayRes = await fetch(`${hostingerUrl}/api/v2/restaurant/orders`, {
-                method: 'POST',
-                headers: relayHeaders,
-                body: JSON.stringify({ table_id, items: processedItems, order_source, status: 'pending_waiter' })
-            });
-
-            const relayData = await relayRes.arrayBuffer();
-            return new Response(relayData, {
-                status: relayRes.status,
-                headers: { ...Object.fromEntries(relayRes.headers.entries()), 'Access-Control-Allow-Origin': '*' }
-            });
-        } catch(e) { console.error("Relay Fail:", e); }
-    }
-
     // 🟡 PROXY FETCH
     try {
         const response = await fetch(vpsUrl, {
