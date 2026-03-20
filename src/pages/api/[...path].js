@@ -7,18 +7,20 @@ export async function ALL({ params, request }) {
     const url = new URL(request.url);
     const searchParams = url.searchParams.toString();
     const vpsUrl = `${hostingerUrl}/api/${path}${searchParams ? '?' + searchParams : ''}`;
+    
+    // Setup headers and body once at the top level for all attempts
+    const headers = new Headers(request.headers);
+    headers.delete("host");
+    headers.delete("cookie"); 
+    headers.set("origin", "http://srv1449576.hstgr.cloud:5000");
+
+    const body = request.method !== 'GET' && request.method !== 'HEAD' 
+        ? await request.arrayBuffer() 
+        : undefined;
+
+    const pathStr = Array.isArray(path) ? path.join('/') : path;
 
     try {
-        const body = request.method !== 'GET' && request.method !== 'HEAD' 
-            ? await request.arrayBuffer() 
-            : undefined;
-
-        const headers = new Headers(request.headers);
-        headers.delete("host");
-        headers.delete("cookie"); 
-        headers.set("origin", "http://srv1449576.hstgr.cloud:5000");
-
-        const pathStr = Array.isArray(path) ? path.join('/') : path;
 
         // 🟢 MASTER RELAY: Special handling for orders to bypass DB schema issues
         if (pathStr === 'v3-relay-order' && request.method === 'POST') {
