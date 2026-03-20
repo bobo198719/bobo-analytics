@@ -352,27 +352,37 @@ const { tableId } = Astro.params;
           body: JSON.stringify(payload)
         });
         const data = await res.json();
+        
         if(data.success) {
-            activeOrderId = data.order.id || data.order.orderId;
+            activeOrderId = data.order.id || data.order.orderId || data.orderId;
             startTracking();
+            
+            // Update Result View
+            const total = items.reduce((s,{item,qty}) => s+(parseFloat(item.price)*qty), 0);
+            document.getElementById('success-total').textContent = '₹' + total.toFixed(0);
+            document.getElementById('success-items').innerHTML = items.map(({item,qty,notes}) => 
+                `<div style="margin-bottom:12px;">
+                    <div style="display:flex;justify-content:space-between;font-size:12px;">
+                        <span style="font-weight:800;color:white;text-transform:uppercase;font-style:italic;">${item.name} × ${qty}</span>
+                        <span style="color:#f97316;font-weight:900;">₹${(item.price*qty).toFixed(0)}</span>
+                    </div>
+                    ${notes ? `<p style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:700;margin-top:2px;">↳ ${notes}</p>` : ''}
+                </div>`
+            ).join('');
+            
+            closeCheckout();
+            document.getElementById('order-success').classList.add('show');
+        } else {
+            alert("Error: " + (data.error || "Could not place order. Please try again."));
+            btn.textContent = 'Confirm Request →';
+            btn.disabled = false;
         }
-      } catch(e) { /* Error handling */ }
-
-      // Update Result View
-      const total = items.reduce((s,{item,qty}) => s+(parseFloat(item.price)*qty), 0);
-      document.getElementById('success-total').textContent = '₹' + total.toFixed(0);
-      document.getElementById('success-items').innerHTML = items.map(({item,qty,notes}) => 
-        `<div style="margin-bottom:12px;">
-          <div style="display:flex;justify-content:space-between;font-size:12px;">
-            <span style="font-weight:800;color:white;text-transform:uppercase;font-style:italic;">${item.name} × ${qty}</span>
-            <span style="color:#f97316;font-weight:900;">₹${(item.price*qty).toFixed(0)}</span>
-          </div>
-          ${notes ? `<p style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:700;margin-top:2px;">↳ ${notes}</p>` : ''}
-        </div>`
-      ).join('');
-      
-      closeCheckout();
-      document.getElementById('order-success').classList.add('show');
+      } catch(e) { 
+          console.error(e);
+          alert("Network Error: Please check your connection.");
+          btn.textContent = 'Confirm Request →';
+          btn.disabled = false;
+      }
     }
 
     function startTracking() {

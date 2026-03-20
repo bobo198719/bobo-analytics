@@ -35,6 +35,13 @@ router.post('/orders', async (req, res) => {
         await client.query('BEGIN');
         const { table_id, items, customer_id, special_notes, status = 'pending_waiter' } = req.body;
 
+        // CRITICAL: Look up the real database ID for the table number provided
+        const { rows: tableRows } = await client.query('SELECT id FROM tables WHERE table_number = $1', [table_id.toString()]);
+        if (tableRows.length === 0) {
+            throw new Error(`Table ${table_id} not found in database.`);
+        }
+        const db_table_id = tableRows[0].id;
+
         // 1. Calculate Totals
         let total = 0;
         let gst = 0;
@@ -59,7 +66,7 @@ router.post('/orders', async (req, res) => {
         // 2. Create Order
         const { rows: orderRows } = await client.query(
             'INSERT INTO orders (table_id, customer_id, status, total_amount, gst_amount, special_notes, items) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-            [table_id, customer_id || null, status, total + gst, gst, special_notes, JSON.stringify(processedItems)]
+            [db_table_id, customer_id || null, status, total + gst, gst, special_notes, JSON.stringify(processedItems)]
         );
         const orderId = orderRows[0].id;
 
@@ -72,7 +79,7 @@ router.post('/orders', async (req, res) => {
         }
 
         // 4. Update Table Status
-        await client.query("UPDATE tables SET status = 'occupied' WHERE id = $1", [table_id]);
+        await client.query("UPDATE tables SET status = 'occupied' WHERE id = $1", [db_table_id]);
 
         await client.query('COMMIT');
 
