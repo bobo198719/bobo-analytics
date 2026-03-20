@@ -37,8 +37,17 @@ router.post('/orders', async (req, res) => {
         console.log("Incoming Order:", req.body);
 
         // CRITICAL: Look up the real database ID for the table number provided
-        const { rows: tableRows } = await client.query('SELECT id FROM tables WHERE table_number = $1', [table_id.toString()]);
+        // Handle both "01" and "1" cases
+        const tableNum = table_id.toString();
+        const tableNumInt = parseInt(tableNum).toString();
+
+        const { rows: tableRows } = await client.query(
+            'SELECT id FROM tables WHERE table_number = $1 OR table_number = $2', 
+            [tableNum, tableNumInt]
+        );
+        
         if (tableRows.length === 0) {
+            console.error("Table Lookup Failed for:", tableNum, tableNumInt);
             throw new Error(`Table ${table_id} not found in database.`);
         }
         const db_table_id = tableRows[0].id;

@@ -116,8 +116,14 @@ const Tables = () => {
               {/* QR Button */}
               <div className="px-6 pb-6">
                 <button
-                  onClick={(e) => { e.stopPropagation(); setQrModal({ table, qrImgSrc, qrUrl }); }}
-                  className="w-full py-2.5 bg-orange-500/10 border border-orange-500/20 rounded-2xl flex items-center justify-center gap-2 text-orange-400 text-[11px] font-black uppercase italic hover:bg-orange-500/20 transition-all"
+                  onClick={(e) => { 
+                    e.preventDefault();
+                    e.stopPropagation(); 
+                    console.log("QR Button Clicked for table:", table.table_number);
+                    setQrModal({ table, qrImgSrc, qrUrl }); 
+                  }}
+                  className="w-full py-2.5 bg-orange-500 border border-orange-600 rounded-2xl flex items-center justify-center gap-2 text-white text-[11px] font-black uppercase italic hover:bg-orange-400 transition-all cursor-pointer relative z-50"
+                  style={{ pointerEvents: 'auto' }}
                 >
                   <QrCode className="w-3.5 h-3.5" /> Generate QR
                 </button>
@@ -137,9 +143,13 @@ const Tables = () => {
 
       {/* QR MODAL */}
       {qrModal && (
-        <div className="fixed inset-0 bg-[#05081a]/95 backdrop-blur-3xl z-[100000] flex items-center justify-center p-6" onClick={() => setQrModal(null)}>
-          <div onClick={e => e.stopPropagation()} className="bg-[#0b0f24] border border-orange-500/20 rounded-[48px] p-10 max-w-sm w-full text-center shadow-[0_0_80px_rgba(249,115,22,0.15)] relative">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-rose-500 rounded-t-[48px]"></div>
+        <div 
+          className="fixed inset-0 bg-black/90 backdrop-blur-3xl z-[200000] flex items-center justify-center p-6" 
+          style={{ visibility: 'visible', opacity: 1 }}
+          onClick={() => setQrModal(null)}
+        >
+          <div onClick={e => e.stopPropagation()} className="bg-[#0b0f24] border border-orange-500/40 rounded-[48px] p-10 max-w-sm w-full text-center shadow-[0_0_100px_rgba(249,115,22,0.3)] relative">
+            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-500 to-rose-500 rounded-t-[48px]"></div>
             <button onClick={() => setQrModal(null)} className="absolute top-5 right-5 w-9 h-9 bg-white/5 rounded-full flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all"><X className="w-4 h-4" /></button>
             
             <h3 className="text-xl font-black italic uppercase tracking-tight mb-1">Table <span className="text-orange-400">{qrModal.table.table_number}</span></h3>
