@@ -87,11 +87,26 @@ router.post('/orders', async (req, res) => {
             });
         }
 
-        // 2. Create Order
-        const { rows: orderRows } = await client.query(
-            'INSERT INTO orders (table_id, customer_id, status, total_amount, gst_amount, special_notes, items) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-            [db_table_id, customer_id || null, status, total + gst, gst, special_notes, JSON.stringify(processedItems)]
-        );
+        // 2. Create Order (with Fallback for Missing Schema Column)
+        let orderRows;
+        try {
+            const result = await client.query(
+                'INSERT INTO orders (table_id, customer_id, status, total_amount, gst_amount, special_notes, items) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+                [db_table_id, customer_id || null, status, total + gst, gst, special_notes || '', JSON.stringify(processedItems)]
+            );
+            orderRows = result.rows;
+        } catch (err) {
+            if (err.message.includes('special_notes') && err.message.includes('does not exist')) {
+                console.warn("⚠️ Legacy Schema Detected: Retrying order without special_notes.");
+                const result = await client.query(
+                    'INSERT INTO orders (table_id, customer_id, status, total_amount, gst_amount, items) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+                    [db_table_id, customer_id || null, status, total + gst, gst, JSON.stringify(processedItems)]
+                );
+                orderRows = result.rows;
+            } else {
+                throw err;
+            }
+        }
         const orderId = orderRows[0].id;
 
         // 3. Create Order Items

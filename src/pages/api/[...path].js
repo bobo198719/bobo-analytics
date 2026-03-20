@@ -18,15 +18,41 @@ export async function ALL({ params, request }) {
         headers.delete("cookie"); // Keep cookies local
         headers.set("origin", "http://srv1449576.hstgr.cloud:5000");
 
-        const response = await fetch(vpsUrl, {
+        let response = await fetch(vpsUrl, {
             method: request.method,
             headers: headers,
             body
         });
 
-        const data = await response.arrayBuffer();
+        let responseData = await response.arrayBuffer();
+        let responseJson = null;
+        try { responseJson = JSON.parse(new TextDecoder().decode(responseData)); } catch(e) {}
 
-        return new Response(data, {
+        // 🟢 HEALING LAYER: If backend fails due to missing column, strip and retry
+        if (response.status === 500 && responseJson && responseJson.error && responseJson.error.includes('special_notes')) {
+            console.warn("Proxy: Healing legacy schema failure...");
+            try {
+                const originalBody = JSON.parse(new TextDecoder().decode(body));
+                delete originalBody.special_notes; // Strip the problematic field
+                
+                const healResponse = await fetch(vpsUrl, {
+                    method: request.method,
+                    headers: headers,
+                    body: JSON.stringify(originalBody)
+                });
+                
+                const healData = await healResponse.arrayBuffer();
+                return new Response(healData, {
+                    status: healResponse.status,
+                    headers: {
+                        ...Object.fromEntries(healResponse.headers.entries()),
+                        'Access-Control-Allow-Origin': '*'
+                    }
+                });
+            } catch(e) { console.error("Healing failed:", e); }
+        }
+
+        return new Response(responseData, {
             status: response.status,
             headers: {
                 ...Object.fromEntries(response.headers.entries()),

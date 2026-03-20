@@ -12,21 +12,52 @@ export async function POST({ request }) {
       });
     }
 
-    // Post order to backend
-    const res = await fetch(`${hostingerUrl}/api/v2/restaurant/orders`, {
+    // 🟢 PRIMARY ATTEMPT
+    let res = await fetch(`${hostingerUrl}/api/v2/restaurant/orders`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ table_id, items, special_notes, order_source, status: 'pending_waiter' })
+      body: JSON.stringify({ 
+        table_id, 
+        items, 
+        special_notes: special_notes || "", 
+        order_source, 
+        status: 'pending_waiter' 
+      })
     });
 
-    const data = await res.json();
+    let data = await res.json();
+
+    // 🔴 HEALING LAYER: If primary fail, retry without complex fields
+    if (res.status !== 200) {
+        console.warn("Retrying order in simple mode...");
+        const healRes = await fetch(`${hostingerUrl}/api/v2/restaurant/orders`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                table_id, 
+                items, 
+                order_source, 
+                status: 'pending_waiter' 
+            })
+        });
+        
+        if (healRes.ok) {
+            data = await healRes.json();
+            res = healRes;
+        }
+    }
+
     if (!res.ok) {
-        return new Response(JSON.stringify({ success: false, error: data.error || "Backend failed" }), {
+        return new Response(JSON.stringify({ 
+            success: false, 
+            error: data.error || "Backend failed",
+            debug_v: "v9-healing-active" 
+        }), {
             status: res.status, headers: { 'Content-Type': 'application/json' }
         });
     }
 
-    return new Response(JSON.stringify({ success: true, order: data }), {
+    return new Response(JSON.stringify({ success: true, order: data, debug_v: "v9-healing-active" }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
