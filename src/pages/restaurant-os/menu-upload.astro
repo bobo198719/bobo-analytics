@@ -131,7 +131,7 @@ import "../../styles/restaurant.css";
     .item-check { width: 18px; height: 18px; accent-color: #f97316; cursor: pointer; flex-shrink: 0; }
   </style>
 
-  <script>
+  <script is:inline>
     let parsedItems = [];
 
     // ── TAB SWITCHING ───────────────────────────────
@@ -152,10 +152,10 @@ import "../../styles/restaurant.css";
       const file = e.target.files[0];
       if (!file) return;
       
-      if (file.type === 'application/pdf') {
-        document.getElementById('img-preview').src = 'https://cdn-icons-png.flaticon.com/512/337/337946.png'; // PDF Icon
+      if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+        document.getElementById('img-preview').src = 'https://cdn-icons-png.flaticon.com/512/4726/4726010.png'; // Improved PDF Icon
         document.getElementById('img-preview-area').classList.remove('hidden');
-        log('PDF loaded: ' + file.name + ' (' + (file.size/1024).toFixed(0) + 'KB). AI is analyzing pages...');
+        log('PDF detected: ' + file.name + ' (' + (file.size/1024).toFixed(0) + 'KB). AI is analyzing pages...');
         return;
       }
 
