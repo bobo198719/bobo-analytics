@@ -23,7 +23,7 @@ export async function ALL({ request }) {
     }
 
     // 🟢 MASTER RELAY: Order Hijack (V20 - Ultra Aggressive Match)
-    const isRelayPath = pathname.includes('relay-order') || pathname.includes('customer-order');
+    const isRelayPath = pathname.includes('relay-order') || pathname.includes('customer-order') || pathname.includes('v20-master-fix-relay');
     if (isRelayPath && request.method === 'POST') {
         try {
             console.log("Master Relay V20: Hijacking Relay Request...");
