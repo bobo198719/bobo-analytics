@@ -144,6 +144,7 @@ const POS = () => {
   if (error) {
     return (
       <div className="h-full flex flex-col items-center justify-center gap-10 bg-white/5 border border-white/10 rounded-[48px] p-20 text-center animate-in fade-in duration-500">
+         <div className="text-gray-500 mb-2 font-mono text-[10px] tracking-widest opacity-30">BUILD_SYNC_IDENTITY_NODE: V37</div>
          <div className="w-24 h-24 bg-rose-600/20 rounded-full flex items-center justify-center text-rose-500 animate-pulse border border-rose-600/30">
             <AlertTriangle className="w-12 h-12" />
          </div>

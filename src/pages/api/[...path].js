@@ -6,14 +6,13 @@ const poolConfig = {
     password: 'Princy@20201987',
     database: 'restaurant_crm',
     port: 5432,
-    ssl: { rejectUnauthorized: false },
+    ssl: false, // 🔓 UNLOCKED: Bypassing SSL for maximum compatibility
     connectionTimeoutMillis: 15000,
     idleTimeoutMillis: 30000,
     max: 20
 };
 
-// V36 - PERSISTENT CLOUD POOL (Concurrency Fix)
-// Moved outside handler to prevent pool closure during parallel requests
+// V37 - NO-SSL CLOUD MATRIX
 const pool = new Pool(poolConfig);
 
 export async function ALL({ request, params }) {
@@ -21,13 +20,13 @@ export async function ALL({ request, params }) {
     const pathname = url.pathname;
     const method = request.method;
 
-    // 🟢 V36 - COMPREHENSIVE CLOUD BRIDGE
+    // 🟢 V37 - COMPREHENSIVE CLOUD BRIDGE
     
     // 1. MENU SYNC (POS FIX)
     if (pathname.includes('/api/v2/restaurant/menu') && method === 'GET') {
         try {
             const { rows } = await pool.query('SELECT * FROM menu_items ORDER BY category ASC');
-            return new Response(JSON.stringify(rows), { status: 200, headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'} });
+            return new Response(JSON.stringify(rows), { status: 200, headers: {'Content-Type': 'application/json'} });
         } catch (e) {
             return new Response(JSON.stringify({ error: e.message, type: "CLOUD_MENU_FAIL" }), { status: 500 });
         }
@@ -91,7 +90,6 @@ export async function ALL({ request, params }) {
         }
     }
 
-    // 🔴 FINAL RELAY
     const hostingerUrl = "http://srv1449576.hstgr.cloud:5000";
     const apiPath = pathname.replace('/api/', '');
     
@@ -110,6 +108,6 @@ export async function ALL({ request, params }) {
         const data = await resProxy.json();
         return new Response(JSON.stringify(data), { status: resProxy.status });
     } catch (err) {
-        return new Response(JSON.stringify({ error: err.message, v: "V36-FAIL" }), { status: 500 });
+        return new Response(JSON.stringify({ error: err.message, v: "V37-FAIL" }), { status: 500 });
     }
 }
