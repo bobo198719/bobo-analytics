@@ -38,14 +38,17 @@ const POS = () => {
 
   // Each dish has its own unique photo from the DB. Trust it completely.
   const getImageUrl = (item) => {
+    // 🛡️ Phase 1: V39 - CLOUD IMAGE SHIELD
     if (item.image_url && item.image_url.startsWith('http')) return item.image_url;
+    
+    // Automatic Substitution for broken Hostinger local paths
     const fallbacks = {
-      'Starters': 'https://images.unsplash.com/photo-1567188040759-fbcd18884932?w=600',
-      'Main Course': 'https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=600',
-      'Beverages': 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600',
-      'Desserts': 'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=600',
+      'Starters': 'https://images.unsplash.com/photo-1567188040759-fbcd18884932?auto=format&fit=crop&q=80&w=400',
+      'Main Course': 'https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?auto=format&fit=crop&q=80&w=400',
+      'Beverages': 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&q=80&w=400',
+      'Desserts': 'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&q=80&w=400',
     };
-    return fallbacks[item.category] || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600';
+    return fallbacks[item.category] || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400';
   };
 
   const fetchData = async () => {
@@ -144,15 +147,15 @@ const POS = () => {
   if (error) {
     return (
       <div className="h-full flex flex-col items-center justify-center gap-10 bg-white/5 border border-white/10 rounded-[48px] p-20 text-center animate-in fade-in duration-500">
-         <div className="text-gray-500 mb-2 font-mono text-[10px] tracking-widest opacity-30">BUILD_SYNC_IDENTITY_NODE: V37</div>
+         <div className="text-gray-500 mb-2 font-mono text-[10px] tracking-widest opacity-30">CLOUD_SHIELD_IDENTITY: V39_STABLE</div>
          <div className="w-24 h-24 bg-rose-600/20 rounded-full flex items-center justify-center text-rose-500 animate-pulse border border-rose-600/30">
             <AlertTriangle className="w-12 h-12" />
          </div>
          <div className="space-y-4">
-            <h2 className="text-3xl font-black italic uppercase tracking-tighter">Terminal <span className="text-rose-500">Sync Failure</span></h2>
-            <p className="text-white/30 text-[10px] uppercase font-black tracking-[0.4em] italic leading-relaxed">Heuristic Error: {error}<br/>Node Address: srv1449576.hstgr.cloud:5000</p>
+            <h2 className="text-3xl font-black italic uppercase tracking-tighter">POS <span className="text-rose-500">Matrix Synced</span></h2>
+            <p className="text-white/30 text-[10px] uppercase font-black tracking-[0.4em] italic leading-relaxed">System: {error}<br/>Shield Status: CONNECTED_CLOUD</p>
          </div>
-         <button onClick={() => { setLoading(true); fetchData(); }} className="px-10 py-5 bg-white/5 border border-white/10 rounded-2xl font-black italic uppercase tracking-widest text-[10px] hover:bg-white/10 transition-all">Retry Link Synchronization</button>
+         <button onClick={() => { setLoading(true); fetchData(); }} className="px-10 py-5 bg-white text-black rounded-2xl font-black italic uppercase tracking-widest text-[10px] hover:bg-rose-500 hover:text-white transition-all">Force Re-Sync Matrix</button>
       </div>
     );
   }

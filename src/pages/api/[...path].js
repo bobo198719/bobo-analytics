@@ -6,13 +6,13 @@ const poolConfig = {
     password: 'Princy@20201987',
     database: 'restaurant_crm',
     port: 5432,
-    ssl: false,
-    connectionTimeoutMillis: 15000,
-    idleTimeoutMillis: 30000,
-    max: 20
+    ssl: { rejectUnauthorized: false }, // 🔐 SSL RE-ENABLED: With Skip-Verification to allow Hostinger certs
+    connectionTimeoutMillis: 30000,     // 🕒 EXTENDED TIMEOUT: 30s to allow slow Hostinger handshakes
+    idleTimeoutMillis: 60000,
+    max: 10
 };
 
-// V38 - FULL CLOUD SYNC MASTER
+// V39 - SECURE CLOUD MATRIX (RE-SYNC)
 const pool = new Pool(poolConfig);
 
 export async function ALL({ request, params }) {
@@ -20,7 +20,7 @@ export async function ALL({ request, params }) {
     const pathname = url.pathname;
     const method = request.method;
 
-    // 🟢 V38 - COMPREHENSIVE CLOUD BRIDGE (Menu Management + Orders + Dashboard)
+    // 🟢 V39 - COMPREHENSIVE CLOUD BRIDGE
     
     // 1. MENU HUB SYNC (POST/DELETE FIX)
     if (pathname.includes('/api/v2/restaurant/menu')) {
@@ -28,25 +28,18 @@ export async function ALL({ request, params }) {
             try {
                 const { rows } = await pool.query('SELECT * FROM menu_items ORDER BY id DESC');
                 return new Response(JSON.stringify(rows), { status: 200, headers: {'Content-Type': 'application/json'} });
-            } catch (e) { console.error(e); }
+            } catch (e) {
+                return new Response(JSON.stringify({ error: e.message, type: "CLOUD_DB_FAIL", v: "V39" }), { status: 500 });
+            }
         } else if (method === 'POST') {
-            try {
+             try {
                 const body = await request.json();
-                const { name, price, category, type, image_url, id } = body;
-                // Using Manual ID if provided for sync, otherwise serial
+                const { name, price, category, type, image_url } = body;
                 const { rows } = await pool.query(
                     'INSERT INTO menu_items (name, price, category, type, image_url) VALUES ($1, $2, $3, $4, $5) RETURNING id',
                     [name, price, category, type, image_url || '']
                 );
                 return new Response(JSON.stringify({ success: true, id: rows[0].id }), { status: 200 });
-            } catch (e) {
-                return new Response(JSON.stringify({ error: e.message, type: "CLOUD_MENU_POST_FAIL" }), { status: 500 });
-            }
-        } else if (method === 'DELETE') {
-             try {
-                const itemId = pathname.split('/').pop();
-                await pool.query('DELETE FROM menu_items WHERE id = $1', [itemId]);
-                return new Response(JSON.stringify({ success: true }), { status: 200 });
              } catch (e) { console.error(e); }
         }
     }
@@ -71,41 +64,19 @@ export async function ALL({ request, params }) {
             try {
                 const { rows } = await pool.query('SELECT * FROM tables ORDER BY table_number ASC');
                 return new Response(JSON.stringify(rows), { status: 200 });
-            } catch (e) {}
-        } else if (method === 'PUT' && pathname.includes('/status')) {
-             try {
-                const tableId = pathname.split('/').slice(-2, -1)[0];
-                const body = await request.json();
-                await pool.query("UPDATE tables SET status = $1 WHERE id = $2", [body.status, tableId]);
-                return new Response(JSON.stringify({ success: true, message: "Node Status Synchronized" }), { status: 200 });
-             } catch (e) { console.error(e); }
+            } catch (e) {
+                return new Response(JSON.stringify({ error: e.message, type: "CLOUD_TABLES_FAIL" }), { status: 500 });
+             }
         }
     }
 
-    // 4. ORDERS & KITCHEN & POS POST
+    // 4. ORDERS SYNC
     if (pathname.includes('/api/v2/restaurant/orders')) {
         if (method === 'GET') {
             try {
-                const { rows } = await pool.query(`
-                    SELECT o.*, t.table_number 
-                    FROM orders o 
-                    JOIN tables t ON o.table_id = t.id 
-                    ORDER BY o.created_at DESC 
-                    LIMIT 200
-                `);
+                const { rows } = await pool.query(`SELECT o.*, t.table_number FROM orders o JOIN tables t ON o.table_id = t.id ORDER BY o.created_at DESC LIMIT 50`);
                 return new Response(JSON.stringify(rows), { status: 200 });
             } catch (e) { console.error(e); }
-        } else if (method === 'POST') {
-             try {
-                const body = await request.json();
-                const { table_id, items } = body;
-                const { rows: orderRows } = await pool.query(
-                    'INSERT INTO orders (table_id, status, total_amount, gst_amount, items) VALUES ($1, $2, $3, $4, $5) RETURNING id',
-                    [table_id, 'pending_waiter', 0, 0, JSON.stringify(items)]
-                );
-                await pool.query("UPDATE tables SET status = 'occupied' WHERE id = $1", [table_id]);
-                return new Response(JSON.stringify({ success: true, orderId: orderRows[0].id }), { status: 200 });
-             } catch (e) { console.error(e); }
         }
     }
 
@@ -117,16 +88,13 @@ export async function ALL({ request, params }) {
         const resProxy = await fetch(`${hostingerUrl}/api/${apiPath}`, {
             method: method,
             headers: { 'Content-Type': 'application/json' },
-            body: bodyContent ? JSON.stringify(bodyContent) : undefined
+            body: bodyContent ? JSON.stringify(bodyContent) : undefined,
+            signal: AbortSignal.timeout(10000)
         });
-
-        if (!resProxy.ok && (method === 'PUT' || method === 'DELETE')) {
-            return new Response(JSON.stringify({ success: true, message: "Manual Cloud Sync" }), { status: 200 });
-        }
 
         const data = await resProxy.json();
         return new Response(JSON.stringify(data), { status: resProxy.status });
     } catch (err) {
-        return new Response(JSON.stringify({ error: err.message, v: "V38-FAIL" }), { status: 500 });
+        return new Response(JSON.stringify({ error: err.message, v: "V39-FAIL" }), { status: 500 });
     }
 }
