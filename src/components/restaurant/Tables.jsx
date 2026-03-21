@@ -78,6 +78,8 @@ const Tables = () => {
     } catch (err) { console.error(err); }
   };
 
+  const tableData = Array.isArray(tables) ? tables : [];
+
   return (
     <div className="space-y-12 animate-in fade-in duration-500 font-['Plus_Jakarta_Sans']">
       
@@ -97,7 +99,7 @@ const Tables = () => {
       </header>
 
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 pb-20">
-        {tables.map((table) => {
+        {tableData.map((table) => {
           const config = getStatusConfig(table.status);
           const qrUrl = `${window.location.origin}/order/${table.table_number}`;
           const qrImgSrc = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrUrl)}&bgcolor=ffffff&color=000000&margin=20`;
