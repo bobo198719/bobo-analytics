@@ -147,13 +147,13 @@ const POS = () => {
   if (error) {
     return (
       <div className="h-full flex flex-col items-center justify-center gap-10 bg-white/5 border border-white/10 rounded-[48px] p-20 text-center animate-in fade-in duration-500">
-         <div className="text-gray-500 mb-2 font-mono text-[10px] tracking-widest opacity-30">CLOUD_SHIELD_IDENTITY: V39_STABLE</div>
+         <div className="text-gray-500 mb-2 font-mono text-[10px] tracking-widest opacity-30">INFRASTRUCTURE_SYNC_IDENTITY: V40_ACTIVE</div>
          <div className="w-24 h-24 bg-rose-600/20 rounded-full flex items-center justify-center text-rose-500 animate-pulse border border-rose-600/30">
             <AlertTriangle className="w-12 h-12" />
          </div>
          <div className="space-y-4">
             <h2 className="text-3xl font-black italic uppercase tracking-tighter">POS <span className="text-rose-500">Matrix Synced</span></h2>
-            <p className="text-white/30 text-[10px] uppercase font-black tracking-[0.4em] italic leading-relaxed">System: {error}<br/>Shield Status: CONNECTED_CLOUD</p>
+            <p className="text-white/30 text-[10px] uppercase font-black tracking-[0.4em] italic leading-relaxed">System: {error}<br/>Cloud Bridge: V40_DIRECT</p>
          </div>
          <button onClick={() => { setLoading(true); fetchData(); }} className="px-10 py-5 bg-white text-black rounded-2xl font-black italic uppercase tracking-widest text-[10px] hover:bg-rose-500 hover:text-white transition-all">Force Re-Sync Matrix</button>
       </div>
