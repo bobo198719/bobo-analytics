@@ -360,7 +360,7 @@ const { tableId } = Astro.params;
         }
         delete finalPayload.special_notes; // Critical: Remove the field that causes the crash
 
-        const orderUrl = '/api/v25-master-sync?v=' + Date.now();
+        const orderUrl = '/api/v2/restaurant/orders';
         let res = await fetch(orderUrl, {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},

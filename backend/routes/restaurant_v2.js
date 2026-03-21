@@ -135,6 +135,15 @@ router.put('/orders/:id/status', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// GET single order (used by QR page for status tracking polling)
+router.get('/orders/:id', async (req, res) => {
+    try {
+        const { rows } = await db.query('SELECT * FROM restaurant_orders WHERE id = ?', [req.params.id]);
+        if (!rows.length) return res.status(404).json({ error: 'Order not found' });
+        res.json(rows[0]);
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 /**
  * 5. DASHBOARD
  */
