@@ -10,9 +10,8 @@ export async function ALL({ request, params }) {
 
     const hostingerUrl = "http://srv1449576.hstgr.cloud:5000";
     
-    // 🔥 ROUTE TRANSLATION (V45 Mastery)
-    let targetPath = pathname.replace('/api/v2/restaurant/', '/api/') + url.search;
-    if (pathname.includes('/dashboard')) targetPath = '/api/dashboard' + url.search;
+    // 🔥 ROUTE PARSE LOGIC
+    let targetPath = pathname + url.search;
 
     try {
         const fetchOptions = {
