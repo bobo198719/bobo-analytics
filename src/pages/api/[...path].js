@@ -23,9 +23,13 @@ export async function ALL({ request, params }) {
             ...(method !== 'GET' && method !== 'HEAD' ? { body: await request.text() } : {})
         };
 
+        // Use longer timeout for seed operations
+        const isSeed = pathname.includes('/seed');
+        const timeoutMs = isSeed ? 60000 : 10000;
+
         const resProxy = await fetch(`${hostingerUrl}${targetPath}`, {
             ...fetchOptions,
-            signal: AbortSignal.timeout(10000)
+            signal: AbortSignal.timeout(timeoutMs)
         });
 
         const data = await resProxy.json();
