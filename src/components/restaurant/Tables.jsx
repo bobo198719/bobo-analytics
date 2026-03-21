@@ -78,10 +78,29 @@ const Tables = () => {
     } catch (err) { console.error(err); }
   };
 
-  const tableData = Array.isArray(tables) ? tables : [];
+  // 🛡️ Phase 1: V42 - PERPETUAL FLOOR SHIELD
+  const tableData = Array.isArray(tables) && tables.length > 0 
+    ? tables 
+    : [
+        { id: 'v1', table_number: '1', status: 'available' },
+        { id: 'v2', table_number: '2', status: 'available' },
+        { id: 'v3', table_number: '3', status: 'available' },
+        { id: 'v4', table_number: '4', status: 'available' },
+        { id: 'v5', table_number: '5', status: 'available' },
+        { id: 'v6', table_number: '6', status: 'available' },
+        { id: 'v7', table_number: '7', status: 'available' },
+        { id: 'v8', table_number: '8', status: 'available' }
+      ];
+
+  const isLoading = loading && tables.length === 0;
 
   return (
     <div className="space-y-12 animate-in fade-in duration-500 font-['Plus_Jakarta_Sans']">
+      {!Array.isArray(tables) || tables.length === 0 ? (
+          <div className="absolute top-4 right-10 z-50 px-4 py-1.5 bg-rose-600/20 border border-rose-600/40 rounded-full">
+            <span className="text-[10px] font-black uppercase text-rose-500 tracking-[0.3em] animate-pulse">V42: Emergency Cloud Floor Active</span>
+          </div>
+      ) : null}
       
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 bg-white/5 border border-white/10 p-10 rounded-[48px] relative overflow-hidden group">
         <div className="relative z-10">
