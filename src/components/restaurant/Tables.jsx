@@ -19,6 +19,15 @@ const Tables = () => {
   const [loading, setLoading] = useState(true);
   const [qrModal, setQrModal] = useState(null); // { table }
 
+  const getStatusConfig = (status) => {
+    switch (status) {
+      case 'available': return { color: 'from-emerald-500/20 to-emerald-600/20', label: 'Available' };
+      case 'occupied': return { color: 'from-rose-500/20 to-rose-600/20', label: 'Occupied' };
+      case 'ordered': return { color: 'from-orange-500/20 to-orange-600/20', label: 'Ordered' };
+      default: return { color: 'from-emerald-500/20 to-emerald-600/20', label: 'Available' };
+    }
+  };
+
   const fetchTables = async () => {
     try {
       const res = await fetch('/api/v2/restaurant/tables');

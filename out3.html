@@ -1,0 +1,27 @@
+* Uses proxy env variable no_proxy == '*.azureedge.net'
+* Host localhost:4322 was resolved.
+* IPv6: ::1
+* IPv4: 127.0.0.1
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0                              0*   Trying [::1]:4322...
+* Established connection to localhost (::1 port 4322) from ::1 port 50804 
+* using HTTP/1.x
+> GET / HTTP/1.1
+> Host: localhost:4322
+> User-Agent: curl/8.18.0
+> Accept: */*
+> 
+* Request completely sent off
+< HTTP/1.1 500 Internal Server Error
+< Vary: Origin
+< Content-Type: text/html; charset=utf-8
+< Content-Length: 75
+< Date: Sat, 21 Mar 2026 18:10:23 GMT
+< Connection: keep-alive
+< Keep-Alive: timeout=5
+< 
+{ [75 bytes data]
+100     75 100     75   0      0    676      0                              0100     75 100     75   0      0    674      0                              0100     75 100     75   0      0    672      0                              0
+* Connection #0 to host localhost:4322 left intact
+<title>undefined</title><script type="module" src="/@vite/client"></script>
