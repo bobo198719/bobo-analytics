@@ -172,12 +172,17 @@ const KDS = () => {
                   </div>
 
                    <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 mb-6 relative z-10 space-y-3">
-                      {order.items?.map((item, idx) => (
+                      {(() => {
+                        let parsedItems = [];
+                        try {
+                          parsedItems = typeof order.items === 'string' ? JSON.parse(order.items) : (order.items || []);
+                        } catch (e) {}
+                        return parsedItems.map((item, idx) => (
                          <div key={idx} className="p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/10 transition-all hover:bg-white/10">
                             <div className="flex items-center gap-3">
                               <div className={`w-2 h-2 rounded-full ${cfg.text} animate-pulse`}></div>
                               <p className="font-black italic text-sm tracking-tight text-white/90">
-                                {item.quantity}x {item.menu_name || `Item ${item.menu_item_id}`}
+                                {item.quantity}x {item.menu_name || item.name || `Item #${item.menu_item_id || '?'}`}
                               </p>
                             </div>
                             {item.special_instructions && (
@@ -186,7 +191,8 @@ const KDS = () => {
                               </p>
                             )}
                          </div>
-                      ))}
+                        ));
+                      })()}
                       {order.special_notes && (
                          <div className="p-4 bg-orange-500/10 border border-orange-500/20 rounded-2xl mt-4">
                             <p className="text-[9px] font-black uppercase text-orange-500 tracking-widest mb-1 italic">Order Note</p>
