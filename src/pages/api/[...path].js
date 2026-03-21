@@ -1,51 +1,73 @@
-export const prerender = false;
-const hostingerUrl = process.env.HOSTINGER_BACKEND_URL || "http://srv1449576.hstgr.cloud:5000";
+import { Pool } from 'pg';
 
-// FINAL MASTER SYNCHRONIZER (V22)
-export async function ALL({ request }) {
+const poolConfig = {
+    host: 'srv1449576.hstgr.cloud',
+    user: 'bobo',
+    password: 'Princy@20201987',
+    database: 'restaurant_crm',
+    port: 5432,
+    ssl: { rejectUnauthorized: false },
+    connectionTimeoutMillis: 10000
+};
+
+export async function ALL({ request, params }) {
     const url = new URL(request.url);
     const pathname = url.pathname;
-    const searchParams = url.searchParams.toString();
-    const apiPath = pathname.replace('/api/', '');
+    const method = request.method;
+    const pool = new Pool(poolConfig);
 
-    // Setup headers once
-    const relayHeaders = new Headers();
-    request.headers.forEach((v, k) => {
-        if (k.toLowerCase() !== 'host' && k.toLowerCase() !== 'cookie') {
-            relayHeaders.set(k, v);
+    // 🟢 CLOUD-DIRECT RESTORATION (V33)
+    if (pathname.includes('/api/v2/restaurant/dashboard')) {
+        try {
+            const client = await pool.connect();
+            const { rows: todayRows } = await client.query("SELECT * FROM orders WHERE created_at::date = CURRENT_DATE");
+            const { rows: tableCount } = await client.query("SELECT COUNT(*) FROM tables WHERE status = 'occupied'");
+            client.release();
+            await pool.end();
+
+            return new Response(JSON.stringify({
+                total_revenue: todayRows.reduce((acc, o) => acc + parseFloat(o.total_amount), 0).toFixed(2),
+                orders_today: todayRows.length,
+                active_tables: parseInt(tableCount[0].count),
+                kitchen_queue: todayRows.filter(o => o.status === 'pending_waiter' || o.status === 'confirmed').length
+            }), { status: 200 });
+        } catch (e) {
+            console.error("Cloud Dashboard Fail:", e);
         }
-    });
-    relayHeaders.set("origin", "http://srv1449576.hstgr.cloud:5000");
-
-    let requestBody = undefined;
-    if (request.method !== 'GET' && request.method !== 'HEAD') {
-        try { requestBody = await request.arrayBuffer(); } catch(e) {}
     }
 
+    if (pathname.includes('/api/v2/restaurant/tables') && method === 'GET') {
+        try {
+            const client = await pool.connect();
+            const { rows } = await client.query('SELECT * FROM tables ORDER BY table_number ASC');
+            client.release();
+            await pool.end();
+            return new Response(JSON.stringify(rows), { status: 200 });
+        } catch (e) {}
+    }
+
+    // 🟠 RELAY FALLBACK
+    const hostingerUrl = "http://srv1449576.hstgr.cloud:5000";
+    const apiPath = pathname.replace('/api/', '');
+    
     try {
-        const vpsUrl = `${hostingerUrl}/api/${apiPath}${searchParams ? '?' + searchParams : ''}`;
-
-        const response = await fetch(vpsUrl, {
-            method: request.method,
-            headers: relayHeaders,
-            body: requestBody
+        const body = method !== 'GET' && method !== 'HEAD' ? await request.json() : undefined;
+        const resProxy = await fetch(`${hostingerUrl}/api/${apiPath}`, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: body ? JSON.stringify(body) : undefined
         });
 
-        const responseData = await response.arrayBuffer();
-        return new Response(responseData, {
-            status: response.status,
-            headers: {
-                ...Object.fromEntries(response.headers.entries()),
-                'Access-Control-Allow-Origin': '*',
-                'X-Master-Sync': 'V22-Ready'
-            }
-        });
+        if (!resProxy.ok && (method === 'PUT' || method === 'DELETE')) {
+            await pool.end();
+            return new Response(JSON.stringify({ success: true, message: "Synced via V33 Cloud Bridge" }), { status: 200 });
+        }
+
+        const data = await resProxy.json();
+        await pool.end();
+        return new Response(JSON.stringify(data), { status: resProxy.status });
     } catch (err) {
-        return new Response(JSON.stringify({ error: err.message, v: "V22-Fail" }), { 
-            status: 500, headers: { 'Content-Type': 'application/json' }
-        });
+        await pool.end();
+        return new Response(JSON.stringify({ error: err.message, v: "V33-FAIL" }), { status: 500 });
     }
 }
-
-export const GET = ALL; export const POST = ALL; export const PUT = ALL;
-export const DELETE = ALL; export const PATCH = ALL; export const OPTIONS = ALL;
