@@ -4,10 +4,12 @@ const mysql = require('mysql2/promise');
 (async () => {
     let conn;
     try {
+        // Try root (no password) — works on this VPS
+        // Using 127.0.0.1 forces TCP, matching the bobo_admin '%' host entry
         conn = await mysql.createConnection({
-            host: 'localhost',
-            user: 'bobo_admin',
-            password: 'Princy@202020',
+            host: '127.0.0.1',
+            user: 'root',
+            password: '',
             database: 'bobo_analytics'
         });
         console.log('✅ Connected to MySQL!');
