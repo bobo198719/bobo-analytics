@@ -367,18 +367,19 @@ import "../../styles/restaurant.css";
       let succeeded = 0;
       for (const item of selected) {
         try {
-          await fetch('/api/v2/restaurant/menu', {
+          const res = await fetch('/api/v2/restaurant/menu', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: item.name, price: item.price, category: item.category, type: item.type, image_url: item.image_url })
           });
-          succeeded++;
-        } catch(e) { /* skip */ }
+          if (res.ok) succeeded++;
+          else console.error('Failed to import:', item.name, await res.text());
+        } catch(e) { console.error('Import error:', e); }
         done++;
         const pct = Math.round((done / selected.length) * 100);
         bar.style.width = pct + '%';
         status.textContent = `Importing ${done}/${selected.length} · ${item.name}`;
-        await new Promise(r => setTimeout(r, 120)); // Rate limit
+        await new Promise(r => setTimeout(r, 200)); // Rate limit 
       }
 
       status.textContent = `✅ Imported ${succeeded}/${selected.length} items to Menu Hub!`;
