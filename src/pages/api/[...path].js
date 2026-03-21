@@ -42,11 +42,17 @@ export async function ALL({ request, params }) {
             ]), { status: 200, headers: {'Content-Type': 'application/json'} });
         }
         
-        // 2. Menu Recovery (MUST BE ARRAY)
+        // 2. Menu Recovery (V59 - Static 500 Matrix)
         if (pathname.includes('/menu')) {
-            return new Response(JSON.stringify([
-                {id: 1, name: "Emergency Menu", price: 0, category: "System", image_url: ""}
-            ]), { status: 200, headers: {'Content-Type': 'application/json'} });
+            try {
+                // Dynamically import to ensure packaging
+                const menuItems = (await import('../../data/restaurant_menu.json')).default;
+                return new Response(JSON.stringify(menuItems), { status: 200, headers: {'Content-Type': 'application/json'} });
+            } catch(e) {
+                return new Response(JSON.stringify([
+                    {id: 1, name: "Emergency Matrix Down", price: 0, category: "System", image_url: ""}
+                ]), { status: 200, headers: {'Content-Type': 'application/json'} });
+            }
         }
 
         // 3. Orders/KDS Recovery
