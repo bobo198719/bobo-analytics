@@ -107,17 +107,25 @@ export default function WaiterDashboard() {
 
               <div className="p-6 flex-1 space-y-4">
                 <div className="space-y-2">
-                  {order.items?.map((item, i) => (
-                    <div key={i} className="flex justify-between items-start gap-4 p-3 bg-black/20 rounded-2xl border border-white/5">
-                      <div>
-                        <p className="text-[11px] font-black uppercase italic text-white/80">{item.menu_name} <span className="text-orange-500">×{item.quantity}</span></p>
-                        {item.special_instructions && (
-                          <p className="text-[9px] text-rose-400 font-bold italic mt-1 leading-relaxed">↳ "{item.special_instructions}"</p>
-                        )}
+                  {(() => {
+                    let parsedItems = [];
+                    try {
+                      parsedItems = typeof order.items === 'string' ? JSON.parse(order.items) : (order.items || []);
+                    } catch(e) {}
+                    return parsedItems.map((item, i) => (
+                      <div key={i} className="flex justify-between items-start gap-4 p-3 bg-black/20 rounded-2xl border border-white/5">
+                        <div>
+                          <p className="text-[11px] font-black uppercase italic text-white/80">
+                            {item.menu_name || item.name || `Item #${item.menu_item_id || '?'}`} <span className="text-orange-500">×{item.quantity}</span>
+                          </p>
+                          {item.special_instructions && (
+                            <p className="text-[9px] text-rose-400 font-bold italic mt-1 leading-relaxed">↳ "{item.special_instructions}"</p>
+                          )}
+                        </div>
+                        <p className="text-[10px] font-black text-white/40">₹{item.total || (item.price ? item.price * item.quantity : 0)}</p>
                       </div>
-                      <p className="text-[10px] font-black text-white/40">₹{item.total}</p>
-                    </div>
-                  ))}
+                    ));
+                  })()}
                 </div>
 
                 {order.special_notes && (
