@@ -99,6 +99,18 @@ const Tables = () => {
       </header>
 
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 pb-20">
+        {tableData.length === 0 && (
+          <div 
+            onClick={async () => {
+              const res = await fetch('/api/v28-force-seed');
+              if (res.ok) fetchTables();
+            }}
+            className="col-span-full py-20 border-4 border-dashed border-orange-500/20 rounded-[48px] text-center cursor-pointer hover:bg-orange-500/5 transition-all group"
+          >
+            <p className="text-orange-400 font-black uppercase italic tracking-widest text-sm mb-2 group-hover:scale-110 transition-transform">Emergency Floor Reset</p>
+            <p className="text-white/20 text-[10px] font-black uppercase tracking-widest italic">Click here to re-provision Tables 01-05</p>
+          </div>
+        )}
         {tableData.map((table) => {
           const config = getStatusConfig(table.status);
           const qrUrl = `${window.location.origin}/order/${table.table_number}`;
