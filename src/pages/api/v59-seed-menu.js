@@ -4,7 +4,7 @@ export async function GET({ request }) {
     const conn = await mysql.createConnection({
         host: 'srv1449576.hstgr.cloud',
         user: 'bobo_admin',
-        password: 'BoboPass2026!',
+        password: 'Princy@202020',
         database: 'bobo_analytics',
         port: 3306,
         connectTimeout: 20000
