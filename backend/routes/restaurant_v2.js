@@ -164,4 +164,43 @@ router.get('/dashboard', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+router.get('/seed', async (req, res) => {
+    const categories = ['Starters', 'Mains', 'Desserts', 'Beverages', 'Chef Specials'];
+    const adjectives = ['Truffle-Infused', 'Wood-Fired', 'Aged', 'Artisanal', 'Crispy', 'Braised', 'Aromatic', 'Charred', 'Glazed', 'Herb-Crusted'];
+    const proteins = ['Wagyu Beef', 'Salmon', 'Pork Belly', 'Chicken', 'Duck', 'Mushroom Risotto', 'Ribeye', 'Lobster', 'Prawns', 'Tofu'];
+    const styles = ['Risotto', 'Medallion', 'Chop', 'Tail', 'Breast', 'Fillet', 'Skewer', 'Tartare'];
+    const sides = ['with Asparagus', 'over Polenta', 'with Mash', 'in Red Wine Jus', 'with Carrots', 'and Caviar', 'in Citrus Reduction'];
+    const desserts = ['Lava Cake', 'Tiramisu', 'Cheesecake', 'Panna Cotta', 'Souffle'];
+    const bevs = ['Mojito', 'Martini', 'Margarita', 'Craft Beer', 'Aged Wine', 'Matcha'];
+    const r = arr => arr[Math.floor(Math.random() * arr.length)];
+
+    try {
+        const names = [], cats = [], types = [], prices = [], gsts = [], images = [];
+        for (let i = 0; i < 500; i++) {
+            let cat = r(categories), name = '', type = 'veg';
+            if (cat === 'Desserts') name = `${r(adjectives)} ${r(desserts)}`;
+            else if (cat === 'Beverages') name = `${r(adjectives)} ${r(bevs)}`;
+            else {
+                name = `${r(adjectives)} ${r(proteins)} ${r(styles)} ${r(sides)}`;
+                if (/Beef|Chicken|Pork|Duck/.test(name)) type = 'non-veg';
+            }
+            names.push(`${name} (#${1000 + i})`);
+            cats.push(cat);
+            types.push(type);
+            prices.push(Math.floor(Math.random() * 40) * 5 + 100);
+            gsts.push(5);
+            images.push('https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400');
+        }
+
+        await pg.query(`
+            INSERT INTO menu_items (name, category, type, price, gst_percent, image_url)
+            SELECT * FROM UNNEST($1::text[], $2::text[], $3::text[], $4::decimal[], $5::decimal[], $6::text[])
+        `, [names, cats, types, prices, gsts, images]);
+
+        res.json({ success: true, count: 500, message: '500 Premium Menu Items Seeded Successfully! 🎉' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 module.exports = router;
