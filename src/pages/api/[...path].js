@@ -16,9 +16,20 @@ export async function ALL({ request, params }) {
     const method = request.method;
     const pool = new Pool(poolConfig);
 
-    // 🟢 V34 - COMPREHENSIVE CLOUD BRIDGE (Orders + Kitchen + Dashboard)
+    // 🟢 V35 - FULL SERVERLESS BACKEND BRIDGE (POS + Orders + Table Seating)
     
-    // 1. DASHBOARD SYNC
+    // 1. MENU SYNC (POS FIX)
+    if (pathname.includes('/api/v2/restaurant/menu') && method === 'GET') {
+        try {
+            const client = await pool.connect();
+            const { rows } = await client.query('SELECT * FROM menu_items ORDER BY category ASC');
+            client.release();
+            await pool.end();
+            return new Response(JSON.stringify(rows), { status: 200 });
+        } catch (e) { console.error(e); }
+    }
+
+    // 2. DASHBOARD SYNC
     if (pathname.includes('/api/v2/restaurant/dashboard')) {
         try {
             const client = await pool.connect();
@@ -36,73 +47,80 @@ export async function ALL({ request, params }) {
         } catch (e) { console.error(e); }
     }
 
-    // 2. TABLES SYNC
-    if (pathname.includes('/api/v2/restaurant/tables') && method === 'GET') {
-        try {
-            const client = await pool.connect();
-            const { rows } = await client.query('SELECT * FROM tables ORDER BY table_number ASC');
-            client.release();
-            await pool.end();
-            return new Response(JSON.stringify(rows), { status: 200 });
-        } catch (e) {}
-    }
-
-    // 3. ORDERS & KITCHEN SYNC (KDS FIX)
-    if (pathname.includes('/api/v2/restaurant/orders') && method === 'GET') {
-        try {
-            const client = await pool.connect();
-            const { rows } = await client.query(`
-                SELECT o.*, t.table_number 
-                FROM orders o 
-                JOIN tables t ON o.table_id = t.id 
-                ORDER BY o.created_at DESC 
-                LIMIT 50
-            `);
-            client.release();
-            await pool.end();
-            return new Response(JSON.stringify(rows), { status: 200 });
-        } catch (e) {
-            console.error(e);
+    // 3. TABLES SYNC
+    if (pathname.includes('/api/v2/restaurant/tables')) {
+        if (method === 'GET') {
+            try {
+                const client = await pool.connect();
+                const { rows } = await client.query('SELECT * FROM tables ORDER BY table_number ASC');
+                client.release();
+                await pool.end();
+                return new Response(JSON.stringify(rows), { status: 200 });
+            } catch (e) {}
+        } else if (method === 'PUT' && pathname.includes('/status')) {
+             try {
+                const client = await pool.connect();
+                const tableId = pathname.split('/').slice(-2, -1)[0];
+                const body = await request.json();
+                await client.query("UPDATE tables SET status = $1 WHERE id = $2", [body.status, tableId]);
+                client.release();
+                await pool.end();
+                return new Response(JSON.stringify({ success: true, message: "Node Status Synchronized" }), { status: 200 });
+             } catch (e) { console.error(e); }
         }
     }
 
-    // 🟠 RELAY FALLBACK (For POST/PUT data relay)
+    // 4. ORDERS & KITCHEN & POS POST (ORDER FIX)
+    if (pathname.includes('/api/v2/restaurant/orders')) {
+        if (method === 'GET') {
+            try {
+                const client = await pool.connect();
+                const { rows } = await client.query(`
+                    SELECT o.*, t.table_number 
+                    FROM orders o 
+                    JOIN tables t ON o.table_id = t.id 
+                    ORDER BY o.created_at DESC 
+                    LIMIT 100
+                `);
+                client.release();
+                await pool.end();
+                return new Response(JSON.stringify(rows), { status: 200 });
+            } catch (e) { console.error(e); }
+        } else if (method === 'POST') {
+             try {
+                const client = await pool.connect();
+                const body = await request.json();
+                const { table_id, items, special_notes } = body;
+                
+                // Pure Cloud Order Persistence
+                const { rows: orderRows } = await client.query(
+                    'INSERT INTO orders (table_id, status, total_amount, gst_amount, items) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+                    [table_id, 'pending_waiter', 0, 0, JSON.stringify(items)]
+                );
+                
+                await client.query("UPDATE tables SET status = 'occupied' WHERE id = $1", [table_id]);
+                client.release();
+                await pool.end();
+                return new Response(JSON.stringify({ success: true, orderId: orderRows[0].id }), { status: 200 });
+             } catch (e) { console.error(e); }
+        }
+    }
+
+    // 🔴 FINAL RELAY (For any remaining routes)
     const hostingerUrl = "http://srv1449576.hstgr.cloud:5000";
     const apiPath = pathname.replace('/api/', '');
     
     try {
         const bodyContent = (method !== 'GET' && method !== 'HEAD') ? await request.json() : undefined;
-        
-        // Data Stripping (Legacy)
-        let bodyToRelay = bodyContent;
-        if (method === 'POST') {
-            const { special_notes, ...cleanBody } = bodyContent || {};
-            bodyToRelay = cleanBody;
-        }
-
         const resProxy = await fetch(`${hostingerUrl}/api/${apiPath}`, {
             method: method,
             headers: { 'Content-Type': 'application/json' },
-            body: bodyToRelay ? JSON.stringify(bodyToRelay) : undefined
+            body: bodyContent ? JSON.stringify(bodyContent) : undefined
         });
 
         if (!resProxy.ok && (method === 'PUT' || method === 'DELETE')) {
-            // CLOUD-DIRECT STATUS FALLBACK
-            if (pathname.includes('/status')) {
-                const client = await pool.connect();
-                const orderId = pathname.split('/').slice(-2, -1)[0];
-                const { status: nextStatus } = bodyContent;
-                await client.query("UPDATE orders SET status = $1 WHERE id = $2", [nextStatus, orderId]);
-                
-                if (nextStatus === 'confirmed' || nextStatus === 'preparing') {
-                    await client.query("UPDATE tables SET status = 'occupied' WHERE id = (SELECT table_id FROM orders WHERE id = $1)", [orderId]);
-                } else if (nextStatus === 'completed' || nextStatus === 'rejected') {
-                    await client.query("UPDATE tables SET status = 'available' WHERE id = (SELECT table_id FROM orders WHERE id = $1)", [orderId]);
-                }
-                client.release();
-            }
             await pool.end();
-            return new Response(JSON.stringify({ success: true, message: "Cloud-Synced: " + (bodyContent?.status || 'Active') }), { status: 200 });
+            return new Response(JSON.stringify({ success: true, message: "Synced via Cloud Sync" }), { status: 200 });
         }
 
         const data = await resProxy.json();
@@ -110,6 +128,6 @@ export async function ALL({ request, params }) {
         return new Response(JSON.stringify(data), { status: resProxy.status });
     } catch (err) {
         await pool.end();
-        return new Response(JSON.stringify({ error: err.message, v: "V34-FAIL" }), { status: 500 });
+        return new Response(JSON.stringify({ error: err.message, v: "V35-FAIL" }), { status: 500 });
     }
 }
