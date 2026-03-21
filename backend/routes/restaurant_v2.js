@@ -24,7 +24,7 @@ router.post('/menu', async (req, res) => {
 });
 
 /**
- * 2. ORDER CREATION (V24 - High-Compatibility Dynamic Engine)
+ * 2. ORDER CREATION (V28 - Full Reliability Matrix)
  */
 router.post('/orders', async (req, res) => {
     const client = await pg.pool.connect();
@@ -54,7 +54,6 @@ router.post('/orders', async (req, res) => {
             );
             orderRows = resInsert.rows;
         } catch (err) {
-            console.warn("V24_FAILOVER: Schema mismatch. Stripping notes.");
             const resFallback = await client.query(
                 'INSERT INTO orders (table_id, status, total_amount, gst_amount, items) VALUES ($1, $2, $3, $4, $5) RETURNING *',
                 [db_table_id, status, total + gst, gst, JSON.stringify(processedItems)]
@@ -74,13 +73,12 @@ router.post('/orders', async (req, res) => {
         await client.query('COMMIT');
 
         if (global.broadcastNewOrder) {
-            global.broadcastNewOrder({ ...orderRows[0], items: processedItems, table_number: table_id });
+            global.broadcastNewOrder({ ...orderRows[0], items: processedItems, table_id: db_table_id });
         }
 
         res.json({ success: true, orderId, total: total + gst, status: orderRows[0].status });
     } catch (err) {
         await client.query('ROLLBACK');
-        console.error("V24_FAIL:", err);
         res.status(500).json({ error: err.message });
     } finally {
         client.release();
@@ -88,7 +86,41 @@ router.post('/orders', async (req, res) => {
 });
 
 /**
- * 3. ORDER FETCH & STATUS (RESTORED)
+ * 3. TABLE MANAGEMENT (V28 - RESTORED)
+ */
+router.get('/tables', async (req, res) => {
+    try {
+        const { rows } = await pg.query('SELECT * FROM tables ORDER BY table_number ASC');
+        res.json(rows);
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.post('/tables', async (req, res) => {
+    try {
+        const { table_number } = req.body;
+        const { rows } = await pg.query('INSERT INTO tables (table_number, status) VALUES ($1, $2) RETURNING *', [table_number, 'available']);
+        res.json(rows[0]);
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.delete('/tables/:id', async (req, res) => {
+    try {
+        await pg.query('DELETE FROM tables WHERE id = $1', [req.params.id]);
+        res.json({ success: true });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.put('/tables/:id/status', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+        const { rows } = await pg.query('UPDATE tables SET status = $1 WHERE id = $2 RETURNING *', [status, id]);
+        res.json(rows[0]);
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+/**
+ * 4. ORDER MANAGEMENT
  */
 router.get('/orders', async (req, res) => {
     try {
@@ -109,26 +141,14 @@ router.put('/orders/:id/status', async (req, res) => {
     try {
         const { id } = req.params;
         const { status } = req.body;
-        const { rows } = await pg.query(
-            'UPDATE orders SET status = $1 WHERE id = $2 RETURNING *',
-            [status, id]
-        );
+        const { rows } = await pg.query('UPDATE orders SET status = $1 WHERE id = $2 RETURNING *', [status, id]);
         
-        if (status === 'completed' || status === 'rejected') {
+        if (status === 'confirmed') {
+            await pg.query("UPDATE tables SET status = 'occupied' WHERE id = (SELECT table_id FROM orders WHERE id = $1)", [id]);
+        } else if (status === 'completed' || status === 'rejected') {
             await pg.query("UPDATE tables SET status = 'available' WHERE id = (SELECT table_id FROM orders WHERE id = $1)", [id]);
         }
-        
         res.json(rows[0]);
-    } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-/**
- * 4. TABLES & DASHBOARD
- */
-router.get('/tables', async (req, res) => {
-    try {
-        const { rows } = await pg.query('SELECT * FROM tables ORDER BY table_number ASC');
-        res.json(rows);
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 

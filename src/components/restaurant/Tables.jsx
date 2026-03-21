@@ -59,13 +59,23 @@ const Tables = () => {
     } catch (err) { console.error(err); }
   };
 
-  const getStatusConfig = (status) => {
-    switch (status) {
-      case 'available': return { color: 'from-emerald-400 to-emerald-600', shadow: 'shadow-emerald-500/20', label: 'Available' };
-      case 'occupied': return { color: 'from-rose-400 to-rose-600', shadow: 'shadow-rose-500/20', label: 'Occupied' };
-      case 'ordered': return { color: 'from-orange-400 to-orange-600', shadow: 'shadow-orange-500/20', label: 'Ordered' };
-      default: return { color: 'from-white/10 to-white/20', shadow: '', label: 'Unknown' };
-    }
+  const deleteTable = async (id) => {
+    if (!confirm("Are you sure you want to delete this table?")) return;
+    try {
+        await fetch(`/api/v2/restaurant/tables/${id}`, { method: 'DELETE' });
+        fetchTables();
+    } catch (err) { console.error(err); }
+  };
+
+  const setTableStatus = async (id, status) => {
+    try {
+        await fetch(`/api/v2/restaurant/tables/${id}/status`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status })
+        });
+        fetchTables();
+    } catch (err) { console.error(err); }
   };
 
   return (
@@ -93,7 +103,15 @@ const Tables = () => {
           const qrImgSrc = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrUrl)}&bgcolor=ffffff&color=000000&margin=20`;
           return (
             <div key={table.id} className="group relative bg-white/5 border border-white/10 rounded-[48px] overflow-hidden shadow-2xl transition-all hover:border-orange-500/30 hover:bg-white/[0.07]">
-              {/* Main clickable area */}
+              
+              {/* Delete Button (Top Right) */}
+              <button 
+                onClick={(e) => { e.stopPropagation(); deleteTable(table.id); }}
+                className="absolute top-6 right-6 w-10 h-10 bg-black/40 border border-white/10 rounded-full flex items-center justify-center text-white/20 hover:text-rose-500 hover:bg-rose-500/10 hover:border-rose-500/30 transition-all z-20"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+
               <div
                 onClick={() => {
                   localStorage.setItem('selected_table_id', table.id);
@@ -108,9 +126,21 @@ const Tables = () => {
                       <p className="text-3xl font-black italic tracking-tighter text-white drop-shadow-lg">{table.table_number}</p>
                    </div>
                 </div>
-                <p className={`mt-6 text-[10px] font-black uppercase tracking-[0.3em] italic ${table.status === 'available' ? 'text-emerald-400' : (table.status === 'occupied' ? 'text-rose-400' : 'text-orange-400')}`}>
-                  {config.label}
-                </p>
+                <div className="flex flex-col items-center mt-6">
+                  <p className={`text-[10px] font-black uppercase tracking-[0.3em] italic ${table.status === 'available' ? 'text-emerald-400' : (table.status === 'occupied' ? 'text-rose-400' : 'text-orange-400')}`}>
+                    {config.label}
+                  </p>
+                  
+                  {/* Quick Action Toggle */}
+                  {table.status === 'occupied' && (
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setTableStatus(table.id, 'available'); }}
+                      className="mt-3 px-4 py-1.5 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase italic text-white/40 hover:text-emerald-400 hover:border-emerald-500/30 transition-all"
+                    >
+                      Clear Table
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* QR Button */}
