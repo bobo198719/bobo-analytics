@@ -261,7 +261,7 @@ const POS = () => {
                            const newTableId = e.target.value;
                            setSelectedTable(newTableId);
                            localStorage.setItem('selected_table_id', newTableId);
-                           const t = tables.find(t => t.id === newTableId);
+                           const t = tables.find(t => String(t.id) === newTableId);
                            if (t) {
                                 setSelectedTableNum(t.table_number);
                                 localStorage.setItem('selected_table_number', t.table_number);
