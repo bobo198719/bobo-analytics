@@ -1,3 +1,5 @@
+import menuItems from '../../data/restaurant_menu.json';
+
 export async function ALL({ request, params }) {
     const url = new URL(request.url);
     const pathname = url.pathname;
@@ -45,8 +47,6 @@ export async function ALL({ request, params }) {
         // 2. Menu Recovery (V59 - Static 500 Matrix)
         if (pathname.includes('/menu')) {
             try {
-                // Dynamically import to ensure packaging
-                const menuItems = (await import('../../data/restaurant_menu.json')).default;
                 return new Response(JSON.stringify(menuItems), { status: 200, headers: {'Content-Type': 'application/json'} });
             } catch(e) {
                 return new Response(JSON.stringify([
