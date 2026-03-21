@@ -4,10 +4,9 @@ const mysql = require('mysql2/promise');
 (async () => {
     let conn;
     try {
-        // Try root (no password) — works on this VPS
-        // Using 127.0.0.1 forces TCP, matching the bobo_admin '%' host entry
+        // Use Unix socket — same auth method as `mysql -u root` from shell
         conn = await mysql.createConnection({
-            host: '127.0.0.1',
+            socketPath: '/run/mysqld/mysqld.sock',
             user: 'root',
             password: '',
             database: 'bobo_analytics'
