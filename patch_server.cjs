@@ -14,14 +14,49 @@ const rPool = mysql2.createPool({
     user: 'root', password: '', database: 'bobo_analytics', connectionLimit: 5
 });
 
+app.get('/api/v2/restaurant/menu', async (req, res) => {
+    try { const [r] = await rPool.execute('SELECT * FROM menu_items ORDER BY category ASC'); res.json(r); }
+    catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/v2/restaurant/menu', async (req, res) => {
+    try {
+        const { name, category, type, price, gst_percent, image_url } = req.body;
+        const [result] = await rPool.execute(
+            'INSERT INTO menu_items (name, category, type, price, gst_percent, image_url) VALUES (?, ?, ?, ?, ?, ?)',
+            [name, category, type, price, gst_percent || 5, image_url || '']
+        );
+        const [rows] = await rPool.execute('SELECT * FROM menu_items WHERE id = ?', [result.insertId]);
+        res.json(rows[0]);
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 app.get('/api/v2/restaurant/tables', async (req, res) => {
     try { const [r] = await rPool.execute('SELECT * FROM restaurant_tables ORDER BY table_number+0 ASC'); res.json(r); }
     catch(e) { res.status(500).json({ error: e.message }); }
 });
 
-app.get('/api/v2/restaurant/menu', async (req, res) => {
-    try { const [r] = await rPool.execute('SELECT * FROM menu_items ORDER BY category ASC'); res.json(r); }
-    catch(e) { res.status(500).json({ error: e.message }); }
+app.post('/api/v2/restaurant/tables', async (req, res) => {
+    try {
+        const { table_number } = req.body;
+        const [result] = await rPool.execute('INSERT INTO restaurant_tables (table_number, status) VALUES (?, ?)', [table_number, 'available']);
+        const [rows] = await rPool.execute('SELECT * FROM restaurant_tables WHERE id = ?', [result.insertId]);
+        res.json(rows[0]);
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/v2/restaurant/tables/:id', async (req, res) => {
+    try { await rPool.execute('DELETE FROM restaurant_tables WHERE id = ?', [req.params.id]); res.json({ success: true }); }
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/v2/restaurant/tables/:id/status', async (req, res) => {
+    try {
+        const { status } = req.body;
+        await rPool.execute('UPDATE restaurant_tables SET status = ? WHERE id = ?', [status, req.params.id]);
+        const [rows] = await rPool.execute('SELECT * FROM restaurant_tables WHERE id = ?', [req.params.id]);
+        res.json(rows[0]);
+    } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.post('/api/v2/restaurant/orders', async (req, res) => {
@@ -91,27 +126,31 @@ app.get('/api/v2/restaurant/dashboard', async (req, res) => {
     } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
-console.log('🍽️  Restaurant V2 MySQL Routes → ACTIVE on port 5000');
+console.log('🍽️  Restaurant V3 MySQL & Management Routes → ACTIVE on port 5000');
 // ═══════════════════════════════════════════════════════
 
 `;
 
 const content = fs.readFileSync(serverPath, 'utf8');
 
-// Don't double-patch
+// If already V2 patched, replace it with V3
 if (content.includes('RESTAURANT V2 — MySQL')) {
-    console.log('⚠️  Already patched! Skipping.');
-    process.exit(0);
+    console.log('🔄 Upgrading existing V2 patch to V3...');
+    const startIdx = content.indexOf('// ═══════════════════════════════════════════════════════');
+    const endIdx = content.lastIndexOf('// ═══════════════════════════════════════════════════════') + 59;
+    const upgraded = content.slice(0, startIdx) + newRoutes + content.slice(endIdx);
+    fs.writeFileSync(serverPath, upgraded, 'utf8');
+    console.log('✅ /root/bobo-api/server.js upgraded to Restaurant V3!');
+} else {
+    // Find last route, inject before app.listen
+    const listenPos = content.lastIndexOf('app.listen');
+    if (listenPos === -1) {
+        console.error('❌ Could not find app.listen in server.js');
+        process.exit(1);
+    }
+    const patched = content.slice(0, listenPos) + newRoutes + content.slice(listenPos);
+    fs.writeFileSync(serverPath, patched, 'utf8');
+    console.log('✅ /root/bobo-api/server.js patched with Restaurant V3 MySQL routes!');
 }
 
-// Find last route, inject before app.listen
-const listenPos = content.lastIndexOf('app.listen');
-if (listenPos === -1) {
-    console.error('❌ Could not find app.listen in server.js');
-    process.exit(1);
-}
-
-const patched = content.slice(0, listenPos) + newRoutes + content.slice(listenPos);
-fs.writeFileSync(serverPath, patched, 'utf8');
-console.log('✅ /root/bobo-api/server.js patched with Restaurant V2 MySQL routes!');
-console.log('🔁 Run: npm install mysql2 --prefix /root/bobo-api && pm2 restart all');
+console.log('🔁 Run: pm2 restart all');
