@@ -134,7 +134,16 @@ const KDS = () => {
         </header>
 
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 pb-20">
-          {orders.length === 0 ? (
+          {error ? (
+            <div className="col-span-full flex flex-col items-center justify-center min-h-[600px] text-center p-6 mt-16">
+              <div className="text-gray-500 mb-2 font-mono text-[10px] tracking-widest opacity-30">CLOUD_ENGINE_IDENTITY: V38_ACTIVE</div>
+              <div className="bg-red-500/10 p-4 rounded-full mb-6 relative">
+                <AlertCircle className="w-12 h-12 text-red-500" />
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 border-2 border-slate-950 rounded-full animate-ping" title="Cloud Failover Ready"></div>
+              </div>
+              <p className="font-black italic uppercase tracking-[0.3em] text-xs">No Active Pipeline Data</p>
+            </div>
+          ) : orders.length === 0 ? (
             <div className="col-span-full h-80 flex flex-col items-center justify-center opacity-20 bg-white/5 border-2 border-dashed border-white/10 rounded-[48px]">
                 <ChefHat className="w-16 h-16 mb-4" />
                 <p className="font-black italic uppercase tracking-[0.3em] text-xs">No Active Pipeline Data</p>
