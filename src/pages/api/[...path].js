@@ -1,6 +1,8 @@
 import { Pool } from 'pg';
 
-const connectionString = "postgresql://bobo:Princy@20201987@srv1449576.hstgr.cloud:5432/restaurant_crm?sslmode=no-verify";
+// V43 - MASTER ENCODING FIX (Password Shield)
+// The '@' in the password must be URL-encoded as '%40' for the connection to work.
+const connectionString = "postgresql://bobo:Princy%4020201987@srv1449576.hstgr.cloud:5432/restaurant_crm?sslmode=no-verify";
 
 const pool = new Pool({
     connectionString,
@@ -14,15 +16,14 @@ export async function ALL({ request, params }) {
     const pathname = url.pathname;
     const method = request.method;
 
-    // 🟢 V41 - THE INDESTRUCTIBLE TABLES FIX (AUTO-SEEDING)
+    // 🟢 V43 - COMPREHENSIVE CLOUD BRIDGE
     
-    // 1. TABLES SYNC (Master Recovery)
+    // 1. TABLES SYNC
     if (pathname.includes('/api/v2/restaurant/tables')) {
         if (method === 'GET') {
             try {
                 let { rows } = await pool.query('SELECT * FROM tables ORDER BY table_number ASC');
                 
-                // 🆘 EMERGENCY AUTO-SEED: If the floor plan is blank, install default tables
                 if (rows.length === 0) {
                     await pool.query("INSERT INTO tables (table_number, status) VALUES ('1','available'), ('2','available'), ('3','available'), ('4','available'), ('5','available')");
                     const { rows: newRows } = await pool.query('SELECT * FROM tables ORDER BY table_number ASC');
@@ -31,8 +32,8 @@ export async function ALL({ request, params }) {
                 
                 return new Response(JSON.stringify(rows), { status: 200, headers: {'Content-Type': 'application/json'} });
             } catch (e) { 
-                // DB Fail Fallback (Hardware Mode)
-                return new Response(JSON.stringify([{id:1, table_number:'1', status:'available'}]), { status: 200 });
+                console.error("V43_TABLES_DB_ERR:", e.message);
+                return new Response(JSON.stringify([{id:'v1', table_number:'1', status:'available'}]), { status: 200 });
             }
         }
     }
@@ -43,25 +44,12 @@ export async function ALL({ request, params }) {
             const { rows } = await pool.query('SELECT * FROM menu_items ORDER BY id DESC');
             return new Response(JSON.stringify(rows), { status: 200 });
         } catch (e) {
+            console.error("V43_MENU_DB_ERR:", e.message);
             return new Response(JSON.stringify([{id:1, name:'Emergency Menu', price:0, category:'System'}]), { status: 200 });
         }
     }
 
-    // 3. DASHBOARD SYNC
-    if (pathname.includes('/api/v2/restaurant/dashboard')) {
-        try {
-            const { rows: todayRows } = await pool.query("SELECT * FROM orders WHERE created_at::date = CURRENT_DATE");
-            const { rows: tableCount } = await pool.query("SELECT COUNT(*) FROM tables WHERE status = 'occupied'");
-            return new Response(JSON.stringify({
-                total_revenue: todayRows.length > 0 ? todayRows.reduce((acc, o) => acc + parseFloat(o.total_amount), 0).toFixed(2) : "0.00",
-                orders_today: todayRows.length || 0,
-                active_tables: parseInt(tableCount[0]?.count || 0),
-                kitchen_queue: 0
-            }), { status: 200 });
-        } catch (e) { console.error(e); }
-    }
-
-    // 4. ORDERS & STATUS RELAY
+    // 🔴 RELAY FALLBACK
     const hostingerUrl = "http://srv1449576.hstgr.cloud:5000";
     const apiPath = pathname.replace('/api/', '');
     
