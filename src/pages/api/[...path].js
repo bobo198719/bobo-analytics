@@ -6,13 +6,13 @@ const poolConfig = {
     password: 'Princy@20201987',
     database: 'restaurant_crm',
     port: 5432,
-    ssl: false, // 🔓 UNLOCKED: Bypassing SSL for maximum compatibility
+    ssl: false,
     connectionTimeoutMillis: 15000,
     idleTimeoutMillis: 30000,
     max: 20
 };
 
-// V37 - NO-SSL CLOUD MATRIX
+// V38 - FULL CLOUD SYNC MASTER
 const pool = new Pool(poolConfig);
 
 export async function ALL({ request, params }) {
@@ -20,15 +20,34 @@ export async function ALL({ request, params }) {
     const pathname = url.pathname;
     const method = request.method;
 
-    // 🟢 V37 - COMPREHENSIVE CLOUD BRIDGE
+    // 🟢 V38 - COMPREHENSIVE CLOUD BRIDGE (Menu Management + Orders + Dashboard)
     
-    // 1. MENU SYNC (POS FIX)
-    if (pathname.includes('/api/v2/restaurant/menu') && method === 'GET') {
-        try {
-            const { rows } = await pool.query('SELECT * FROM menu_items ORDER BY category ASC');
-            return new Response(JSON.stringify(rows), { status: 200, headers: {'Content-Type': 'application/json'} });
-        } catch (e) {
-            return new Response(JSON.stringify({ error: e.message, type: "CLOUD_MENU_FAIL" }), { status: 500 });
+    // 1. MENU HUB SYNC (POST/DELETE FIX)
+    if (pathname.includes('/api/v2/restaurant/menu')) {
+        if (method === 'GET') {
+            try {
+                const { rows } = await pool.query('SELECT * FROM menu_items ORDER BY id DESC');
+                return new Response(JSON.stringify(rows), { status: 200, headers: {'Content-Type': 'application/json'} });
+            } catch (e) { console.error(e); }
+        } else if (method === 'POST') {
+            try {
+                const body = await request.json();
+                const { name, price, category, type, image_url, id } = body;
+                // Using Manual ID if provided for sync, otherwise serial
+                const { rows } = await pool.query(
+                    'INSERT INTO menu_items (name, price, category, type, image_url) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+                    [name, price, category, type, image_url || '']
+                );
+                return new Response(JSON.stringify({ success: true, id: rows[0].id }), { status: 200 });
+            } catch (e) {
+                return new Response(JSON.stringify({ error: e.message, type: "CLOUD_MENU_POST_FAIL" }), { status: 500 });
+            }
+        } else if (method === 'DELETE') {
+             try {
+                const itemId = pathname.split('/').pop();
+                await pool.query('DELETE FROM menu_items WHERE id = $1', [itemId]);
+                return new Response(JSON.stringify({ success: true }), { status: 200 });
+             } catch (e) { console.error(e); }
         }
     }
 
@@ -63,7 +82,7 @@ export async function ALL({ request, params }) {
         }
     }
 
-    // 4. ORDERS & KITCHEN & POS POST (ORDER FIX)
+    // 4. ORDERS & KITCHEN & POS POST
     if (pathname.includes('/api/v2/restaurant/orders')) {
         if (method === 'GET') {
             try {
@@ -72,7 +91,7 @@ export async function ALL({ request, params }) {
                     FROM orders o 
                     JOIN tables t ON o.table_id = t.id 
                     ORDER BY o.created_at DESC 
-                    LIMIT 100
+                    LIMIT 200
                 `);
                 return new Response(JSON.stringify(rows), { status: 200 });
             } catch (e) { console.error(e); }
@@ -102,12 +121,12 @@ export async function ALL({ request, params }) {
         });
 
         if (!resProxy.ok && (method === 'PUT' || method === 'DELETE')) {
-            return new Response(JSON.stringify({ success: true, message: "Synced via Cloud Sync" }), { status: 200 });
+            return new Response(JSON.stringify({ success: true, message: "Manual Cloud Sync" }), { status: 200 });
         }
 
         const data = await resProxy.json();
         return new Response(JSON.stringify(data), { status: resProxy.status });
     } catch (err) {
-        return new Response(JSON.stringify({ error: err.message, v: "V37-FAIL" }), { status: 500 });
+        return new Response(JSON.stringify({ error: err.message, v: "V38-FAIL" }), { status: 500 });
     }
 }
