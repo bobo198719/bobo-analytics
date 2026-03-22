@@ -463,10 +463,10 @@ const { title = "Bobo Grocery OS" } = Astro.props;
                 <span>Home Bakers OS</span>
                 <span class="new-badge">NEW</span>
             </a>
-            
-            <!-- INSTALL APP BUTTON (Grocery Suite) -->
-            <div id="install-container" style="display: none; padding: 12px; margin-top: 20px; background: rgba(16, 185, 129, 0.1); border-radius: 16px; border: 1px dashed var(--primary);">
-                <span style="font-size: 0.65rem; color: var(--primary); font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 8px; text-align: center;">📲 Grocery App Ready</span>
+
+            <!-- INSTALL APP PORTAL (PERMANENTLY VISIBLE) -->
+            <div id="install-container" style="padding: 12px; margin-top: 20px; background: rgba(16, 185, 129, 0.1); border-radius: 16px; border: 1px dashed var(--primary); display: block;">
+                <span style="font-size: 0.65rem; color: var(--primary); font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 8px; text-align: center;">📲 Bobo Apps & APK Center</span>
                 <button id="btnInstall" class="nav-link" style="background: var(--primary); color: white; border: none; width: 100%; cursor: pointer; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     <span>Download App</span>
@@ -476,29 +476,28 @@ const { title = "Bobo Grocery OS" } = Astro.props;
 
         <script is:inline>
             let deferredPrompt;
-            const installContainer = document.getElementById('install-container');
             const btnInstall = document.getElementById('btnInstall');
 
             window.addEventListener('beforeinstallprompt', (e) => {
                 e.preventDefault();
                 deferredPrompt = e;
-                if (installContainer) installContainer.style.display = 'block';
+                console.log('✅ Software Install Ready');
             });
 
             if (btnInstall) {
                 btnInstall.addEventListener('click', async () => {
-                    if (!deferredPrompt) return;
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    console.log(`User response to the install prompt: ${outcome}`);
-                    deferredPrompt = null;
-                    if (installContainer) installContainer.style.display = 'none';
+                    if (deferredPrompt) {
+                        deferredPrompt.prompt();
+                        const { outcome } = await deferredPrompt.userChoice;
+                        deferredPrompt = null;
+                    } else {
+                        alert("App Installation Info:\n\n1. Mobile: Tap 'Install App' or 'Add to Home Screen' in browser menu.\n2. PC: Click the 'Install' icon ⊕ in URL bar.\n3. Already installed? Open it from your home screen!");
+                    }
                 });
             }
 
-            window.addEventListener('appinstalled', (evt) => {
-                console.log('✅ Grocery OS Software Installed Successfully.');
-        </div>
+            window.addEventListener('appinstalled', () => console.log('✅ Software Installed.'));
+        </script>
 
         <!-- AI Autopilot Widget -->
         <div class="autopilot-teaser">
@@ -509,45 +508,6 @@ const { title = "Bobo Grocery OS" } = Astro.props;
             <p>Predicting 15% stock surge for weekend.</p>
             <button class="teaser-btn">Manage Shop</button>
         </div>
-
-        <div class="flex flex-col gap-6 items-center">
-         <!-- INSTALL APP BUTTON (Retail Suite) -->
-         <div id="install-container" style="display: none; padding: 10px; background: rgba(79, 70, 229, 0.1); border-radius: 16px; border: 1px dashed #4f46e5; margin-bottom: 20px;">
-            <button id="btnInstall" class="p-3 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-600/20 hover:scale-110 transition-transform">
-               <i class="lucide-download text-lg"></i>
-            </button>
-         </div>
-
-         <button id="logout-btn" class="p-4 text-white/20 hover:text-rose-400 hover:bg-rose-400/10 rounded-2xl transition-all"><i class="lucide-log-out text-xl"></i></button>
-      </div>
-
-      <script is:inline>
-        let deferredPrompt;
-        const installContainer = document.getElementById('install-container');
-        const btnInstall = document.getElementById('btnInstall');
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            if (installContainer) installContainer.style.display = 'block';
-        });
-
-        if (btnInstall) {
-            btnInstall.addEventListener('click', async () => {
-                if (!deferredPrompt) return;
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                console.log(`User response to the install prompt: ${outcome}`);
-                deferredPrompt = null;
-                if (installContainer) installContainer.style.display = 'none';
-            });
-        }
-
-        window.addEventListener('appinstalled', (evt) => {
-            console.log('✅ Retail OS Software Installed Successfully.');
-            if (installContainer) installContainer.style.display = 'none';
-        });
-      </script>
 
         <style>
             .autopilot-teaser {

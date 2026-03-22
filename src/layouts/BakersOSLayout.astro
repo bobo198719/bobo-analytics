@@ -196,9 +196,9 @@ const { title = "Baker OS" } = Astro.props;
                 ⚙️ Emergency Reset Layout
             </button>
             
-            <!-- INSTALL APP BUTTON -->
-            <div id="install-container" style="display: none; padding: 12px; margin-top: 20px; background: rgba(99, 102, 241, 0.1); border-radius: 16px; border: 1px dashed var(--primary);">
-                <span style="font-size: 0.65rem; color: var(--primary); font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 8px; text-align: center;">📲 App & Software Ready</span>
+            <!-- INSTALL APP PORTAL (PERMANENTLY VISIBLE) -->
+            <div id="install-container" style="padding: 12px; margin-top: 20px; background: rgba(99, 102, 241, 0.1); border-radius: 16px; border: 1px dashed var(--primary); display: block;">
+                <span style="font-size: 0.65rem; color: var(--primary); font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 8px; text-align: center;">📲 Bobo Apps & APK Center</span>
                 <button id="btnInstall" class="nav-link" style="background: var(--primary); color: white; border: none; width: 100%; cursor: pointer; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:16px; height:16px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     <span>Download App</span>
@@ -209,36 +209,30 @@ const { title = "Baker OS" } = Astro.props;
 
     <script is:inline>
         let deferredPrompt;
-        const installContainer = document.getElementById('install-container');
         const btnInstall = document.getElementById('btnInstall');
 
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent the mini-infobar from appearing on mobile
             e.preventDefault();
-            // Stash the event so it can be triggered later.
             deferredPrompt = e;
-            // Update UI notify the user they can install the PWA
-            if (installContainer) installContainer.style.display = 'block';
+            console.log('✅ Software Install Ready');
         });
 
         if (btnInstall) {
             btnInstall.addEventListener('click', async () => {
-                if (!deferredPrompt) return;
-                // Show the install prompt
-                deferredPrompt.prompt();
-                // Wait for the user to respond to the prompt
-                const { outcome } = await deferredPrompt.userChoice;
-                console.log(`User response to the install prompt: ${outcome}`);
-                // We've used the prompt, and can't use it again
-                deferredPrompt = null;
-                // Hide the install button
-                if (installContainer) installContainer.style.display = 'none';
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`User response: ${outcome}`);
+                    deferredPrompt = null;
+                } else {
+                    // Fallback for browsers that don't support the prompt or already have it installed
+                    alert("App Installation Info:\n\n1. If you're on Mobile (Chrome): Tap 'Install App' or 'Add to Home Screen' in your browser menu.\n2. If you're on PC: Click the 'Install' icon ⊕ in the URL bar.\n3. If already installed: Open it from your home screen!");
+                }
             });
         }
 
         window.addEventListener('appinstalled', (evt) => {
             console.log('✅ Baker OS Software Installed Successfully.');
-            if (installContainer) installContainer.style.display = 'none';
         });
     </script>
 

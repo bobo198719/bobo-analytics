@@ -16,7 +16,7 @@ if (isSubdomain) {
       <p>Powerful, industry-specific software designed to transform your data into actionable intelligence. Optimized for pharmacy, healthcare, retail, and more.</p>
       <div class="hero-buttons">
         <a href="/crm-login" class="btn-primary crm-login-btn">Login to CRMPortal</a>
-        <button id="btnDownloadHome" class="btn-secondary" style="display: none; border: 1px dashed #6366f1; background: rgba(99, 102, 241, 0.1);">
+        <button id="btnDownloadHome" class="btn-secondary" style="border: 1px dashed #6366f1; background: rgba(99, 102, 241, 0.1); display: inline-block;">
            📥 Download Mobile APK / Desktop App
         </button>
       </div>
@@ -28,17 +28,18 @@ if (isSubdomain) {
         window.addEventListener('beforeinstallprompt', (e) => {
           e.preventDefault();
           deferredPrompt = e;
-          if (btnDownload) btnDownload.style.display = 'inline-block';
+          console.log('✅ Homepage Software Ready');
         });
 
         if (btnDownload) {
           btnDownload.addEventListener('click', async () => {
-            if (!deferredPrompt) return;
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            console.log(`User response to the install prompt: ${outcome}`);
-            deferredPrompt = null;
-            btnDownload.style.display = 'none';
+            if (deferredPrompt) {
+              deferredPrompt.prompt();
+              const { outcome } = await deferredPrompt.userChoice;
+              deferredPrompt = null;
+            } else {
+              alert("Instant Installation Guide:\n\n1. Chrome (Mobile): Tap 'Install App' in your menu.\n2. PC: Click the 'Install' icon ⊕ in your URL bar.\n3. Safari (iPhone): Tap 'Share' then 'Add to Home Screen'.");
+            }
           });
         }
       </script>

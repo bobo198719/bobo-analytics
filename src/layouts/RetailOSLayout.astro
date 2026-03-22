@@ -69,9 +69,9 @@ const { title = "Bobo Retail OS" } = Astro.props;
       </div>
 
       <div class="flex flex-col gap-6 items-center">
-         <!-- INSTALL APP BUTTON (Retail Suite) -->
-         <div id="install-container" style="display: none; padding: 10px; background: rgba(79, 70, 229, 0.1); border-radius: 16px; border: 1px dashed #4f46e5; margin-bottom: 20px;">
-            <button id="btnInstall" class="p-3 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-600/20 hover:scale-110 transition-transform">
+         <!-- INSTALL APP PORTAL (PERMANENTLY VISIBLE) -->
+         <div id="install-container" style="padding: 10px; background: rgba(79, 70, 229, 0.1); border-radius: 16px; border: 1px dashed #4f46e5; margin-bottom: 20px; display: block;">
+            <button id="btnInstall" title="Download APK / Software" class="p-3 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-600/20 hover:scale-110 transition-transform">
                <i class="lucide-download text-lg"></i>
             </button>
          </div>
@@ -81,30 +81,27 @@ const { title = "Bobo Retail OS" } = Astro.props;
 
       <script is:inline>
         let deferredPrompt;
-        const installContainer = document.getElementById('install-container');
         const btnInstall = document.getElementById('btnInstall');
 
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            if (installContainer) installContainer.style.display = 'block';
+            console.log('✅ Software Install Ready');
         });
 
         if (btnInstall) {
             btnInstall.addEventListener('click', async () => {
-                if (!deferredPrompt) return;
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                console.log(`User response to the install prompt: ${outcome}`);
-                deferredPrompt = null;
-                if (installContainer) installContainer.style.display = 'none';
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    deferredPrompt = null;
+                } else {
+                    alert("App Installation Info:\n\n1. Mobile: Tap 'Install App' or 'Add to Home Screen' in browser menu.\n2. PC: Click the 'Install' icon ⊕ in URL bar.\n3. Already installed? Open it from your home screen!");
+                }
             });
         }
 
-        window.addEventListener('appinstalled', (evt) => {
-            console.log('✅ Retail OS Software Installed Successfully.');
-            if (installContainer) installContainer.style.display = 'none';
-        });
+        window.addEventListener('appinstalled', () => console.log('✅ Software Installed.'));
       </script>
     </aside>
 
