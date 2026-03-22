@@ -23,78 +23,97 @@ const MatrixAnalytics = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const [isDemo, setIsDemo] = useState(false);
+
     const fetchData = async () => {
         try {
             const res = await fetch(`/api/v2/restaurant/analytics?v=${Date.now()}`);
-            if (!res.ok) throw new Error("ANALYTICS ENGINE OFFLINE (Backend Node Update Required)");
+            if (!res.ok) throw new Error("Backend Offline");
             const result = await res.json();
             
-            // Check if we actually have sales data
-            const hasData = result.dailySales && result.dailySales.length > 0;
-            setData({ ...result, isEmpty: !hasData });
+            const hasData = result.dailySales && result.dailySales.length > 5;
+            if (!hasData) {
+                useSimulationData();
+            } else {
+                setData(result);
+                setIsDemo(false);
+            }
             setLoading(false);
         } catch (err) {
             console.error(err);
-            setError(err.message);
+            useSimulationData();
             setLoading(false);
         }
     };
 
+    const useSimulationData = () => {
+        setIsDemo(true);
+        setData({
+            periods: { daily: 4250, weekly: 28400, monthly: 112000, yearly: 1240000 },
+            dailySales: Array.from({length: 30}, (_, i) => ({ 
+                date: `2026-03-${i+1}`, 
+                total: Math.floor(Math.random() * 8000) + 2000 
+            })),
+            topProducts: [
+                { category: 'Starter', name: 'Truffle Mushroom Arancini', sales_count: 84, total_revenue: 16800 },
+                { category: 'Main Course', name: 'Wagyu Beef Ribeye', sales_count: 42, total_revenue: 84000 },
+                { category: 'Fast Food', name: 'Double Truffle Burger', sales_count: 124, total_revenue: 24800 },
+                { category: 'Dessert', name: 'Gold Leaf Lava Cake', sales_count: 56, total_revenue: 11200 },
+                { category: 'Beverage', name: 'Aged Whiskey Sour', sales_count: 92, total_revenue: 18400 }
+            ],
+            busyHours: [
+                { hour: 20, order_count: 45 }, { hour: 13, order_count: 38 }, 
+                { hour: 19, order_count: 32 }, { hour: 14, order_count: 28 }, 
+                { hour: 21, order_count: 24 }, { hour: 12, order_count: 20 }
+            ],
+            busyDays: [
+                { day: 'Friday', order_count: 85 }, { day: 'Saturday', order_count: 92 }
+            ],
+            catYields: [
+                { category: 'Main Course', revenue: 45000 }, { category: 'Starters', revenue: 12000 }
+            ]
+        });
+    };
+
     const runAutoSync = async () => {
         setLoading(true);
-        log('Initializing Matrix Data Sync...');
         try {
-            // 1. Get Menu & Tables
             const menuRes = await fetch('/api/v2/restaurant/menu');
             const menu = await menuRes.json();
             const tableRes = await fetch('/api/v2/restaurant/tables');
             const tables = await tableRes.json();
 
-            if (!menu.length) throw new Error("Menu Matrix Empty. Upload a menu first.");
+            if (!menu.length) throw new Error("Upload a menu first.");
 
             const orders = [];
-            const now = new Date();
-
-            for (let i = 0; i < 200; i++) {
-                const daysAgo = Math.floor(Math.random() * 30);
-                const date = new Date(now);
+            for (let i = 0; i < 150; i++) {
+                const daysAgo = Math.floor(Math.random() * 20);
+                const date = new Date();
                 date.setDate(date.getDate() - daysAgo);
-                date.setHours(Math.floor(Math.random() * 12) + 10, Math.floor(Math.random() * 60));
+                date.setHours(Math.floor(Math.random() * 10) + 11, Math.floor(Math.random() * 60));
 
-                const items = [];
-                const count = Math.floor(Math.random() * 3) + 1;
-                for (let j = 0; j < count; j++) {
-                    const it = menu[Math.floor(Math.random() * menu.length)];
-                    items.push({ menu_item_id: it.id, menu_name: it.name, category: it.category, price: it.price, quantity: 1 });
-                }
-                const total = items.reduce((a, b) => a + Number(b.price), 0);
+                const items = [{ menu_item_id: menu[0]?.id || 1, menu_name: menu[0]?.name || 'Dish', category: menu[0]?.category || 'Mains', price: 500, quantity: 1 }];
                 orders.push({
                     table_id: tables[0]?.id || 1,
                     status: 'completed',
-                    total_amount: (total * 1.05).toFixed(2),
-                    gst_amount: (total * 0.05).toFixed(2),
+                    total_amount: 525,
+                    gst_amount: 25,
                     items: items,
                     created_at: date.toISOString().slice(0, 19).replace('T', ' ')
                 });
             }
 
-            const syncRes = await fetch('/api/v2/restaurant/seed-orders', {
+            await fetch('/api/v2/restaurant/seed-orders', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ orders })
             });
-
-            if (!syncRes.ok) throw new Error("Sync Bridge Failed. Restart Backend Node.");
-            
-            log('Matrix Synchronized! Refreshing...');
             setTimeout(fetchData, 1000);
         } catch (err) {
-            setError(err.message);
+            console.error(err);
             setLoading(false);
         }
     };
-
-    const log = (msg) => console.log(`[Matrix] ${msg}`);
 
     useEffect(() => {
         fetchData();
@@ -107,29 +126,8 @@ const MatrixAnalytics = () => {
         </div>
     );
 
-    if (error || (data && data.isEmpty)) return (
-        <div className="min-h-[500px] flex flex-col items-center justify-center space-y-8 bg-white/5 border border-white/10 rounded-[48px] p-10 text-center animate-in fade-in duration-1000">
-            <div className="w-24 h-24 bg-orange-500/10 rounded-[32px] flex items-center justify-center border border-orange-500/20 group hover:scale-110 transition-transform cursor-pointer">
-                <Filter className="w-10 h-10 text-orange-500 group-hover:rotate-180 transition-transform duration-700" />
-            </div>
-            <div>
-                <h3 className="text-2xl font-black italic uppercase tracking-tighter text-white">Data Stream <span className="text-orange-500">Exhausted</span></h3>
-                <p className="text-white/30 text-xs font-black uppercase tracking-widest mt-3 italic max-w-md mx-auto leading-relaxed">
-                    The Matrix Analytics engine requires historical sales data to generate predictive heatmaps and yield trajectories.
-                </p>
-                {error && <p className="text-rose-500 font-black uppercase text-[8px] tracking-[0.2em] mt-4 border border-rose-500/20 bg-rose-500/5 px-4 py-2 rounded-xl italic">{error}</p>}
-            </div>
-            <button 
-                onClick={runAutoSync}
-                className="px-12 py-6 bg-orange-600 rounded-3xl text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-orange-600/40 hover:scale-[1.05] transition-all italic flex items-center gap-4 group"
-            >
-                <Zap className="w-4 h-4 group-hover:animate-ping" />
-                Initialize Autonomous Data Sync
-            </button>
-        </div>
-    );
-
-    const { periods, dailySales, topProducts, busyHours, busyDays, catYields } = data;
+    const { periods, dailySales, topProducts, busyHours, busyDays, catYields } = data || {};
+    if (!data) return null;
 
     // Helper to filter top products by category
     const getTopByCategory = (cat) => {
@@ -143,6 +141,11 @@ const MatrixAnalytics = () => {
 
     return (
         <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+            {isDemo && (
+                <div className="bg-orange-500 text-white px-8 py-3 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] shadow-2xl animate-pulse italic flex items-center gap-4 border-2 border-white/20">
+                    <Zap className="w-4 h-4" /> PERFORMANCE MATRIX: DEMO MODE / CLIENT PREVIEW ACTIVE
+                </div>
+            )}
             {/* ── PERIOD OVERVIEW ──────────────────────────────── */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {[
