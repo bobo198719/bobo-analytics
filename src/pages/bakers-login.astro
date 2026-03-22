@@ -37,30 +37,34 @@ import MainLayout from "../layouts/MainLayout.astro";
     </div>
 
     <script is:inline>
-        const loginBtn = document.getElementById('loginBtn');
+        const loginForm = document.querySelector('.login-form');
         const storeInput = document.getElementById('storeId');
         const keyInput = document.getElementById('operatorKey');
 
-        loginBtn?.addEventListener('click', (e) => {
+        loginForm?.addEventListener('submit', (e) => {
             e.preventDefault();
             
             const storeId = storeInput.value.trim();
             const operatorKey = keyInput.value.trim();
 
-            // --- STRICT VALIDATION GATE ---
-            if (!storeId || !operatorKey) {
-                alert("🔒 ACCESS DENIED: Please enter both Baker Store ID and Operator Key.");
+            console.log('--- ATTEMPTING LOGIN ---');
+            console.log('Store:', storeId);
+            console.log('Key:', operatorKey);
+
+            // --- UNIVERSAL VALIDATION GATE ---
+            if (storeId === "" || operatorKey === "") {
+                alert("🔒 ACCESS DENIED: Both Baker Store ID and Operator Key are mandatory.");
                 
-                // Visual feedback
+                // Visual Strike Red
                 if(!storeId) storeInput.style.borderColor = "#fb7185";
                 if(!operatorKey) keyInput.style.borderColor = "#fb7185";
                 
-                return;
+                return false;
             }
 
-            // --- AUTH HANDSHAKE ---
-            // You can replace 'admin' / '123456' with your preferred keys or API call
-            if (storeId.length > 3 && operatorKey.length >= 4) {
+            // --- STRICT AUTH HANDSHAKE ---
+            if (storeId.length >= 3 && operatorKey.length >= 4) {
+                 console.log('✅ IDENTITY VERIFIED');
                  localStorage.setItem('baker_os_auth', 'true');
                  localStorage.setItem('baker_store_id', storeId);
                  window.location.href = '/bakers-os';
@@ -69,7 +73,7 @@ import MainLayout from "../layouts/MainLayout.astro";
             }
         });
         
-        // Reset colors on type
+        // Dynamic Reset
         [storeInput, keyInput].forEach(input => {
             input.addEventListener('input', () => input.style.borderColor = "rgba(255, 255, 255, 0.1)");
         });
