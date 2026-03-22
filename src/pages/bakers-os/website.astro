@@ -311,23 +311,60 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
 
         async function fetchLiveProducts() {
             try {
-                const res = await fetch(`${API_BASE}/products`);
-                const data = await res.json();
-                if (Array.isArray(data) && data.length > 0) {
-                    liveProducts = data;
-                } else {
-                    liveProducts = [
-                        { id:'p1', name:'Spider-Man Theme Cake', category:'Chocolate Cakes', price:1800, description:'Premium chocolate sponge with hand-piped Spider-man web design.', status:'approved', image_path:'/menu-images/whatsapp-image-2026-03-13-at-10-59-57-jpeg-1773564631013.webp' },
-                        { id:'p2', name:'Classic Smiley Cake',   category:'Vanilla Cakes',   price:1200, description:'Joyful vanilla cream cake with a classic smiley face design.',    status:'approved', image_path:'/menu-images/ww-jpeg-1773564633537.webp' },
-                        { id:'p3', name:'Luxury Cupcake Box',    category:'Cupcakes',        price:950,  description:'Set of 6 gourmet cupcakes with fresh berries and rich frosting.', status:'approved', image_path:'/menu-images/cake2-png-1773563690213.webp' }
-                    ];
+                // 1. MASTER SEARCH: Expanded Legacy Recovery
+                const legacyKeys = ['bakers_products', 'bobo_products', 'baker_creations', 'products', 'menu_bakes', 'bobo_baker_products'];
+                let legacyData = [];
+                for (const key of legacyKeys) {
+                    const local = localStorage.getItem(key);
+                    if (local) {
+                      try {
+                        const parsed = JSON.parse(local);
+                        if (Array.isArray(parsed)) legacyData = [...legacyData, ...parsed];
+                      } catch(e) {}
+                    }
                 }
-                const approved = liveProducts.filter(p => !p.status || p.status === 'approved');
+
+                // 2. Fetch Active Cloud Matrix
+                const res = await fetch(`${API_BASE}/products?t=${Date.now()}`);
+                const cloudData = await res.json();
+                let cloudProducts = Array.isArray(cloudData) ? cloudData : [];
+                
+                // 3. Load Local Backup (Physical Memory Primary)
+                const localBackup = localStorage.getItem('bobo_master_bakes_backup');
+                const localProducts = localBackup ? JSON.parse(localBackup) : [];
+                
+                // 4. Merging Matrix (Mirroring Catalog Resurrection)
+                const mergedMap = new Map();
+                
+                // Cloud & Local Backup Priority
+                cloudProducts.forEach(p => { if (p.id) mergedMap.set(String(p.id), p); });
+                localProducts.forEach(lp => { if (lp.id && !mergedMap.has(String(lp.id))) mergedMap.set(String(lp.id), lp); });
+
+                // Legacy Context Resurrection
+                legacyData.forEach(p => {
+                    const idStr = p.id ? String(p.id) : ('leg_' + Math.random().toString(36).substr(2, 5));
+                    if (!mergedMap.has(idStr)) mergedMap.set(idStr, {...p, id: idStr, status: 'approved'});
+                });
+
+                // Final Sanitization & UHD Path Normalization
+                liveProducts = Array.from(mergedMap.values()).map(p => {
+                    let rawImg = p.image_path || p.image_url || p.high_res_url || "";
+                    if (rawImg && !rawImg.startsWith('http') && !rawImg.startsWith('/api')) {
+                        p.image_path = "/api" + (rawImg.startsWith('/') ? '' : '/') + rawImg;
+                    }
+                    return p;
+                });
+
+                const approved = liveProducts.filter(p => !p.status || p.status === 'approved' || p.status === 'Live');
                 renderMenu(approved);
                 renderGallery(approved);
             } catch (e) {
-                console.error("Live fetch failed:", e);
-                renderMenu([]);
+                console.warn("Website Sync Pulse Weak - Recovering from Local Memory...", e);
+                const backup = localStorage.getItem('bobo_master_bakes_backup');
+                if (backup) {
+                    liveProducts = JSON.parse(backup);
+                    renderMenu(liveProducts.filter(p => p.status === 'approved' || p.status === 'Live'));
+                }
             }
         }
 
