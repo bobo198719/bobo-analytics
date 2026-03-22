@@ -138,13 +138,49 @@ const { title = "Restaurant OS" } = Astro.props;
       </a>
     </nav>
 
-    <div style="padding: 24px; border-top: 1px solid rgba(255,255,255,0.05);">
        <a href="/crm-login" style="display: flex; align-items: center; gap: 12px; color: rgba(255,255,255,0.2); text-decoration: none; font-size: 10px; font-weight: 900; text-transform: uppercase; font-style: italic;">
           <i class="lucide-log-out"></i>
           <span>Exit Portal</span>
        </a>
+
+       <!-- INSTALL APP BUTTON (Universal APK/Software Hub) -->
+       <div id="install-container" style="display: none; padding: 12px; margin-top: 20px; background: rgba(249, 115, 22, 0.1); border-radius: 16px; border: 1px dashed #f97316;">
+          <span style="font-size: 0.65rem; color: #f97316; font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 8px; text-align: center;">📲 App & Software Ready</span>
+          <button id="btnInstall" style="background: linear-gradient(135deg, #f97316, #e11d48); color: white; border: none; width: 100%; padding: 12px; border-radius: 12px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 10px; text-transform: uppercase; font-style: italic; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);">
+              <i class="lucide-download" style="font-size: 14px;"></i>
+              <span>Download App</span>
+          </button>
+       </div>
     </div>
   </aside>
+
+  <script is:inline>
+     let deferredPrompt;
+     const installContainer = document.getElementById('install-container');
+     const btnInstall = document.getElementById('btnInstall');
+
+     window.addEventListener('beforeinstallprompt', (e) => {
+         e.preventDefault();
+         deferredPrompt = e;
+         if (installContainer) installContainer.style.display = 'block';
+     });
+
+     if (btnInstall) {
+         btnInstall.addEventListener('click', async () => {
+             if (!deferredPrompt) return;
+             deferredPrompt.prompt();
+             const { outcome } = await deferredPrompt.userChoice;
+             console.log(`User response to the install prompt: ${outcome}`);
+             deferredPrompt = null;
+             if (installContainer) installContainer.style.display = 'none';
+         });
+     }
+
+     window.addEventListener('appinstalled', (evt) => {
+         console.log('✅ Restaurant OS Software Installed Successfully.');
+         if (installContainer) installContainer.style.display = 'none';
+     });
+  </script>
 
   <!-- MAIN CONTENT (OFFSET BY SIDEBAR) -->
   <main id="restaurant-main-view" style="margin-left: 256px !important; padding: 24px; min-height: 100vh; position: relative; z-index: 10; background: #0b0f1a;">
