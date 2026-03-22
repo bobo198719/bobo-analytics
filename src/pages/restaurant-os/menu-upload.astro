@@ -123,6 +123,7 @@ import "../../styles/restaurant.css";
     </div>
   </div>
 
+  <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
   <style>
     .upload-tab { color: rgba(255,255,255,0.3); transition: all 0.2s; }
     .upload-tab.active { background: linear-gradient(135deg,#7c3aed,#a855f7); color: white; box-shadow: 0 4px 16px rgba(124,58,237,0.3); }
@@ -134,6 +135,11 @@ import "../../styles/restaurant.css";
   <script is:inline>
     let parsedItems = [];
 
+    // ── LOG ─────────────────────────────────────────
+    function log(msg) {
+      document.getElementById('log-text').textContent = '▶ ' + msg;
+    }
+
     // ── TAB SWITCHING ───────────────────────────────
     function switchTab(name, btn) {
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
@@ -142,42 +148,93 @@ import "../../styles/restaurant.css";
       btn.classList.add('active');
     }
 
-    // ── LOG ─────────────────────────────────────────
-    function log(msg) {
-      document.getElementById('log-text').textContent = '▶ ' + msg;
-    }
-
     // ── IMAGE UPLOAD ────────────────────────────────
+    let uploadedFile = null;
     function handleImageUpload(e) {
       const file = e.target.files[0];
       if (!file) return;
+      uploadedFile = file;
       
-      if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
-        document.getElementById('img-preview').src = 'https://cdn-icons-png.flaticon.com/512/4726/4726010.png'; // Improved PDF Icon
-        document.getElementById('img-preview-area').classList.remove('hidden');
-        log('PDF detected: ' + file.name + ' (' + (file.size/1024).toFixed(0) + 'KB). AI is analyzing pages...');
-        return;
-      }
-
       const reader = new FileReader();
       reader.onload = () => {
         document.getElementById('img-preview').src = reader.result;
         document.getElementById('img-preview-area').classList.remove('hidden');
-        log('Image loaded: ' + file.name + ' (' + (file.size/1024).toFixed(0) + 'KB). Click "Parse" to extract menu.');
+        log('File loaded: ' + file.name + ' (' + (file.size/1024).toFixed(0) + 'KB). Click "Parse" to start AI extraction.');
       };
       reader.readAsDataURL(file);
     }
 
-    // Simulate OCR parsing (keyword-based since no server-side OCR)
-    function parseImage() {
-      log('Simulating OCR extraction...');
-      document.getElementById('parse-btn').textContent = '⏳ Parsing...';
-      setTimeout(() => {
-        const sampleItems = generateSampleMenu();
-        setParsedItems(sampleItems);
-        document.getElementById('parse-btn').textContent = '🤖 Parse Menu with AI';
-        log('Extracted ' + sampleItems.length + ' items. Review and import below.');
-      }, 1800);
+    // REAL OCR EXTRACTION
+    async function parseImage() {
+      if (!uploadedFile) return;
+      
+      const btn = document.getElementById('parse-btn');
+      const originalText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = '⏳ Initializing AI...';
+      log('Preparing Tesseract OCR Engine...');
+
+      try {
+        const worker = await Tesseract.createWorker('eng', 1, {
+          logger: m => {
+            if (m.status === 'recognizing text') {
+              const pct = Math.round(m.progress * 100);
+              log(`AI Scanning: ${pct}% Complete...`);
+              btn.textContent = `⏳ Scanning ${pct}%...`;
+            }
+          }
+        });
+
+        const { data: { text } } = await worker.recognize(uploadedFile);
+        await worker.terminate();
+
+        log('Extraction successful. Applying menu structure logic...');
+        processRawText(text);
+      } catch (err) {
+        console.error(err);
+        log('ERROR: AI could not read this file. Try a clearer photo.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🤖 Parse Menu with AI';
+      }
+    }
+
+    // ── SMART PARSER ────────────────────────────────
+    function processRawText(text) {
+      const lines = text.split('\n').filter(l => l.trim().length > 3);
+      const items = [];
+      
+      lines.forEach(line => {
+        // Look for patterns like "Chicken Curry 240" or "Pizza ... $15" or "Burger - 9.99"
+        const priceMatch = line.match(/([₹$]?\s*\d+(?:\.\d{1,2})?)\s*$/); 
+        
+        if (priceMatch) {
+          const priceStr = priceMatch[1];
+          const price = parseFloat(priceStr.replace(/[₹$]/g, '')) || 0;
+          let name = line.replace(priceStr, '').trim();
+          
+          name = name.replace(/[\.\-\:\=\–\+\_\*\s]+$/, '').trim();
+          
+          if (name.length > 2 && price > 0) {
+            const category = autoCategory(name);
+            items.push({ 
+              name: name, 
+              price: price, 
+              category: category, 
+              type: autoType(name), 
+              image_url: autoImage(name, category) 
+            });
+          }
+        }
+      });
+
+      if (items.length === 0) {
+        log('AI Warning: Could not detect clear name/price pairs. Try Manual Paste.');
+        return;
+      }
+      
+      setParsedItems(items);
+      log('Identified ' + items.length + ' precise items. Verify and Import.');
     }
 
     // ── CSV PARSER ───────────────────────────────────
@@ -210,25 +267,8 @@ import "../../styles/restaurant.css";
     function parseManualText() {
       const text = document.getElementById('manual-text').value.trim();
       if (!text) return;
-      log('Parsing menu text...');
-      const lines = text.split('\n').filter(l => l.trim());
-      const items = [];
-      lines.forEach(line => {
-        // Match "Dish Name - ₹240" or "Dish Name 240" or "Dish Name : 240"  
-        const priceMatch = line.match(/[₹$]?\s*(\d+(?:\.\d{1,2})?)/);
-        if (!priceMatch) return;
-        const price = parseFloat(priceMatch[1]);
-        const name = line.replace(/[\-\:\|]\s*[₹$]?\s*\d+(?:\.\d{1,2})?/, '')
-                        .replace(/[₹$]?\s*\d+(?:\.\d{1,2})?\s*[\-\:\|]/, '')
-                        .trim();
-        if (!name || price <= 0) return;
-        const category = autoCategory(name);
-        const type = autoType(name);
-        items.push({ name, price, category, type, image_url: autoImage(name, category) });
-      });
-      if (items.length === 0) { log('Could not parse any items. Check format.'); return; }
-      setParsedItems(items);
-      log('Structured ' + items.length + ' items. Review and import below.');
+      log('Structured parsing in progress...');
+      processRawText(text);
     }
 
     // ── AUTO DETECTION ──────────────────────────────
