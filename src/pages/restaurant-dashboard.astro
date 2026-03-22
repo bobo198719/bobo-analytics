@@ -7,6 +7,7 @@ import Tables from "../components/restaurant/Tables.jsx";
 import KDS from "../components/restaurant/KDS.jsx";
 import MenuManager from "../components/restaurant/MenuManager.jsx";
 import StaffManager from "../components/restaurant/StaffManager.jsx";
+import SettingsNode from "../components/restaurant/SettingsNode.jsx";
 import "../styles/restaurant.css";
 ---
 
@@ -67,7 +68,7 @@ import "../styles/restaurant.css";
                </div>
             </div>
          </div>
-         <div class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white cursor-pointer transition-all">
+         <div onclick="window.location.hash='#settings'" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white cursor-pointer transition-all hover:bg-white/10 active:scale-90">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /></svg>
          </div>
       </div>
@@ -116,6 +117,10 @@ import "../styles/restaurant.css";
       <StaffManager client:load />
    </div>
 
+   <div id="settingsSection" class="section hidden animate-in fade-in transition-all">
+      <SettingsNode client:load />
+   </div>
+
    <div id="customersSection" class="section hidden animate-in fade-in transition-all">
       <!-- (Customer Intelligence UI remains the same) -->
       <div class="p-20 opacity-20 text-center font-black italic uppercase italic tracking-widest">Customer Protocol Active</div>
@@ -161,6 +166,10 @@ import "../styles/restaurant.css";
    window.RO_ACCESS_ROLE = localStorage.getItem('ro_role') || 'owner';
    window.RO_ACCESS_DISPLAY = localStorage.getItem('ro_role_display') || 'Owner Protocol';
    document.getElementById('activeRoleDisplay').innerText = window.RO_ACCESS_DISPLAY;
+
+   // Identity Setup
+   const identity = JSON.parse(localStorage.getItem('ro_identity') || '{"name":"Grand Cafe Bobo"}');
+   document.getElementById('activeBranch').innerText = identity.name;
 
    function setAccessMode(role, display) {
       localStorage.setItem('ro_role', role);
