@@ -15,6 +15,20 @@ const { title = "Bobo Analytics", hideNav = false } = Astro.props;
     <meta name="keywords" content="bakery software, pharmacy POS, grocery POS, SaaS business tools India" />
     
     <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#C2185B">
+
+    <script is:inline>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').then(reg => {
+            console.log('✅ App Controller Active (Mobile & Desktop Software Bridge)');
+          }).catch(err => {
+            console.warn('❌ App Deployment Failed:', err);
+          });
+        });
+      }
+    </script>
 
     <script type="application/ld+json">
     {
