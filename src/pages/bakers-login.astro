@@ -26,7 +26,7 @@ import MainLayout from "../layouts/MainLayout.astro";
                     <a href="#">Forgot Key?</a>
                 </div>
 
-                <button type="button" id="loginBtn" class="login-btn">Access Dashboard</button>
+                <button type="button" id="loginBtn" class="login-btn" onclick="performLockdownLogin()">Access Dashboard</button>
             </form>
 
             <div class="login-footer">
@@ -37,54 +37,54 @@ import MainLayout from "../layouts/MainLayout.astro";
     </div>
 
     <script is:inline>
-        // --- ABSOLUTE INITIAL LOCKDOWN ---
+        // --- ABSOLUTE SESSION CLEAR ---
         localStorage.removeItem('baker_os_auth');
-        console.log('🛡️ SESSION PURGED: Ready for Fresh Identity Verification.');
+        console.log('🛡️ SECURITY READY: Session Purged.');
 
         function performLockdownLogin() {
-            const storeId = document.getElementById('storeId').value.trim();
-            const operatorKey = document.getElementById('operatorKey').value.trim();
+            const sidInput = document.getElementById('storeId');
+            const keyInput = document.getElementById('operatorKey');
+            
+            if (!sidInput || !keyInput) return;
 
-            console.log('--- SECURITY AUDIT: ATTEMPTED LOGIN ---');
+            const sid = sidInput.value.trim();
+            const key = keyInput.value.trim();
 
-            if (!storeId || !operatorKey) {
-                console.error('❌ GHOST LOGIN BLOCKED');
-                alert("🔒 ACCESS DENIED: Physical credentials are required to enter the vault.");
+            console.log('--- LOGIN HANDSHAKE INITIATED ---');
+
+            // --- ZERO-ENTRY BLOCKDOWN ---
+            if (!sid || !key) {
+                alert("🔒 ACCESS DENIED: Both Store ID and Secret Key are strictly required.");
+                if(!sid) sidInput.style.borderColor = "#f43f5e";
+                if(!key) keyInput.style.borderColor = "#f43f5e";
                 return;
             }
 
-            // --- HARDCODED IDENTITY GATE ---
+            // --- IDENTITY VERIFICATION ---
             // Key: bobo2026
-            if (operatorKey === "bobo2026") {
+            if (key === "bobo2026") {
                 console.log('✅ VAULT UNLOCKED');
                 localStorage.setItem('baker_os_auth', 'true');
-                localStorage.setItem('baker_store_id', storeId);
-                window.location.href = '/bakers-os';
+                localStorage.setItem('baker_store_id', sid);
+                window.location.replace('/bakers-os');
             } else {
-                console.error('❌ UNAUTHORIZED BREACH DETECTED');
-                alert("⚠️ AUTHENTICATION FAILED: Invalid Secret Key. Entrance Rejected.");
-                document.getElementById('operatorKey').value = "";
+                console.error('❌ UNAUTHORIZED ATTEMPT');
+                alert("⚠️ INCORRECT KEY: Access Rejected. Please try again.");
+                keyInput.value = "";
+                keyInput.style.borderColor = "#f43f5e";
             }
         }
 
-        // Attach listeners after load
-        window.onload = () => {
-            const btn = document.getElementById('loginBtn');
-            const storeInp = document.getElementById('storeId');
-            const keyInp = document.getElementById('operatorKey');
-
-            btn.onclick = performLockdownLogin;
-
-            // Handle Enter Key
-            [storeInp, keyInp].forEach(el => {
-                el.onkeydown = (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        performLockdownLogin();
-                    }
-                };
-            });
-        };
+        // Handle Enter Key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const active = document.activeElement;
+                if (active && (active.id === 'storeId' || active.id === 'operatorKey')) {
+                    e.preventDefault();
+                    performLockdownLogin();
+                }
+            }
+        });
     </script>
 
     <style>
