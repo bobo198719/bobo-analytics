@@ -1,0 +1,354 @@
+---
+// Restaurant Management Software - Settings
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - Restaurant OS | Bobo Analytics</title>
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <meta name="theme-color" content="#0a0a0a">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0a0a; color: #fafafa; min-height: 100vh; }
+    
+    .app-layout { display: flex; min-height: 100vh; }
+    
+    /* Sidebar */
+    .sidebar { width: 260px; background: #0f0f0f; border-right: 1px solid #1f1f1f; padding: 24px 16px; display: flex; flex-direction: column; position: fixed; height: 100vh; }
+    .logo { display: flex; align-items: center; gap: 12px; padding: 0 8px; margin-bottom: 32px; }
+    .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+    .logo-icon svg { width: 22px; height: 22px; color: white; }
+    .logo-text { font-size: 18px; font-weight: 700; }
+    .logo-sub { font-size: 11px; color: #71717a; }
+    
+    .nav-section { margin-bottom: 24px; }
+    .nav-label { font-size: 11px; color: #52525b; text-transform: uppercase; letter-spacing: 0.5px; padding: 0 12px; margin-bottom: 8px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; color: #a1a1aa; text-decoration: none; font-size: 14px; margin-bottom: 4px; transition: all 0.2s; }
+    .nav-item:hover { background: #1f1f1f; color: #fafafa; }
+    .nav-item.active { background: rgba(99, 102, 241, 0.1); color: #a5b4fc; }
+    .nav-item svg { width: 20px; height: 20px; }
+    
+    .sidebar-footer { margin-top: auto; padding-top: 16px; border-top: 1px solid #1f1f1f; }
+    .logout-btn { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; color: #ef4444; text-decoration: none; font-size: 14px; width: 100%; border: none; background: transparent; cursor: pointer; }
+    .logout-btn:hover { background: rgba(239, 68, 68, 0.1); }
+    
+    /* Main Content */
+    .main-content { flex: 1; margin-left: 260px; padding: 32px; max-width: 900px; }
+    
+    .page-header { margin-bottom: 32px; }
+    .page-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .page-subtitle { font-size: 14px; color: #71717a; }
+    
+    /* Settings Sections */
+    .settings-section { background: #171717; border: 1px solid #262626; border-radius: 12px; margin-bottom: 24px; overflow: hidden; }
+    .section-header { padding: 20px 24px; border-bottom: 1px solid #1f1f1f; }
+    .section-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+    .section-desc { font-size: 13px; color: #71717a; }
+    
+    .settings-list { padding: 8px 0; }
+    .setting-item { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid #1f1f1f; }
+    .setting-item:last-child { border-bottom: none; }
+    .setting-info h4 { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+    .setting-info p { font-size: 12px; color: #71717a; }
+    
+    /* Form Elements */
+    .input { width: 100%; padding: 12px 16px; background: #0a0a0a; border: 1px solid #262626; border-radius: 8px; color: #fafafa; font-size: 14px; }
+    .input:focus { outline: none; border-color: #6366f1; }
+    .input-group { display: flex; gap: 12px; }
+    .input-group .input { flex: 1; }
+    
+    /* Toggle Switch */
+    .toggle { position: relative; width: 48px; height: 26px; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #262626; border-radius: 26px; transition: 0.3s; }
+    .toggle-slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background: #71717a; border-radius: 50%; transition: 0.3s; }
+    .toggle input:checked + .toggle-slider { background: #6366f1; }
+    .toggle input:checked + .toggle-slider:before { transform: translateX(22px); background: white; }
+    
+    /* Select */
+    .select { padding: 10px 16px; background: #0a0a0a; border: 1px solid #262626; border-radius: 8px; color: #fafafa; font-size: 14px; min-width: 180px; cursor: pointer; }
+    .select:focus { outline: none; border-color: #6366f1; }
+    
+    /* Button */
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 8px; border: none; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+    .btn-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-secondary { background: #262626; color: #fafafa; }
+    .btn-secondary:hover { background: #3f3f46; }
+    .btn-danger { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .btn-danger:hover { background: rgba(239, 68, 68, 0.2); }
+    
+    /* Color Picker */
+    .color-options { display: flex; gap: 8px; }
+    .color-option { width: 32px; height: 32px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+    .color-option:hover { transform: scale(1.1); }
+    .color-option.active { border-color: white; }
+    
+    .form-actions { display: flex; gap: 12px; padding: 20px 24px; border-top: 1px solid #1f1f1f; background: #0f0f0f; }
+    
+    /* Info Card */
+    .info-card { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; padding: 20px; margin: 16px 24px; display: flex; gap: 16px; }
+    .info-card svg { width: 24px; height: 24px; color: #3b82f6; flex-shrink: 0; }
+    .info-card p { font-size: 13px; color: #a1a1aa; line-height: 1.5; }
+    .info-card strong { color: #fafafa; }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-content { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Z"/></svg>
+        </div>
+        <div>
+          <div class="logo-text">Restaurant OS</div>
+          <div class="logo-sub">Bobo Analytics</div>
+        </div>
+      </div>
+      
+      <nav>
+        <div class="nav-section">
+          <div class="nav-label">Main</div>
+          <a href="/software/dashboard" class="nav-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg> Dashboard</a>
+          <a href="/software/tables" class="nav-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg> Tables</a>
+          <a href="/software/orders" class="nav-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1Z"/></svg> Orders</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-label">Operations</div>
+          <a href="/software/menu" class="nav-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Z"/></svg> Menu</a>
+          <a href="/software/kitchen" class="nav-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20"/><path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"/><path d="m4 8 2-4h12l2 4"/></svg> Kitchen</a>
+          <a href="/software/staff" class="nav-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Staff</a>
+          <a href="/software/reports" class="nav-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg> Reports</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-label">System</div>
+          <a href="/software/settings" class="nav-item active"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg> Settings</a>
+        </div>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <button class="logout-btn" onclick="logout()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+          Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="page-header">
+        <h1 class="page-title">Settings</h1>
+        <p class="page-subtitle">Manage your restaurant settings and preferences</p>
+      </div>
+
+      <!-- Restaurant Info -->
+      <div class="settings-section">
+        <div class="section-header">
+          <div class="section-title">Restaurant Information</div>
+          <div class="section-desc">Basic details about your restaurant</div>
+        </div>
+        <div style="padding: 24px;">
+          <div style="display: grid; gap: 16px;">
+            <div>
+              <label style="display: block; font-size: 13px; color: #a1a1aa; margin-bottom: 8px;">Restaurant Name</label>
+              <input type="text" class="input" value="Bobo's Fine Dining" />
+            </div>
+            <div class="input-group">
+              <div style="flex: 1;">
+                <label style="display: block; font-size: 13px; color: #a1a1aa; margin-bottom: 8px;">Phone</label>
+                <input type="text" class="input" value="+1 (555) 123-4567" />
+              </div>
+              <div style="flex: 1;">
+                <label style="display: block; font-size: 13px; color: #a1a1aa; margin-bottom: 8px;">Email</label>
+                <input type="email" class="input" value="contact@bobos.com" />
+              </div>
+            </div>
+            <div>
+              <label style="display: block; font-size: 13px; color: #a1a1aa; margin-bottom: 8px;">Address</label>
+              <input type="text" class="input" value="123 Main Street, New York, NY 10001" />
+            </div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary">Save Changes</button>
+          <button class="btn btn-secondary">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      <div class="settings-section">
+        <div class="section-header">
+          <div class="section-title">Notifications</div>
+          <div class="section-desc">Configure how you receive alerts</div>
+        </div>
+        <div class="settings-list">
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>New Order Alerts</h4>
+              <p>Get notified when new orders come in</p>
+            </div>
+            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>Low Stock Alerts</h4>
+              <p>Alert when inventory items are running low</p>
+            </div>
+            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>Reservation Reminders</h4>
+              <p>Notify about upcoming reservations</p>
+            </div>
+            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>Sound Notifications</h4>
+              <p>Play sound for important alerts</p>
+            </div>
+            <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Appearance -->
+      <div class="settings-section">
+        <div class="section-header">
+          <div class="section-title">Appearance</div>
+          <div class="section-desc">Customize the look and feel</div>
+        </div>
+        <div class="settings-list">
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>Theme</h4>
+              <p>Choose your preferred color theme</p>
+            </div>
+            <select class="select">
+              <option>Dark (Default)</option>
+              <option>Light</option>
+              <option>System</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>Accent Color</h4>
+              <p>Primary brand color</p>
+            </div>
+            <div class="color-options">
+              <div class="color-option active" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);"></div>
+              <div class="color-option" style="background: linear-gradient(135deg, #3b82f6, #2563eb);"></div>
+              <div class="color-option" style="background: linear-gradient(135deg, #22c55e, #16a34a);"></div>
+              <div class="color-option" style="background: linear-gradient(135deg, #f97316, #ea580c);"></div>
+              <div class="color-option" style="background: linear-gradient(135deg, #ec4899, #db2777);"></div>
+            </div>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>Compact Mode</h4>
+              <p>Use smaller spacing and fonts</p>
+            </div>
+            <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Operations -->
+      <div class="settings-section">
+        <div class="section-header">
+          <div class="section-title">Operations</div>
+          <div class="section-desc">Configure restaurant operations</div>
+        </div>
+        <div class="settings-list">
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>Default Tax Rate</h4>
+              <p>Applied to all orders</p>
+            </div>
+            <select class="select">
+              <option>8.875% (NYC)</option>
+              <option>8.0%</option>
+              <option>10.0%</option>
+              <option>Custom</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>Service Charge</h4>
+              <p>Auto-add service charge to bills</p>
+            </div>
+            <select class="select">
+              <option>None</option>
+              <option>15%</option>
+              <option>18%</option>
+              <option>20%</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>Auto-print Receipts</h4>
+              <p>Print receipt when order is completed</p>
+            </div>
+            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Danger Zone -->
+      <div class="settings-section" style="border-color: rgba(239, 68, 68, 0.3);">
+        <div class="section-header">
+          <div class="section-title" style="color: #ef4444;">Danger Zone</div>
+          <div class="section-desc">Irreversible actions</div>
+        </div>
+        <div class="info-card" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2);">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+          <p>Actions in this section are <strong>permanent and cannot be undone</strong>. Please proceed with caution.</p>
+        </div>
+        <div class="settings-list">
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>Clear All Orders</h4>
+              <p>Delete all order history from the system</p>
+            </div>
+            <button class="btn btn-danger">Clear Orders</button>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>Reset to Defaults</h4>
+              <p>Reset all settings to factory defaults</p>
+            </div>
+            <button class="btn btn-danger">Reset Settings</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    if (sessionStorage.getItem('restaurant_os_auth') !== 'true') window.location.href = '/software';
+    
+    function logout() {
+      sessionStorage.removeItem('restaurant_os_auth');
+      window.location.href = '/software';
+    }
+
+    // Color picker
+    document.querySelectorAll('.color-option').forEach(opt => {
+      opt.addEventListener('click', function() {
+        document.querySelectorAll('.color-option').forEach(o => o.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
