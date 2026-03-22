@@ -6,314 +6,398 @@ const { tableId } = Astro.params;
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Table {tableId} | Order Now</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Table {tableId} | Bobo Order Console</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700;1,800;1,900&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; font-family: 'Plus Jakarta Sans', sans-serif; background: #080b18; color: white; }
-    ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
-    .cat-tab { flex-shrink: 0; padding: 8px 18px; border-radius: 50px; font-size: 12px; font-weight: 800; font-style: italic; text-transform: uppercase; border: 1px solid transparent; cursor: pointer; transition: all 0.2s; white-space: nowrap; background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.4); }
-    .cat-tab.active { background: linear-gradient(135deg,#f97316,#e11d48); color: white; border-color: transparent; box-shadow: 0 4px 20px rgba(249,115,22,0.4); }
-    .dish-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; overflow: hidden; transition: all 0.25s; }
-    .dish-card:active { transform: scale(0.98); }
-    .add-btn { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg,#f97316,#e11d48); border: none; color: white; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 300; transition: transform 0.15s; box-shadow: 0 4px 12px rgba(249,115,22,0.4); }
-    .add-btn:active { transform: scale(0.88); }
-    .qty-ctrl { display: flex; align-items: center; gap: 10px; }
-    .qty-btn { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: white; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-    .qty-btn:active { background: rgba(249,115,22,0.3); }
-    .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; padding: 16px; transition: transform 0.3s; }
-    .cart-bar.hidden { transform: translateY(100%); }
-    #order-success { display: none; position: fixed; inset: 0; background: #080b18; z-index: 999; flex-direction: column; align-items: center; justify-content: center; gap: 24px; }
-    #order-success.show { display: flex; }
-    .loading-spinner { width: 32px; height: 32px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #f97316; border-radius: 50%; animation: spin 0.8s linear infinite; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { 
+        height: 100%; 
+        font-family: 'Plus Jakarta Sans', sans-serif; 
+        background: #05081a; 
+        color: white; 
+        overflow-x: hidden;
+    }
+    
+    /* CRYSTAL CLEAR TYPOGRAPHY */
+    h1, h2, h3, h4 { font-style: italic; text-transform: uppercase; letter-spacing: -0.02em; }
+    
+    ::-webkit-scrollbar { width: 0; display: none; } 
+
+    .cat-tab { 
+        flex-shrink: 0; 
+        padding: 12px 24px; 
+        border-radius: 20px; 
+        font-size: 13px; 
+        font-weight: 900; 
+        text-transform: uppercase; 
+        border: 1px solid rgba(255,255,255,0.05); 
+        cursor: pointer; 
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        white-space: nowrap; 
+        background: rgba(255,255,255,0.03); 
+        color: rgba(255,255,255,0.3); 
+    }
+    .cat-tab.active { 
+        background: linear-gradient(135deg,#f97316,#e11d48); 
+        color: white; 
+        border-color: transparent; 
+        box-shadow: 0 10px 25px rgba(249,115,22,0.3); 
+        transform: scale(1.05);
+    }
+
+    /* UHD DISH CARD */
+    .dish-card { 
+        background: rgba(255,255,255,0.03); 
+        border: 1px solid rgba(255,255,255,0.06); 
+        border-radius: 32px; 
+        overflow: hidden; 
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+    .dish-card:active { transform: scale(0.97); background: rgba(255,255,255,0.06); }
+    
+    .dish-image-container {
+        width: 100%;
+        aspect-ratio: 4/3;
+        overflow: hidden;
+        position: relative;
+        background: #000;
+    }
+    .dish-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s ease;
+    }
+    
+    .add-btn { 
+        width: 48px; 
+        height: 48px; 
+        border-radius: 18px; 
+        background: linear-gradient(135deg,#f97316,#fb923c); 
+        border: none; 
+        color: white; 
+        cursor: pointer; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        transition: all 0.2s; 
+        box-shadow: 0 8px 16px rgba(249,115,22,0.25);
+    }
+    .add-btn:active { transform: scale(0.85); filter: brightness(1.2); }
+
+    .qty-ctrl { 
+        display: flex; 
+        align-items: center; 
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 18px;
+        padding: 4px;
+        gap: 12px; 
+    }
+    .qty-btn { 
+        width: 36px; 
+        height: 36px; 
+        border-radius: 14px; 
+        background: rgba(255,255,255,0.05); 
+        border: none; 
+        color: white; 
+        font-size: 20px; 
+        font-weight: 300;
+        cursor: pointer; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+    }
+
+    .cart-bar { 
+        position: fixed; 
+        bottom: 24px; 
+        left: 16px; 
+        right: 16px; 
+        z-index: 100; 
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+    }
+    .cart-bar.hidden { transform: translateY(200%); opacity: 0; }
+
+    #checkout-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.9);
+        backdrop-filter: blur(20px);
+        z-index: 500;
+        align-items: flex-end;
+    }
+    .checkout-sheet {
+        background: #0a0e1f;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        width: 100%;
+        border-radius: 40px 40px 0 0;
+        padding: 32px 24px;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        animation: sheetUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+    .loading-spinner { width: 40px; height: 40px; border: 4px solid rgba(249,115,22,0.15); border-top-color: #f97316; border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .slide-up { animation: slideUp 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards; }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .slide-up { animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0; }
+    @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
   </style>
 </head>
 <body>
-  <!-- TRACKING / SUCCESS SCREEN -->
-  <div id="order-success">
-    <div id="status-icon" style="font-size:80px;">⏳</div>
-    <div style="text-align:center; padding: 0 20px;">
-      <h1 id="status-title" style="font-size:24px;font-weight:900;font-style:italic;text-transform:uppercase;margin-bottom:8px;">Request Sent</h1>
-      <p id="status-desc" style="color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;line-height:1.5;">Waiting for waiter to confirm your order...</p>
-      <div id="status-badge" style="display:inline-block; margin-top: 12px; padding: 6px 16px; border-radius: 50px; background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.2); color: #f97316; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; font-style: italic;">
-        🟡 Pending Waiter
-      </div>
-    </div>
-    
-    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:24px;padding:20px;max-width:320px;width:90%; animation: slideUp 0.4s ease;">
-      <p style="color:rgba(255,255,255,0.2);font-size:10px;font-weight:900;margin-bottom:16px;text-transform:uppercase;letter-spacing:0.2em;text-align:center;">Order Items</p>
-      <div id="success-items" style="max-height: 200px; overflow-y: auto; padding-right: 4px;"></div>
-      <div style="height:1px;background:rgba(255,255,255,0.07);margin:16px 0;"></div>
-      <div style="display:flex; justify-content: space-between; align-items: center;">
-        <span style="font-size:11px; font-weight: 800; color: rgba(255,255,255,0.3); text-transform: uppercase;">Total Request</span>
-        <p id="success-total" style="font-size:20px;font-weight:900;color:#f97316;font-style:italic;"></p>
-      </div>
-    </div>
 
-    <div style="display:flex; flex-direction: column; gap: 12px; width: 100%; max-width: 320px; padding: 0 20px;">
-        <button onclick="resetOrder()" style="width: 100%; background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border-radius:20px;padding:16px;font-size:12px;font-weight:900;font-style:italic;text-transform:uppercase;cursor:pointer;">Add More Items</button>
-        <p style="color:rgba(255,255,255,0.2);font-size:9px;text-align:center;font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Auto-refreshing every 3s</p>
-    </div>
+  <!-- SUCCESS OVERLAY -->
+  <div id="order-success" style="display:none; position:fixed; inset:0; background:#05081a; z-index:999; flex-direction:column; align-items:center; justify-content:center; padding:24px;">
+     <div id="status-icon" style="font-size:64px; margin-bottom:24px; filter: drop-shadow(0 0 20px rgba(249,115,22,0.3));">⏳</div>
+     <h1 id="status-title" style="font-size:28px; font-weight:900; text-align:center; margin-bottom:12px;">Request Active</h1>
+     <p id="status-desc" style="color:rgba(255,255,255,0.4); font-size:14px; text-align:center; font-weight:700; margin-bottom:32px;">Your order payload is in the sync queue.</p>
+     
+     <div style="width:100%; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:32px; padding:24px; margin-bottom:32px;">
+        <div id="success-items" style="max-height:200px; overflow-y:auto; margin-bottom:20px;"></div>
+        <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:20px; display:flex; justify-content:space-between; align-items:center;">
+            <p style="font-size:11px; font-weight:900; color:rgba(255,255,255,0.3); text-transform:uppercase;">Aggregate Dues</p>
+            <p id="success-total" style="font-size:24px; font-weight:900; color:#f97316; font-style:italic;"></p>
+        </div>
+     </div>
+     
+     <button onclick="resetOrder()" style="width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:24px; padding:20px; font-size:14px; font-weight:900; text-transform:uppercase; font-style:italic;">Order More Items</button>
   </div>
 
-  <!-- CHECKOUT MODAL -->
-  <div id="checkout-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter:blur(10px); z-index:500; align-items:flex-end;">
-    <div style="background:#0f172a; border-top: 1px solid rgba(255,255,255,0.1); width:100%; border-radius:32px 32px 0 0; padding:32px 24px; animation: slideUp 0.3s ease-out;">
+  <!-- CHECKOUT SHEET -->
+  <div id="checkout-modal">
+    <div class="checkout-sheet">
         <div style="width:40px; height:4px; background:rgba(255,255,255,0.1); border-radius:2px; margin:0 auto 24px;"></div>
-        <h2 style="font-size:20px; font-weight:900; font-style:italic; text-transform:uppercase; margin-bottom:20px;">Review Request</h2>
+        <h2 style="font-size:24px; font-weight:900; margin-bottom:24px;">Final <span style="color:#f97316">Review</span></h2>
         
-        <div id="checkout-items" style="max-height: 250px; overflow-y: auto; margin-bottom: 24px; padding-right: 4px;"></div>
+        <div id="checkout-items" style="flex:1; overflow-y:auto; margin-bottom:24px;"></div>
         
-        <div style="margin-bottom: 24px;">
-            <p style="font-size:10px; font-weight:900; color:rgba(255,255,255,0.3); text-transform:uppercase; margin-bottom:8px; letter-spacing:1px;">Global Notes (Optional)</p>
-            <textarea id="global-notes" placeholder="e.g. Bring extra napkins, less spicy..." style="width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:12px; color:white; font-size:13px; font-family:inherit; resize:none;" rows="2"></textarea>
+        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:28px; padding:24px; margin-bottom:24px; space-y:12px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                <span style="font-size:11px; font-weight:900; color:rgba(255,255,255,0.3);">Subtotal</span>
+                <span id="checkout-subtotal" style="font-size:14px; font-weight:900; color:white/80;"></span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05);">
+                <span style="font-size:11px; font-weight:900; color:rgba(255,255,255,0.3);">Tax (GST @ 5.0%)</span>
+                <span id="checkout-tax" style="font-size:14px; font-weight:900; color:white/80;"></span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:12px; font-weight:900; text-transform:uppercase; color:white;">Aggregate Total</span>
+                <span id="checkout-total" style="font-size:26px; font-weight:900; color:#f97316; font-style:italic;"></span>
+            </div>
         </div>
 
-        <button id="final-confirm-btn" onclick="submitOrder()" style="width:100%; background:linear-gradient(135deg,#f97316,#e11d48); border:none; color:white; border-radius:20px; padding:18px; font-size:14px; font-weight:900; font-style:italic; text-transform:uppercase; box-shadow:0 8px 32px rgba(249,115,22,0.3);">
-            Confirm Request →
+        <button id="final-confirm-btn" onclick="submitOrder()" style="width:100%; background:linear-gradient(135deg,#f97316,#e11d48); border:none; color:white; border-radius:24px; padding:22px; font-size:16px; font-weight:900; text-transform:uppercase; font-style:italic; box-shadow:0 15px 35px rgba(249,115,22,0.3);">
+            Confirm Order →
         </button>
-        <button onclick="closeCheckout()" style="width:100%; background:transparent; border:none; color:rgba(255,255,255,0.3); font-size:11px; font-weight:900; text-transform:uppercase; margin-top:16px;">Go Back</button>
+        <button onclick="closeCheckout()" style="width:100%; margin-top:20px; font-size:12px; font-weight:900; text-transform:uppercase; color:rgba(255,255,255,0.2); background:transparent; border:none;">Modify Items</button>
     </div>
   </div>
 
-  <!-- LOADING SCREEN -->
-  <div id="loading-screen" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;background:#080b18;z-index:50;">
+  <!-- APP HUB -->
+  <div id="loading-screen" style="position:fixed; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:20px; background:#05081a; z-index:1000;">
     <div class="loading-spinner"></div>
-    <p style="color:rgba(255,255,255,0.3);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.2em;">Loading Menu...</p>
+    <p style="color:rgba(255,255,255,0.3); font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:0.3em;">Syncing Menu Matrix...</p>
   </div>
 
-  <!-- MAIN APP -->
-  <div id="app" style="display:none;min-height:100vh;padding-bottom:120px;">
-    
-    <!-- HEADER -->
-    <header style="background:linear-gradient(180deg,rgba(249,115,22,0.12) 0%,transparent 100%);padding:32px 20px 20px;text-align:center;position:relative;">
-      <div style="width:52px;height:52px;background:linear-gradient(135deg,#f97316,#e11d48);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 16px;box-shadow:0 8px 24px rgba(249,115,22,0.3);">🍽️</div>
-      <h1 style="font-size:22px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:-0.03em;">Bobo Restaurant</h1>
-      <p style="color:rgba(255,255,255,0.3);font-size:11px;font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.15em;">Table <span id="table-label" style="color:#f97316;"></span></p>
+  <div id="app" style="display:none; padding-bottom:140px;">
+    <!-- UHD HEADER -->
+    <header style="padding:40px 24px 24px; position:relative; overflow:hidden;">
+        <div style="display:flex; align-items:center; justify-content:between;">
+            <div>
+                <h1 style="font-size:28px; font-weight:900; margin-bottom:4px;">Grand <span style="color:#f97316">Cafe</span></h1>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div style="width:6px; height:6px; background:#10b981; border-radius:50%; box-shadow:0 0 10px #10b981;"></div>
+                    <p style="font-size:10px; font-weight:900; color:rgba(255,255,255,0.3); text-transform:uppercase; letter-spacing:0.1em;">Table Node {tableId} · Live Now</p>
+                </div>
+            </div>
+            <div style="margin-left:auto; width:56px; height:56px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:24px;">🍱</div>
+        </div>
     </header>
 
-    <!-- SEARCH -->
-    <div style="padding:0 16px 16px;">
-      <div style="position:relative;">
-        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;">🔍</span>
-        <input id="search-input" type="text" placeholder="Search dishes..." oninput="filterDishes()" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:white;border-radius:16px;padding:12px 14px 12px 40px;font-size:14px;font-weight:600;outline:none;" />
-      </div>
+    <!-- SEARCH HUB -->
+    <div style="padding:0 24px 24px;">
+        <div style="position:relative; group">
+            <span style="position:absolute; left:20px; top:50%; transform:translateY(-50%); opacity:0.3;">🔍</span>
+            <input id="search-input" oninput="filterDishes()" type="text" placeholder="QUERY DISH..." style="width:100%; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:24px; padding:18px 24px 18px 52px; color:white; font-size:15px; font-weight:700; outline:none; focus:border-orange-500/50 transition-all" />
+        </div>
     </div>
 
-    <!-- CATEGORY TABS -->
-    <div style="overflow-x:auto;padding:0 16px 20px;display:flex;gap:10px;-webkit-overflow-scrolling:touch;scrollbar-width:none;" id="category-tabs">
-      <button class="cat-tab active" onclick="filterCategory('All',this)">All</button>
+    <!-- CATEGORY SLIDER -->
+    <div id="category-tabs" style="display:flex; gap:12px; overflow-x:auto; padding:0 24px 32px; -webkit-overflow-scrolling:touch;">
+        <button class="cat-tab active" onclick="filterCategory('All', this)">Matrix_All</button>
     </div>
 
-    <!-- MENU GRID -->
-    <div id="menu-grid" style="padding:0 16px;display:grid;gap:16px;"></div>
-
+    <!-- UHD MENU GRID -->
+    <div id="menu-grid" style="padding:0 24px; display:grid; gap:24px;"></div>
   </div>
 
-  <!-- CART BAR -->
+  <!-- FLOATING CART BAR (GLASS) -->
   <div class="cart-bar hidden" id="cart-bar">
-    <div style="background:rgba(15,23,42,0.96);border:1px solid rgba(255,255,255,0.15);backdrop-filter:blur(24px);border-radius:28px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 -8px 40px rgba(0,0,0,0.5);">
-      <div>
-        <p style="font-size:10px;color:rgba(255,255,255,0.3);font-weight:800;text-transform:uppercase;letter-spacing:0.15em;">Your Order</p>
-        <p id="cart-summary" style="font-size:18px;font-weight:900;font-style:italic;margin-top:2px;"></p>
-      </div>
-      <button id="place-order-btn" onclick="openCheckout()" style="background:linear-gradient(135deg,#f97316,#e11d48);border:none;color:white;border-radius:50px;padding:14px 28px;font-size:13px;font-weight:900;font-style:italic;text-transform:uppercase;cursor:pointer;letter-spacing:0.05em;box-shadow:0 4px 20px rgba(249,115,22,0.4);transition:transform 0.15s;">
-        Place Request →
-      </button>
+    <div onclick="openCheckout()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); backdrop-filter:blur(30px) saturate(1.5); border-radius:32px; padding:20px 24px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 20px 50px rgba(0,0,0,0.6); active:scale-95 transition-all">
+        <div style="display:flex; align-items:center; gap:16px;">
+            <div style="position:relative;">
+                <div id="cart-count-badge" style="position:absolute; -top:8px; -right:8px; background:#f97316; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:900; border:2px solid #0a0e1f;">0</div>
+                <div style="width:48px; height:48px; background:white/5; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:20px;">🛒</div>
+            </div>
+            <div>
+                <p style="font-size:11px; font-weight:900; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:0.1em;">Order Total</p>
+                <p id="cart-summary" style="font-size:20px; font-weight:900; color:white; font-style:italic;">₹0.00</p>
+            </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; background:rgba(249,115,22,0.15); border:1px solid rgba(249,115,22,0.2); padding:10px 20px; border-radius:20px; color:#f97316; font-[11px] font-black uppercase italic tracking-widest">
+            Review →
+        </div>
     </div>
   </div>
 
   <div id="table-id-data" data-id={tableId} style="display:none"></div>
 
   <script is:inline>
-    // ── CONFIG ─────────────────────────────────────
     const TABLE_ID = document.getElementById('table-id-data').dataset.id;
     let allItems = [];
-    let cart = {}; // { itemId: { item, qty, notes } }
+    let cart = {}; 
     let currentCategory = 'All';
 
-    // ── FETCH MENU ─────────────────────────────────
-    window.loadMenu = async function() {
-      try {
-        const res = await fetch('/api/v2/restaurant/menu');
-        const data = await res.json();
-        // Take the 253 newest unique dishes
-        allItems = [...data].sort((a,b) => b.id - a.id).slice(0, 253);
-        
-        // Update Table UI
-        const labelEl = document.getElementById('table-label');
-        if (labelEl) labelEl.textContent = '#' + TABLE_ID;
-        
-        buildCategoryTabs();
-        renderMenu(allItems);
-        
-        document.getElementById('loading-screen').style.display = 'none';
-        document.getElementById('app').style.display = 'block';
-      } catch(e) {
-        console.error("Menu Load Failed:", e);
-        document.getElementById('loading-screen').innerHTML = 
-          `<div style="color:rgba(255,255,255,0.4);font-size:12px;text-align:center;padding:32px;">
-            <p style="font-size:24px;margin-bottom:12px;">🚧</p>
-            <p style="font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:white;margin-bottom:8px;">Menu Sync Failure</p>
-            <p style="font-size:10px;font-family:monospace;margin-bottom:16px;color:#f43f5e;">${e.message}</p>
-            <button onclick="location.reload()" style="background:white/10;border:1px solid white/20;color:white;padding:8px 16px;border-radius:12px;font-size:10px;font-weight:900;text-transform:uppercase;">Try Reconnect</button>
-          </div>`;
-      }
-    };
-
-    // ── CATEGORIES ──────────────────────────────────
-    function buildCategoryTabs() {
-      const cats = ['All', ...new Set(allItems.map(i => i.category).filter(Boolean))];
-      const container = document.getElementById('category-tabs');
-      container.innerHTML = '';
-      cats.forEach(cat => {
-        const btn = document.createElement('button');
-        btn.className = 'cat-tab' + (cat === 'All' ? ' active' : '');
-        btn.textContent = cat;
-        btn.onclick = () => filterCategory(cat, btn);
-        container.appendChild(btn);
-      });
+    // ── DATA SYNC ──────────────────────────────────
+    async function loadMenu() {
+        try {
+            const res = await fetch('/api/v2/restaurant/menu');
+            const data = await res.json();
+            allItems = [...data].sort((a,b) => b.id - a.id).slice(0, 250);
+            
+            buildCategoryTabs();
+            renderMenu(allItems);
+            
+            document.getElementById('loading-screen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('loading-screen').style.display = 'none';
+                document.getElementById('app').style.display = 'block';
+            }, 500);
+        } catch(e) { console.error(e); }
     }
 
-    window.applyFilters = function() {
-      const search = document.getElementById('search-input').value.toLowerCase();
-      let filtered = allItems;
-      if (currentCategory !== 'All') filtered = filtered.filter(i => i.category === currentCategory);
-      if (search) filtered = filtered.filter(i => i.name.toLowerCase().includes(search));
-      renderMenu(filtered);
+    function buildCategoryTabs() {
+        const cats = ['All', ...new Set(allItems.map(i => i.category).filter(Boolean))];
+        const container = document.getElementById('category-tabs');
+        container.innerHTML = cats.map(cat => 
+            `<button class="cat-tab ${cat === 'All' ? 'active' : ''}" onclick="filterCategory('${cat}', this)">${cat}</button>`
+        ).join('');
     }
 
     window.filterCategory = function(cat, btn) {
-      currentCategory = cat;
-      document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      applyFilters();
+        currentCategory = cat;
+        document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        applyFilters();
     }
 
     window.filterDishes = function() { applyFilters(); }
 
-    // ── IMAGE HANDLING ─────────────────────────────
-    const KEYWORD_IMAGES = {
-      chicken: 'https://images.unsplash.com/photo-1598103442097-8b74394b95c8?w=300',
-      paneer: 'https://images.unsplash.com/photo-1567188040759-fbcd18884932?w=300',
-      pizza: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=300',
-      burger: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300',
-      biryani: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=300',
-      noodles: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=300',
-      coffee: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=300',
-      tea: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=300',
-      juice: 'https://images.unsplash.com/photo-1543362906-acfc16c67564?w=300',
-      cake: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300',
-      icecream:'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=300',
-      kulfi: 'https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=300',
-      dosa: 'https://images.unsplash.com/photo-1630383249896-424e482df921?w=300',
-      fish: 'https://images.unsplash.com/photo-1580476262798-bddd9f4b7369?w=300',
-      salad: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=300',
-    };
-
-    function getImage(item) {
-      if (item.image_url && item.image_url.startsWith('http')) return item.image_url;
-      const name = (item.name || '').toLowerCase();
-      for (const [kw, url] of Object.entries(KEYWORD_IMAGES)) {
-        if (name.includes(kw)) return url;
-      }
-      const catFallbacks = {
-        'Starters': 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=300',
-        'Main Course': 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=300',
-        'Beverages': 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=300',
-        'Desserts': 'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=300',
-      };
-      return catFallbacks[item.category] || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300';
+    function applyFilters() {
+        const search = document.getElementById('search-input').value.toLowerCase();
+        let filtered = allItems;
+        if (currentCategory !== 'All') filtered = filtered.filter(i => i.category === currentCategory);
+        if (search) filtered = filtered.filter(i => i.name.toLowerCase().includes(search));
+        renderMenu(filtered);
     }
 
-    // ── RENDER MENU ─────────────────────────────────
+    // ── UHD RENDER ──────────────────────────────────
     function renderMenu(items) {
-      const grid = document.getElementById('menu-grid');
-      if (items.length === 0) {
-        grid.innerHTML = '<div style="text-align:center;padding:48px 0;color:rgba(255,255,255,0.2);"><div style="font-size:48px;margin-bottom:12px;">🍽️</div><p style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;">No dishes found</p></div>';
-        return;
-      }
-      grid.innerHTML = '';
-      items.forEach((item, idx) => {
-        const inCart = cart[item.id];
-        const qty = inCart ? inCart.qty : 0;
-        const card = document.createElement('div');
-        card.className = 'dish-card slide-up';
-        card.style.animationDelay = (idx * 0.04) + 's';
-        card.innerHTML = `
-          <div style="display:flex;gap:14px;padding:14px;align-items:center;">
-            <div style="width:80px;height:80px;border-radius:16px;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,0.05);">
-              <img src="${getImage(item)}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;" 
-                onerror="this.style.display='none';this.parentNode.innerHTML='<div style=width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;>🍽️</div>'" />
-            </div>
-            <div style="flex:1;min-width:0;">
-              <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
-                <div style="width:10px;height:10px;border-radius:50%;background:${item.type === 'veg' ? '#10b981' : '#f43f5e'};flex-shrink:0;box-shadow:0 0 6px ${item.type === 'veg' ? 'rgba(16,185,129,0.6)' : 'rgba(244,63,94,0.6)'};"></div>
-                <h3 style="font-size:14px;font-weight:800;font-style:italic;text-transform:uppercase;letter-spacing:-0.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</h3>
-              </div>
-              <p style="font-size:11px;color:rgba(255,255,255,0.3);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">${item.category || ''}</p>
-              <p style="font-size:18px;font-weight:900;color:#f97316;font-style:italic;">₹${item.price}</p>
-            </div>
-            <div style="flex-shrink:0;">
-              ${qty === 0 
-                ? `<button class="add-btn" onclick="addToCart(${item.id})">+</button>`
-                : `<div class="qty-ctrl">
-                    <button class="qty-btn" onclick="changeQty(${item.id},-1)">−</button>
-                    <span style="font-size:16px;font-weight:900;min-width:20px;text-align:center;">${qty}</span>
-                    <button class="qty-btn" style="background:rgba(249,115,22,0.2);border-color:rgba(249,115,22,0.3);" onclick="changeQty(${item.id},1)">+</button>
-                  </div>`
-              }
-            </div>
-          </div>`;
-        grid.appendChild(card);
-      });
+        const grid = document.getElementById('menu-grid');
+        grid.innerHTML = items.map((item, idx) => {
+            const qty = cart[item.id] ? cart[item.id].qty : 0;
+            return `
+                <div class="dish-card slide-up" style="animation-delay: ${idx * 0.05}s">
+                    <div class="dish-image-container">
+                        <img class="dish-image" src="${item.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600'}" alt="${item.name}" />
+                        <div style="position:absolute; top:16px; right:16px; background:rgba(0,0,0,0.6); backdrop-filter:blur(8px); padding:6px 14px; border-radius:12px; font-size:10px; font-weight:900; text-transform:uppercase; color:${item.type === 'veg' ? '#10b981' : '#f43f5e'}; border:1px solid ${item.type === 'veg' ? 'rgba(16,185,129,0.3)' : 'rgba(244,63,94,0.3)'};">
+                            ${item.type}
+                        </div>
+                    </div>
+                    <div style="padding:24px;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                            <div style="flex:1; min-width:0;">
+                                <h3 style="font-size:18px; font-weight:900; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.name}</h3>
+                                <p style="font-size:11px; font-weight:900; color:rgba(255,255,255,0.3); text-transform:uppercase;">${item.category}</p>
+                            </div>
+                            <p style="font-size:22px; font-weight:900; color:#f97316; font-style:italic;">₹${item.price}</p>
+                        </div>
+                        
+                        <div style="display:flex; justify-content:flex-end;">
+                            ${qty === 0 
+                                ? `<button class="add-btn" onclick="addToCart(${item.id})">
+                                    <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" /></svg>
+                                   </button>`
+                                : `<div class="qty-ctrl">
+                                    <button class="qty-btn" onclick="changeQty(${item.id}, -1)">−</button>
+                                    <span style="font-size:16px; font-weight:900; min-width:24px; text-align:center;">${qty}</span>
+                                    <button class="qty-btn" style="background:rgba(249,115,22,0.2); color:#f97316;" onclick="changeQty(${item.id}, 1)">+</button>
+                                   </div>`
+                            }
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
     }
 
-    // ── CART ─────────────────────────────────────────
+    // ── TAX INTELLIGENCE ─────────────────────────────
     window.addToCart = function(id) {
-      const item = allItems.find(i => Number(i.id) === Number(id));
-      if (!item) return;
-      cart[id] = { item, qty: 1, notes: '' };
-      updateCartBar();
-      applyFilters();
+        const item = allItems.find(i => Number(i.id) === Number(id));
+        if (!item) return;
+        cart[id] = { item, qty: 1 };
+        updateUI();
     }
 
     window.changeQty = function(id, delta) {
-      if (!cart[id]) return;
-      cart[id].qty += delta;
-      if (cart[id].qty <= 0) delete cart[id];
-      updateCartBar();
-      applyFilters();
+        if (!cart[id]) return;
+        cart[id].qty += delta;
+        if (cart[id].qty <= 0) delete cart[id];
+        updateUI();
     }
 
-    function updateCartBar() {
-      const items = Object.values(cart);
-      const bar = document.getElementById('cart-bar');
-      if (items.length === 0) { bar.classList.add('hidden'); return; }
-      bar.classList.remove('hidden');
-      const total = items.reduce((s, {item, qty}) => s + (parseFloat(item.price) * qty), 0);
-      const count = items.reduce((s, {qty}) => s + qty, 0);
-      document.getElementById('cart-summary').textContent = `${count} items · ₹${total.toFixed(0)}`;
+    function updateUI() {
+        const items = Object.values(cart);
+        const subtotal = items.reduce((s, {item, qty}) => s + (item.price * qty), 0);
+        const gst = subtotal * 0.05;
+        const total = subtotal + gst;
+        const count = items.reduce((s, {qty}) => s + qty, 0);
+
+        const bar = document.getElementById('cart-bar');
+        if (count > 0) {
+            bar.classList.remove('hidden');
+            document.getElementById('cart-summary').textContent = `₹${total.toFixed(2)}`;
+            document.getElementById('cart-count-badge').textContent = count;
+        } else {
+            bar.classList.add('hidden');
+        }
+
+        // Update Checkout Peak
+        document.getElementById('checkout-subtotal').textContent = `₹${subtotal.toFixed(2)}`;
+        document.getElementById('checkout-tax').textContent = `₹${gst.toFixed(2)}`;
+        document.getElementById('checkout-total').textContent = `₹${total.toFixed(2)}`;
+        
+        applyFilters(); 
     }
 
-    // ── CHECKOUT ─────────────────────────────────────
     window.openCheckout = function() {
         const items = Object.values(cart);
         const container = document.getElementById('checkout-items');
-        container.innerHTML = items.map(({item, qty, notes}, i) => `
-            <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:16px; padding:12px; margin-bottom:12px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <span style="font-size:13px; font-weight:800; font-style:italic; text-transform:uppercase;">${item.name} × ${qty}</span>
-                    <span style="font-size:13px; font-weight:900; color:#f97316;">₹${(item.price * qty).toFixed(0)}</span>
+        container.innerHTML = items.map(({item, qty}) => `
+            <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:24px; padding:16px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <p style="font-size:14px; font-weight:800; text-transform:uppercase;">${item.name}</p>
+                    <p style="font-size:11px; font-weight:900; color:rgba(255,255,255,0.3); margin-top:4px;">Qty: ${qty} · ₹${item.price} each</p>
                 </div>
-                <input type="text" placeholder="Instructions (e.g. no spice)" 
-                    value="${notes || ''}"
-                    onchange="window.updateItemNotes(${item.id}, this.value)"
-                    style="width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:8px 12px; color:rgba(255,255,255,0.6); font-size:11px; font-weight:600; outline:none;" />
+                <p style="font-size:16px; font-weight:900; color:#f97316;">₹${(item.price * qty).toFixed(2)}</p>
             </div>
         `).join('');
         document.getElementById('checkout-modal').style.display = 'flex';
@@ -323,147 +407,46 @@ const { tableId } = Astro.params;
         document.getElementById('checkout-modal').style.display = 'none';
     }
 
-    window.updateItemNotes = function(id, val) {
-        if(cart[id]) cart[id].notes = val;
-    }
-
-    // ── STATUS TRACKING ──────────────────────────────
-    let activeOrderId = null;
-    let trackInterval = null;
-
     window.submitOrder = async function() {
-      const items = Object.values(cart);
-      if (items.length === 0) return;
+        const items = Object.values(cart);
+        const btn = document.getElementById('final-confirm-btn');
+        btn.textContent = '⏱ Committing to Matrix...';
+        btn.disabled = true;
 
-      const btn = document.getElementById('final-confirm-btn');
-      btn.textContent = '⏱ Processing Request...';
-      btn.disabled = true;
-
-      const payload = {
-        table_id: TABLE_ID,
-        items: items.map(({item, qty, notes}) => ({ 
-            menu_item_id: item.id, 
-            quantity: qty,
-            special_instructions: notes
-        })),
-        special_notes: document.getElementById('global-notes').value,
-        order_source: 'QR',
-        status: 'pending_waiter'
-      };
-
-      try {
-        // 🟢 MASTER SYNC (V26 - LEGACY COMPATIBILITY)
-        // Merge notes into first item to bypass missing DB column
-        const finalPayload = { ...payload };
-        if (finalPayload.special_notes && finalPayload.items.length > 0) {
-            finalPayload.items[0].special_instructions = `${finalPayload.items[0].special_instructions || ''} [Note: ${finalPayload.special_notes}]`.trim();
-        }
-        delete finalPayload.special_notes; // Critical: Remove the field that causes the crash
-
-        const orderUrl = '/api/v2/restaurant/orders';
-        let res = await fetch(orderUrl, {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(finalPayload)
-        });
-        
-        let data = await res.json();
-        
-        if(data.success || data.id) {
-            activeOrderId = (data.order && (data.order.id || data.order.orderId)) || data.id || data.orderId;
-            startTracking();
-            
-            // Update Result View
-            const total = items.reduce((s,{item,qty}) => s+(parseFloat(item.price)*qty), 0);
-            document.getElementById('success-total').textContent = '₹' + total.toFixed(0);
-            document.getElementById('success-items').innerHTML = items.map(({item,qty,notes}) => 
-                `<div style="margin-bottom:12px;">
-                    <div style="display:flex;justify-content:space-between;font-size:12px;">
-                        <span style="font-weight:800;color:white;text-transform:uppercase;font-style:italic;">${item.name} × ${qty}</span>
-                        <span style="color:#f97316;font-weight:900;">₹${(item.price*qty).toFixed(0)}</span>
-                    </div>
-                    ${notes ? `<p style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:700;margin-top:2px;">↳ ${notes}</p>` : ''}
-                </div>`
-            ).join('');
-            
-            closeCheckout();
-            document.getElementById('order-success').classList.add('show');
-        } else {
-            alert("Error: " + (data.error || "Could not place order. Please try again."));
-            btn.textContent = 'Confirm Request →';
-            btn.disabled = false;
-        }
-      } catch(e) { 
-          console.error(e);
-          alert("Network Error: Please check your connection.");
-          btn.textContent = 'Confirm Request →';
-          btn.disabled = false;
-      }
-    }
-
-    function startTracking() {
-        if(trackInterval) clearInterval(trackInterval);
-        trackInterval = setInterval(pollStatus, 3000);
-        pollStatus();
-    }
-
-    async function pollStatus() {
-        if(!activeOrderId) return;
         try {
-            const res = await fetch(`/api/v2/restaurant/orders/${activeOrderId}`);
-            const data = await res.json();
-            updateStatusUI(data.status);
-        } catch(e) {}
-    }
-
-    function updateStatusUI(status) {
-        const icon = document.getElementById('status-icon');
-        const title = document.getElementById('status-title');
-        const desc = document.getElementById('status-desc');
-        const badge = document.getElementById('status-badge');
-
-        switch(status) {
-            case 'pending_waiter':
-                icon.textContent = '⏳';
-                title.textContent = 'Request Sent';
-                desc.textContent = 'Waiting for waiter to confirm your order...';
-                badge.textContent = '🟡 Pending Waiter';
-                badge.style.color = '#f97316';
-                break;
-            case 'confirmed':
-                icon.textContent = '✅';
-                title.textContent = 'Confirmed!';
-                desc.textContent = 'Waiter has confirmed your order. Sending to kitchen...';
-                badge.textContent = '🟢 Confirmed';
-                badge.style.color = '#10b981';
-                break;
-            case 'preparing':
-                icon.textContent = '👨‍🍳';
-                title.textContent = 'Preparing';
-                desc.textContent = 'Our chefs are crafting your meal with love.';
-                badge.textContent = '🔥 In Kitchen';
-                badge.style.color = '#f43f5e';
-                break;
-            case 'ready':
-                icon.textContent = '🍽️';
-                title.textContent = 'Order Ready';
-                desc.textContent = 'Your food is ready! It will be at your table any second.';
-                badge.textContent = '⚡️ Ready to Serve';
-                badge.style.color = '#8b5cf6';
-                break;
-        }
+            const res = await fetch('/api/v2/restaurant/orders', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    table_id: TABLE_ID,
+                    items: items.map(({item, qty}) => ({ menu_item_id: item.id, quantity: qty })),
+                    order_source: 'QR'
+                })
+            });
+            
+            if (res.ok) {
+                const total = items.reduce((s, {item, qty}) => s + (item.price * qty), 0) * 1.05;
+                document.getElementById('success-total').textContent = `₹${total.toFixed(2)}`;
+                document.getElementById('success-items').innerHTML = items.map(({item, qty}) => 
+                    `<div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px;">
+                        <span style="font-weight:900; opacity:0.6;">${item.name} × ${qty}</span>
+                        <span style="font-weight:900; color:#f97316;">₹${(item.price * qty).toFixed(2)}</span>
+                    </div>`
+                ).join('');
+                document.getElementById('order-success').style.display = 'flex';
+                closeCheckout();
+            } else {
+                alert("Matrix Sync Error. Please retry.");
+                btn.textContent = 'Confirm Order →';
+                btn.disabled = false;
+            }
+        } catch(e) { alert("Offline Connectivity Detected."); btn.textContent = 'Confirm Order →'; btn.disabled = false; }
     }
 
     window.resetOrder = function() {
-      if(trackInterval) clearInterval(trackInterval);
-      activeOrderId = null;
-      cart = {};
-      document.getElementById('order-success').classList.remove('show');
-      document.getElementById('cart-bar').classList.add('hidden');
-      document.getElementById('search-input').value = '';
-      document.getElementById('final-confirm-btn').disabled = false;
-      document.getElementById('final-confirm-btn').textContent = 'Confirm Request →';
-      filterCategory('All', document.querySelector('.cat-tab'));
+        cart = {};
+        document.getElementById('order-success').style.display = 'none';
+        updateUI();
     }
 
     loadMenu();
