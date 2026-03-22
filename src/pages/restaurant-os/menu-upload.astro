@@ -125,6 +125,7 @@ import "../../styles/restaurant.css";
 
   <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs" type="module"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     .upload-tab { color: rgba(255,255,255,0.3); transition: all 0.2s; }
     .upload-tab.active { background: linear-gradient(135deg,#7c3aed,#a855f7); color: white; box-shadow: 0 4px 16px rgba(124,58,237,0.3); }
@@ -270,30 +271,52 @@ import "../../styles/restaurant.css";
       log('Identified ' + items.length + ' precise items. Verify and Import.');
     }
 
-    // ── CSV PARSER ───────────────────────────────────
+    // ── CSV/EXCEL PARSER (SHEETJS) ──────────────────
     function handleCSV(e) {
       const file = e.target.files[0];
       if (!file) return;
-      log('Parsing CSV: ' + file.name + '...');
+      log('Preparing to parse ' + file.name + '...');
+
       const reader = new FileReader();
       reader.onload = (ev) => {
-        const lines = ev.target.result.split('\n').filter(l => l.trim());
-        const items = [];
-        // Skip header
-        for (let i = 1; i < lines.length; i++) {
-          const cols = lines[i].split(',').map(c => c.trim().replace(/"/g,''));
-          if (cols.length < 2) continue;
-          const name = cols[0];
-          const price = parseFloat(cols[1].replace(/[^\d.]/g,'')) || 0;
-          const category = cols[2] || autoCategory(name);
-          const type = cols[3] || autoType(name);
-          if (name && price) items.push({ name, price, category, type, image_url: autoImage(name, category) });
+        try {
+          const data = new Uint8Array(ev.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const sheetName = workbook.SheetNames[0];
+          const sheet = workbook.Sheets[sheetName];
+          const rows = XLSX.utils.sheet_to_json(sheet);
+
+          if (rows.length === 0) { log('No data found in your file.'); return; }
+
+          const items = [];
+          rows.forEach((row, i) => {
+            // Smart Map: look for Name, Price regardless of capitalization
+            const name = row.Name || row.name || row.Dish || row.dish || Object.values(row)[0];
+            const price = parseFloat(row.Price || row.price || row.Rate || row.rate || Object.values(row)[1]) || 0;
+            const category = row.Category || row.category || row.cat || autoCategory(name);
+            const type = (row.Type || row.type || row.kind || autoType(name)).toLowerCase();
+
+            if (name && String(name).length > 2) {
+              items.push({ 
+                name: String(name).trim(), 
+                price: price, 
+                category: category, 
+                type: type.includes('non') ? 'non-veg' : 'veg',
+                image_url: autoImage(String(name), category) 
+              });
+            }
+          });
+
+          if (items.length === 0) { log('AI could not identify columns (Name, Price). Check headers.'); return; }
+
+          setParsedItems(items);
+          log(`Successfully extracted ${items.length} items from ${file.name}.`);
+        } catch (err) {
+          console.error(err);
+          log('ERROR: File corrupted or unsupported. Try a different Excel version.');
         }
-        if (items.length === 0) { log('No valid rows found. Check CSV format.'); return; }
-        setParsedItems(items);
-        log('Parsed ' + items.length + ' items from CSV. Review and import.');
       };
-      reader.readAsText(file);
+      reader.readAsArrayBuffer(file);
     }
 
     // ── MANUAL TEXT PARSER ──────────────────────────
