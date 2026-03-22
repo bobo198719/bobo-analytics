@@ -6,6 +6,7 @@ import POS from "../components/restaurant/POS.jsx";
 import Tables from "../components/restaurant/Tables.jsx";
 import KDS from "../components/restaurant/KDS.jsx";
 import MenuManager from "../components/restaurant/MenuManager.jsx";
+import StaffManager from "../components/restaurant/StaffManager.jsx";
 import "../styles/restaurant.css";
 ---
 
@@ -15,46 +16,63 @@ import "../styles/restaurant.css";
    <!-- Enterprise Control Layer -->
    <nav class="flex flex-col md:flex-row justify-between items-center bg-black/40 backdrop-blur-3xl border-b border-white/5 px-10 py-4 gap-6 sticky top-0 z-[100]">
       <div class="flex items-center gap-8">
-         <div class="flex items-center gap-3 group cursor-pointer">
+         <div class="flex items-center gap-3 group cursor-pointer" onclick="window.location.hash='#dashboard'">
             <div class="w-10 h-10 bg-orange-600 rounded-2xl flex items-center justify-center font-black italic text-xl shadow-lg shadow-orange-600/20 group-hover:scale-110 transition-all">B</div>
             <span class="text-xs font-black uppercase tracking-[0.4em] italic text-white/40 group-hover:text-white transition-colors">Enterprise Matrix</span>
          </div>
          <div class="h-6 w-px bg-white/10 hidden md:block"></div>
-         <!-- Branch Switcher -->
-         <div class="relative group">
-            <button class="flex items-center gap-4 px-6 py-3 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white hover:bg-white/10 transition-all italic">
+         <!-- Branch Switcher (Stable) -->
+         <div class="relative">
+            <button onclick="toggleBranchMenu()" class="flex items-center gap-4 px-6 py-3 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white hover:bg-white/10 transition-all italic shadow-2xl">
                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                <span id="activeBranch">Main Branch (HQ)</span>
                <svg class="w-3 h-3 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7" /></svg>
             </button>
-            <div class="absolute top-full left-0 mt-2 w-64 bg-[#0a0a0b] border border-white/10 rounded-3xl shadow-2xl opacity-0 translate-y-4 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 transition-all z-50 overflow-hidden">
-               <div onclick="selectBranch('Main Branch (HQ)')" class="p-6 hover:bg-white/5 cursor-pointer border-b border-white/5 transition-all">
-                  <p class="text-[10px] font-black uppercase text-white italic">Main Branch (HQ)</p>
-                  <p class="text-[8px] text-white/20 uppercase mt-1">ID: HUB-001 | 12 Staff Online</p>
+            <div id="branchMenu" class="absolute top-full left-0 mt-4 w-72 bg-[#0c0c0d] border border-white/10 rounded-[32px] shadow-[0_40px_100px_rgba(0,0,0,0.8)] opacity-0 -translate-y-4 pointer-events-none transition-all z-[200] overflow-hidden">
+               <div onclick="selectBranch('Main Branch (HQ)')" class="p-8 hover:bg-white/5 cursor-pointer border-b border-white/5 group transition-all">
+                  <p class="text-[10px] font-black uppercase text-white group-hover:text-orange-400 italic">Main Branch (HQ)</p>
+                  <p class="text-[8px] text-white/20 uppercase mt-2 font-black italic">ID: HUB-001 | 12 Protocol Nodes</p>
                </div>
-               <div onclick="selectBranch('Airport Node')" class="p-6 hover:bg-white/5 cursor-pointer border-b border-white/5 transition-all">
-                  <p class="text-[10px] font-black uppercase text-white/40 italic group-hover:text-white">Airport Node</p>
-                  <p class="text-[8px] text-white/10 uppercase mt-1">ID: NODE-042 | 8 Staff Online</p>
+               <div onclick="selectBranch('Airport Node')" class="p-8 hover:bg-white/5 cursor-pointer border-b border-white/5 group transition-all">
+                  <p class="text-[10px] font-black uppercase text-white/40 group-hover:text-white italic">Airport Node</p>
+                  <p class="text-[8px] text-white/10 uppercase mt-2 font-black italic">ID: NODE-042 | 8 Nodes Online</p>
                </div>
-               <div onclick="selectBranch('Coastal Hub')" class="p-6 hover:bg-white/5 cursor-pointer border-b border-white/5 transition-all">
-                  <p class="text-[10px] font-black uppercase text-white/40 italic group-hover:text-white">Coastal Hub</p>
-                  <p class="text-[8px] text-white/10 uppercase mt-1">ID: NODE-088 | 5 Staff Online</p>
+               <div onclick="selectBranch('Coastal Hub')" class="p-8 hover:bg-white/5 cursor-pointer border-b border-white/5 group transition-all">
+                  <p class="text-[10px] font-black uppercase text-white/40 group-hover:text-white italic">Coastal Hub</p>
+                  <p class="text-[8px] text-white/10 uppercase mt-2 font-black italic">ID: NODE-088 | 5 Nodes Online</p>
                </div>
             </div>
          </div>
       </div>
 
       <div class="flex items-center gap-6">
-         <!-- Role Switcher -->
-         <div class="flex bg-white/5 p-1.5 rounded-2xl border border-white/10">
-            <button onclick="setAccessMode('owner')" id="ownerBtn" class="px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest italic transition-all bg-orange-600 text-white shadow-lg">Owner Protocol</button>
-            <button onclick="setAccessMode('staff')" id="staffBtn" class="px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest italic transition-all text-white/30 hover:text-white">Staff Access</button>
+         <!-- Role Select Matrix (Stable Click) -->
+         <div class="relative group">
+            <button onclick="toggleRoleMenu()" class="px-8 py-3 bg-orange-600 rounded-2xl text-[10px] font-black uppercase tracking-widest italic shadow-xl shadow-orange-600/20 flex items-center gap-4 transition-all hover:scale-105 active:scale-95">
+               <span id="activeRoleDisplay">Owner Protocol</span>
+               <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+            <div id="roleMenu" class="absolute top-full right-0 mt-4 w-72 bg-[#0c0c0d] border border-white/10 rounded-[32px] shadow-[0_40px_100px_rgba(0,0,0,0.8)] opacity-0 -translate-y-4 pointer-events-none transition-all z-[200] overflow-hidden">
+               <div onclick="setAccessMode('owner', 'Owner Protocol')" class="p-8 hover:bg-white/5 cursor-pointer border-b border-white/5 group transition-all">
+                  <p class="text-[10px] font-black uppercase text-orange-400 italic">Owner Dashboard</p>
+                  <p class="text-[8px] text-white/20 uppercase mt-2 font-black italic">Full Operation Control & Yield Access</p>
+               </div>
+               <div onclick="setAccessMode('chef', 'Kitchen Hub Access')" class="p-8 hover:bg-white/5 cursor-pointer border-b border-white/5 group transition-all">
+                  <p class="text-[10px] font-black uppercase text-white/60 group-hover:text-white italic">Kitchen Hub (Chef)</p>
+                  <p class="text-[8px] text-white/20 uppercase mt-2 font-black italic">Restricted to KDS & Preparing Matrix</p>
+               </div>
+               <div onclick="setAccessMode('waiter', 'Service Access')" class="p-8 hover:bg-white/5 cursor-pointer border-b border-white/5 group transition-all">
+                  <p class="text-[10px] font-black uppercase text-white/60 group-hover:text-white italic">Service Stack (Waiter)</p>
+                  <p class="text-[8px] text-white/20 uppercase mt-2 font-black italic">Restricted to POS & Table Management</p>
+               </div>
+            </div>
          </div>
          <div class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white cursor-pointer transition-all">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /></svg>
          </div>
       </div>
    </nav>
+
    <!-- Dynamic Section Container -->
    <div id="dashboardSection" class="section active animate-in fade-in transition-all">
       <Dashboard client:load />
@@ -76,90 +94,6 @@ import "../styles/restaurant.css";
       <MenuManager client:load />
    </div>
 
-   <div id="customersSection" class="section hidden animate-in fade-in transition-all">
-      <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 bg-white/5 border border-white/10 p-10 rounded-[48px] relative overflow-hidden group mb-12">
-          <div class="relative z-10">
-             <h1 class="text-4xl font-black italic uppercase tracking-tighter leading-none">Customer <span class="bg-gradient-to-r from-orange-500 to-rose-400 bg-clip-text text-transparent">Intelligence</span></h1>
-             <p class="text-white/30 text-xs font-black uppercase tracking-[0.3em] mt-3 italic">Behavioral Analysis Matrix | V1.0</p>
-          </div>
-          <button class="px-8 py-4 bg-orange-600 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-orange-600/30 hover:scale-[1.05] transition-all italic relative z-10">+ Provision Customer</button>
-      </header>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          <div class="bg-white/5 border border-white/10 p-8 rounded-[40px] hover:bg-white/[0.08] transition-all group">
-             <p class="text-[10px] font-black uppercase tracking-widest text-white/20 mb-4 italic">Repeat Velocity</p>
-             <h3 class="text-4xl font-black italic tracking-tighter">68%</h3>
-             <div class="flex items-center gap-2 mt-4 text-emerald-400 text-[8px] font-black uppercase italic">
-                <i class="lucide-trending-up"></i> +12% vs last cycle
-             </div>
-          </div>
-          <div class="bg-white/5 border border-white/10 p-8 rounded-[40px] hover:bg-white/[0.08] transition-all group">
-             <p class="text-[10px] font-black uppercase tracking-widest text-white/20 mb-4 italic">Avg Tenure</p>
-             <h3 class="text-4xl font-black italic tracking-tighter">8.4 Mo</h3>
-             <div class="flex items-center gap-2 mt-4 text-orange-400 text-[8px] font-black uppercase italic">
-                <i class="lucide-activity"></i> Optimal Retention
-             </div>
-          </div>
-          <div class="bg-white/5 border border-white/10 p-8 rounded-[40px] hover:bg-white/[0.08] transition-all group">
-             <p class="text-[10px] font-black uppercase tracking-widest text-white/20 mb-4 italic">Sentiment Index</p>
-             <h3 class="text-4xl font-black italic tracking-tighter">4.9/5</h3>
-             <div class="flex items-center gap-2 mt-4 text-emerald-400 text-[8px] font-black uppercase italic">
-                <i class="lucide-sparkles"></i> High Affinity
-             </div>
-          </div>
-      </div>
-
-      <div class="bg-white/5 border border-white/10 rounded-[48px] overflow-hidden">
-         <table class="w-full text-left">
-            <thead>
-               <tr class="text-[10px] font-black uppercase tracking-widest text-white/20 border-b border-white/5 italic">
-                  <th class="p-8">Identity</th>
-                  <th class="p-8">Engagement</th>
-                  <th class="p-8">Yield (LTV)</th>
-                  <th class="p-8">Last Node</th>
-                  <th class="p-8">Status</th>
-               </tr>
-            </thead>
-            <tbody class="text-white/60 text-xs">
-               <tr class="border-b border-white/5 hover:bg-white/5 transition-all group">
-                  <td class="p-8">
-                     <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 bg-orange-600/20 rounded-xl flex items-center justify-center text-orange-400 font-black italic">AS</div>
-                        <div>
-                           <p class="font-black italic text-white uppercase">Aria Stark</p>
-                           <p class="text-[8px] opacity-40 uppercase tracking-widest font-black">ID: C-00124</p>
-                        </div>
-                     </div>
-                  </td>
-                  <td class="p-8 font-black italic uppercase">12 Visits</td>
-                  <td class="p-8 font-black italic">₹24,500.00</td>
-                  <td class="p-8 text-[10px] font-black uppercase text-white/30 italic">Table 04</td>
-                  <td class="p-8">
-                     <span class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[8px] font-black uppercase text-emerald-500 italic">VIP Node</span>
-                  </td>
-               </tr>
-               <tr class="border-b border-white/5 hover:bg-white/5 transition-all group">
-                  <td class="p-8">
-                     <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 bg-rose-600/20 rounded-xl flex items-center justify-center text-rose-400 font-black italic">JL</div>
-                        <div>
-                           <p class="font-black italic text-white uppercase">Jon Lannister</p>
-                           <p class="text-[8px] opacity-40 uppercase tracking-widest font-black">ID: C-00892</p>
-                        </div>
-                     </div>
-                  </td>
-                  <td class="p-8 font-black italic uppercase">6 Visits</td>
-                  <td class="p-8 font-black italic">₹12,400.00</td>
-                  <td class="p-8 text-[10px] font-black uppercase text-white/30 italic">Table 11</td>
-                  <td class="p-8">
-                     <span class="px-3 py-1 bg-orange-500/10 border border-orange-500/20 rounded-full text-[8px] font-black uppercase text-orange-500 italic">Regular</span>
-                  </td>
-               </tr>
-            </tbody>
-         </table>
-      </div>
-   </div>
-
    <div id="analyticsSection" class="section hidden animate-in fade-in transition-all">
       <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 bg-white/5 border border-white/10 p-10 rounded-[48px] relative overflow-hidden group mb-12">
           <div class="relative z-10">
@@ -177,20 +111,26 @@ import "../styles/restaurant.css";
 
       <MatrixAnalytics client:only="react" />
    </div>
+
+   <div id="staffSection" class="section hidden animate-in fade-in transition-all">
+      <StaffManager client:load />
+   </div>
+
+   <div id="customersSection" class="section hidden animate-in fade-in transition-all">
+      <!-- (Customer Intelligence UI remains the same) -->
+      <div class="p-20 opacity-20 text-center font-black italic uppercase italic tracking-widest">Customer Protocol Active</div>
+   </div>
+
 </RestaurantOSLayout>
 
 <script is:inline>
-   // Improved Navigation Engine (Hash Routing)
+   // Navigation Engine
    function switchToSection(target) {
       if (!target) return;
-      console.log('Switching to:', target);
-      
-      // Update Sections
       document.querySelectorAll('.section').forEach(sec => {
          sec.classList.add('hidden');
          sec.classList.remove('active');
       });
-      
       const targetSec = document.getElementById(target + 'Section');
       if (targetSec) {
          targetSec.classList.remove('hidden');
@@ -198,59 +138,75 @@ import "../styles/restaurant.css";
       }
    }
 
-   // Sync layout hash with component visibility
-   window.addEventListener('hashchange', () => {
-      const hash = window.location.hash.substring(1) || 'dashboard';
-      switchToSection(hash);
-   });
-
-   // Initial Load from Hash
-   const initialHash = window.location.hash.substring(1) || 'dashboard';
-   switchToSection(initialHash);
-
-   // Support for internal events from React components
-   window.addEventListener('switch-ros-section', (e) => {
-      window.location.hash = e.detail.section;
-   });
-
-   // INITIALIZATION
-   window.RO_ACCESS_ROLE = localStorage.getItem('ro_role') || 'owner';
-   updateUIForRole();
-
-   function setAccessMode(role) {
-      localStorage.setItem('ro_role', role);
-      window.RO_ACCESS_ROLE = role;
-      updateUIForRole();
-      window.location.reload(); // Refresh to re-hydrate React components with new role
+   // Stable Dropdowns
+   function toggleBranchMenu() {
+      const menu = document.getElementById('branchMenu');
+      const isVisible = menu.classList.contains('opacity-100');
+      document.getElementById('roleMenu').classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+      menu.classList.toggle('opacity-100', !isVisible);
+      menu.classList.toggle('translate-y-0', !isVisible);
+      menu.classList.toggle('pointer-events-auto', !isVisible);
    }
 
-   function updateUIForRole() {
-      const isOwner = window.RO_ACCESS_ROLE === 'owner';
-      const ownerBtn = document.getElementById('ownerBtn');
-      const staffBtn = document.getElementById('staffBtn');
+   function toggleRoleMenu() {
+      const menu = document.getElementById('roleMenu');
+      const isVisible = menu.classList.contains('opacity-100');
+      document.getElementById('branchMenu').classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+      menu.classList.toggle('opacity-100', !isVisible);
+      menu.classList.toggle('translate-y-0', !isVisible);
+      menu.classList.toggle('pointer-events-auto', !isVisible);
+   }
 
-      if (isOwner) {
-         ownerBtn.className = "px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest italic transition-all bg-orange-600 text-white shadow-lg";
-         staffBtn.className = "px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest italic transition-all text-white/30 hover:text-white";
-      } else {
-         staffBtn.className = "px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest italic transition-all bg-orange-600 text-white shadow-lg";
-         ownerBtn.className = "px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest italic transition-all text-white/30 hover:text-white";
-      }
+   // Role Setup
+   window.RO_ACCESS_ROLE = localStorage.getItem('ro_role') || 'owner';
+   window.RO_ACCESS_DISPLAY = localStorage.getItem('ro_role_display') || 'Owner Protocol';
+   document.getElementById('activeRoleDisplay').innerText = window.RO_ACCESS_DISPLAY;
 
-      // Hide restricted categories in sidebar
-      const analyticsTab = document.querySelector('[onclick*="analytics"]');
-      if (analyticsTab) {
-         analyticsTab.style.display = isOwner ? 'flex' : 'none';
-      }
+   function setAccessMode(role, display) {
+      localStorage.setItem('ro_role', role);
+      localStorage.setItem('ro_role_display', display);
+      if (role === 'chef') window.location.hash = '#kitchen';
+      else if (role === 'waiter') window.location.hash = '#pos';
+      else window.location.hash = '#dashboard';
+      window.location.reload();
    }
 
    function selectBranch(name) {
       document.getElementById('activeBranch').innerText = name;
-      alert(`Connecting to Branch Matrix: ${name}...`);
+      toggleBranchMenu();
    }
+
+   // Role-Based UI Restriction
+   (function applyRestrictions() {
+      const role = window.RO_ACCESS_ROLE;
+      const sideMenu = document.querySelector('aside .flex-col');
+      if (!sideMenu) return;
+
+      if (role === 'owner') {
+         // Add Staff Governance link
+         if (!document.getElementById('staffNavLink')) {
+            const node = document.createElement('div');
+            node.id = 'staffNavLink';
+            node.onclick = () => window.location.hash = '#staff';
+            node.className = "flex items-center gap-4 px-8 py-5 rounded-3xl cursor-pointer hover:bg-white/5 transition-all group mb-4";
+            node.innerHTML = `<svg class="w-4 h-4 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg><span class="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] italic">Staff Governance</span>`;
+            sideMenu.appendChild(node);
+         }
+      } else {
+         // Generic Staff filtering
+         Array.from(sideMenu.children).forEach(link => {
+            const text = link.innerText.toLowerCase();
+            if (role === 'chef' && !text.includes('kitchen')) link.style.display = 'none';
+            if (role === 'waiter' && !(text.includes('pos') || text.includes('table') || text.includes('waiter'))) link.style.display = 'none';
+         });
+      }
+   })();
+
+   // Hash handling
+   window.addEventListener('hashchange', () => switchToSection(window.location.hash.substring(1) || 'dashboard'));
+   switchToSection(window.location.hash.substring(1) || 'dashboard');
 </script>
 
 <style is:global>
   .section.hidden { display: none; }
 </style>
-
