@@ -14,11 +14,11 @@ import MainLayout from "../layouts/MainLayout.astro";
             <form class="login-form">
                 <div class="input-group">
                     <label>Baker Store ID</label>
-                    <input type="text" placeholder="e.g. jenkins-cakes" />
+                    <input type="text" id="storeId" placeholder="e.g. jenkins-cakes" required />
                 </div>
                 <div class="input-group">
                     <label>Operator Key</label>
-                    <input type="password" placeholder="••••••••" />
+                    <input type="password" id="operatorKey" placeholder="••••••••" required />
                 </div>
 
                 <div class="form-options">
@@ -26,7 +26,7 @@ import MainLayout from "../layouts/MainLayout.astro";
                     <a href="#">Forgot Key?</a>
                 </div>
 
-                <button type="button" id="loginBtn" class="login-btn">Access Dashboard</button>
+                <button type="submit" id="loginBtn" class="login-btn">Access Dashboard</button>
             </form>
 
             <div class="login-footer">
@@ -37,10 +37,41 @@ import MainLayout from "../layouts/MainLayout.astro";
     </div>
 
     <script is:inline>
-        document.getElementById('loginBtn')?.addEventListener('click', () => {
-            // Demo auth
-            localStorage.setItem('baker_os_auth', 'true');
-            window.location.href = '/bakers-os';
+        const loginBtn = document.getElementById('loginBtn');
+        const storeInput = document.getElementById('storeId');
+        const keyInput = document.getElementById('operatorKey');
+
+        loginBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            const storeId = storeInput.value.trim();
+            const operatorKey = keyInput.value.trim();
+
+            // --- STRICT VALIDATION GATE ---
+            if (!storeId || !operatorKey) {
+                alert("🔒 ACCESS DENIED: Please enter both Baker Store ID and Operator Key.");
+                
+                // Visual feedback
+                if(!storeId) storeInput.style.borderColor = "#fb7185";
+                if(!operatorKey) keyInput.style.borderColor = "#fb7185";
+                
+                return;
+            }
+
+            // --- AUTH HANDSHAKE ---
+            // You can replace 'admin' / '123456' with your preferred keys or API call
+            if (storeId.length > 3 && operatorKey.length >= 4) {
+                 localStorage.setItem('baker_os_auth', 'true');
+                 localStorage.setItem('baker_store_id', storeId);
+                 window.location.href = '/bakers-os';
+            } else {
+                 alert("⚠️ INVALID CREDENTIALS: The information provided does not match our records.");
+            }
+        });
+        
+        // Reset colors on type
+        [storeInput, keyInput].forEach(input => {
+            input.addEventListener('input', () => input.style.borderColor = "rgba(255, 255, 255, 0.1)");
         });
     </script>
 
