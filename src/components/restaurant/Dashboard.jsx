@@ -97,6 +97,9 @@ const Dashboard = () => {
     window.dispatchEvent(new CustomEvent('switch-ros-section', { detail: { section } }));
   };
 
+  const role = typeof window !== 'undefined' ? localStorage.getItem('ro_role') || 'owner' : 'owner';
+  const isOwner = role === 'owner';
+
   return (
     <div className="space-y-12 animate-in fade-in duration-700 font-['Plus_Jakarta_Sans']">
       
@@ -121,50 +124,52 @@ const Dashboard = () => {
           <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/5 blur-[100px] -z-10 group-hover:bg-orange-500/10 transition-all"></div>
       </header>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <div onClick={() => switchSection('analytics')} className="cursor-pointer"><Card title="Shift Revenue" value={`₹${stats.todayRevenue.toLocaleString()}`} icon={<TrendingUp className="text-white w-6 h-6" />} gradient="bg-gradient-to-br from-orange-400 to-orange-600" trend="+12.4%" subValue="Performance: Optimal" /></div>
+      <section className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${isOwner ? '4' : '3'} gap-8`}>
+        {isOwner && <div onClick={() => switchSection('analytics')} className="cursor-pointer"><Card title="Shift Revenue" value={`₹${stats.todayRevenue.toLocaleString()}`} icon={<TrendingUp className="text-white w-6 h-6" />} gradient="bg-gradient-to-br from-orange-400 to-orange-600" trend="+12.4%" subValue="Performance: Optimal" /></div>}
         <div onClick={() => switchSection('pos')} className="cursor-pointer"><Card title="Traffic Volume" value={stats.totalOrders} icon={<ShoppingCart className="text-white w-6 h-6" />} gradient="bg-gradient-to-br from-indigo-400 to-indigo-600" trend="+8.2%" subValue="Dine-in Activity Live" /></div>
         <div onClick={() => switchSection('tables')} className="cursor-pointer"><Card title="Active Tables" value={stats.activeTables} icon={<Zap className="text-white w-6 h-6" />} gradient="bg-gradient-to-br from-amber-400 to-amber-600" subValue="Occupied Now" /></div>
         <div onClick={() => switchSection('kitchen')} className="cursor-pointer"><Card title="Kitchen Queue" value={`${stats.pendingOrders} KOTs`} icon={<Clock className="text-white w-6 h-6" />} gradient="bg-gradient-to-br from-rose-400 to-rose-600" subValue="Avg: 18 min prep time" /></div>
       </section>
 
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-white/5 border border-white/10 rounded-[48px] p-10 relative overflow-hidden group">
-          <div className="flex justify-between items-center mb-12 relative z-10">
-            <div>
-               <h3 className="text-xl font-black italic uppercase tracking-tight">Revenue Projection</h3>
-               <p className="text-[10px] font-black uppercase text-white/20 tracking-widest italic">Weekly Yield Distribution (Last 7 Days)</p>
+      <section className={`grid grid-cols-1 lg:grid-cols-${isOwner ? '3' : '1'} gap-8`}>
+        {isOwner && (
+          <div className="lg:col-span-2 bg-white/5 border border-white/10 rounded-[48px] p-10 relative overflow-hidden group">
+            <div className="flex justify-between items-center mb-12 relative z-10">
+              <div>
+                 <h3 className="text-xl font-black italic uppercase tracking-tight">Revenue Projection</h3>
+                 <p className="text-[10px] font-black uppercase text-white/20 tracking-widest italic">Weekly Yield Distribution (Last 7 Days)</p>
+              </div>
             </div>
+            
+            <div className="h-[300px] flex items-end justify-between gap-4 px-6 relative z-10 pb-8">
+              {stats.history.length === 0 ? (
+                  <div className="w-full flex flex-col items-center justify-center opacity-10">
+                      <Activity className="w-12 h-12 mb-4 animate-pulse" />
+                      <p className="font-black italic uppercase text-[10px] tracking-[0.3em]">Matrix Data Depleted</p>
+                  </div>
+              ) : (
+                  stats.history.map((h, i) => {
+                      const max = Math.max(...stats.history.map(x => Number(x.total))) || 1;
+                      const height = (Number(h.total) / max) * 100;
+                      return (
+                          <div key={i} className="flex-1 group relative flex flex-col items-center">
+                              {/* Phase 1: Show ₹ values above bars */}
+                              <div className="absolute -top-12 bg-white text-black px-3 py-2 rounded-xl text-[10px] font-black italic opacity-0 group-hover:opacity-100 transition-all transform translate-y-4 group-hover:translate-y-0 shadow-2xl z-20 border border-white shadow-orange-500/10">₹{Number(h.total).toLocaleString()}</div>
+                              <div 
+                                  style={{ height: `${height}%`, minHeight: '12px' }} 
+                                  className={`w-full max-w-[48px] rounded-2xl transition-all duration-1000 relative overflow-hidden bg-white/5 group-hover:bg-white/10 group-hover:border-orange-500/30 border border-white/5 ${i === stats.history.length - 1 ? 'bg-gradient-to-t from-orange-600 to-orange-400 shadow-xl shadow-orange-500/20' : 'shadow-inner'}`}
+                              >
+                                  <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                              </div>
+                              <p className="text-center text-[8px] text-white/30 font-black mt-6 uppercase tracking-widest italic group-hover:text-white transition-colors">{h.date}</p>
+                          </div>
+                      );
+                  })
+              )}
+            </div>
+            <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-orange-500/5 to-transparent -z-10"></div>
           </div>
-          
-          <div className="h-[300px] flex items-end justify-between gap-4 px-6 relative z-10 pb-8">
-            {stats.history.length === 0 ? (
-                <div className="w-full flex flex-col items-center justify-center opacity-10">
-                    <Activity className="w-12 h-12 mb-4 animate-pulse" />
-                    <p className="font-black italic uppercase text-[10px] tracking-[0.3em]">Matrix Data Depleted</p>
-                </div>
-            ) : (
-                stats.history.map((h, i) => {
-                    const max = Math.max(...stats.history.map(x => Number(x.total))) || 1;
-                    const height = (Number(h.total) / max) * 100;
-                    return (
-                        <div key={i} className="flex-1 group relative flex flex-col items-center">
-                            {/* Phase 1: Show ₹ values above bars */}
-                            <div className="absolute -top-12 bg-white text-black px-3 py-2 rounded-xl text-[10px] font-black italic opacity-0 group-hover:opacity-100 transition-all transform translate-y-4 group-hover:translate-y-0 shadow-2xl z-20 border border-white shadow-orange-500/10">₹{Number(h.total).toLocaleString()}</div>
-                            <div 
-                                style={{ height: `${height}%`, minHeight: '12px' }} 
-                                className={`w-full max-w-[48px] rounded-2xl transition-all duration-1000 relative overflow-hidden bg-white/5 group-hover:bg-white/10 group-hover:border-orange-500/30 border border-white/5 ${i === stats.history.length - 1 ? 'bg-gradient-to-t from-orange-600 to-orange-400 shadow-xl shadow-orange-500/20' : 'shadow-inner'}`}
-                            >
-                                <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                            </div>
-                            <p className="text-center text-[8px] text-white/30 font-black mt-6 uppercase tracking-widest italic group-hover:text-white transition-colors">{h.date}</p>
-                        </div>
-                    );
-                })
-            )}
-          </div>
-          <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-orange-500/5 to-transparent -z-10"></div>
-        </div>
+        )}
 
         <div className="bg-white/5 border border-white/10 rounded-[48px] p-10 relative overflow-hidden group">
            <h3 className="text-xl font-black italic uppercase tracking-tight mb-10 relative z-10 text-orange-400">Kitchen Pulse</h3>
