@@ -312,6 +312,10 @@ const POS = () => {
                  <span>Operational Subtotal</span>
                  <span>₹{getSubtotal().toFixed(2)}</span>
               </div>
+              <div className="flex items-center justify-between text-white/20 font-black text-[10px] tracking-widest uppercase italic border-b border-white/5 pb-3 pt-3">
+                 <span>Tax (GST @ 5.0%)</span>
+                 <span>₹{getGST().toFixed(2)}</span>
+              </div>
               <div className="flex items-center justify-between pt-4">
                  <div>
                     <span className="text-[8px] font-black uppercase text-white/30 tracking-widest italic block">AGGREGATE DUES (INC. GST)</span>
