@@ -1,0 +1,440 @@
+---
+// Restaurant Management Software - Kitchen Display System
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kitchen Display - Restaurant OS | Bobo Analytics</title>
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <meta name="theme-color" content="#0a0a0a">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0a0a; color: #fafafa; min-height: 100vh; }
+
+    /* Full-screen kitchen mode */
+    .kitchen-layout { min-height: 100vh; display: flex; flex-direction: column; }
+
+    .kitchen-header {
+      background: #171717;
+      border-bottom: 1px solid #1f1f1f;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+    .logo-icon svg { width: 22px; height: 22px; color: white; }
+    .header-title { font-size: 20px; font-weight: 600; }
+    .header-subtitle { font-size: 12px; color: #71717a; }
+
+    .header-center { display: flex; gap: 24px; }
+    .header-stat { text-align: center; }
+    .header-stat-value { font-size: 24px; font-weight: 700; }
+    .header-stat-value.orange { color: #f97316; }
+    .header-stat-value.blue { color: #3b82f6; }
+    .header-stat-value.green { color: #22c55e; }
+    .header-stat-label { font-size: 11px; color: #71717a; text-transform: uppercase; }
+
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    .time-display { font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .back-btn { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: #262626; border: none; border-radius: 8px; color: #a1a1aa; font-size: 13px; cursor: pointer; text-decoration: none; }
+    .back-btn:hover { background: #3f3f46; color: #fafafa; }
+
+    /* Kitchen Grid */
+    .kitchen-content { flex: 1; padding: 24px; overflow-y: auto; }
+    .kitchen-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+
+    /* Order Ticket */
+    .order-ticket {
+      background: #171717;
+      border: 2px solid #262626;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .order-ticket.pending { border-color: rgba(249, 115, 22, 0.5); }
+    .order-ticket.preparing { border-color: rgba(59, 130, 246, 0.5); }
+    .order-ticket.ready { border-color: rgba(34, 197, 94, 0.5); background: rgba(34, 197, 94, 0.05); }
+
+    .ticket-header {
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid #262626;
+    }
+
+    .ticket-info h3 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+    .ticket-info p { font-size: 13px; color: #71717a; }
+
+    .ticket-time {
+      text-align: right;
+    }
+    .ticket-timer {
+      font-size: 24px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .ticket-timer.warning { color: #f97316; }
+    .ticket-timer.urgent { color: #ef4444; animation: pulse 1s infinite; }
+    .ticket-status {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+    .ticket-status.pending { background: rgba(249, 115, 22, 0.1); color: #f97316; }
+    .ticket-status.preparing { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+    .ticket-status.ready { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .ticket-items { padding: 16px; }
+    .ticket-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #1f1f1f;
+    }
+    .ticket-item:last-child { border-bottom: none; }
+    .item-qty {
+      width: 28px;
+      height: 28px;
+      background: #262626;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .item-details { flex: 1; }
+    .item-name { font-weight: 600; font-size: 15px; margin-bottom: 2px; }
+    .item-notes { font-size: 12px; color: #f97316; }
+    .item-check {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #3f3f46;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .item-check:hover { border-color: #22c55e; }
+    .item-check.done { background: #22c55e; border-color: #22c55e; }
+    .item-check svg { display: none; }
+    .item-check.done svg { display: block; color: white; }
+
+    .ticket-actions {
+      padding: 16px;
+      border-top: 1px solid #262626;
+      display: flex;
+      gap: 12px;
+    }
+    .ticket-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .ticket-btn.secondary { background: #262626; color: #a1a1aa; }
+    .ticket-btn.secondary:hover { background: #3f3f46; color: #fafafa; }
+    .ticket-btn.primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; }
+    .ticket-btn.primary:hover { opacity: 0.9; }
+    .ticket-btn.success { background: #22c55e; color: white; }
+    .ticket-btn.success:hover { background: #16a34a; }
+
+    /* Filter tabs */
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .filter-tab {
+      padding: 10px 20px;
+      background: #171717;
+      border: 1px solid #262626;
+      border-radius: 8px;
+      color: #a1a1aa;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .filter-tab:hover { background: #1f1f1f; color: #fafafa; }
+    .filter-tab.active { background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.3); color: #a5b4fc; }
+
+    /* Sound notification */
+    .sound-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: #262626;
+      border: none;
+      border-radius: 8px;
+      color: #a1a1aa;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .sound-toggle.active { color: #22c55e; }
+
+    @media (max-width: 768px) {
+      .header-center { display: none; }
+      .kitchen-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="kitchen-layout">
+    <header class="kitchen-header">
+      <div class="header-left">
+        <div class="logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20"/><path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"/><path d="m4 8 2-4h12l2 4"/></svg>
+        </div>
+        <div>
+          <div class="header-title">Kitchen Display</div>
+          <div class="header-subtitle">Live Order Queue</div>
+        </div>
+      </div>
+
+      <div class="header-center">
+        <div class="header-stat">
+          <div class="header-stat-value orange" id="pending-count">3</div>
+          <div class="header-stat-label">Pending</div>
+        </div>
+        <div class="header-stat">
+          <div class="header-stat-value blue" id="preparing-count">4</div>
+          <div class="header-stat-label">Preparing</div>
+        </div>
+        <div class="header-stat">
+          <div class="header-stat-value green" id="ready-count">2</div>
+          <div class="header-stat-label">Ready</div>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="time-display" id="current-time">--:--:--</div>
+        <button class="sound-toggle active" id="sound-toggle">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          Sound On
+        </button>
+        <a href="/software/dashboard" class="back-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+          Back
+        </a>
+      </div>
+    </header>
+
+    <div class="kitchen-content">
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="all">All Orders</button>
+        <button class="filter-tab" data-filter="pending">Pending</button>
+        <button class="filter-tab" data-filter="preparing">Preparing</button>
+        <button class="filter-tab" data-filter="ready">Ready</button>
+      </div>
+
+      <div class="kitchen-grid" id="kitchen-grid"></div>
+    </div>
+  </div>
+
+  <script>
+    if (sessionStorage.getItem('restaurant_os_auth') !== 'true') window.location.href = '/software';
+
+    const orders = [
+      { id: '#1247', table: 'Table 5', status: 'preparing', time: 8, items: [
+        { qty: 1, name: 'Grilled Salmon', notes: '' },
+        { qty: 1, name: 'Caesar Salad', notes: 'No croutons' },
+        { qty: 2, name: 'Garlic Bread', notes: '' },
+        { qty: 1, name: 'House Wine', notes: '' }
+      ]},
+      { id: '#1246', table: 'Table 2', status: 'ready', time: 12, items: [
+        { qty: 1, name: 'Pasta Carbonara', notes: 'Extra bacon' },
+        { qty: 1, name: 'Tiramisu', notes: '' }
+      ]},
+      { id: '#1245', table: 'Table 8', status: 'pending', time: 2, items: [
+        { qty: 2, name: 'Steak Frites', notes: 'Medium rare' },
+        { qty: 1, name: 'Lobster Bisque', notes: '' },
+        { qty: 1, name: 'Cheesecake', notes: '' }
+      ]},
+      { id: '#1244', table: 'Table 3', status: 'preparing', time: 15, items: [
+        { qty: 3, name: 'Burger Deluxe', notes: '1 no onions' },
+        { qty: 3, name: 'Fries', notes: '' },
+        { qty: 3, name: 'Milkshake', notes: '1 chocolate, 2 vanilla' }
+      ]},
+      { id: '#1243', table: 'Table 1', status: 'pending', time: 1, items: [
+        { qty: 1, name: 'Fish & Chips', notes: 'Gluten-free batter' },
+        { qty: 1, name: 'Coleslaw', notes: '' }
+      ]},
+      { id: '#1242', table: 'Table 7', status: 'preparing', time: 10, items: [
+        { qty: 2, name: 'Pizza Margherita', notes: 'Extra cheese' },
+        { qty: 1, name: 'Garlic Knots', notes: '' }
+      ]},
+      { id: '#1241', table: 'Table 4', status: 'ready', time: 18, items: [
+        { qty: 1, name: 'Truffle Risotto', notes: '' },
+        { qty: 1, name: 'House Red Wine', notes: '' }
+      ]},
+      { id: '#1240', table: 'Table 6', status: 'pending', time: 0, items: [
+        { qty: 4, name: 'Chicken Wings', notes: 'Extra spicy' },
+        { qty: 4, name: 'Beer', notes: '' }
+      ]},
+      { id: '#1239', table: 'Table 9', status: 'preparing', time: 6, items: [
+        { qty: 1, name: 'Sushi Platter', notes: 'No wasabi' },
+        { qty: 2, name: 'Miso Soup', notes: '' }
+      ]}
+    ];
+
+    let currentFilter = 'all';
+    let soundEnabled = true;
+
+    function getTimerClass(time) {
+      if (time >= 15) return 'urgent';
+      if (time >= 10) return 'warning';
+      return '';
+    }
+
+    function formatTime(minutes) {
+      const mins = Math.floor(minutes);
+      const secs = Math.floor((minutes % 1) * 60);
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function renderOrders() {
+      const grid = document.getElementById('kitchen-grid');
+      const filtered = currentFilter === 'all' ? orders : orders.filter(o => o.status === currentFilter);
+      
+      // Sort: pending first, then preparing, then ready. Within each, sort by time (longest first)
+      const statusOrder = { pending: 0, preparing: 1, ready: 2 };
+      filtered.sort((a, b) => {
+        if (statusOrder[a.status] !== statusOrder[b.status]) {
+          return statusOrder[a.status] - statusOrder[b.status];
+        }
+        return b.time - a.time;
+      });
+
+      grid.innerHTML = filtered.map(order => `
+        <div class="order-ticket ${order.status}">
+          <div class="ticket-header">
+            <div class="ticket-info">
+              <h3>${order.id}</h3>
+              <p>${order.table}</p>
+            </div>
+            <div class="ticket-time">
+              <div class="ticket-timer ${getTimerClass(order.time)}">${formatTime(order.time)}</div>
+              <div class="ticket-status ${order.status}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</div>
+            </div>
+          </div>
+          <div class="ticket-items">
+            ${order.items.map((item, i) => `
+              <div class="ticket-item">
+                <div class="item-qty">${item.qty}</div>
+                <div class="item-details">
+                  <div class="item-name">${item.name}</div>
+                  ${item.notes ? `<div class="item-notes">${item.notes}</div>` : ''}
+                </div>
+                <div class="item-check" onclick="toggleItem(this)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="ticket-actions">
+            ${order.status === 'pending' ? `
+              <button class="ticket-btn primary" onclick="startOrder('${order.id}')">Start Preparing</button>
+            ` : order.status === 'preparing' ? `
+              <button class="ticket-btn secondary" onclick="bumpOrder('${order.id}')">Bump</button>
+              <button class="ticket-btn success" onclick="markReady('${order.id}')">Mark Ready</button>
+            ` : `
+              <button class="ticket-btn success" onclick="completeOrder('${order.id}')">Complete & Clear</button>
+            `}
+          </div>
+        </div>
+      `).join('');
+
+      // Update counts
+      document.getElementById('pending-count').textContent = orders.filter(o => o.status === 'pending').length;
+      document.getElementById('preparing-count').textContent = orders.filter(o => o.status === 'preparing').length;
+      document.getElementById('ready-count').textContent = orders.filter(o => o.status === 'ready').length;
+    }
+
+    renderOrders();
+
+    function toggleItem(el) { el.classList.toggle('done'); }
+
+    function startOrder(id) {
+      const order = orders.find(o => o.id === id);
+      if (order) { order.status = 'preparing'; renderOrders(); }
+    }
+
+    function markReady(id) {
+      const order = orders.find(o => o.id === id);
+      if (order) { order.status = 'ready'; renderOrders(); }
+    }
+
+    function bumpOrder(id) {
+      const order = orders.find(o => o.id === id);
+      if (order) { order.time = 0; renderOrders(); }
+    }
+
+    function completeOrder(id) {
+      const idx = orders.findIndex(o => o.id === id);
+      if (idx !== -1) { orders.splice(idx, 1); renderOrders(); }
+    }
+
+    // Filter tabs
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentFilter = tab.dataset.filter;
+        renderOrders();
+      });
+    });
+
+    // Sound toggle
+    document.getElementById('sound-toggle').addEventListener('click', function() {
+      soundEnabled = !soundEnabled;
+      this.classList.toggle('active', soundEnabled);
+      this.innerHTML = soundEnabled ? 
+        '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Sound On' :
+        '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg> Sound Off';
+    });
+
+    // Update time
+    function updateTime() {
+      const now = new Date();
+      document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    // Simulate time passing
+    setInterval(() => {
+      orders.forEach(order => {
+        if (order.status !== 'ready') {
+          order.time += 1/60;
+        }
+      });
+      renderOrders();
+    }, 1000);
+  </script>
+</body>
+</html>

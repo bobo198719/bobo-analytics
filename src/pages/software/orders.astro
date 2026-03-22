@@ -1,0 +1,480 @@
+---
+// Restaurant Management Software - Order Management
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders - Restaurant OS | Bobo Analytics</title>
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <meta name="theme-color" content="#0a0a0a">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0a0a; color: #fafafa; min-height: 100vh; }
+    .app-layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 260px; background: #0a0a0a; border-right: 1px solid #1f1f1f; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; transition: transform 0.3s; }
+    .sidebar-header { padding: 20px; border-bottom: 1px solid #1f1f1f; }
+    .sidebar-logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+    .logo-icon svg { width: 22px; height: 22px; color: white; }
+    .logo-text h2 { font-size: 16px; font-weight: 600; color: #fafafa; }
+    .logo-text span { font-size: 11px; color: #71717a; }
+    .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+    .nav-section { margin-bottom: 24px; }
+    .nav-section-title { font-size: 11px; font-weight: 600; color: #52525b; text-transform: uppercase; letter-spacing: 0.5px; padding: 0 12px; margin-bottom: 8px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; color: #a1a1aa; text-decoration: none; font-size: 14px; font-weight: 500; transition: all 0.2s; cursor: pointer; border: none; background: none; width: 100%; text-align: left; }
+    .nav-item:hover { background: #171717; color: #fafafa; }
+    .nav-item.active { background: rgba(99, 102, 241, 0.1); color: #a5b4fc; }
+    .nav-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+    .nav-item .badge { margin-left: auto; background: #ef4444; color: white; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+    .sidebar-footer { padding: 16px; border-top: 1px solid #1f1f1f; }
+    .user-info { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 8px; }
+    .user-avatar { width: 36px; height: 36px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; }
+    .user-details { flex: 1; }
+    .user-name { font-size: 14px; font-weight: 500; color: #fafafa; }
+    .user-role { font-size: 12px; color: #71717a; }
+    .logout-btn { display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 12px; margin-top: 8px; background: none; border: 1px solid #262626; border-radius: 8px; color: #a1a1aa; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+    .logout-btn:hover { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #ef4444; }
+    .main-content { flex: 1; margin-left: 260px; min-height: 100vh; }
+    .header { background: #0a0a0a; border-bottom: 1px solid #1f1f1f; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .mobile-menu-btn { display: none; background: none; border: none; color: #a1a1aa; cursor: pointer; padding: 8px; }
+    .page-title { font-size: 20px; font-weight: 600; color: #fafafa; }
+    .header-right { display: flex; align-items: center; gap: 12px; }
+    .header-btn { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #171717; border: 1px solid #262626; border-radius: 8px; color: #a1a1aa; cursor: pointer; transition: all 0.2s; }
+    .header-btn:hover { background: #1f1f1f; color: #fafafa; }
+    .page-content { padding: 24px; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .page-header h2 { font-size: 24px; font-weight: 600; }
+    .page-header p { color: #71717a; font-size: 14px; margin-top: 4px; }
+    .new-order-btn { display: flex; align-items: center; gap: 8px; padding: 12px 20px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; border-radius: 8px; color: white; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+    .new-order-btn:hover { opacity: 0.9; }
+
+    /* Order Stats */
+    .order-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .stat-card { background: #171717; border: 1px solid #1f1f1f; border-radius: 12px; padding: 20px; }
+    .stat-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .stat-card-label { font-size: 13px; color: #71717a; }
+    .stat-card-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .stat-card-icon.orange { background: rgba(249, 115, 22, 0.1); color: #f97316; }
+    .stat-card-icon.blue { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+    .stat-card-icon.green { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+    .stat-card-icon.purple { background: rgba(168, 85, 247, 0.1); color: #a855f7; }
+    .stat-card-value { font-size: 28px; font-weight: 700; color: #fafafa; }
+
+    /* Filter Tabs */
+    .filter-tabs { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid #1f1f1f; padding-bottom: 16px; }
+    .filter-tab { padding: 8px 16px; background: none; border: none; color: #71717a; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; border-radius: 8px; }
+    .filter-tab:hover { color: #a1a1aa; background: #171717; }
+    .filter-tab.active { color: #a5b4fc; background: rgba(99, 102, 241, 0.1); }
+
+    /* Orders List */
+    .orders-container { background: #171717; border: 1px solid #1f1f1f; border-radius: 12px; overflow: hidden; }
+    .orders-header { display: grid; grid-template-columns: 100px 120px 1fr 120px 100px 120px; gap: 16px; padding: 16px 20px; background: #0a0a0a; border-bottom: 1px solid #1f1f1f; font-size: 12px; font-weight: 600; color: #71717a; text-transform: uppercase; }
+    .order-row { display: grid; grid-template-columns: 100px 120px 1fr 120px 100px 120px; gap: 16px; padding: 16px 20px; border-bottom: 1px solid #1f1f1f; align-items: center; cursor: pointer; transition: background 0.2s; }
+    .order-row:hover { background: rgba(99, 102, 241, 0.05); }
+    .order-row:last-child { border-bottom: none; }
+    .order-id { font-weight: 600; color: #fafafa; }
+    .order-table { color: #a1a1aa; }
+    .order-items { color: #a1a1aa; font-size: 13px; }
+    .order-items span { display: block; color: #71717a; font-size: 12px; margin-top: 2px; }
+    .order-amount { font-weight: 600; color: #fafafa; }
+    .order-time { color: #71717a; font-size: 13px; }
+    .order-status { display: inline-flex; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+    .order-status.pending { background: rgba(249, 115, 22, 0.1); color: #f97316; }
+    .order-status.preparing { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+    .order-status.ready { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+    .order-status.completed { background: rgba(168, 85, 247, 0.1); color: #a855f7; }
+    .order-status.cancelled { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+    /* Order Details Modal */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-overlay.show { display: flex; }
+    .modal { background: #171717; border: 1px solid #262626; border-radius: 16px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px; border-bottom: 1px solid #262626; }
+    .modal-title { font-size: 18px; font-weight: 600; }
+    .modal-close { background: none; border: none; color: #71717a; cursor: pointer; padding: 4px; }
+    .modal-close:hover { color: #fafafa; }
+    .modal-body { padding: 20px; }
+
+    .order-detail-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #262626; }
+    .order-detail-info h3 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+    .order-detail-info p { color: #71717a; font-size: 14px; }
+    .order-detail-status { text-align: right; }
+    .order-detail-status select { padding: 8px 12px; background: #0a0a0a; border: 1px solid #262626; border-radius: 6px; color: #fafafa; font-size: 13px; cursor: pointer; }
+
+    .order-items-list { margin-bottom: 24px; }
+    .order-items-title { font-size: 14px; font-weight: 600; color: #a1a1aa; margin-bottom: 12px; }
+    .order-item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #262626; }
+    .order-item-row:last-child { border-bottom: none; }
+    .order-item-name { font-weight: 500; }
+    .order-item-qty { color: #71717a; font-size: 13px; margin-top: 2px; }
+    .order-item-price { font-weight: 600; }
+
+    .order-totals { background: #0a0a0a; border-radius: 8px; padding: 16px; }
+    .order-total-row { display: flex; justify-content: space-between; padding: 8px 0; color: #a1a1aa; font-size: 14px; }
+    .order-total-row.final { border-top: 1px solid #262626; margin-top: 8px; padding-top: 16px; color: #fafafa; font-size: 18px; font-weight: 700; }
+
+    .modal-footer { display: flex; gap: 12px; justify-content: flex-end; padding: 20px; border-top: 1px solid #262626; }
+    .btn { padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .btn-secondary { background: #262626; border: 1px solid #3f3f46; color: #a1a1aa; }
+    .btn-secondary:hover { background: #3f3f46; color: #fafafa; }
+    .btn-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; color: white; }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-success { background: #22c55e; border: none; color: white; }
+    .btn-success:hover { background: #16a34a; }
+
+    .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 99; }
+
+    @media (max-width: 1200px) {
+      .orders-header, .order-row { grid-template-columns: 80px 100px 1fr 100px 120px; }
+      .order-time { display: none; }
+    }
+    @media (max-width: 1024px) { .order-stats { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.show { display: block; }
+      .main-content { margin-left: 0; }
+      .mobile-menu-btn { display: block; }
+      .order-stats { grid-template-columns: 1fr; }
+      .orders-header { display: none; }
+      .order-row { grid-template-columns: 1fr; gap: 8px; padding: 16px; }
+      .page-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="logo-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+          </div>
+          <div class="logo-text">
+            <h2>Restaurant OS</h2>
+            <span>Business Software</span>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Overview</div>
+          <a href="/software/dashboard" class="nav-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+            Dashboard
+          </a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Operations</div>
+          <a href="/software/tables" class="nav-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+            Tables
+          </a>
+          <a href="/software/orders" class="nav-item active">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1Z"/></svg>
+            Orders
+            <span class="badge">7</span>
+          </a>
+          <a href="/software/menu" class="nav-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+            Menu
+          </a>
+          <a href="/software/kitchen" class="nav-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20"/><path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"/><path d="m4 8 2-4h12l2 4"/></svg>
+            Kitchen Display
+          </a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Management</div>
+          <a href="/software/staff" class="nav-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            Staff
+          </a>
+          <a href="/software/reports" class="nav-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+            Reports
+          </a>
+          <a href="/software/settings" class="nav-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg>
+            Settings
+          </a>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">A</div>
+          <div class="user-details">
+            <div class="user-name">Admin</div>
+            <div class="user-role">Business Owner</div>
+          </div>
+        </div>
+        <button class="logout-btn" id="logout-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="header">
+        <div class="header-left">
+          <button class="mobile-menu-btn" id="mobile-menu-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+          </button>
+          <h1 class="page-title">Order Management</h1>
+        </div>
+        <div class="header-right">
+          <button class="header-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          </button>
+          <button class="header-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <div class="page-header">
+          <div>
+            <h2>Today's Orders</h2>
+            <p>Track and manage all restaurant orders</p>
+          </div>
+          <button class="new-order-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            New Order
+          </button>
+        </div>
+
+        <div class="order-stats">
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-label">Pending</span>
+              <div class="stat-card-icon orange">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+            </div>
+            <div class="stat-card-value">3</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-label">Preparing</span>
+              <div class="stat-card-icon blue">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20"/><path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"/></svg>
+              </div>
+            </div>
+            <div class="stat-card-value">5</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-label">Ready</span>
+              <div class="stat-card-icon green">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </div>
+            </div>
+            <div class="stat-card-value">2</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-label">Completed Today</span>
+              <div class="stat-card-icon purple">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+              </div>
+            </div>
+            <div class="stat-card-value">146</div>
+          </div>
+        </div>
+
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-filter="all">All Orders</button>
+          <button class="filter-tab" data-filter="pending">Pending</button>
+          <button class="filter-tab" data-filter="preparing">Preparing</button>
+          <button class="filter-tab" data-filter="ready">Ready</button>
+          <button class="filter-tab" data-filter="completed">Completed</button>
+        </div>
+
+        <div class="orders-container">
+          <div class="orders-header">
+            <div>Order ID</div>
+            <div>Table</div>
+            <div>Items</div>
+            <div>Amount</div>
+            <div>Time</div>
+            <div>Status</div>
+          </div>
+          <div id="orders-list">
+            <!-- Orders rendered by JS -->
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Order Details Modal -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Order Details</h3>
+        <button class="modal-close" onclick="closeModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <!-- Order details rendered by JS -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+        <button class="btn btn-success" id="mark-ready-btn">Mark as Ready</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Check auth
+    if (sessionStorage.getItem('restaurant_os_auth') !== 'true') {
+      window.location.href = '/software';
+    }
+
+    // Sample orders data
+    const orders = [
+      { id: '#1247', table: 'Table 5', items: ['Grilled Salmon', 'Caesar Salad', 'Garlic Bread', 'Wine'], amount: 68.50, time: '2 min ago', status: 'preparing' },
+      { id: '#1246', table: 'Table 2', items: ['Pasta Carbonara', 'Tiramisu'], amount: 32.00, time: '5 min ago', status: 'ready' },
+      { id: '#1245', table: 'Table 8', items: ['Steak', 'Lobster Bisque', 'Cheesecake', 'Red Wine', 'Coffee', 'Appetizer Platter'], amount: 124.75, time: '8 min ago', status: 'pending' },
+      { id: '#1244', table: 'Table 3', items: ['Burger', 'Fries', 'Milkshake'], amount: 45.00, time: '15 min ago', status: 'completed' },
+      { id: '#1243', table: 'Table 1', items: ['Pizza Margherita', 'Garlic Knots', 'Soda', 'Ice Cream', 'Salad'], amount: 89.25, time: '20 min ago', status: 'completed' },
+      { id: '#1242', table: 'Table 7', items: ['Fish & Chips', 'Coleslaw'], amount: 28.00, time: '25 min ago', status: 'preparing' },
+      { id: '#1241', table: 'Table 4', items: ['Chicken Wings', 'Beer', 'Nachos'], amount: 42.50, time: '30 min ago', status: 'pending' },
+      { id: '#1240', table: 'Table 6', items: ['Vegetarian Curry', 'Naan Bread', 'Mango Lassi'], amount: 35.00, time: '35 min ago', status: 'preparing' },
+      { id: '#1239', table: 'Table 9', items: ['Sushi Platter', 'Miso Soup', 'Green Tea'], amount: 78.00, time: '40 min ago', status: 'ready' },
+      { id: '#1238', table: 'Table 10', items: ['BBQ Ribs', 'Corn on the Cob', 'Coleslaw', 'Beer'], amount: 56.00, time: '45 min ago', status: 'pending' },
+    ];
+
+    let currentFilter = 'all';
+
+    function renderOrders() {
+      const list = document.getElementById('orders-list');
+      const filtered = currentFilter === 'all' ? orders : orders.filter(o => o.status === currentFilter);
+      
+      list.innerHTML = filtered.map(order => `
+        <div class="order-row" onclick="showOrderDetails('${order.id}')">
+          <div class="order-id">${order.id}</div>
+          <div class="order-table">${order.table}</div>
+          <div class="order-items">
+            ${order.items.slice(0, 2).join(', ')}
+            ${order.items.length > 2 ? `<span>+${order.items.length - 2} more items</span>` : ''}
+          </div>
+          <div class="order-amount">$${order.amount.toFixed(2)}</div>
+          <div class="order-time">${order.time}</div>
+          <div><span class="order-status ${order.status}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span></div>
+        </div>
+      `).join('');
+    }
+
+    renderOrders();
+
+    // Filter tabs
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentFilter = tab.dataset.filter;
+        renderOrders();
+      });
+    });
+
+    // Modal functions
+    function showOrderDetails(orderId) {
+      const order = orders.find(o => o.id === orderId);
+      const modal = document.getElementById('modal-body');
+      
+      const subtotal = order.amount * 0.9;
+      const tax = order.amount * 0.1;
+      
+      modal.innerHTML = `
+        <div class="order-detail-header">
+          <div class="order-detail-info">
+            <h3>Order ${order.id}</h3>
+            <p>${order.table} - ${order.time}</p>
+          </div>
+          <div class="order-detail-status">
+            <select id="status-select" onchange="updateStatus('${order.id}', this.value)">
+              <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
+              <option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>Preparing</option>
+              <option value="ready" ${order.status === 'ready' ? 'selected' : ''}>Ready</option>
+              <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Completed</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="order-items-list">
+          <div class="order-items-title">Order Items</div>
+          ${order.items.map((item, i) => `
+            <div class="order-item-row">
+              <div>
+                <div class="order-item-name">${item}</div>
+                <div class="order-item-qty">Qty: 1</div>
+              </div>
+              <div class="order-item-price">$${(order.amount / order.items.length).toFixed(2)}</div>
+            </div>
+          `).join('')}
+        </div>
+        
+        <div class="order-totals">
+          <div class="order-total-row">
+            <span>Subtotal</span>
+            <span>$${subtotal.toFixed(2)}</span>
+          </div>
+          <div class="order-total-row">
+            <span>Tax (10%)</span>
+            <span>$${tax.toFixed(2)}</span>
+          </div>
+          <div class="order-total-row final">
+            <span>Total</span>
+            <span>$${order.amount.toFixed(2)}</span>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('modal-overlay').classList.add('show');
+    }
+
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.remove('show');
+    }
+
+    function updateStatus(orderId, newStatus) {
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.status = newStatus;
+        renderOrders();
+      }
+    }
+
+    // Mobile menu
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+    mobileMenuBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      sidebarOverlay.classList.toggle('show');
+    });
+
+    sidebarOverlay.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      sidebarOverlay.classList.remove('show');
+    });
+
+    // Logout
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      sessionStorage.removeItem('restaurant_os_auth');
+      window.location.href = '/software';
+    });
+  </script>
+</body>
+</html>
