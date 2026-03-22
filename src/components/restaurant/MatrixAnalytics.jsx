@@ -139,8 +139,29 @@ const MatrixAnalytics = () => {
         }).slice(0, 3);
     };
 
+    const [selectedDate, setSelectedDate] = useState(null);
+
+    const downloadLedger = () => {
+        const ws = XLSX.utils.json_to_sheet(dailySales.map(d => ({
+            Date: d.date,
+            Revenue: `₹${Number(d.total).toLocaleString()}`,
+            Status: d.total > 10000 ? 'Peak' : 'Average'
+        })));
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Sales Ledger");
+        XLSX.download(wb, "Restaurant_Matrix_Ledger_2026.xlsx");
+    };
+
     return (
         <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+            <div className="flex justify-between items-center bg-orange-600/10 border border-orange-600/30 p-4 rounded-2xl mb-8">
+                <div className="flex items-center gap-4">
+                    <span className="w-2 h-2 rounded-full bg-orange-500 animate-ping"></span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-orange-400 italic">Matrix Protocol: V2.2 ULTRA (Active)</span>
+                </div>
+                <button onClick={() => window.location.reload(true)} className="text-[8px] font-black uppercase text-white/40 hover:text-white underline italic">Force Reload Mirror</button>
+            </div>
+            
             {isDemo && (
                 <div className="bg-orange-500 text-white px-8 py-3 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] shadow-2xl animate-pulse italic flex items-center gap-4 border-2 border-white/20">
                     <Zap className="w-4 h-4" /> PERFORMANCE MATRIX: DEMO MODE / CLIENT PREVIEW ACTIVE
@@ -170,65 +191,77 @@ const MatrixAnalytics = () => {
                     <div className="flex justify-between items-end mb-12">
                         <div>
                             <h3 className="text-2xl font-black italic uppercase tracking-tighter text-white group-hover:text-orange-400 transition-colors">Yield Trajectory</h3>
-                            <p className="text-[10px] font-black uppercase text-white/20 tracking-widest italic mt-2">Daily Revenue Matrix (30D)</p>
+                            <p className="text-[10px] font-black uppercase text-white/20 tracking-widest italic mt-2">Daily Revenue Matrix (30D) - <span className="text-emerald-400">Profit Activated</span></p>
                         </div>
-                        <div className="text-right">
-                            <p className="text-[8px] font-black uppercase text-emerald-400 italic mb-1">Peak Performance</p>
-                            <p className="text-lg font-black italic text-white line-through opacity-20 decoration-orange-500">₹45,200</p>
-                        </div>
+                        <button onClick={downloadLedger} className="px-6 py-3 bg-white/10 rounded-2xl text-[8px] font-black uppercase tracking-widest text-white border border-white/10 hover:bg-white/20 transition-all italic flex items-center gap-3">
+                           <Activity className="w-4 h-4 text-emerald-400" /> Export Excel Ledger
+                        </button>
                     </div>
 
                     <div className="h-[300px] flex items-end justify-between gap-1 relative z-10">
                         {Array.from({length: 30}).map((_, i) => {
-                            const day = dailySales[dailySales.length - 30 + i] || { total: Math.random() * 5000 + 1000 };
-                            const max = 30000;
+                            const day = dailySales[dailySales.length - 30 + i] || { total: 0, date: '---' };
+                            const max = 15000;
                             const h = Math.min(((Number(day.total) || 0) / max) * 100, 100);
+                            
+                            // PROFIT WISE COLORING
+                            const color = day.total > 10000 ? 'bg-emerald-500' : day.total > 5000 ? 'bg-orange-500' : 'bg-rose-500';
+                            const isSelected = selectedDate === day.date;
+
                             return (
-                                <div key={i} className="flex-1 group/bar relative h-full flex flex-col justify-end">
-                                    <div className="absolute bottom-full mb-4 left-1/2 -translate-x-1/2 bg-white px-2 py-1 rounded-lg text-[8px] font-black text-black opacity-0 group-hover/bar:opacity-100 transition-all pointer-events-none whitespace-nowrap z-50 italic">
+                                <div key={i} onMouseEnter={() => setSelectedDate(day.date)} className="flex-1 group/bar relative h-full flex flex-col justify-end">
+                                    <div className={`absolute bottom-full mb-6 left-1/2 -translate-x-1/2 bg-white px-3 py-2 rounded-xl text-[10px] font-black text-black transition-all pointer-events-none z-50 italic shadow-2xl ${isSelected ? 'opacity-100 translate-y-0 scale-110' : 'opacity-0 translate-y-4 group-hover/bar:opacity-100 group-hover/bar:translate-y-0'}`}>
+                                        <div className="text-[8px] opacity-40 uppercase mb-1">{day.date}</div>
                                         ₹{Math.round(day.total).toLocaleString()}
                                     </div>
                                     <div 
-                                        style={{ height: `${h}%`, minHeight: '4px' }} 
-                                        className={`w-full rounded-full transition-all duration-1000 ${i === 29 ? 'bg-orange-500 shadow-lg shadow-orange-500/40' : 'bg-white/10 group-hover/bar:bg-white/30'}`}
+                                        style={{ height: `${h}%`, minHeight: '8px' }} 
+                                        className={`w-full rounded-2xl transition-all duration-700 ${isSelected ? 'opacity-100 scale-x-110 ring-4 ring-white shadow-2xl' : 'opacity-40 group-hover/bar:opacity-100'} ${color}`}
                                     ></div>
                                 </div>
                             );
                         })}
                     </div>
-                    <div className="flex justify-between mt-6 text-[8px] font-black uppercase text-white/20 tracking-[0.4em] italic">
-                        <span>30 Days Ago</span>
+                    <div className="flex justify-between mt-8 text-[8px] font-black uppercase text-white/20 tracking-[0.4em] italic">
+                        {Array.from({length: 4}).map((_, i) => (
+                            <span key={i}>{dailySales[i*7]?.date || `Node 0${i+1}`}</span>
+                        ))}
                         <span>Today</span>
                     </div>
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/5 blur-[100px] -z-10 group-hover:bg-orange-500/10 transition-all"></div>
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/5 blur-[100px] -z-10 group-hover:bg-rose-500/10 transition-all"></div>
                 </div>
 
                 <div className="bg-white/5 border border-white/10 rounded-[48px] p-10 relative overflow-hidden group">
-                    <h3 className="text-2xl font-black italic uppercase tracking-tighter mb-8 text-orange-400">Peak Hours</h3>
-                    <div className="space-y-4">
-                        {busyHours.slice(0, 6).map((h, i) => (
-                            <div key={i} className="flex items-center gap-4 group/row">
-                                <div className="w-12 text-[10px] font-black uppercase text-white/30 italic">{h.hour}:00</div>
-                                <div className="flex-1 h-3 bg-white/5 rounded-full overflow-hidden border border-white/5 relative">
-                                    <div 
-                                        className="h-full bg-gradient-to-r from-orange-500 to-rose-500 transition-all duration-1000" 
-                                        style={{ width: `${(h.order_count / busyHours[0].order_count) * 100}%` }}
-                                    ></div>
-                                </div>
-                                <div className="text-[10px] font-black italic text-white/60">{h.order_count} Vol</div>
-                            </div>
-                        ))}
+                    <div className="flex justify-between items-center mb-10">
+                       <h3 className="text-xl font-black italic uppercase tracking-tighter text-orange-400">Intelligence Ledger</h3>
+                       <Calendar className="w-5 h-5 text-white/20" />
                     </div>
-                    <div className="mt-10 pt-10 border-t border-white/5">
-                        <div className="flex items-center gap-4">
-                            <div className="p-4 bg-orange-500 rounded-2xl shadow-xl shadow-orange-500/30 font-black italic text-lg leading-none">
-                                {busyHours[0]?.hour}:00
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-emerald-400 italic">Busiest Cycle</p>
-                                <p className="text-xs font-black uppercase text-white/40 italic">Maximize kitchen staff</p>
-                            </div>
+                    {/* MINI CALENDAR INTERFACE */}
+                    <div className="grid grid-cols-7 gap-3 mb-12">
+                        {Array.from({length: 30}).map((_, i) => {
+                            const dateObj = dailySales[i] || { date: '---', total: 0 };
+                            const color = dateObj.total > 10000 ? 'bg-emerald-500' : dateObj.total > 5000 ? 'bg-orange-500' : 'bg-rose-500/20';
+                            return (
+                                <div 
+                                    key={i} 
+                                    onClick={() => setSelectedDate(dateObj.date)}
+                                    className={`w-full aspect-square rounded-xl cursor-pointer hover:scale-110 transition-all border border-white/5 ${selectedDate === dateObj.date ? 'ring-4 ring-white' : ''} ${color}`}
+                                ></div>
+                            );
+                        })}
+                    </div>
+
+                    <div className="space-y-4 pt-10 border-t border-white/5">
+                        <div className="flex justify-between items-center">
+                            <p className="text-[10px] font-black uppercase text-white/30 italic">Target Day Profit</p>
+                            <span className="text-xl font-black italic text-white tracking-tighter">
+                                ₹{(Number(dailySales.find(d => d.date === selectedDate)?.total) || 0).toLocaleString()}
+                            </span>
                         </div>
+                        <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div className="h-full bg-orange-500 w-[65%]"></div>
+                        </div>
+                        <p className="text-[8px] font-black uppercase text-white/20 italic text-right">Yield Performance Stable</p>
                     </div>
                 </div>
             </div>
