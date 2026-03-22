@@ -145,23 +145,123 @@ router.get('/orders/:id', async (req, res) => {
 });
 
 /**
- * 5. DASHBOARD
+ * 5. ANALYTICS & INSIGHTS (NEW)
  */
-router.get('/dashboard', async (req, res) => {
+router.get('/analytics', async (req, res) => {
     try {
-        const { rows } = await db.query('SELECT * FROM restaurant_orders WHERE DATE(created_at) = CURDATE()');
-        const activeTablesResult = await db.query("SELECT COUNT(*) AS cnt FROM restaurant_tables WHERE status = 'occupied'");
+        // A. Sales Over Time (Last 30 Days)
+        const [dailySales] = await db.rawPool.execute(`
+            SELECT DATE(created_at) as date, SUM(total_amount) as total 
+            FROM restaurant_orders 
+            WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+            AND status NOT IN ('rejected', 'pending_waiter')
+            GROUP BY DATE(created_at) ORDER BY date ASC
+        `);
+
+        // B. Top Products by Category
+        const [topProducts] = await db.rawPool.execute(`
+            SELECT category, name, COUNT(*) as sales_count, SUM(price) as total_revenue
+            FROM (
+                SELECT JSON_UNQUOTE(JSON_EXTRACT(item, '$.menu_name')) as name,
+                       JSON_UNQUOTE(JSON_EXTRACT(item, '$.category')) as category,
+                       CAST(JSON_EXTRACT(item, '$.price') AS DECIMAL(10,2)) as price
+                FROM restaurant_orders,
+                JSON_TABLE(items, '$[*]' COLUMNS (item JSON PATH '$')) as jt
+                WHERE status NOT IN ('rejected', 'pending_waiter')
+            ) as product_data
+            GROUP BY category, name
+            ORDER BY sales_count DESC
+        `);
+
+        // C. Busy Hour Analysis
+        const [busyHours] = await db.rawPool.execute(`
+            SELECT HOUR(created_at) as hour, COUNT(*) as order_count, SUM(total_amount) as revenue
+            FROM restaurant_orders
+            WHERE status NOT IN ('rejected', 'pending_waiter')
+            GROUP BY HOUR(created_at)
+            ORDER BY order_count DESC
+        `);
+
+        // D. Day of Week Analysis
+        const [busyDays] = await db.rawPool.execute(`
+            SELECT DAYNAME(created_at) as day, COUNT(*) as order_count
+            FROM restaurant_orders
+            GROUP BY DAYNAME(created_at)
+            ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
+        `);
+
+        // E. Category Yields
+        const [catYields] = await db.rawPool.execute(`
+            SELECT category, SUM(price) as revenue
+            FROM (
+                SELECT JSON_UNQUOTE(JSON_EXTRACT(item, '$.category')) as category,
+                       CAST(JSON_EXTRACT(item, '$.price') AS DECIMAL(10,2)) as price
+                FROM restaurant_orders,
+                JSON_TABLE(items, '$[*]' COLUMNS (item JSON PATH '$')) as jt
+                WHERE status NOT IN ('rejected', 'pending_waiter')
+            ) as cat_data
+            GROUP BY category
+        `);
+
+        // F. Period Summary (Daily, Weekly, Monthly, Yearly)
+        const [periods] = await db.rawPool.execute(`
+            SELECT 
+                (SELECT SUM(total_amount) FROM restaurant_orders WHERE created_at >= CURDATE()) as daily,
+                (SELECT SUM(total_amount) FROM restaurant_orders WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)) as weekly,
+                (SELECT SUM(total_amount) FROM restaurant_orders WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)) as monthly,
+                (SELECT SUM(total_amount) FROM restaurant_orders WHERE created_at >= DATE_SUB(NOW(), INTERVAL 1 YEAR)) as yearly
+            FROM DUAL
+        `);
+
         res.json({
-            total_revenue: rows.reduce((acc, o) => acc + parseFloat(o.total_amount || 0), 0).toFixed(2),
-            orders_today: rows.length,
-            active_tables: activeTablesResult.rows[0]?.cnt || 0,
-            kitchen_queue: rows.filter(o => o.status === 'pending_waiter' || o.status === 'confirmed').length
+            dailySales,
+            topProducts,
+            busyHours,
+            busyDays,
+            catYields,
+            periods: periods[0]
         });
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 /**
- * 6. SEED (for initial data)
+ * 6. DASHBOARD
+ */
+router.get('/dashboard', async (req, res) => {
+    try {
+        const [rows] = await db.rawPool.execute('SELECT * FROM restaurant_orders WHERE DATE(created_at) = CURDATE()');
+        const [activeTablesResult] = await db.rawPool.execute("SELECT COUNT(*) AS cnt FROM restaurant_tables WHERE status = 'occupied'");
+        
+        // Extended Dashboard: Weekly history for the chart
+        const [history] = await db.rawPool.execute(`
+            SELECT DATE_FORMAT(created_at, '%a') as date, SUM(total_amount) as total 
+            FROM restaurant_orders 
+            WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+            AND status NOT IN ('rejected', 'pending_waiter')
+            GROUP BY DATE(created_at) ORDER BY created_at ASC
+        `);
+
+        // Extended Dashboard: Recent 5 orders
+        const [recent] = await db.rawPool.execute(`
+            SELECT o.id, o.status, t.table_number 
+            FROM restaurant_orders o 
+            JOIN restaurant_tables t ON o.table_id = t.id 
+            ORDER BY o.created_at DESC LIMIT 5
+        `);
+
+        res.json({
+            total_revenue: rows.reduce((acc, o) => acc + parseFloat(o.total_amount || 0), 0).toFixed(2),
+            orders_today: rows.length,
+            active_tables: activeTablesResult[0]?.cnt || 0,
+            kitchen_queue: rows.filter(o => o.status === 'pending_waiter' || o.status === 'confirmed').length,
+            history,
+            recent
+        });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+/**
+ * 7. SEED (for initial data)
  */
 router.get('/seed', async (req, res) => {
     const cats = ['Starters','Mains','Desserts','Beverages','Chef Specials'];

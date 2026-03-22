@@ -114,16 +114,26 @@ app.put('/api/v2/restaurant/orders/:id/status', async (req, res) => {
     } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
+app.get('/api/v2/restaurant/analytics', async (req, res) => {
+    try {
+        const [dailySales] = await rPool.execute("SELECT DATE(created_at) as date, SUM(total_amount) as total FROM restaurant_orders WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND status NOT IN ('rejected', 'pending_waiter', 'pending') GROUP BY DATE(created_at) ORDER BY date ASC");
+        const [topProducts] = await rPool.execute("SELECT category, name, COUNT(*) as sales_count, SUM(price) as total_revenue FROM (SELECT JSON_UNQUOTE(JSON_EXTRACT(item, '$.menu_name')) as name, JSON_UNQUOTE(JSON_EXTRACT(item, '$.category')) as category, CAST(JSON_EXTRACT(item, '$.price') AS DECIMAL(10,2)) as price FROM restaurant_orders, JSON_TABLE(items, '$[*]' COLUMNS (item JSON PATH '$')) as jt WHERE status NOT IN ('rejected', 'pending_waiter', 'pending')) as product_data GROUP BY category, name ORDER BY sales_count DESC");
+        const [busyHours] = await rPool.execute("SELECT HOUR(created_at) as hour, COUNT(*) as order_count, SUM(total_amount) as revenue FROM restaurant_orders WHERE status NOT IN ('rejected', 'pending_waiter', 'pending') GROUP BY HOUR(created_at) ORDER BY order_count DESC");
+        const [busyDays] = await rPool.execute("SELECT DAYNAME(created_at) as day, COUNT(*) as order_count FROM restaurant_orders GROUP BY DAYNAME(created_at) ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')");
+        const [catYields] = await rPool.execute("SELECT category, SUM(price) as revenue FROM (SELECT JSON_UNQUOTE(JSON_EXTRACT(item, '$.category')) as category, CAST(JSON_EXTRACT(item, '$.price') AS DECIMAL(10,2)) as price FROM restaurant_orders, JSON_TABLE(items, '$[*]' COLUMNS (item JSON PATH '$')) as jt WHERE status NOT IN ('rejected', 'pending_waiter', 'pending')) as cat_data GROUP BY category");
+        const [periods] = await rPool.execute("SELECT (SELECT SUM(total_amount) FROM restaurant_orders WHERE created_at >= CURDATE() AND status NOT IN ('rejected', 'pending_waiter', 'pending')) as daily, (SELECT SUM(total_amount) FROM restaurant_orders WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY) AND status NOT IN ('rejected', 'pending_waiter', 'pending')) as weekly, (SELECT SUM(total_amount) FROM restaurant_orders WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND status NOT IN ('rejected', 'pending_waiter', 'pending')) as monthly, (SELECT SUM(total_amount) FROM restaurant_orders WHERE created_at >= DATE_SUB(NOW(), INTERVAL 1 YEAR) AND status NOT IN ('rejected', 'pending_waiter', 'pending')) as yearly FROM DUAL");
+        res.json({ dailySales, topProducts, busyHours, busyDays, catYields, periods: periods[0] });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 app.get('/api/v2/restaurant/dashboard', async (req, res) => {
     try {
-        const [orders] = await rPool.execute("SELECT * FROM restaurant_orders WHERE DATE(created_at)=CURDATE()");
-        const [tables] = await rPool.execute("SELECT COUNT(*) AS cnt FROM restaurant_tables WHERE status='occupied'");
-        res.json({
-            total_revenue: orders.reduce((a,o)=>a+parseFloat(o.total_amount||0),0).toFixed(2),
-            orders_today: orders.length, active_tables: tables[0]?.cnt||0,
-            kitchen_queue: orders.filter(o=>['pending_waiter','confirmed','preparing'].includes(o.status)).length
-        });
-    } catch(e) { res.status(500).json({ error: e.message }); }
+        const [rows] = await rPool.execute('SELECT * FROM restaurant_orders WHERE DATE(created_at) = CURDATE()');
+        const [activeTablesResult] = await rPool.execute("SELECT COUNT(*) AS cnt FROM restaurant_tables WHERE status = 'occupied'");
+        const [history] = await rPool.execute("SELECT DATE_FORMAT(created_at, '%a') as date, SUM(total_amount) as total FROM restaurant_orders WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY) AND status NOT IN ('rejected', 'pending_waiter') GROUP BY DATE(created_at) ORDER BY created_at ASC");
+        const [recent] = await rPool.execute("SELECT o.id, o.status, t.table_number FROM restaurant_orders o JOIN restaurant_tables t ON o.table_id = t.id ORDER BY o.created_at DESC LIMIT 5");
+        res.json({ total_revenue: rows.reduce((acc, o) => acc + parseFloat(o.total_amount || 0), 0).toFixed(2), orders_today: rows.length, active_tables: activeTablesResult[0]?.cnt || 0, kitchen_queue: rows.filter(o => o.status === 'pending_waiter' || o.status === 'confirmed').length, history, recent });
+    } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 console.log('🍽️  Restaurant V3 MySQL & Management Routes → ACTIVE on port 5000');
