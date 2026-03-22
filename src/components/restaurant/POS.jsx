@@ -287,7 +287,7 @@ const POS = () => {
         </div>
       </div>
 
-      <aside className="w-[380px] bg-white/5 border border-white/10 rounded-[56px] p-10 flex flex-col hover:border-white/20 transition-all shadow-[0_0_100px_rgba(0,0,0,0.4)] backdrop-blur-2xl overflow-hidden group">
+      <aside className="w-[400px] bg-white/5 border border-white/10 rounded-[56px] p-10 flex flex-col hover:border-white/20 transition-all shadow-[0_0_100px_rgba(0,0,0,0.4)] backdrop-blur-2xl overflow-hidden group">
           <header className="flex items-center justify-between mb-8 flex-shrink-0">
              <div className="flex items-center gap-6">
                 <div className="w-14 h-14 bg-gradient-to-br from-orange-400 to-rose-600 rounded-3xl flex items-center justify-center text-white shadow-xl shadow-orange-500/20"><ShoppingCart className="w-6 h-6" /></div>
@@ -307,7 +307,7 @@ const POS = () => {
              </div>
           </header>
 
-          <div className="flex-1 overflow-y-auto custom-scrollbar pr-4 space-y-4 mb-4">
+          <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-6 mb-4">
              {cart.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center opacity-10 py-10">
                     <Table className="w-20 h-20 mb-8" />
@@ -315,19 +315,24 @@ const POS = () => {
                 </div>
              ) : (
                 cart.map((item, i) => (
-                  <div key={i} className="flex items-center justify-between p-5 bg-white/5 border border-white/5 rounded-3xl hover:bg-white/[0.08] transition-all">
-                     <div className="flex-1">
-                        <p className="text-xs font-black italic uppercase tracking-tight">{item.name}</p>
-                        <p className="text-[8px] text-white/20 font-black italic mt-1 uppercase">Unit Yield: ₹{item.price}</p>
+                  <div key={i} className="flex flex-col gap-5 p-6 bg-white/5 border border-white/10 rounded-[40px] hover:bg-white/[0.08] transition-all min-h-[140px] relative overflow-hidden group/item">
+                     <div className="flex-1 min-w-0 pr-10">
+                        <p className="text-sm font-black italic uppercase tracking-tight text-white pr-2 leading-tight mb-1" title={item.name}>{item.name}</p>
+                        <p className="text-[9px] text-white/30 font-black italic uppercase tracking-widest">Yield: ₹{item.price}</p>
                      </div>
-                     <div className="flex items-center gap-6 ml-6">
-                        <div className="flex items-center bg-black/40 rounded-2xl border border-white/5 p-1 px-3 gap-3 font-black transition-all">
-                           <button onClick={() => removeFromCart(item.id)} className="w-5 h-5 flex items-center justify-center text-lg text-white/20 hover:text-rose-500">-</button>
+                     
+                     <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
+                        <div className="flex items-center bg-black/40 rounded-2xl border border-white/5 p-1 px-4 gap-5 font-black transition-all">
+                           <button onClick={() => removeFromCart(item.id)} className="w-6 h-6 flex items-center justify-center text-xl text-white/30 hover:text-rose-500">-</button>
                            <span className="text-xs font-black italic text-orange-400">{item.quantity}</span>
-                           <button onClick={() => addToCart(item)} className="w-5 h-5 flex items-center justify-center text-lg text-white/20 hover:text-emerald-500">+</button>
+                           <button onClick={() => addToCart(item)} className="w-6 h-6 flex items-center justify-center text-xl text-white/30 hover:text-emerald-500">+</button>
                         </div>
-                        <p className="text-[10px] font-black italic w-16 text-right text-white/80">₹{(item.price * item.quantity).toFixed(2)}</p>
+                        <p className="text-base font-black italic text-white/90">₹{(item.price * item.quantity).toFixed(2)}</p>
                      </div>
+
+                     <button onClick={() => setCart(cart.filter(c => c.id !== item.id))} className="absolute top-6 right-6 p-2 rounded-xl bg-rose-500/10 text-rose-500 opacity-0 group-hover/item:opacity-100 hover:bg-rose-500 hover:text-white transition-all">
+                        <Trash2 size={16} />
+                     </button>
                   </div>
                 ))
              )}
