@@ -1,38 +1,146 @@
 {
-  "name": "Bobo Analytics & Baker OS",
+  "name": "Bobo Analytics - Business Management Suite",
   "short_name": "Bobo Analytics",
-  "description": "Unified POS, CRM and Business Management for Bakeries and Restaurants.",
-  "start_url": "/dashboard",
+  "description": "Complete SaaS platform for Bakery, Pharmacy, Grocery & Retail businesses. Manage POS, CRM, Inventory, Analytics and more.",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#0F172A",
-  "theme_color": "#C2185B",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "background_color": "#05081a",
+  "theme_color": "#6366f1",
   "orientation": "any",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "finance", "utilities"],
   "icons": [
     {
-      "src": "/assets/icon-192.png",
+      "src": "/icons/icon-72x72.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "72x72",
+      "purpose": "any"
     },
     {
-      "src": "/assets/icon-512.png",
+      "src": "/icons/icon-96x96.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "96x96",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "type": "image/png",
+      "sizes": "128x128",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "type": "image/png",
+      "sizes": "144x144",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "type": "image/png",
+      "sizes": "152x152",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "type": "image/png",
+      "sizes": "384x384",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-maskable-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/dashboard-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Dashboard Overview"
+    },
+    {
+      "src": "/screenshots/pos-narrow.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile POS System"
     }
   ],
   "shortcuts": [
     {
-      "name": "Baker Dashboard",
+      "name": "Dashboard",
       "short_name": "Dashboard",
-      "description": "Quick Access to Baker OS Dashboard",
-      "url": "/bakers-os",
-      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
+      "description": "View your business analytics",
+      "url": "/dashboard",
+      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
     },
     {
-      "name": "Restaurant CRM",
-      "short_name": "CRM",
-      "description": "Quick Access to Restaurant Dashboard",
-      "url": "/restaurant-dashboard",
-      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
+      "name": "Baker OS",
+      "short_name": "Bakery",
+      "description": "Bakery management system",
+      "url": "/bakers-os",
+      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Grocery OS",
+      "short_name": "Grocery",
+      "description": "Grocery store management",
+      "url": "/grocery-os",
+      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Restaurant OS",
+      "short_name": "Restaurant",
+      "description": "Restaurant management",
+      "url": "/restaurant-os",
+      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Retail OS",
+      "short_name": "Retail",
+      "description": "Retail store management",
+      "url": "/retail-os",
+      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Pharmacy POS",
+      "short_name": "Pharmacy",
+      "description": "Pharmacy point of sale",
+      "url": "/pharmacy-pos",
+      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
     }
-  ]
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "handle_links": "preferred",
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  },
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
 }

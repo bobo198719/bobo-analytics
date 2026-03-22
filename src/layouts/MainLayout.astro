@@ -14,9 +14,33 @@ const { title = "Bobo Analytics", hideNav = false } = Astro.props;
     <meta name="description" content="Bobo Analytics helps bakery, pharmacy, grocery and retail businesses manage orders, CRM, billing and analytics in one powerful platform." />
     <meta name="keywords" content="bakery software, pharmacy POS, grocery POS, SaaS business tools India" />
     
+    <!-- Favicons & Icons -->
     <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-192x192.png">
+    
+    <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#C2185B">
+    
+    <!-- Theme Colors -->
+    <meta name="theme-color" content="#6366f1" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#05081a" media="(prefers-color-scheme: dark)">
+    
+    <!-- iOS PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Bobo Analytics">
+    
+    <!-- Windows PWA Meta Tags -->
+    <meta name="msapplication-TileColor" content="#6366f1">
+    <meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+    
+    <!-- Mobile Optimization -->
+    <meta name="format-detection" content="telephone=no">
+    <meta name="mobile-web-app-capable" content="yes">
 
     <script is:inline>
       if ('serviceWorker' in navigator) {
