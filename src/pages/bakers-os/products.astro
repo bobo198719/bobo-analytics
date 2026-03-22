@@ -525,8 +525,8 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             if (!allowedTypes.includes(file.type)) {
                 return alert('Invalid file type. Please upload JPG, PNG or WEBP.');
             }
-            if (file.size > 5 * 1024 * 1024) {
-                return alert('File too large. Max size is 5MB.');
+            if (file.size > 20 * 1024 * 1024) {
+                return alert('File too large. Max size is 20MB for high-fidelity uploads.');
             }
 
             if (isUploading) return alert('An upload is already in progress. Please wait.');
@@ -760,7 +760,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
             const validFiles = files.filter(file => {
                 if (!allowedTypes.includes(file.type)) return false;
-                if (file.size > 10 * 1024 * 1024) return false; // Increased to 10MB
+                if (file.size > 20 * 1024 * 1024) return false; // Increased to 20MB for UHD gallery support
                 return true;
             });
 
