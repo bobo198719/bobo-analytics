@@ -287,9 +287,8 @@ const POS = () => {
         </div>
       </div>
 
-      <aside className="flex-1 bg-white/5 border border-white/10 rounded-[56px] p-10 flex flex-col justify-between hover:border-white/20 transition-all shadow-[0_0_100px_rgba(0,0,0,0.4)] backdrop-blur-2xl min-w-[380px] overflow-hidden group">
-        <div className="flex flex-col h-full overflow-hidden relative z-10">
-          <header className="flex items-center justify-between mb-12">
+      <aside className="w-[380px] bg-white/5 border border-white/10 rounded-[56px] p-10 flex flex-col hover:border-white/20 transition-all shadow-[0_0_100px_rgba(0,0,0,0.4)] backdrop-blur-2xl overflow-hidden group">
+          <header className="flex items-center justify-between mb-8 flex-shrink-0">
              <div className="flex items-center gap-6">
                 <div className="w-14 h-14 bg-gradient-to-br from-orange-400 to-rose-600 rounded-3xl flex items-center justify-center text-white shadow-xl shadow-orange-500/20"><ShoppingCart className="w-6 h-6" /></div>
                  <div>
@@ -308,7 +307,7 @@ const POS = () => {
              </div>
           </header>
 
-          <div className="flex-1 overflow-y-auto custom-scrollbar pr-4 space-y-4">
+          <div className="flex-1 overflow-y-auto custom-scrollbar pr-4 space-y-4 mb-4">
              {cart.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center opacity-10 py-10">
                     <Table className="w-20 h-20 mb-8" />
@@ -333,27 +332,25 @@ const POS = () => {
                 ))
              )}
           </div>
-        </div>
 
-        <div className="mt-10 pt-10 border-t border-white/5 space-y-6 relative z-10">
-           <div className="space-y-3">
-              <div className="flex items-center justify-between text-white/20 font-black text-[10px] tracking-widest uppercase italic border-b border-white/5 pb-3"> <span>Operational Subtotal</span> <span>₹{getSubtotal().toFixed(2)}</span> </div>
-              <div className="flex items-center justify-between text-white/20 font-black text-[10px] tracking-widest uppercase italic border-b border-white/5 pb-3 pt-3"> <span>Tax (GST @ 5.0%)</span> <span>₹{getGST().toFixed(2)}</span> </div>
-              <div className="flex items-center justify-between pt-4">
-                 <div>
-                    <span className="text-[8px] font-black uppercase text-white/30 tracking-widest italic block">AGGREGATE DUES (INC. GST)</span>
-                    <span className="text-3xl font-black italic tracking-tighter text-orange-400">₹{getTotal().toFixed(2)}</span>
-                 </div>
-                 <div className="flex gap-4">
-                    <button onClick={handlePrint} className="w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-white/30 hover:bg-white/10 transition-all text-white"><Printer size={20}/></button>
-                 </div>
-              </div>
-           </div>
-
-           <button onClick={handlePlaceOrder} disabled={cart.length === 0 || isSubmitting} className={`w-full py-6 bg-orange-600 rounded-[32px] font-black italic uppercase tracking-[0.3em] text-xs shadow-2xl flex items-center justify-center gap-4 transition-all ${isSubmitting ? 'opacity-50' : 'shadow-orange-600/30 hover:scale-[1.02]'}`} >
-             {isSubmitting ? 'Syncing...' : ( <div className="flex items-center gap-2 text-white">Commit Matrix Payload <SendHorizonal size={16} /></div> )}
-           </button>
-        </div>
+          <div className="pt-6 border-t border-white/5 space-y-6 flex-shrink-0">
+             <div className="space-y-3">
+                <div className="flex items-center justify-between text-white/20 font-black text-[10px] tracking-widest uppercase italic border-b border-white/5 pb-3"> <span>Operational Subtotal</span> <span>₹{getSubtotal().toFixed(2)}</span> </div>
+                <div className="flex items-center justify-between text-white/20 font-black text-[10px] tracking-widest uppercase italic border-b border-white/5 pb-3 pt-3"> <span>Tax (GST @ 5.0%)</span> <span>₹{getGST().toFixed(2)}</span> </div>
+                <div className="flex items-center justify-between pt-4">
+                   <div>
+                      <span className="text-[8px] font-black uppercase text-white/30 tracking-widest italic block">AGGREGATE DUES (INC. GST)</span>
+                      <span className="text-3xl font-black italic tracking-tighter text-orange-400">₹{getTotal().toFixed(2)}</span>
+                   </div>
+                   <div className="flex gap-4">
+                      <button onClick={handlePrint} className="w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-white/30 hover:bg-white/10 transition-all text-white"><Printer size={20}/></button>
+                   </div>
+                </div>
+             </div>
+             <button onClick={handlePlaceOrder} disabled={cart.length === 0 || isSubmitting} className={`w-full py-6 bg-orange-600 rounded-[32px] font-black italic uppercase tracking-[0.3em] text-xs shadow-2xl flex items-center justify-center gap-4 transition-all ${isSubmitting ? 'opacity-50' : 'shadow-orange-600/30 hover:scale-[1.02]'}`} >
+               {isSubmitting ? 'Syncing...' : ( <div className="flex items-center gap-2 text-white">Commit Matrix Payload <SendHorizonal size={16} /></div> )}
+             </button>
+          </div>
       </aside>
     </div>
   );
