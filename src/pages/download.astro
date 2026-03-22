@@ -161,6 +161,95 @@ import MainLayout from "../layouts/MainLayout.astro";
     </div>
   </section>
 
+  <section class="software-section">
+    <div class="section-header">
+      <span class="badge software-badge">STANDALONE SOFTWARE</span>
+      <h2>Restaurant Management Software</h2>
+      <p>Complete standalone business software for restaurant owners - no website needed</p>
+    </div>
+
+    <div class="software-card">
+      <div class="software-preview">
+        <div class="preview-window">
+          <div class="window-header">
+            <div class="window-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <span class="window-title">Restaurant OS - Dashboard</span>
+          </div>
+          <div class="preview-content">
+            <div class="preview-sidebar">
+              <div class="preview-nav-item active"></div>
+              <div class="preview-nav-item"></div>
+              <div class="preview-nav-item"></div>
+              <div class="preview-nav-item"></div>
+              <div class="preview-nav-item"></div>
+            </div>
+            <div class="preview-main">
+              <div class="preview-stats">
+                <div class="preview-stat-card"></div>
+                <div class="preview-stat-card"></div>
+                <div class="preview-stat-card"></div>
+                <div class="preview-stat-card"></div>
+              </div>
+              <div class="preview-chart"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="software-info">
+        <h3>Restaurant OS - Admin Dashboard</h3>
+        <p class="software-desc">Full-featured restaurant management system with table management, order tracking, kitchen display, menu management, staff scheduling, and detailed analytics reports.</p>
+        
+        <div class="software-features">
+          <div class="sw-feature">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+            <span>Live Dashboard & Analytics</span>
+          </div>
+          <div class="sw-feature">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+            <span>Table & Reservation Management</span>
+          </div>
+          <div class="sw-feature">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+            <span>Real-time Order Tracking</span>
+          </div>
+          <div class="sw-feature">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+            <span>Kitchen Display System (KDS)</span>
+          </div>
+          <div class="sw-feature">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+            <span>Menu & Pricing Management</span>
+          </div>
+          <div class="sw-feature">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+            <span>Staff Scheduling & Attendance</span>
+          </div>
+        </div>
+
+        <div class="software-credentials">
+          <span class="credentials-label">Login Credentials:</span>
+          <code>Username: admin | Password: admin123</code>
+        </div>
+
+        <div class="software-actions">
+          <a href="/software" class="btn-launch">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+            Launch Software
+          </a>
+          <button class="btn-install-software" id="installSoftwareBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Install as App
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="modules">
     <div class="section-header">
       <h2>All Modules Included</h2>
@@ -206,7 +295,7 @@ import MainLayout from "../layouts/MainLayout.astro";
 
   <script is:inline>
     let deferredPrompt;
-    const installButtons = document.querySelectorAll('#installButton, #installButtonBottom, .btn-platform');
+    const installButtons = document.querySelectorAll('#installButton, #installButtonBottom, .btn-platform, #installSoftwareBtn');
 
     // Capture the install prompt
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -543,6 +632,219 @@ import MainLayout from "../layouts/MainLayout.astro";
     margin-bottom: 32px;
   }
 
+  /* Software Section Styles */
+  .software-section {
+    padding: 100px 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .software-badge {
+    background: rgba(99, 102, 241, 0.2);
+    color: #a5b4fc;
+  }
+
+  .software-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.05) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 24px;
+    padding: 48px;
+  }
+
+  .preview-window {
+    background: #0a0d1a;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  }
+
+  .window-header {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .window-dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .window-dots span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .window-dots span:nth-child(1) { background: #ff5f56; }
+  .window-dots span:nth-child(2) { background: #ffbd2e; }
+  .window-dots span:nth-child(3) { background: #27ca40; }
+
+  .window-title {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.8rem;
+    flex: 1;
+    text-align: center;
+  }
+
+  .preview-content {
+    display: flex;
+    height: 280px;
+  }
+
+  .preview-sidebar {
+    width: 50px;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 16px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .preview-nav-item {
+    height: 30px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .preview-nav-item.active {
+    background: rgba(99, 102, 241, 0.3);
+  }
+
+  .preview-main {
+    flex: 1;
+    padding: 16px;
+  }
+
+  .preview-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .preview-stat-card {
+    height: 50px;
+    border-radius: 8px;
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+  }
+
+  .preview-chart {
+    flex: 1;
+    height: 140px;
+    border-radius: 8px;
+    background: linear-gradient(180deg, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0.05) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+  }
+
+  .software-info h3 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+  }
+
+  .software-desc {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  .software-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 24px;
+    margin-bottom: 24px;
+  }
+
+  .sw-feature {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+  }
+
+  .sw-feature svg {
+    color: #10b981;
+    flex-shrink: 0;
+  }
+
+  .software-credentials {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .credentials-label {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .software-credentials code {
+    color: #a5b4fc;
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 0.95rem;
+  }
+
+  .software-actions {
+    display: flex;
+    gap: 16px;
+  }
+
+  .btn-launch {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    color: white;
+    padding: 14px 28px;
+    border-radius: 10px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+  }
+
+  .btn-launch:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(99, 102, 241, 0.4);
+  }
+
+  .btn-install-software {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    border: 2px solid rgba(99, 102, 241, 0.5);
+    color: #a5b4fc;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-install-software:hover {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: #6366f1;
+  }
+
   @media (max-width: 768px) {
     .download-hero {
       padding: 80px 20px 60px;
@@ -554,6 +856,24 @@ import MainLayout from "../layouts/MainLayout.astro";
 
     .section-header {
       margin-bottom: 40px;
+    }
+
+    .software-card {
+      grid-template-columns: 1fr;
+      gap: 32px;
+      padding: 24px;
+    }
+
+    .software-features {
+      grid-template-columns: 1fr;
+    }
+
+    .software-actions {
+      flex-direction: column;
+    }
+
+    .preview-stats {
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 </style>
