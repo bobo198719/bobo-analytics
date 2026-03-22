@@ -37,6 +37,10 @@ import MainLayout from "../layouts/MainLayout.astro";
     </div>
 
     <script is:inline>
+        // --- ABSOLUTE INITIAL LOCKDOWN ---
+        localStorage.removeItem('baker_os_auth');
+        console.log('🛡️ SESSION PURGED: Ready for Fresh Identity Verification.');
+
         function performLockdownLogin() {
             const storeId = document.getElementById('storeId').value.trim();
             const operatorKey = document.getElementById('operatorKey').value.trim();

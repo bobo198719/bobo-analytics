@@ -253,6 +253,11 @@ const { title = "Baker OS" } = Astro.props;
     </main>
 
     <script is:inline>
+        // --- ABSOLUTE AUTHENTICATION GUARD ---
+        if (localStorage.getItem('baker_os_auth') !== 'true' && !window.location.pathname.includes('login')) {
+            window.location.href = '/bakers-login';
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             try {
                 // Find current account
@@ -265,9 +270,11 @@ const { title = "Baker OS" } = Astro.props;
 
                 // Security Check
                 const ad = document.getElementById('access-denied');
-                if (ad && client.type === 'Test') {
-                    ad.style.display = 'flex';
-                    document.body.style.overflow = 'hidden';
+                // Force access denied if no auth is found (double check)
+                if (!localStorage.getItem('baker_os_auth')) {
+                    if (ad) ad.style.display = 'flex';
+                    window.location.href = '/bakers-login';
+                    return;
                 }
 
                 // Branding Injection
