@@ -11,14 +11,14 @@ import MainLayout from "../layouts/MainLayout.astro";
                 <p>Digital dashboard for artisanal bakes</p>
             </div>
 
-            <form class="login-form">
+            <form class="login-form" onsubmit="return false;" autocomplete="off">
                 <div class="input-group">
                     <label>Baker Store ID</label>
-                    <input type="text" id="storeId" placeholder="e.g. jenkins-cakes" required />
+                    <input type="text" id="storeId" placeholder="Enter Store ID" autocomplete="off" />
                 </div>
                 <div class="input-group">
                     <label>Operator Key</label>
-                    <input type="password" id="operatorKey" placeholder="••••••••" required />
+                    <input type="password" id="operatorKey" placeholder="Enter Secret Key" autocomplete="off" />
                 </div>
 
                 <div class="form-options">
@@ -26,7 +26,7 @@ import MainLayout from "../layouts/MainLayout.astro";
                     <a href="#">Forgot Key?</a>
                 </div>
 
-                <button type="submit" id="loginBtn" class="login-btn">Access Dashboard</button>
+                <button type="button" id="loginBtn" class="login-btn">Access Dashboard</button>
             </form>
 
             <div class="login-footer">
@@ -37,46 +37,50 @@ import MainLayout from "../layouts/MainLayout.astro";
     </div>
 
     <script is:inline>
-        const loginForm = document.querySelector('.login-form');
-        const storeInput = document.getElementById('storeId');
-        const keyInput = document.getElementById('operatorKey');
+        function performLockdownLogin() {
+            const storeId = document.getElementById('storeId').value.trim();
+            const operatorKey = document.getElementById('operatorKey').value.trim();
 
-        loginForm?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const storeId = storeInput.value.trim();
-            const operatorKey = keyInput.value.trim();
+            console.log('--- SECURITY AUDIT: ATTEMPTED LOGIN ---');
 
-            console.log('--- ATTEMPTING LOGIN ---');
-            console.log('Store:', storeId);
-            console.log('Key:', operatorKey);
-
-            // --- UNIVERSAL VALIDATION GATE ---
-            if (storeId === "" || operatorKey === "") {
-                alert("🔒 ACCESS DENIED: Both Baker Store ID and Operator Key are mandatory.");
-                
-                // Visual Strike Red
-                if(!storeId) storeInput.style.borderColor = "#fb7185";
-                if(!operatorKey) keyInput.style.borderColor = "#fb7185";
-                
-                return false;
+            if (!storeId || !operatorKey) {
+                console.error('❌ GHOST LOGIN BLOCKED');
+                alert("🔒 ACCESS DENIED: Physical credentials are required to enter the vault.");
+                return;
             }
 
-            // --- STRICT AUTH HANDSHAKE ---
-            if (storeId.length >= 3 && operatorKey.length >= 4) {
-                 console.log('✅ IDENTITY VERIFIED');
-                 localStorage.setItem('baker_os_auth', 'true');
-                 localStorage.setItem('baker_store_id', storeId);
-                 window.location.href = '/bakers-os';
+            // --- HARDCODED IDENTITY GATE ---
+            // Key: bobo2026
+            if (operatorKey === "bobo2026") {
+                console.log('✅ VAULT UNLOCKED');
+                localStorage.setItem('baker_os_auth', 'true');
+                localStorage.setItem('baker_store_id', storeId);
+                window.location.href = '/bakers-os';
             } else {
-                 alert("⚠️ INVALID CREDENTIALS: The information provided does not match our records.");
+                console.error('❌ UNAUTHORIZED BREACH DETECTED');
+                alert("⚠️ AUTHENTICATION FAILED: Invalid Secret Key. Entrance Rejected.");
+                document.getElementById('operatorKey').value = "";
             }
-        });
-        
-        // Dynamic Reset
-        [storeInput, keyInput].forEach(input => {
-            input.addEventListener('input', () => input.style.borderColor = "rgba(255, 255, 255, 0.1)");
-        });
+        }
+
+        // Attach listeners after load
+        window.onload = () => {
+            const btn = document.getElementById('loginBtn');
+            const storeInp = document.getElementById('storeId');
+            const keyInp = document.getElementById('operatorKey');
+
+            btn.onclick = performLockdownLogin;
+
+            // Handle Enter Key
+            [storeInp, keyInp].forEach(el => {
+                el.onkeydown = (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        performLockdownLogin();
+                    }
+                };
+            });
+        };
     </script>
 
     <style>
