@@ -68,9 +68,44 @@ const { title = "Bobo Retail OS" } = Astro.props;
         </nav>
       </div>
 
-      <div class="flex flex-col gap-6">
+      <div class="flex flex-col gap-6 items-center">
+         <!-- INSTALL APP BUTTON (Retail Suite) -->
+         <div id="install-container" style="display: none; padding: 10px; background: rgba(79, 70, 229, 0.1); border-radius: 16px; border: 1px dashed #4f46e5; margin-bottom: 20px;">
+            <button id="btnInstall" class="p-3 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-600/20 hover:scale-110 transition-transform">
+               <i class="lucide-download text-lg"></i>
+            </button>
+         </div>
+
          <button id="logout-btn" class="p-4 text-white/20 hover:text-rose-400 hover:bg-rose-400/10 rounded-2xl transition-all"><i class="lucide-log-out text-xl"></i></button>
       </div>
+
+      <script is:inline>
+        let deferredPrompt;
+        const installContainer = document.getElementById('install-container');
+        const btnInstall = document.getElementById('btnInstall');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            if (installContainer) installContainer.style.display = 'block';
+        });
+
+        if (btnInstall) {
+            btnInstall.addEventListener('click', async () => {
+                if (!deferredPrompt) return;
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response to the install prompt: ${outcome}`);
+                deferredPrompt = null;
+                if (installContainer) installContainer.style.display = 'none';
+            });
+        }
+
+        window.addEventListener('appinstalled', (evt) => {
+            console.log('✅ Retail OS Software Installed Successfully.');
+            if (installContainer) installContainer.style.display = 'none';
+        });
+      </script>
     </aside>
 
     <main class="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-12 relative">
