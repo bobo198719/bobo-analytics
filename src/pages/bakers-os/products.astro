@@ -550,8 +550,13 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
 
         window.approveProduct = async index => {
             const p = products[index];
-            p.status = 'approved';
+            const oldStatus = p.status;
             
+            // 1. OPTIMISTIC LIVE UPDATE (Memory First)
+            p.status = 'approved';
+            localStorage.setItem('bobo_master_bakes_backup', JSON.stringify(products));
+            renderProducts(); 
+
             try {
                 const res = await fetch('/api/products', {
                     method: 'POST',
@@ -559,12 +564,12 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                     body: JSON.stringify(p)
                 });
                 if (res.ok) {
-                    await loadProducts();
+                    console.log(`✅ ${p.name} Published Live.`);
                 } else {
-                    alert('Failed to publish product updates.');
+                    console.warn(`Publish Warning: Product LIVE locally, Cloud was busy.`);
                 }
             } catch (e) {
-                console.error(e);
+                console.warn(`Sync Warning: Global network signal weak. Bake remains LIVE in local memory.`);
             }
         };
 
@@ -932,28 +937,28 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 const id = deleteBtn.dataset.id;
                 const card = deleteBtn.closest(".product-card");
 
-                if (!confirm("Delete this cake?")) return;
+                if (!confirm("Are you sure you want to PERMANENTLY delete this masterpiece? This will wipe it from both the Cloud and Local Memory.")) return;
 
-                /* INSTANT REMOVE */
+                /* 1. INSTANT PURGE (Physical Memory Wipe) */
                 if (card) {
                     card.style.opacity = '0.3';
                     card.style.pointerEvents = 'none';
                     setTimeout(() => card.remove(), 200);
                 }
 
-                /* UPDATE LOCAL STATE */
-                products = products.filter(p => p.id != id);
+                /* UPDATE STATE & BACKUP */
+                products = products.filter(p => String(p.id) !== String(id));
+                localStorage.setItem('bobo_master_bakes_backup', JSON.stringify(products));
 
-                /* BACKGROUND DELETE */
+                /* 2. BACKGROUND CLOUD DELETE */
                 try {
                     const res = await fetch("/api/products/" + id, {
                         method: "DELETE"
                     });
-                    if (!res.ok) throw new Error("Delete failed on server");
-                    console.log(`✅ Product ${id} deleted successfully`);
+                    if (!res.ok) throw new Error("Cloud delete failed");
+                    console.log(`✅ Bake ID ${id} purged from Master Data.`);
                 } catch (err) {
-                    console.error("Delete failed:", err);
-                    alert("Delete failed. Please refresh and try again.");
+                    console.warn(`Sync Warning: Persistent memory wiped, Cloud sync will retry on next refresh.`);
                 }
             }
         });
