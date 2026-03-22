@@ -2,7 +2,9 @@ const CACHE_NAME = 'bobo-cache-v1';
 const ASSETS = [
     '/',
     '/bakers-os',
-    '/manifest.json'
+    '/manifest.json',
+    '/icon-192.png',
+    '/icon-512.png'
 ];
 
 self.addEventListener('install', (e) => {

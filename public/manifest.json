@@ -2,19 +2,19 @@
   "name": "Bobo Analytics & Baker OS",
   "short_name": "Bobo Analytics",
   "description": "Unified POS, CRM and Business Management for Bakeries and Restaurants.",
-  "start_url": "/dashboard",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#0F172A",
-  "theme_color": "#C2185B",
+  "theme_color": "#0F172A",
   "orientation": "any",
   "icons": [
     {
-      "src": "/assets/icon-192.png",
+      "src": "/icon-192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/assets/icon-512.png",
+      "src": "/icon-512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
@@ -25,14 +25,14 @@
       "short_name": "Dashboard",
       "description": "Quick Access to Baker OS Dashboard",
       "url": "/bakers-os",
-      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Restaurant CRM",
       "short_name": "CRM",
       "description": "Quick Access to Restaurant Dashboard",
       "url": "/restaurant-dashboard",
-      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }
