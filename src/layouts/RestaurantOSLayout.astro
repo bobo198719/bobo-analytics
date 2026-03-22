@@ -116,6 +116,10 @@ const { title = "Restaurant OS" } = Astro.props;
         <i class="lucide-bar-chart-3"></i>
         <span>Analytics</span>
       </a>
+      <a href="/restaurant-dashboard#staff" class="nav-link" data-section="staff">
+        <i class="lucide-users"></i>
+        <span>Staff Governance</span>
+      </a>
       <a href="/restaurant-os/billing" class="nav-link" data-section="billing">
         <i class="lucide-credit-card"></i>
         <span>Billing & Plan</span>
@@ -203,6 +207,30 @@ const { title = "Restaurant OS" } = Astro.props;
      window.addEventListener('hashchange', updateActiveLink);
      window.addEventListener('load', updateActiveLink);
      updateActiveLink();
+
+     // --- ENTERPRISE ROLE LOCKDOWN ---
+     function applySecurityLockdown() {
+        const role = localStorage.getItem('ro_role') || 'owner';
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        navLinks.forEach(link => {
+            const section = link.getAttribute('data-section');
+            if (role === 'chef') {
+                if (section !== 'kitchen' && section !== 'dashboard') link.style.display = 'none';
+            } else if (role === 'waiter') {
+                const allowed = ['pos', 'tables', 'waiter', 'dashboard'];
+                if (!allowed.includes(section)) link.style.display = 'none';
+            } else if (role === 'owner') {
+                link.style.display = 'flex';
+            }
+        });
+
+        // Hide special headers for staff
+        const matrixHeader = document.querySelector('p[style*="Matrix Terminal"]');
+        if (role !== 'owner' && matrixHeader) matrixHeader.innerText = 'Service Node';
+     }
+     window.addEventListener('load', applySecurityLockdown);
+     applySecurityLockdown();
   </script>
 </body>
 </html>
