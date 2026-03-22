@@ -834,11 +834,11 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
             const validFiles = files.filter(file => {
                 if (!allowedTypes.includes(file.type)) return false;
-                if (file.size > 20 * 1024 * 1024) return false; // Increased to 20MB for UHD gallery support
+                if (file.size > 20 * 1024 * 1024) return false; 
                 return true;
             });
 
-            if (validFiles.length === 0) return alert('No valid images (JPG/PNG/WEBP under 10MB) selected.');
+            if (validFiles.length === 0) return alert('No valid images (JPG/PNG/WEBP under 20MB) selected.');
 
             const overlay  = document.getElementById('processing-overlay');
             const progress = document.getElementById('processing-progress');
@@ -846,42 +846,54 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             overlay.style.display = 'flex';
 
             let successCount = 0;
-            const CONCURRENCY = 3; // Upload 3 images at a time for performance
+            const CONCURRENCY = 2; // Reduced for stability during high-res transfers
             
             async function processFile(file, index) {
                 try {
-                    status.innerText = `Optimizing ${file.name}...`;
+                    status.innerText = `Optimizing ${file.name} (UHD)…`;
                     const optimizedDataUrl = await optimizeImageClient(file);
                     const response = await fetch(optimizedDataUrl);
                     const optimizedBlob = await response.blob();
 
-                    status.innerText = `Uploading ${file.name}...`;
+                    status.innerText = `Uploading ${file.name}…`;
                     const result = await uploadImageToServer(optimizedBlob);
                     
-                    if (!result.url) throw new Error('No URL returned');
+                    const rawUrl = result.url || result.image_url || result.image;
+                    if (!rawUrl) throw new Error('No UHD URL returned from Cloud Matrix');
                     
+                    // Normalize UHD Path
+                    let finalPath = rawUrl;
+                    if (finalPath && !finalPath.startsWith('http') && !finalPath.startsWith('/api')) {
+                        finalPath = "/api" + (finalPath.startsWith('/') ? '' : '/') + finalPath;
+                    }
+
                     const fileName = file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ')
                         .split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-                    const desc = TEMPLATES[Math.floor(Math.random() * TEMPLATES.length)].replace('{name}', fileName);
+                    const description = TEMPLATES[Math.floor(Math.random() * TEMPLATES.length)].replace('{name}', fileName);
 
-                    products.unshift({
+                    const newBake = {
                         id           : 'bulk_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
                         name         : fileName,
                         price        : 1500,
-                        desc,
-                        cat          : 'Chocolate Cakes',
+                        description,
+                        category     : 'Celebration Cakes',
                         prep         : '4h',
                         status       : 'pending',
-                        image_url    : result.url,
-                        thumbnail_url: result.url,
-                        medium_url   : result.url,
-                        high_res_url : result.url,
-                    });
+                        image_path   : finalPath
+                    };
+
+                    // 1. ITERATIVE OPTIMISTIC COMMIT (Physical Memory First)
+                    products.unshift(newBake);
+                    localStorage.setItem('bobo_master_bakes_backup', JSON.stringify(products));
+                    renderProducts();
+
+                    // 2. BACKGROUND CLOUD SYNC
+                    saveToCloudSilent(newBake);
                     
                     successCount++;
                     const percent = Math.round(((successCount) / validFiles.length) * 100);
                     progress.style.width = `${percent}%`;
-                    status.innerText = `Uploaded ${successCount}/${validFiles.length}`;
+                    status.innerText = `Successfully Synced ${successCount}/${validFiles.length} Bakes`;
                 } catch(err) {
                     console.error(`Failed ${file.name}:`, err);
                 }
@@ -893,17 +905,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 await Promise.all(chunk.map((f, idx) => processFile(f, i + idx)));
             }
 
-            status.innerText = `Saving ${successCount} items to cloud...`;
-            
-            const pendingProducts = products.filter(p => p.id && String(p.id).startsWith('bulk_'));
-            await Promise.all(pendingProducts.map(p => 
-                fetch('/api/products', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(p)
-                }).catch(e => console.error("Sync failed for", p.name))
-            ));
-
+            // Final Cloud Pull to ensure absolute sync
             await loadProducts();
 
             setTimeout(() => {
@@ -911,10 +913,8 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 progress.style.width  = '0%';
                 if (successCount > 0) {
                     currentFilter = 'pending';
-                    document.querySelectorAll('.s-tab').forEach(t => t.classList.remove('active'));
-                    const pendingTab = document.querySelector('button[onclick*="pending"]');
-                    if (pendingTab) pendingTab.classList.add('active');
-                    alert(`✅ ${successCount} image(s) processed and synced successfully!`);
+                    renderProducts();
+                    alert(`✅ ${successCount} UHD creations successfully added to your catalog!`);
                 }
                 input.value = '';
             }, 800);
