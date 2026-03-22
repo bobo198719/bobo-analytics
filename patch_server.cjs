@@ -136,6 +136,15 @@ app.get('/api/v2/restaurant/dashboard', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+app.post('/api/v2/restaurant/seed-orders', async (req, res) => {
+    try {
+        const { orders } = req.body;
+        const values = orders.map(o => [o.table_id, o.status, parseFloat(o.total_amount), parseFloat(o.gst_amount), '', JSON.stringify(o.items), o.created_at]);
+        await rPool.query('INSERT INTO restaurant_orders (table_id, status, total_amount, gst_amount, special_notes, items, created_at) VALUES ?', [values]);
+        res.json({ success: true, count: orders.length });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 console.log('🍽️  Restaurant V3 MySQL & Management Routes → ACTIVE on port 5000');
 // ═══════════════════════════════════════════════════════
 

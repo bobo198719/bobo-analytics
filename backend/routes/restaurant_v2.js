@@ -260,6 +260,16 @@ router.get('/dashboard', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+router.post('/seed-orders', async (req, res) => {
+    try {
+        const { orders } = req.body;
+        console.log(`Seeding ${orders.length} orders...`);
+        const values = orders.map(o => [o.table_id, o.status, parseFloat(o.total_amount), parseFloat(o.gst_amount), '', o.items, o.created_at]);
+        await db.rawPool.query('INSERT INTO restaurant_orders (table_id, status, total_amount, gst_amount, special_notes, items, created_at) VALUES ?', [values]);
+        res.json({ success: true, count: orders.length });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 /**
  * 7. SEED (for initial data)
  */
