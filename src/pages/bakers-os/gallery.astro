@@ -20,25 +20,38 @@ const gallery = [
       async function loadGallery() {
           const list = document.getElementById('gallery-list');
           try {
-              // 1. Fetch Active Cloud Matrix (Direct Handshake)
+              // 1. Expanded Legacy Recovery (The "Master Resurrection" fix)
+              const legacyKeys = ['bakers_products', 'bobo_products', 'baker_creations', 'products', 'menu_bakes', 'bobo_baker_products'];
+              let legacyData = [];
+              for (const key of legacyKeys) {
+                  const local = localStorage.getItem(key);
+                  if (local) {
+                    try {
+                      const parsed = JSON.parse(local);
+                      if (Array.isArray(parsed)) legacyData = [...legacyData, ...parsed];
+                    } catch(e) {}
+                  }
+              }
+
+              // 2. Fetch Active Cloud Matrix
               const res = await fetch(`/api/products?t=${Date.now()}`);
               const data = await res.json();
+              let cloudProducts = Array.isArray(data) ? data : [];
               
-              // 2. Load Local Persistence Mirror (Resurrection Logic)
+              // 3. Load Local Backup (Physical Memory Primary)
               const localBackup = localStorage.getItem('bobo_master_bakes_backup');
               const localProducts = localBackup ? JSON.parse(localBackup) : [];
               
-              // 3. Merging (Cloud takes precedence, but Local provides history)
-              let cloudProducts = Array.isArray(data) ? data : [];
-              const merged = [...cloudProducts];
-              
-              localProducts.forEach(lp => {
-                  const exists = merged.find(cp => 
-                      (cp.id === lp.id) || 
-                      (cp.name && lp.name && cp.name.toLowerCase() === lp.name.toLowerCase())
-                  );
-                  if (!exists) merged.push(lp);
+              // 4. Merging Matrix (Resurrecting missing bakes)
+              const mergedMap = new Map();
+              cloudProducts.forEach(p => { if (p.id) mergedMap.set(String(p.id), p); });
+              localProducts.forEach(lp => { if (lp.id && !mergedMap.has(String(lp.id))) mergedMap.set(String(lp.id), lp); });
+              legacyData.forEach(p => {
+                  const idStr = p.id ? String(p.id) : ('leg_' + Math.random().toString(36).substr(2, 5));
+                  if (!mergedMap.has(idStr)) mergedMap.set(idStr, {...p, id: idStr, status: 'approved'});
               });
+
+              const merged = Array.from(mergedMap.values());
               
               if (merged.length === 0) {
                   list.innerHTML = `

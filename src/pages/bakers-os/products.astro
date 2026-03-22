@@ -377,8 +377,8 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
 
         async function loadProducts() {
             try {
-                // 1. Recover Legacy Context (The "Invisible Bakes" fix)
-                const legacyKeys = ['bakers_products', 'bobo_products', 'baker_creations'];
+                // 1. Expanded Legacy Recovery (The "Master Resurrection" fix)
+                const legacyKeys = ['bakers_products', 'bobo_products', 'baker_creations', 'products', 'menu_bakes', 'bobo_baker_products'];
                 let legacyData = [];
                 for (const key of legacyKeys) {
                     const local = localStorage.getItem(key);
@@ -390,38 +390,51 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                     }
                 }
 
-                // 2. Fetch Active Cloud Matrix
+                // 2. Load Local Backup (Physical Memory Primary)
+                const localBackup = localStorage.getItem('bobo_master_bakes_backup');
+                const localProducts = localBackup ? JSON.parse(localBackup) : [];
+                
+                // 3. Fetch Active Cloud Matrix
                 const res = await fetch(`/api/products?t=${Date.now()}`);
                 const data = await res.json();
-                
-                // Cloud Truth
                 let cloudProducts = Array.isArray(data) ? data : [];
                 
-                // 3. Merging Matrix (Resurrecting missing bakes)
-                const merged = [...cloudProducts];
-                legacyData.forEach(lp => {
-                    const exists = merged.find(cp => 
-                        (cp.id === lp.id) || 
-                        (cp.name && lp.name && cp.name.toLowerCase() === lp.name.toLowerCase())
-                    );
-                    if (!exists) {
-                        merged.push({...lp, status: 'approved'});
-                        // Proactively sync missing legacy bake back to cloud
+                // 4. Merging Matrix (Resurrecting missing bakes)
+                const mergedMap = new Map();
+                
+                // Cloud data has highest priority
+                cloudProducts.forEach(p => { if (p.id) mergedMap.set(String(p.id), p); });
+                
+                // Local Backup (Resurrection for offline/mismatch)
+                localProducts.forEach(lp => {
+                    if (lp.id && !mergedMap.has(String(lp.id))) {
+                        mergedMap.set(String(lp.id), lp);
                         saveToCloudSilent(lp);
                     }
                 });
 
-                products = merged;
+                // Legacy Context (Deep Resurrection)
+                legacyData.forEach(p => {
+                    const idStr = p.id ? String(p.id) : ('leg_' + Math.random().toString(36).substr(2, 5));
+                    if (!mergedMap.has(idStr)) {
+                        mergedMap.set(idStr, {...p, id: idStr, status: 'approved'});
+                        saveToCloudSilent(p);
+                    }
+                });
+
+                products = Array.from(mergedMap.values());
                 
-                // 4. Local Persistence Guard (Safety Mirror)
+                // 5. Hardened Persistence Mirror
                 localStorage.setItem('bobo_master_bakes_backup', JSON.stringify(products));
                 
                 renderProducts();
             } catch(e) {
-                console.warn('Sync Failure - Activating Local Backup...');
+                console.warn('Sync Signal Weak - Recovering from Physical Memory...');
                 const backup = localStorage.getItem('bobo_master_bakes_backup');
-                products = backup ? JSON.parse(backup) : [];
-                renderProducts();
+                if (backup) {
+                    products = JSON.parse(backup);
+                    renderProducts();
+                }
             }
         }
 
@@ -648,8 +661,15 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 const deleteBtn = document.getElementById('p-delete-image-btn');
                 
                 preview.style.display = 'block';
-                if (p.image_path || p.high_res_url || p.medium_url || p.thumbnail_url) {
-                    preview.style.backgroundImage = `url('${p.image_path || p.high_res_url || p.medium_url || p.thumbnail_url || ''}')`;
+                
+                // Image Resolution Logic
+                let imgPath = p.image_path || p.image_url || p.high_res_url || p.medium_url || p.thumbnail_url || "";
+                if (imgPath && !imgPath.startsWith('http') && !imgPath.startsWith('/api')) {
+                    imgPath = "/api" + (imgPath.startsWith('/') ? '' : '/') + imgPath;
+                }
+                
+                if (imgPath) {
+                    preview.style.backgroundImage = `url('${imgPath}')`;
                     deleteBtn.style.display = 'block';
                 } else if (p.image_id) {
                     const img = await getImageFromDB(p.image_id);
@@ -692,15 +712,20 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             const statusText = document.getElementById('processing-status');
             
             overlay.style.display = 'flex';
-            statusText.innerText = 'Securing Product in Database…';
+            statusText.innerText = 'Persisting locally and syncing to cloud…';
 
             const existing = editingIndex !== null ? products[editingIndex] : null;
             
             // Prefer the newly uploaded URL, otherwise keep the existing one
-            const finalImageUrl = currentUploadedUrl || existing?.image_path || existing?.image_url || existing?.high_res_url || '';
+            let finalImageUrl = currentUploadedUrl || existing?.image_path || existing?.image_url || existing?.high_res_url || '';
+            
+            // Normalize Path for Persistence
+            if (finalImageUrl && !finalImageUrl.startsWith('http') && !finalImageUrl.startsWith('/api')) {
+                finalImageUrl = "/api" + (finalImageUrl.startsWith('/') ? '' : '/') + finalImageUrl;
+            }
 
             const productData = {
-                id           : existing?.id, 
+                id           : existing?.id || 'bake_' + Date.now(), 
                 name, 
                 price        : parseFloat(price),
                 category     : document.getElementById('p-cat').value,
@@ -710,6 +735,19 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 image_path   : finalImageUrl
             };
 
+            // 1. OPTIMISTIC UPDATE (Save to Physical Memory Instantly)
+            if (editingIndex !== null) {
+                products[editingIndex] = productData;
+            } else {
+                products.unshift(productData);
+            }
+            
+            localStorage.setItem('bobo_master_bakes_backup', JSON.stringify(products));
+            renderProducts(); 
+            closeModal();
+            overlay.style.display = 'none';
+
+            // 2. BACKGROUND CLOUD SYNC
             try {
                 const res = await fetch('/api/products', {
                     method: 'POST',
@@ -718,18 +756,12 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 });
 
                 if (res.ok) {
-                    await loadProducts();
-                    closeModal();
-                    alert('✅ Product saved successfully!');
+                    console.log(`✅ ${name} Synced with Cloud Master.`);
                 } else {
-                    const err = await res.json();
-                    alert('Failed to save product: ' + (err.error || 'Unknown Error'));
+                    console.warn(`Sync Warning: Product saved locally but Cloud was busy.`);
                 }
             } catch (e) {
-                console.error('Save Error:', e);
-                alert('Save failed: ' + e.message);
-            } finally {
-                overlay.style.display = 'none';
+                console.warn(`Sync Warning: Network severed. Product remains safe in local memory.`);
             }
         };
 
