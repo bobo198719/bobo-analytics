@@ -377,20 +377,62 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
 
         async function loadProducts() {
             try {
-                // Add timestamp to bypass any caching layers (Vercel/Browser)
+                // 1. Recover Legacy Context (The "Invisible Bakes" fix)
+                const legacyKeys = ['bakers_products', 'bobo_products', 'baker_creations'];
+                let legacyData = [];
+                for (const key of legacyKeys) {
+                    const local = localStorage.getItem(key);
+                    if (local) {
+                      try {
+                        const parsed = JSON.parse(local);
+                        if (Array.isArray(parsed)) legacyData = [...legacyData, ...parsed];
+                      } catch(e) {}
+                    }
+                }
+
+                // 2. Fetch Active Cloud Matrix
                 const res = await fetch(`/api/products?t=${Date.now()}`);
                 const data = await res.json();
-                if (Array.isArray(data)) {
-                    products = data;
-                } else {
-                    products = [];
-                }
+                
+                // Cloud Truth
+                let cloudProducts = Array.isArray(data) ? data : [];
+                
+                // 3. Merging Matrix (Resurrecting missing bakes)
+                const merged = [...cloudProducts];
+                legacyData.forEach(lp => {
+                    const exists = merged.find(cp => 
+                        (cp.id === lp.id) || 
+                        (cp.name && lp.name && cp.name.toLowerCase() === lp.name.toLowerCase())
+                    );
+                    if (!exists) {
+                        merged.push({...lp, status: 'approved'});
+                        // Proactively sync missing legacy bake back to cloud
+                        saveToCloudSilent(lp);
+                    }
+                });
+
+                products = merged;
+                
+                // 4. Local Persistence Guard (Safety Mirror)
+                localStorage.setItem('bobo_master_bakes_backup', JSON.stringify(products));
+                
                 renderProducts();
             } catch(e) {
-                console.error('API Error:', e);
-                products = [];
+                console.warn('Sync Failure - Activating Local Backup...');
+                const backup = localStorage.getItem('bobo_master_bakes_backup');
+                products = backup ? JSON.parse(backup) : [];
                 renderProducts();
             }
+        }
+
+        async function saveToCloudSilent(p) {
+            try {
+                fetch('/api/products', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(p)
+                });
+            } catch(e) {}
         }
 
         // ═══════════════════════════════════════════════════════════════════

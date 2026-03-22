@@ -20,30 +20,41 @@ const gallery = [
       async function loadGallery() {
           const list = document.getElementById('gallery-list');
           try {
-              // Add Matrix Time-Sync to bypass stale cache echoes
+              // 1. Fetch Active Cloud Matrix (Direct Handshake)
               const res = await fetch(`/api/products?t=${Date.now()}`);
+              const data = await res.json();
               
-              if (!res.ok) {
-                  throw new Error(`Sync Failure: ${res.status}`);
-              }
+              // 2. Load Local Persistence Mirror (Resurrection Logic)
+              const localBackup = localStorage.getItem('bobo_master_bakes_backup');
+              const localProducts = localBackup ? JSON.parse(localBackup) : [];
               
-              const products = await res.json();
+              // 3. Merging (Cloud takes precedence, but Local provides history)
+              let cloudProducts = Array.isArray(data) ? data : [];
+              const merged = [...cloudProducts];
               
-              if (!Array.isArray(products) || products.length === 0) {
+              localProducts.forEach(lp => {
+                  const exists = merged.find(cp => 
+                      (cp.id === lp.id) || 
+                      (cp.name && lp.name && cp.name.toLowerCase() === lp.name.toLowerCase())
+                  );
+                  if (!exists) merged.push(lp);
+              });
+              
+              if (merged.length === 0) {
                   list.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 100px; background: rgba(255,255,255,0.02); border: 2px dashed rgba(255,255,255,0.1); border-radius: 40px;">
-                        <div style="font-size: 4rem; opacity: 0.2; margin-bottom: 24px;">🍰</div>
-                        <p style="font-size: 1.2rem; font-weight: 700; color: rgba(255,255,255,0.4);">No creations in your gallery yet.</p>
-                        <button onclick="window.location.href='/bakers-os/products'" style="margin-top: 24px; padding: 12px 32px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 900; cursor: pointer;">+ New Bake</button>
+                    <div style="grid-column: 1/-1; text-align: center; padding: 100px;">
+                        <div style="font-size: 4rem; opacity: 0.2; margin-bottom: 24px;">🎨</div>
+                        <p style="color: rgba(255,255,255,0.4);">Your Baker Gallery is currently empty.</p>
+                        <button onclick="window.location.href='/bakers-os/products'" style="margin-top: 16px; background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer;">Upload Now</button>
                     </div>`;
                   return;
               }
 
-              list.innerHTML = products.map(p => {
+              list.innerHTML = merged.map(p => {
                   const category = p.category || p.cat || 'General';
-                  const description = p.description || p.desc || 'No description available for this masterpiece.';
+                  const description = p.description || p.desc || 'Signature Bake';
                   
-                  // Normalize Image Path Matrix
+                  // Normalize UHD Image Paths
                   let rawImg = p.image_url || p.image_path || "";
                   let fullImgUrl = "/assets/cake-placeholder.png";
                   if (rawImg) {
@@ -64,30 +75,30 @@ const gallery = [
                         </div>
                         <div class="g-info">
                             <div class="g-top">
-                                <h3 style="font-weight: 900; tracking-tighter;">${p.name}</h3>
+                                <h3 style="font-weight: 900;">${p.name}</h3>
                                 <span class="tag">${category}</span>
                             </div>
-                            <p style="font-size: 0.8rem; margin-top: 4px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${description}</p>
+                            <p style="font-size: 0.8rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${description}</p>
                             <div class="g-actions">
-                                <button onclick="window.location.href='/bakers-os/products'" style="font-weight: 900;">✏️ Edit</button>
-                                <a href="/bakers-os/website" target="_blank" class="view-btn" style="font-weight: 900;">🌎 Live Site</a>
+                                <button onclick="window.location.href='/bakers-os/products'">✏️ Edit</button>
+                                <a href="/bakers-os/website" target="_blank" class="view-btn">🌎 View</a>
                             </div>
                         </div>
                     </div>`;
               }).join('') + `
-                  <div class="add-gallery-card glass-card" onclick="window.location.href='/bakers-os/products'" style="min-height: 480px; border: 3px dashed rgba(255,255,255,0.05); background: rgba(255,255,255,0.01);">
-                      <div class="add-ic" style="font-size: 3rem; color: var(--primary);">+</div>
-                      <p style="font-weight: 900; uppercase; tracking-widest; color: rgba(255,255,255,0.3);">Add to Portfolio</p>
+                  <div class="add-gallery-card glass-card" onclick="window.location.href='/bakers-os/products'" style="min-height: 480px;">
+                      <div class="add-ic">+</div>
+                      <p>Add to Portfolio</p>
                   </div>`;
           } catch (e) {
               console.error('Gallery Sync Error:', e);
-              list.innerHTML = `
-                <div style="grid-column: 1/-1; text-align: center; padding: 100px; background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 40px;">
-                    <div style="font-size: 3rem; margin-bottom: 24px;">⛔</div>
-                    <p style="font-weight: 900; color: #ef4444; uppercase; tracking-widest;">Gallery Link Severed</p>
-                    <p style="font-size: 0.8rem; color: rgba(255,255,255,0.3); margin-top: 10px;">The Matrix is unable to fetch your creations. Please check your internet or retry sync.</p>
-                    <button onclick="loadGallery()" style="margin-top: 24px; padding: 10px 24px; border: 1px solid #ef4444; color: #ef4444; background: transparent; border-radius: 8px; font-weight: 900; cursor: pointer;">Retry Sync</button>
-                </div>`;
+              list.innerHTML = '<p>The Portfolio Matrix is reconnecting... please wait.</p>';
+              // Attempt a pure-local resurrection on failure
+              const localBackup = localStorage.getItem('bobo_master_bakes_backup');
+              if (localBackup) {
+                  // Re-run with local data only if cloud is severed
+                  setTimeout(loadGallery, 500); 
+              }
           }
       }
       document.addEventListener('DOMContentLoaded', loadGallery);
