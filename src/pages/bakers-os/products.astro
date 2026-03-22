@@ -846,7 +846,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             overlay.style.display = 'flex';
 
             let successCount = 0;
-            const CONCURRENCY = 2; // Reduced for stability during high-res transfers
+            const CONCURRENCY = 2; // Reduced for stable high-fidelity UHD transfer
             
             async function processFile(file, index) {
                 try {
@@ -855,45 +855,44 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                     const response = await fetch(optimizedDataUrl);
                     const optimizedBlob = await response.blob();
 
-                    status.innerText = `Uploading ${file.name}…`;
+                    status.innerText = `Uploading ${file.name} to Cloud…`;
                     const result = await uploadImageToServer(optimizedBlob);
                     
                     const rawUrl = result.url || result.image_url || result.image;
                     if (!rawUrl) throw new Error('No UHD URL returned from Cloud Matrix');
                     
-                    // Normalize UHD Path
-                    let finalPath = rawUrl;
-                    if (finalPath && !finalPath.startsWith('http') && !finalPath.startsWith('/api')) {
-                        finalPath = "/api" + (finalPath.startsWith('/') ? '' : '/') + finalPath;
+                    // Normalize Path for Instant Website Visibility
+                    let finalLivePath = rawUrl;
+                    if (finalLivePath && !finalLivePath.startsWith('http') && !finalLivePath.startsWith('/api')) {
+                        finalLivePath = "/api" + (finalLivePath.startsWith('/') ? '' : '/') + finalLivePath;
                     }
 
                     const fileName = file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ')
                         .split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-                    const description = TEMPLATES[Math.floor(Math.random() * TEMPLATES.length)].replace('{name}', fileName);
-
+                    
                     const newBake = {
-                        id           : 'bulk_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+                        id           : Date.now() + Math.floor(Math.random() * 1000), 
                         name         : fileName,
                         price        : 1500,
-                        description,
+                        description  : 'New UHD Signature Bake: ' + fileName,
                         category     : 'Celebration Cakes',
                         prep         : '4h',
-                        status       : 'pending',
-                        image_path   : finalPath
+                        status       : 'approved', // INSTANT LIVE STATUS
+                        image_path   : finalLivePath
                     };
 
-                    // 1. ITERATIVE OPTIMISTIC COMMIT (Physical Memory First)
+                    // 1. OPTIMISTIC INSTANT UI COMMIT (Physical Memory First)
                     products.unshift(newBake);
                     localStorage.setItem('bobo_master_bakes_backup', JSON.stringify(products));
                     renderProducts();
 
-                    // 2. BACKGROUND CLOUD SYNC
+                    // 2. BACKGROUND CLOUD SYNC (Ensures persistent backup on Hostinger)
                     saveToCloudSilent(newBake);
                     
                     successCount++;
                     const percent = Math.round(((successCount) / validFiles.length) * 100);
                     progress.style.width = `${percent}%`;
-                    status.innerText = `Successfully Synced ${successCount}/${validFiles.length} Bakes`;
+                    status.innerText = `Successfully Published ${successCount}/${validFiles.length} Bakes Live!`;
                 } catch(err) {
                     console.error(`Failed ${file.name}:`, err);
                 }
@@ -905,16 +904,16 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 await Promise.all(chunk.map((f, idx) => processFile(f, i + idx)));
             }
 
-            // Final Cloud Pull to ensure absolute sync
+            // Reconcile overall Matrix State
             await loadProducts();
 
             setTimeout(() => {
                 overlay.style.display = 'none';
                 progress.style.width  = '0%';
                 if (successCount > 0) {
-                    currentFilter = 'pending';
+                    currentFilter = 'approved';
                     renderProducts();
-                    alert(`✅ ${successCount} UHD creations successfully added to your catalog!`);
+                    alert(`✅ ${successCount} UHD creations are now LIVE on your website!`);
                 }
                 input.value = '';
             }, 800);
