@@ -13,8 +13,8 @@ export async function GET({ url }) {
             connectTimeout: 10000
         });
 
-        // 1. Fetch products for this tenant
-        const [rows] = await connection.query("SELECT * FROM products WHERE tenant_id = ? AND status = 'approved'", [tenantId]);
+        // 1. Fetch products for this tenant (using bakery_slug as per production schema)
+        const [rows] = await connection.query("SELECT * FROM bakery_products WHERE bakery_slug = ?", [tenantId]);
         await connection.end();
 
         return new Response(JSON.stringify(rows), { 
