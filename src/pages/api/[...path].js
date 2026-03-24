@@ -6,8 +6,8 @@ export async function ALL({ request, params }) {
     const method = request.method;
 
     // Only intercept paths that should go to the Hostinger API
-    if (!pathname.includes('/api/')) {
-        return undefined; // Let Vercel Astro handle page SSR untouched
+    if (!pathname.includes('/api/') || pathname.includes('/api/v2/')) {
+        return undefined; // Let Vercel Astro handle its own high-performance V2 bridges
     }
 
     const hostingerUrl = "http://srv1449576.hstgr.cloud:5000";
