@@ -395,8 +395,11 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             msg += `*Items ordered:*\n${orderDetails.items.map(i => `- ${i.name} x${i.qty}`).join('\n')}\n\n`;
             msg += `_Thank you for ordering with us! We will start preparing your cake shortly._`;
             
-            const waNumber = businessSettings.phone ? businessSettings.phone.replace(/\D/g, '') : "917387021958";
-            window.open(`https://wa.me/91${waNumber}?text=${encodeURIComponent(msg)}`, '_blank');
+            let waNumber = businessSettings.phone ? businessSettings.phone.replace(/\D/g, '') : "917387021958";
+            if (waNumber.length === 10) {
+                waNumber = '91' + waNumber;
+            }
+            window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`, '_blank');
         }
     </script>
 </MainLayout>

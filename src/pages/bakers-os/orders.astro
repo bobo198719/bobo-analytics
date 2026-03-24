@@ -194,7 +194,10 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
 
       window.whatsappCustomer = (phone, name, id) => {
           if (!phone) return alert('No phone number found.');
-          const cleanPhone = phone.replace(/\D/g, '');
+          let cleanPhone = phone.replace(/\D/g, '');
+          if (cleanPhone.length === 10) {
+              cleanPhone = '91' + cleanPhone;
+          }
           const message = encodeURIComponent(`Hi ${name}! Regarding your order #${id} from Baker OS.`);
           window.open(`https://wa.me/${cleanPhone}?text=${message}`, '_blank');
       };
