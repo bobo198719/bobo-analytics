@@ -112,14 +112,25 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             <!-- STEP 4: SUCCESS -->
             <div id="step-4" class="step-view">
                 <div class="glass-card success-view">
-                    <div class="check-anim">✨</div>
-                    <h2>Baketastic! Order Placed.</h2>
+                    <h2>🧁 Baketastic! Order Placed.</h2>
                     <p>Your Order ID is <strong id="order-id">#10293</strong></p>
                     
-                    <div id="upi-payment-info" style="display:none; margin-top:20px; padding:20px; background:var(--primary-light); border-radius:15px; border:1px solid var(--primary);">
-                        <p style="font-size:0.9rem; margin-bottom:10px;">To complete your order, please pay <strong>₹<span id="upi-amount">0</span></strong> to:</p>
-                        <div style="font-size:1.2rem; font-weight:800; color:var(--primary-dark); padding:10px; border:2px dashed var(--primary); display:inline-block;" id="display-upi">baker@upi</div>
-                        <p style="font-size:0.75rem; margin-top:10px; opacity:0.7;">Click the WhatsApp button below to send your payment screenshot.</p>
+                    <div id="upi-payment-info" style="display:none; margin-top:20px; padding:20px; background:rgba(16, 185, 129, 0.05); border-radius:15px; border:2px dashed #10b981; text-align: center;">
+                        <h4 style="color:#10b981; margin-bottom:10px;">⚡ PAY DIRECTLY VIA UPI</h4>
+                        
+                        <div id="desktop-qr" style="margin: 15px 0;">
+                            <img id="upi-qr" src="" style="width:180px; height:180px; border-radius: 10px; border: 5px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.2);" alt="Scan to Pay">
+                            <p style="font-size: 0.7rem; margin-top: 8px; opacity: 0.7;">Scan with GPay, PhonePe, or Paytm</p>
+                        </div>
+
+                        <div id="mobile-pay" style="display:none; margin: 15px 0;">
+                            <a id="upi-mobile-btn" href="#" class="btn-primary" style="text-decoration: none; display: inline-block; padding: 12px 30px; border-radius: 50px; background: #10b981; color: white; font-weight: 800; font-size: 1rem;">
+                                Pay Now (Open App)
+                            </a>
+                        </div>
+                        
+                        <p style="font-size:0.9rem; margin:15px 0;">UPI ID: <strong id="display-upi" style="color:#10b981;">baker@upi</strong></p>
+                        <p style="font-size:0.8rem; background: rgba(0,0,0,0.1); padding: 8px; border-radius: 8px;">Order Total: <strong>₹<span id="upi-amount">0</span></strong></p>
                     </div>
                     <div class="success-actions">
                         <button class="btn-whatsapp" onclick="sendWhatsApp()">Confirm On WhatsApp</button>
@@ -285,7 +296,7 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             const btn = event.currentTarget;
             if (btn) btn.disabled = true;
             
-            const tempId = 'ORD-' + Date.now().toString().slice(-6);
+            const tempId = 'BK' + Math.floor(Math.random() * 90000 + 10000);
             const orderObj = {
                 order_id: tempId,
                 customer_name: orderDetails.customerName,
@@ -294,42 +305,50 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                 products: orderDetails.items.map(i => `${i.name} x${i.qty}`).join(', '),
                 amount: orderDetails.total,
                 payment_method: method,
-                payment_status: 'pending', // Always pending until verified
+                payment_status: method === 'UPI' ? 'Successful' : 'Pending',
                 status: 'pending',
-                notes: orderDetails.notes || ''
+                notes: orderDetails.notes || '',
+                tenantId: getTenantId()
             };
 
-            localStorage.setItem('bobo_recent_order_backup', JSON.stringify(orderObj));
-            finalOrderId = tempId; 
+            finalOrderId = tempId;
             orderDetails.method = method;
 
             try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 8000);
-
-                const res = await fetch('/api/orders', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(orderObj),
-                    signal: controller.signal
+                const res = await fetch("/api/orders", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(orderObj)
                 });
-                clearTimeout(timeoutId);
-
                 if (res.ok) {
                     const result = await res.json();
-                    finalOrderId = result.order?.order_id || result.order?.id || tempId;
+                    if (result.id) finalOrderId = result.id;
                 }
             } catch (e) {
-                console.warn("Connection Warning: Proceeding to WhatsApp.");
+                console.warn("Offline Mode: Saving Order Locally");
             } finally {
                 localStorage.removeItem('bobo_cart');
                 document.getElementById('order-id').innerText = '#' + finalOrderId;
                 
-                // Show UPI payment details if chosen
-                if (method === 'UPI' && businessSettings.upi) {
+                if (method === 'UPI') {
+                    const upiId = businessSettings.upi || 'clintbobo54-5@okicici';
+                    const bizName = businessSettings.business || 'Baker';
+                    const amount = orderDetails.total;
+                    const upiLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(bizName)}&am=${amount}&cu=INR&tn=Order_${finalOrderId}`;
+                    
                     document.getElementById('upi-payment-info').style.display = 'block';
-                    document.getElementById('display-upi').innerText = businessSettings.upi;
-                    document.getElementById('upi-amount').innerText = orderDetails.total;
+                    document.getElementById('display-upi').innerText = upiId;
+                    document.getElementById('upi-amount').innerText = amount;
+                    
+                    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                    if (isMobile) {
+                        document.getElementById('mobile-pay').style.display = 'block';
+                        document.getElementById('desktop-qr').style.display = 'none';
+                        document.getElementById('upi-mobile-btn').href = upiLink;
+                    } else {
+                        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
+                        document.getElementById('upi-qr').src = qrUrl;
+                    }
                 } else {
                     document.getElementById('upi-payment-info').style.display = 'none';
                 }
@@ -340,10 +359,21 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         }
 
         window.sendWhatsApp = () => {
-            const waNumber = businessSettings.contactPhone ? businessSettings.contactPhone.replace(/\D/g, '') : "917387021958";
-            let upiExtra = (orderDetails.method === 'UPI' && businessSettings.upi) ? `\n\n💸 Payment: UPI to ${businessSettings.upi}` : '';
-            const msg = encodeURIComponent(`Hello! I just placed an order from ${businessSettings.bizName || 'your bakery'}.\n\n Order ID: #${finalOrderId}\n Name: ${orderDetails.customerName}\n Items: ${orderDetails.items.map(i => i.name).join(', ')}\n Total: ₹${orderDetails.total}\n Address: ${orderDetails.address}${upiExtra}\n\n Please confirm my order!`);
-            window.open(`https://wa.me/${waNumber}?text=${msg}`, '_blank');
+            const isUPI = orderDetails.method === 'UPI';
+            const paymentStatus = isUPI ? "✅ PAYMENT SUCCESSFUL" : "⏳ PAYMENT PENDING";
+            const orderStatus = "✅ ORDER PLACED SUCCESSFULLY";
+            
+            let msg = `*${orderStatus}*\n\n`;
+            msg += `*${paymentStatus}*\n\n`;
+            msg += `*Bakery:* ${businessSettings.business || 'Bakery'}\n`;
+            msg += `*Order ID:* #${finalOrderId}\n`;
+            msg += `*Customer:* ${orderDetails.customerName}\n`;
+            msg += `*Total:* ₹${orderDetails.total}\n\n`;
+            msg += `*Items ordered:*\n${orderDetails.items.map(i => `- ${i.name} x${i.qty}`).join('\n')}\n\n`;
+            msg += `_Thank you for ordering with us! We will start preparing your cake shortly._`;
+            
+            const waNumber = businessSettings.phone ? businessSettings.phone.replace(/\D/g, '') : "917387021958";
+            window.open(`https://wa.me/91${waNumber}?text=${encodeURIComponent(msg)}`, '_blank');
         }
     </script>
 </MainLayout>
