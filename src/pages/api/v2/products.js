@@ -24,14 +24,22 @@ export async function GET({ url }) {
         
         await connection.end();
 
-        // 3. Transform paths for proxy
+        // 3. Transform paths for proxy only if they are local filenames
         const rows = dbRows.map(p => {
-            if (p.image_url && !p.image_url.startsWith('http')) {
-                const filename = p.image_url.split('/').pop();
-                p.image_url = `/api/storage/bakery/images/${filename}`;
+            const rawImg = p.image_url || p.image_path || "";
+            
+            // If it's already a full cloud URL (like Vercel Blob), keep it!
+            if (rawImg.startsWith('http')) {
+                p.image_url = rawImg;
+            } else if (rawImg && rawImg.length > 0) {
+                // If it's just a filename, point to the Hostinger Proxy (via secure /api/uploads)
+                const filename = rawImg.split('/').pop();
+                p.image_url = `/api/uploads/${filename}`;
             }
             return p;
         });
+
+        console.log(`[Bridge] Dispatched ${rows.length} products for ${tenantId}`);
 
         return new Response(JSON.stringify(rows), { 
             status: 200,

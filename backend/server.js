@@ -37,11 +37,23 @@ if (!fs.existsSync(uploadDir)) {
 
 app.use(cors());
 
-// Serve uploads directory specifically (proxied via /api/uploads)
-app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
+// 🛡️ Asset Delivery Service: Securely map /api/uploads to Production Storage
+app.use("/api/uploads", (req, res, next) => {
+    const STORAGE_DIR = "/var/www/storage/bakery/images";
+    if (fs.existsSync(STORAGE_DIR)) {
+        return express.static(STORAGE_DIR)(req, res, next);
+    }
+    express.static(path.join(__dirname, "uploads"))(req, res, next);
+});
 
-// Serve images from the internal public directory
-app.use("/menu-images", express.static(uploadDir));
+// Backward compatibility for /menu-images
+app.use("/menu-images", (req, res, next) => {
+    const STORAGE_DIR = "/var/www/storage/bakery/images";
+    if (fs.existsSync(STORAGE_DIR)) {
+        return express.static(STORAGE_DIR)(req, res, next);
+    }
+    express.static(uploadDir)(req, res, next);
+});
 
 // Ensure Permanent Storage (VPS) Directory Structure
 const STORAGE_ROOT = "/var/www/storage";

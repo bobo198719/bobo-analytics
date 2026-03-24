@@ -16,7 +16,7 @@ export async function ALL({ request, params }) {
     let targetPath = pathname + url.search;
     
     // 🛠️ Asset Mapping Correction: Strip /api for static folders mounted at root on Hostinger
-    const assetFolders = ['/storage/', '/menu-images/', '/uploads/'];
+    const assetFolders = ['/storage/', '/menu-images/'];
     for (const folder of assetFolders) {
         if (targetPath.startsWith('/api' + folder)) {
             targetPath = targetPath.replace('/api/', '/');
