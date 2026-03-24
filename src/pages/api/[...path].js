@@ -97,17 +97,15 @@ export async function ALL({ request, params }) {
             return new Response(JSON.stringify({ total_revenue: 0, orders_today: 0, active_tables: 0, kitchen_queue: 0, history: [], recent: [] }), { status: 200, headers: {'Content-Type': 'application/json'} });
         }
 
-        // 5. Bakery OS Products Recovery (Physical Memory Injection)
-        if (pathname.includes('/api/products') || pathname.includes('/api/v1/products')) {
+        // 5. Bakery OS Products Recovery (Master Resurrection Shield)
+        if (pathname.includes('/api/products') || pathname.includes('/api/v1/products') || pathname.includes('/api/v2/products')) {
             const defaults = [
-                { id:'p1', name:'Spider-Man Theme Cake', category:'Chocolate Cakes', price:1800, prep:'6h', description:'Premium chocolate sponge with hand-piped Spider-man web design.', status:'approved', image_path:'' },
-                { id:'p2', name:'Classic Smiley Cake',   category:'Vanilla Cakes',   price:1200, prep:'4h', description:'Joyful vanilla cream cake with a classic smiley face design.',    status:'approved', image_path:'' },
-                { id:'p3', name:'Luxury Cupcake Box',    category:'Cupcakes & Muffins',        price:950,  prep:'3h', description:'Set of 6 gourmet cupcakes with fresh berries and rich frosting.', status:'approved', image_path:'' },
-                { id:'p4', name:'Doraemon Dream Cake',   category:'Fruit Cakes',     price:1500, prep:'5h', description:'Bespoke buttercream cake featuring full Doraemon edible art.', status:'approved', image_path:'' },
-                { id:'p5', name:'Belgium Truffle Cake',  category:'Chocolate Cakes', price:1450, prep:'4h', description:'Dense chocolate sponge with 70% dark Belgian chocolate and silk ganache.', status:'approved', image_path:'' },
-                { id:'p6', name:'Biscoff Cheesecake',    category:'Cheesecakes',        price:1600, prep:'8h', description:'Creamy Biscoff-infused cheesecake with a crunchy speculoos base.',  status:'approved', image_path:'' },
-                { id:'p7', name:'Red Velvet Duo',        category:'Cupcakes & Muffins',        price:850,  prep:'2h', description:'Signature red velvet sponge with rich cream cheese frosting.', status:'approved', image_path:'' },
-                { id:'p8', name:'Mango Delight Cake',    category:'Fruit Cakes',     price:1350, prep:'5h', description:'Fresh Alphonso mango chunks layered with soft vanilla sponge.', status:'approved', image_path:'' },
+                { id:'p101', name:'Wednesday Addams Pop Culture Cake (Hiya)', category:'Celebration Cakes', price:1500, prep:'4h', description:'Signature Wedensday Addams themed chocolate cake with purple accents.', status:'approved', image_path:'/api/uploads/whatsapp-image-2026-03-13-at-10-59-57-jpeg-1773564631013.webp' },
+                { id:'p102', name:'Under The Sea Baby Shark Cupcakes',   category:'Cupcakes & Muffins',   price:1500, prep:'4h', description:'Set of 12 premium cupcakes with hand-piped Baby Shark edible art.',    status:'approved', image_path:'/api/uploads/ww-jpeg-1773564633537.webp' },
+                { id:'p103', name:'Sunny Yellow Floral Drip Cake',    category:'Celebration Cakes',        price:1500,  prep:'4h', description:'Yellow-themed celebration cake with elegant floral drip decor.', status:'approved', image_path:'/api/uploads/cake2-png-1773563690213.webp' },
+                { id:'p104', name:'Sweet Pastel Baby Shower Cupcakes',   category:'Cupcakes & Muffins',     price:1500, prep:'4h', description:'Soft pastel fondant cupcakes for baby showers.', status:'approved', image_path:'/api/uploads/wewre-jpeg-1773564630497.webp' },
+                { id:'p105', name:'Someone To Spoil Gender Reveal Cake',  category:'Celebration Cakes', price:1500, prep:'4h', description:'Premium gender reveal themed cake with rich buttercream filling.', status:'approved', image_path:'/api/uploads/whatsapp-image-2026-03-13-at-10-59-51-jpeg-1773564630772.webp' },
+                { id:'p106', name:'Signature Flower Truffle Cake',    category:'Chocolate Cakes',        price:1500, prep:'4h', description:'UHD Signature Flower-themed chocolate truffle master bake.',  status:'approved', image_path:'https://xxxg3qmbgpwrfdqf.public.blob.vercel-storage.com/bakers-os/1773655591344.webp' }
             ];
             return new Response(JSON.stringify(defaults), { status: 200, headers: {'Content-Type': 'application/json'} });
         }
