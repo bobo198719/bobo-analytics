@@ -1094,6 +1094,16 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
 
             loadProducts();
             renderProducts();
+
+            // Auto-Edit Deep Linking
+            const urlParams = new URLSearchParams(window.location.search);
+            const editId = urlParams.get('id');
+            if (editId) {
+                setTimeout(() => {
+                    const idx = products.findIndex(p => String(p.id) === String(editId));
+                    if (idx !== -1) openProductModal(idx);
+                }, 800);
+            }
         });
     </script>
 </BakersOSLayout>

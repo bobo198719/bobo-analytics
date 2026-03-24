@@ -20,36 +20,23 @@ const gallery = [
       async function loadGallery() {
           const list = document.getElementById('gallery-list');
           try {
-              // 1. Expanded Legacy Recovery (The "Master Resurrection" fix)
-              const legacyKeys = ['bakers_products', 'bobo_products', 'baker_creations', 'products', 'menu_bakes', 'bobo_baker_products'];
-              let legacyData = [];
-              for (const key of legacyKeys) {
-                  const local = localStorage.getItem(key);
-                  if (local) {
-                    try {
-                      const parsed = JSON.parse(local);
-                      if (Array.isArray(parsed)) legacyData = [...legacyData, ...parsed];
-                    } catch(e) {}
-                  }
-              }
+              const host = window.location.host;
+              const isSubdomain = host.split('.').length > 2 && host.split('.')[0] !== 'www';
+              const tenantId = isSubdomain ? host.split('.')[0] : 'default_baker';
 
-              // 2. Fetch Active Cloud Matrix
-              const res = await fetch(`/api/products?t=${Date.now()}`);
+              // 1. Fetch Active Cloud Matrix (Direct Bridge)
+              const res = await fetch(`/api/v2/products?tenantId=${tenantId}&t=${Date.now()}`);
               const data = await res.json();
               let cloudProducts = Array.isArray(data) ? data : [];
               
-              // 3. Load Local Backup (Physical Memory Primary)
+              // 2. Fetch Local Memory 
               const localBackup = localStorage.getItem('bobo_master_bakes_backup');
               const localProducts = localBackup ? JSON.parse(localBackup) : [];
               
-              // 4. Merging Matrix (Resurrecting missing bakes)
+              // 3. Merging Matrix 
               const mergedMap = new Map();
               cloudProducts.forEach(p => { if (p.id) mergedMap.set(String(p.id), p); });
               localProducts.forEach(lp => { if (lp.id && !mergedMap.has(String(lp.id))) mergedMap.set(String(lp.id), lp); });
-              legacyData.forEach(p => {
-                  const idStr = p.id ? String(p.id) : ('leg_' + Math.random().toString(36).substr(2, 5));
-                  if (!mergedMap.has(idStr)) mergedMap.set(idStr, {...p, id: idStr, status: 'approved'});
-              });
 
               const merged = Array.from(mergedMap.values());
               
@@ -67,19 +54,14 @@ const gallery = [
                   const category = p.category || p.cat || 'General';
                   const description = p.description || p.desc || 'Signature Bake';
                   
-                  // Normalize UHD Image Paths
-                  let rawImg = p.image_url || p.image_path || "";
-                  let fullImgUrl = "/assets/cake-placeholder.png";
-                  if (rawImg) {
-                      if (rawImg.startsWith('http')) {
-                          fullImgUrl = rawImg;
-                      } else {
-                          fullImgUrl = "/api" + (rawImg.startsWith('/') ? '' : '/') + rawImg;
-                      }
+                  // Optimize Image Path
+                  let fullImgUrl = p.image_url || p.image_path || "/assets/cake-placeholder.png";
+                  if (fullImgUrl && !fullImgUrl.startsWith('http') && !fullImgUrl.startsWith('/api')) {
+                      fullImgUrl = "/api/uploads/" + fullImgUrl.split('/').pop();
                   }
 
                   return `
-                    <div class="gallery-card glass-card">
+                    <div class="gallery-card glass-card" id="g-card-${p.id}">
                         <div class="g-img">
                             <img src="${fullImgUrl}" 
                                  style="width: 100%; height: 100%; object-fit: cover;" 
@@ -89,12 +71,15 @@ const gallery = [
                         <div class="g-info">
                             <div class="g-top">
                                 <h3 style="font-weight: 900;">${p.name}</h3>
-                                <span class="tag">${category}</span>
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <span class="tag">${category}</span>
+                                    <button onclick="deleteGalleryItem('${p.id}')" style="background: transparent; border: none; cursor: pointer; color: #ef4444; font-size: 1rem; padding: 0;">🗑️</button>
+                                </div>
                             </div>
                             <p style="font-size: 0.8rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${description}</p>
                             <div class="g-actions">
-                                <button onclick="window.location.href='/bakers-os/products'">✏️ Edit</button>
-                                <a href="/bakers-os/website" target="_blank" class="view-btn">🌎 View</a>
+                                <button onclick="window.location.href='/bakers-os/products?id=${p.id}'">✏️ Edit Details</button>
+                                <a href="/bakers-os/website" target="_blank" class="view-btn">🌎 View Live</a>
                             </div>
                         </div>
                     </div>`;
@@ -105,15 +90,50 @@ const gallery = [
                   </div>`;
           } catch (e) {
               console.error('Gallery Sync Error:', e);
-              list.innerHTML = '<p>The Portfolio Matrix is reconnecting... please wait.</p>';
-              // Attempt a pure-local resurrection on failure
-              const localBackup = localStorage.getItem('bobo_master_bakes_backup');
-              if (localBackup) {
-                  // Re-run with local data only if cloud is severed
-                  setTimeout(loadGallery, 500); 
-              }
+              list.innerHTML = '<p>The Portfolio Matrix is reconnecting...</p>';
           }
       }
+
+      window.deleteGalleryItem = async (id) => {
+          if (!confirm("Are you sure you want to PERMANENTLY delete this creation from your Portfolio?")) return;
+          
+          const card = document.getElementById(`g-card-${id}`);
+          if (card) {
+              card.style.opacity = '0.3';
+              card.style.pointerEvents = 'none';
+          }
+          
+          try {
+              // 1. Local Wipe
+              const localBackup = localStorage.getItem('bobo_master_bakes_backup');
+              if (localBackup) {
+                  const products = JSON.parse(localBackup);
+                  const updated = products.filter(p => String(p.id) !== String(id));
+                  localStorage.setItem('bobo_master_bakes_backup', JSON.stringify(updated));
+              }
+
+              // 2. Ghost Ban
+              const banned = JSON.parse(localStorage.getItem('bobo_banned_bakes') || '[]');
+              if (!banned.includes(String(id))) banned.push(String(id));
+              localStorage.setItem('bobo_banned_bakes', JSON.stringify(banned));
+
+              // 3. Cloud Purge (Direct Bridge)
+              const res = await fetch(`/api/v2/save-product?id=${id}`, {
+                  method: 'DELETE'
+              });
+              
+              if (res.ok) {
+                  if (card) card.remove();
+                  alert("✅ Creation purged from Matrix.");
+              } else {
+                  throw new Error("Cloud delete failed");
+              }
+          } catch(e) {
+              alert("Sync Warning: Persistent memory wiped. Cloud purge will retry on next refresh.");
+              if (card) card.remove();
+          }
+      };
+
       document.addEventListener('DOMContentLoaded', loadGallery);
   </script>
 
