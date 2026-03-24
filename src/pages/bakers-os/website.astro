@@ -347,14 +347,22 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                 });
 
                 // Final Sanitization & UHD Path Normalization
-                liveProducts = Array.from(mergedMap.values()).map(p => {
-                    let rawImg = p.image_path || p.image_url || p.high_res_url || "";
-                    if (rawImg && !rawImg.startsWith('http') && !rawImg.startsWith('/api')) {
-                        p.image_path = "/api" + (rawImg.startsWith('/') ? '' : '/') + rawImg;
-                    }
-                    return p;
-                });
+                const banned = JSON.parse(localStorage.getItem('bobo_banned_bakes') || '[]');
+                const wiped  = JSON.parse(localStorage.getItem('bobo_wiped_images') || '[]');
 
+                liveProducts = Array.from(mergedMap.values())
+                    .filter(p => !banned.includes(String(p.id)))
+                    .map(p => {
+                        let rawImg = p.image_path || p.image_url || p.high_res_url || "";
+                        if (wiped.includes(String(p.id))) {
+                             return { ...p, image_path: '', image_url: '', high_res_url: '', thumbnail_url: '', image_id: null };
+                        }
+                        if (rawImg && !rawImg.startsWith('http') && !rawImg.startsWith('/api')) {
+                            p.image_path = "/api" + (rawImg.startsWith('/') ? '' : '/') + rawImg;
+                        }
+                        return p;
+                    });
+                
                 const approved = liveProducts.filter(p => !p.status || p.status === 'approved' || p.status === 'Live');
                 renderMenu(approved);
                 renderGallery(approved);
@@ -362,7 +370,8 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                 console.warn("Website Sync Pulse Weak - Recovering from Local Memory...", e);
                 const backup = localStorage.getItem('bobo_master_bakes_backup');
                 if (backup) {
-                    liveProducts = JSON.parse(backup);
+                    const banned = JSON.parse(localStorage.getItem('bobo_banned_bakes') || '[]');
+                    liveProducts = JSON.parse(backup).filter(p => !banned.includes(String(p.id)));
                     renderMenu(liveProducts.filter(p => p.status === 'approved' || p.status === 'Live'));
                 }
             }
@@ -377,8 +386,9 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             }
             
             menuContainer.innerHTML = items.map(p => {
-                const fallback = '/assets/cake-placeholder.png';
-                const imgPath = p.image_path || p.image_url || p.high_res_url || fallback;
+                const fallback = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%231e293b'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23475569' font-size='10'%3ENO IMAGE%3C/text%3E%3C/svg%3E`;
+                let imgPath = p.image_path || p.image_url || p.high_res_url || fallback;
+                if (!imgPath || imgPath.trim() === '') imgPath = fallback;
                 const category = p.category || p.cat || 'General';
                 const description = p.description || p.desc || '';
                 

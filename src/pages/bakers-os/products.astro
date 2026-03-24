@@ -399,6 +399,12 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 const data = await res.json();
                 let cloudProducts = Array.isArray(data) ? data : [];
                 
+                // --- IRON VAULT FALLBACK ---
+                if (cloudProducts.length === 0 || (cloudProducts.length === 1 && cloudProducts[0].error)) {
+                    console.warn("⚠️ Master Matrix Empty/Offline - Resurrecting Signature Defaults...");
+                    cloudProducts = DEFAULTS; // Removed banned filter here, will be applied later
+                }
+                
                 // 4. Merging Matrix (Resurrecting missing bakes)
                 const mergedMap = new Map();
                 
@@ -422,11 +428,20 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                     }
                 });
 
-                products = Array.from(mergedMap.values());
+                // 5. THE GHOST WIPE SHIELD (Absolute Final Priority)
+                const banned = JSON.parse(localStorage.getItem('bobo_banned_bakes') || '[]');
+                const wiped  = JSON.parse(localStorage.getItem('bobo_wiped_images') || '[]');
                 
-                // 5. Hardened Persistence Mirror
+                products = Array.from(mergedMap.values())
+                    .filter(p => !banned.includes(String(p.id)))
+                    .map(p => {
+                        if (wiped.includes(String(p.id))) {
+                            return { ...p, image_path: '', image_url: '', high_res_url: '', thumbnail_url: '', image_id: null, medium_url: null };
+                        }
+                        return p;
+                    });
+                
                 localStorage.setItem('bobo_master_bakes_backup', JSON.stringify(products));
-                
                 renderProducts();
             } catch(e) {
                 console.warn('Sync Signal Weak - Recovering from Physical Memory...');
@@ -473,9 +488,9 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 
                 // Image Path Safety Repair
                 let rawImg = p.image_url || p.image_path || "";
-                let fullImgUrl = "/assets/cake-placeholder.png";
+                let fullImgUrl = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%231e293b'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23475569' font-size='10'%3ENO IMAGE%3C/text%3E%3C/svg%3E`;
                 
-                if (rawImg) {
+                if (rawImg && rawImg.trim() !== '') {
                     if (rawImg.startsWith('http')) {
                         fullImgUrl = rawImg;
                     } else if (rawImg.startsWith('/api/') || rawImg.startsWith('api/')) {
@@ -523,7 +538,10 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             }).join('');
 
             // Async: upgrade placeholder to medium-res image from legacy IndexedDB (older uploads only)
+            const wipedList = JSON.parse(localStorage.getItem('bobo_wiped_images') || '[]');
             for (const p of filtered) {
+                if (wipedList.includes(String(p.id))) continue; // FINAL GHOST SHIELD: Skip background upgrades for wiped items
+
                 if (!p.medium_url && p.image_id) {
                     getImageFromDB(p.image_id).then(img => {
                         if (!img) return;
@@ -748,6 +766,14 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             }
             
             localStorage.setItem('bobo_master_bakes_backup', JSON.stringify(products));
+
+            // --- GHOST WIPE PROTOCOL (Step 2: Sync Wipe State) ---
+            if (currentUploadedUrl) {
+                // If user uploaded a NEW image, remove it from the wipe list
+                const wiped = JSON.parse(localStorage.getItem('bobo_wiped_images') || '[]');
+                localStorage.setItem('bobo_wiped_images', JSON.stringify(wiped.filter(wId => wId !== String(productData.id))));
+            }
+            
             renderProducts(); 
             closeModal();
             overlay.style.display = 'none';
@@ -795,6 +821,11 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                     products[editingIndex].thumbnail_url = null;
                     currentUploadedUrl = null;
                     
+                    // --- GHOST WIPE PROTOCOL (Step 3: Identity Wipe) ---
+                    const wiped = JSON.parse(localStorage.getItem('bobo_wiped_images') || '[]');
+                    if (!wiped.includes(String(p.id))) wiped.push(String(p.id));
+                    localStorage.setItem('bobo_wiped_images', JSON.stringify(wiped));
+
                     document.getElementById('p-image-preview').style.display = 'none';
                     document.getElementById('p-delete-image-btn').style.display = 'none';
                     
@@ -949,6 +980,11 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 /* UPDATE STATE & BACKUP */
                 products = products.filter(p => String(p.id) !== String(id));
                 localStorage.setItem('bobo_master_bakes_backup', JSON.stringify(products));
+
+                // --- GHOST WIPE PROTOCOL (Step 4: Master Ban) ---
+                const banned = JSON.parse(localStorage.getItem('bobo_banned_bakes') || '[]');
+                if (!banned.includes(String(id))) banned.push(String(id));
+                localStorage.setItem('bobo_banned_bakes', JSON.stringify(banned));
 
                 /* 2. BACKGROUND CLOUD DELETE */
                 try {

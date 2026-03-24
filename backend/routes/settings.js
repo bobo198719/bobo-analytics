@@ -41,7 +41,7 @@ router.post("/settings/upi", async (req, res) => {
         // Simple update in site_settings JSON or dedicated column
         // Here we'll update the 'upi' key inside the settings JSON for simplicity
         const [rows] = await db.query("SELECT settings FROM site_settings WHERE tenant_id = ?", [tenantId]);
-        let settings = rows.length > 0 ? rows[0].settings : {};
+        let settings = rows.length > 0 && rows[0].settings ? rows[0].settings : {};
         if (typeof settings === 'string') settings = JSON.parse(settings);
         settings.upi = upi;
 

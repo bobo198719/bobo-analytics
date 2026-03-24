@@ -33,7 +33,7 @@ export async function ALL({ request, params }) {
         });
 
         const data = await resProxy.json();
-        return new Response(JSON.stringify(data), { status: 200, headers: {'Content-Type': 'application/json'} });
+        return new Response(JSON.stringify(data), { status: resProxy.status, headers: {'Content-Type': 'application/json'} });
 
     } catch (err) {
         // 🆘 EMERGENCY CLOUD RECOVERY SHIELD
@@ -67,6 +67,21 @@ export async function ALL({ request, params }) {
         // 4. Dashboard Recovery
         if (pathname.includes('/dashboard')) {
             return new Response(JSON.stringify({ total_revenue: 0, orders_today: 0, active_tables: 0, kitchen_queue: 0, history: [], recent: [] }), { status: 200, headers: {'Content-Type': 'application/json'} });
+        }
+
+        // 5. Bakery OS Products Recovery (Physical Memory Injection)
+        if (pathname.includes('/api/products') || pathname.includes('/api/v1/products')) {
+            const defaults = [
+                { id:'p1', name:'Spider-Man Theme Cake', category:'Chocolate Cakes', price:1800, prep:'6h', description:'Premium chocolate sponge with hand-piped Spider-man web design.', status:'approved', image_path:'' },
+                { id:'p2', name:'Classic Smiley Cake',   category:'Vanilla Cakes',   price:1200, prep:'4h', description:'Joyful vanilla cream cake with a classic smiley face design.',    status:'approved', image_path:'' },
+                { id:'p3', name:'Luxury Cupcake Box',    category:'Cupcakes & Muffins',        price:950,  prep:'3h', description:'Set of 6 gourmet cupcakes with fresh berries and rich frosting.', status:'approved', image_path:'' },
+                { id:'p4', name:'Doraemon Dream Cake',   category:'Fruit Cakes',     price:1500, prep:'5h', description:'Bespoke buttercream cake featuring full Doraemon edible art.', status:'approved', image_path:'' },
+                { id:'p5', name:'Belgium Truffle Cake',  category:'Chocolate Cakes', price:1450, prep:'4h', description:'Dense chocolate sponge with 70% dark Belgian chocolate and silk ganache.', status:'approved', image_path:'' },
+                { id:'p6', name:'Biscoff Cheesecake',    category:'Cheesecakes',        price:1600, prep:'8h', description:'Creamy Biscoff-infused cheesecake with a crunchy speculoos base.',  status:'approved', image_path:'' },
+                { id:'p7', name:'Red Velvet Duo',        category:'Cupcakes & Muffins',        price:850,  prep:'2h', description:'Signature red velvet sponge with rich cream cheese frosting.', status:'approved', image_path:'' },
+                { id:'p8', name:'Mango Delight Cake',    category:'Fruit Cakes',     price:1350, prep:'5h', description:'Fresh Alphonso mango chunks layered with soft vanilla sponge.', status:'approved', image_path:'' },
+            ];
+            return new Response(JSON.stringify(defaults), { status: 200, headers: {'Content-Type': 'application/json'} });
         }
 
         return new Response(JSON.stringify({ error: "VPS_OFFLINE_V56" }), { status: 200 });

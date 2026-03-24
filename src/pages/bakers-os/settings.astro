@@ -29,7 +29,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                     </div>
                 </div>
             </div>
-            <button class="btn-save" onclick="saveSettings()">Update Identity</button>
+            <button class="btn-save" onclick="window.saveSettings()">Update Identity</button>
         </div>
 
         <!-- Automation -->
@@ -70,16 +70,16 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             <div class="glass-card settings-section">
                 <h3>Payment Integrations</h3>
                 <div class="form-body">
-                    <div class="payment-method active">
-                        <div class="p-info">
-                            <strong>Integrated UPI / GPay</strong>
-                            <span>Direct to Bank Transfer</span>
+                    <div class="payment-method active" style="flex-direction: column; align-items: flex-start; gap: 16px;">
+                        <div class="p-info" style="width:100%;">
+                            <strong style="font-size: 1.1rem; color: #10b981; display: block;">Integrated UPI / GPay</strong>
+                            <span style="font-size: 0.8rem; opacity: 0.7;">Direct to Bank Transfer</span>
                             <div class="mt-24">
-                                <label style="display:block; font-size:0.65rem; color:var(--text-muted); margin-bottom:4px;">UPI ID (e.g. baker@upi)</label>
-                                <input type="text" id="upi-input" placeholder="Enter UPI ID" style="width:100%; background:rgba(0,0,0,0.2); border:1px solid var(--border); padding:8px; border-radius:8px; color:white;" />
-                                <button class="btn-save" style="margin-top:10px; width:100%; padding:10px;" onclick="saveUPI()">Update UPI</button>
+                                <label style="display:block; font-size:0.65rem; color:var(--text-muted); margin-bottom:8px; text-transform: uppercase; font-weight: 900;">UPI ID (e.g. baker@upi)</label>
+                                <input type="text" id="upi-input" placeholder="Enter UPI ID" style="width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); padding:12px; border-radius:10px; color:white; font-size: 1rem;" />
                             </div>
                         </div>
+                        <button class="btn-save" id="upi-btn" style="margin-top:10px; width:100%; padding:16px; position: relative; z-index: 100; cursor: pointer !important; display: block;" onclick="console.log('UPI_CLICKED'); window.saveUPI();">Update UPI</button>
                     </div>
                     <div class="payment-method">
                         <div class="p-info">
@@ -174,27 +174,59 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             }
         }
 
+        function getTenantId() {
+            try {
+                const host = window.location.host;
+                const parts = host.split('.');
+                // Handle cases like baker-os.vercel.app or my-baker.com
+                if (parts.length > 2 && !host.includes('localhost') && !host.includes('vercel.app')) {
+                    return parts[0];
+                }
+                // If on vercel.app or localhost, we might be using a query param or path
+                // But for now, default_baker is the fallback
+                return 'default_baker';
+            } catch(e) {
+                return 'default_baker';
+            }
+        }
+        
         window.saveUPI = async () => {
-            const upi = document.getElementById('upi-input').value;
+            const btn = document.getElementById('upi-btn');
+            const upiInput = document.getElementById('upi-input');
+            const upi = upiInput.value;
+            
             if (!upi) return alert("Please enter a valid UPI ID");
+
+            const tenantId = getTenantId();
+            btn.innerText = "Saving...";
+            btn.style.opacity = "0.7";
+            btn.disabled = true;
 
             try {
                 const res = await fetch("/api/settings/upi", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ upi, tenantId: "default" })
+                    body: JSON.stringify({ upi, tenantId })
                 });
+                const data = await res.json();
                 if (res.ok) {
-                    alert("UPI Connected Successfully");
+                    alert("✅ UPI Connected Successfully!");
+                } else {
+                    alert("❌ Error: " + (data.error || data.message || "Failed to save UPI"));
                 }
             } catch (e) {
-                alert("Failed to connect UPI");
+                alert("🆘 Failed to connect UPI (Network Error)");
+            } finally {
+                btn.innerText = "Update UPI";
+                btn.style.opacity = "1";
+                btn.disabled = false;
             }
         };
 
         async function loadSettings() {
+            const tenantId = getTenantId();
             try {
-                const res = await fetch("/api/settings/default");
+                const res = await fetch(`/api/settings/${tenantId}`);
                 if (res.ok) {
                     const settings = await res.json();
                     if (settings.upi) {
