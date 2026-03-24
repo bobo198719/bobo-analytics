@@ -32,8 +32,17 @@ export async function ALL({ request, params }) {
             signal: AbortSignal.timeout(timeoutMs)
         });
 
-        const data = await resProxy.json();
-        return new Response(JSON.stringify(data), { status: resProxy.status, headers: {'Content-Type': 'application/json'} });
+        let data = await resProxy.json();
+        
+        // 🔒 CORE REPAIR: If backend returns settings as a string, parse it for the frontend
+        if (pathname.includes('/api/settings') && typeof data === 'string') {
+            try { data = JSON.parse(data); } catch(e) {}
+        }
+
+        return new Response(JSON.stringify(data), { 
+            status: resProxy.status, 
+            headers: {'Content-Type': 'application/json'} 
+        });
 
     } catch (err) {
         // 🆘 EMERGENCY CLOUD RECOVERY SHIELD
