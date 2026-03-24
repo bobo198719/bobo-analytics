@@ -324,10 +324,19 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                     }
                 }
 
-                // 2. Fetch Active Cloud Matrix
-                const res = await fetch(`${API_BASE}/products?t=${Date.now()}`);
+                // 2. Fetch Active Cloud Matrix (Direct DB Bridge)
+                const res = await fetch(`/api/v2/products?tenantId=${tenantId}&t=${Date.now()}`);
                 const cloudData = await res.json();
                 let cloudProducts = Array.isArray(cloudData) ? cloudData : [];
+                
+                // 3. Normalization Update: Ensure all local images use the /api/ proxy
+                cloudProducts = cloudProducts.map(p => {
+                    let path = p.image_path || p.image_url || '';
+                    if (path && (path.startsWith('storage/') || path.startsWith('/storage/') || path.startsWith('menu-images/'))) {
+                        p.image_path = "/api" + (path.startsWith('/') ? '' : '/') + path;
+                    }
+                    return p;
+                });
                 
                 // 3. Load Local Backup (Physical Memory Primary)
                 const localBackup = localStorage.getItem('bobo_master_bakes_backup');

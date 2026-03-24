@@ -14,6 +14,15 @@ export async function ALL({ request, params }) {
     
     // 🔥 ROUTE PARSE LOGIC
     let targetPath = pathname + url.search;
+    
+    // 🛠️ Asset Mapping Correction: Strip /api for static folders mounted at root on Hostinger
+    const assetFolders = ['/storage/', '/menu-images/', '/uploads/'];
+    for (const folder of assetFolders) {
+        if (targetPath.startsWith('/api' + folder)) {
+            targetPath = targetPath.replace('/api/', '/');
+            break;
+        }
+    }
 
     try {
         const fetchOptions = {
