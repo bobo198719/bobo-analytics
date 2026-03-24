@@ -319,7 +319,10 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
                 const res = await fetch(`/api/v2/products?tenantId=${currentTenant}&t=${Date.now()}`);
                 const cloudData = await res.json();
                 let cloudItems = Array.isArray(cloudData) ? cloudData : [];
-                console.log(`[Sync] Cloud Data Recv: ${cloudItems.length} items.`);
+                console.log(`[Sync] Cloud Data Recv: ${cloudItems.length} items. Timestamp: ${new Date().toLocaleTimeString()}`);
+                if (cloudItems.length === 0) {
+                    console.warn("⚠️ CRM Cloud Bridge returned 0 items. Checking database persistence...");
+                }
 
                 // 2. Local State Reconciliation
                 const localBackup = JSON.parse(localStorage.getItem('bobo_master_bakes_backup') || '[]');
