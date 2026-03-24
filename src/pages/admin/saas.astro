@@ -461,8 +461,8 @@ import MainLayout from "../../layouts/MainLayout.astro";
     .panel-header h2 { margin: 0; font-size: 1.5rem; }
     .table-responsive { overflow-x: auto; }
     table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
-    th { text-align: left; padding: 10px 15px; font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; }
-    td { padding: 15px; background: rgba(255,255,255,0.02); }
+    th { text-align: left; padding: 10px 15px; font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; white-space: nowrap; }
+    td { padding: 15px; background: rgba(255,255,255,0.02); white-space: nowrap; }
     tr td:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
     tr td:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
     tr { transition: 0.2s; }
@@ -606,13 +606,29 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
     function updateIndustryChart(users) {
         if(!charts.industry) return;
-        const counts = { 'Restaurant': 0, 'Pharmacy': 0, 'Retail': 0, 'Bakery': 0, 'Salon': 0 };
+        const counts = {};
         users.forEach(u => {
+           if(u.industry === 'admin' || u.industry === 'Admin') return; // Hide admin accounts from charts
            if(counts[u.industry] !== undefined) counts[u.industry]++;
            else counts[u.industry] = 1;
         });
-        charts.industry.data.labels = Object.keys(counts);
-        charts.industry.data.datasets[0].data = Object.values(counts);
+        
+        const labels = [];
+        const data = [];
+        const colors = [];
+        const colorPalette = { 'Restaurant': '#e11d48', 'Pharmacy': '#10b981', 'Retail': '#38bdf8', 'Bakery': '#fbbf24', 'Salon': '#a855f7' };
+        
+        for (const [key, val] of Object.entries(counts)) {
+            if (val > 0) {
+                 labels.push(key);
+                 data.push(val);
+                 colors.push(colorPalette[key] || '#94a3b8');
+            }
+        }
+        
+        charts.industry.data.labels = labels;
+        charts.industry.data.datasets[0].data = data;
+        charts.industry.data.datasets[0].backgroundColor = colors;
         charts.industry.update();
     }
 
