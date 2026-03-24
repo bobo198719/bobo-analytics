@@ -67,7 +67,7 @@ import MainLayout from "../layouts/MainLayout.astro";
 
       // Simulate secure master node verification
       setTimeout(() => {
-          if (password === "bobo2026" || password === "BoboPass2026!") {
+          if (username === "admin" && password === "password123") {
               console.log('✅ SYSTEM VAULT UNLOCKED');
               localStorage.setItem("user", JSON.stringify({ role: 'admin', username }));
               window.location.replace("/admin/saas");
