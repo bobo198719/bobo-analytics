@@ -93,6 +93,6 @@ export async function ALL({ request, params }) {
             return new Response(JSON.stringify(defaults), { status: 200, headers: {'Content-Type': 'application/json'} });
         }
 
-        return new Response(JSON.stringify({ error: "VPS_OFFLINE_V56" }), { status: 200 });
+        return new Response(JSON.stringify({ error: "VPS_OFFLINE_V56" }), { status: 503 });
     }
 }
