@@ -96,33 +96,57 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
     </style>
 
     <script is:inline>
-        const schedules = [
-            { id: '101', time: '11:00', period: 'AM', type: 'Pickup', customer: 'Anjali Sharma', address: 'B-Block, Green Valley Park', status: 'preparing' },
-            { id: '102', time: '02:30', period: 'PM', type: 'Delivery', customer: 'Rahul Verma', address: '4th Floor, Skyline Apts, Sector 4', status: 'out-for-delivery' },
-            { id: '103', time: '04:00', period: 'PM', type: 'Delivery', customer: 'Priya Iyer', address: 'Villa 22, Rose Estate', status: 'pending' },
-            { id: '104', time: '06:00', period: 'PM', type: 'Pickup', customer: 'Sonali Das', address: 'Storefront Pickup', status: 'pending' }
-        ];
+        let orders = [];
+        let tenantId = 'default_baker';
+
+        async function fetchOrders() {
+            try {
+                const host = window.location.host;
+                const isSubdomain = host.split('.').length > 2 && host.split('.')[0] !== 'www';
+                tenantId = isSubdomain ? host.split('.')[0] : 'default_baker';
+
+                const res = await fetch(`/api/v2/orders?tenantId=${tenantId}&t=${Date.now()}`);
+                orders = await res.json();
+                renderSchedules();
+                updateStats();
+            } catch (e) { console.error('Dispatch Fetch Error:', e); }
+        }
+
+        function updateStats() {
+            const totalE = document.querySelector('.stats span:nth-child(1) strong');
+            const pendE  = document.querySelector('.stats span:nth-child(2) strong');
+            const outE   = document.querySelector('.stats span:nth-child(3) strong');
+            
+            if (totalE) totalE.innerText = orders.length;
+            if (pendE) pendE.innerText = orders.filter(o => o.status === 'pending').length;
+            if (outE) outE.innerText = orders.filter(o => o.status === 'out-for-delivery').length;
+        }
 
         function renderSchedules() {
             const list = document.getElementById('schedule-list');
-            list.innerHTML = schedules.map(s => `
+            if (orders.length === 0) {
+                list.innerHTML = `<div style="text-align:center; padding:60px; background:rgba(255,255,255,0.02); border-radius:20px;">
+                    <p style="color:var(--text-muted);">No orders scheduled for dispatch yet.</p></div>`;
+                return;
+            }
+
+            list.innerHTML = orders.map(s => `
                 <div class="schedule-item">
                     <div class="time-box">
-                        <strong>${s.time}</strong>
-                        <span>${s.period}</span>
+                        <strong>${s.delivery_time || 'ASAP'}</strong>
+                        <span>${s.type || 'Fulfillment'}</span>
                     </div>
                     <div class="order-info">
-                        <h4>${s.customer} (#ORD-${s.id})</h4>
-                        <p>📍 ${s.address}</p>
+                        <h4>${s.customer_name} (#ORD-${s.id})</h4>
+                        <p>📍 ${s.address || 'Storefront Pickup'}</p>
                     </div>
                     <div class="status-cell">
                         <div class="status-pill" style="background: ${getStatusColor(s.status).bg}; color: ${getStatusColor(s.status).text}">
-                            ${s.status.replace(/-/g, ' ').toUpperCase()}
+                            ${(s.status || 'pending').replace(/-/g, ' ').toUpperCase()}
                         </div>
                     </div>
                     <div class="actions">
-                        <button class="btn-s" onclick="cycleStatus('${s.id}')">Update</button>
-                        <button class="btn-s">✏️</button>
+                        <button class="btn-s" onclick="updateStatus('${s.id}', '${s.status}')">Update Status</button>
                     </div>
                 </div>
             `).join('');
@@ -134,18 +158,30 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 case 'preparing': return { bg: 'rgba(96,165,250,0.1)', text: '#60a5fa' };
                 case 'out-for-delivery': return { bg: 'rgba(236,72,153,0.1)', text: '#ec4899' };
                 case 'delivered': return { bg: 'rgba(74,222,128,0.1)', text: '#4ade80' };
-                default: return { bg: 'gray', text: 'white' };
+                default: return { bg: 'rgba(255,255,255,0.1)', text: 'white' };
             }
         }
 
-        window.cycleStatus = (id) => {
+        window.updateStatus = async (id, currentStatus) => {
             const flow = ['pending', 'preparing', 'out-for-delivery', 'delivered'];
-            const idx = schedules.findIndex(x => x.id === id);
-            const current = flow.indexOf(schedules[idx].status);
-            schedules[idx].status = flow[(current + 1) % flow.length];
-            renderSchedules();
+            const currentIdx = flow.indexOf(currentStatus);
+            const nextStatus = flow[(currentIdx + 1) % flow.length];
+
+            try {
+                const res = await fetch('/api/v2/orders', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, status: nextStatus })
+                });
+
+                if (res.ok) {
+                    await fetchOrders(); // Re-fetch to confirm cloud sync
+                } else {
+                    alert('Order Matrix Sync Failed. Local state preserved.');
+                }
+            } catch (e) { console.error('Status Push Error:', e); }
         };
 
-        document.addEventListener('DOMContentLoaded', renderSchedules);
+        document.addEventListener('DOMContentLoaded', fetchOrders);
     </script>
 </BakersOSLayout>
