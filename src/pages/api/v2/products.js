@@ -13,12 +13,12 @@ export async function GET({ url }) {
             connectTimeout: 10000
         });
 
-        // 1. Fetch products for this tenant
-        let [dbRows] = await connection.query("SELECT * FROM bakery_products WHERE bakery_slug = ?", [tenantId]);
+        // 1. Fetch products for this tenant (or untagged legacy products)
+        let [dbRows] = await connection.query("SELECT * FROM bakery_products WHERE bakery_slug = ? OR bakery_slug IS NULL", [tenantId]);
         
-        // 2. Global Fallback if no specific tenant data
+        // 2. Global Fallback if absolutely no products found
         if (dbRows.length === 0) {
-            const [fallbackRows] = await connection.query("SELECT * FROM bakery_products LIMIT 50");
+            const [fallbackRows] = await connection.query("SELECT * FROM bakery_products ORDER BY id DESC LIMIT 50");
             dbRows = fallbackRows;
         }
         

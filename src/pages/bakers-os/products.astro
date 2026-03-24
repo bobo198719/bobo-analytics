@@ -747,6 +747,10 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 finalImageUrl = "/api" + (finalImageUrl.startsWith('/') ? '' : '/') + finalImageUrl;
             }
 
+            // Fetch current tenant identity from hostname or fallback
+            const hostParts = window.location.host.split('.');
+            const currentSlug = (hostParts.length > 2 && hostParts[0] !== 'www') ? hostParts[0] : 'default_baker';
+
             const productData = {
                 id           : existing?.id || 'bake_' + Date.now(), 
                 name, 
@@ -755,7 +759,8 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 description  : document.getElementById('p-desc').value || TEMPLATES[0].replace('{name}', name),
                 prep         : document.getElementById('p-prep').value || '4h',
                 status       : existing?.status || 'approved',
-                image_path   : finalImageUrl
+                image_path   : finalImageUrl,
+                bakery_slug  : currentSlug
             };
 
             // 1. OPTIMISTIC UPDATE (Save to Physical Memory Instantly)
@@ -906,6 +911,9 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                     const fileName = file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ')
                         .split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
                     
+                    const hostParts = window.location.host.split('.');
+                    const currentSlug = (hostParts.length > 2 && hostParts[0] !== 'www') ? hostParts[0] : 'default_baker';
+
                     const newBake = {
                         id           : Date.now() + Math.floor(Math.random() * 1000), 
                         name         : fileName,
@@ -914,7 +922,8 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                         category     : 'Celebration Cakes',
                         prep         : '4h',
                         status       : 'approved', // INSTANT LIVE STATUS
-                        image_path   : finalLivePath
+                        image_path   : finalLivePath,
+                        bakery_slug  : currentSlug
                     };
 
                     // 1. OPTIMISTIC INSTANT UI COMMIT (Physical Memory First)

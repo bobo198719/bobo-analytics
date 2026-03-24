@@ -71,25 +71,26 @@ router.get("/", async (req, res) => {
 
 router.post(["/", "/products"], async (req, res) => {
     try {
-        const { id, name, price, desc, description, cat, category, image_path, image_url } = req.body;
+        const { id, name, price, desc, description, cat, category, image_path, image_url, bakery_slug, tenantId } = req.body;
         const finalName = name || "";
         const finalDesc = description || desc || "";
         const finalPrice = Number(price) || 0;
         const finalCat = category || cat || "General";
         const finalImg = image_path || image_url || "";
+        const finalSlug = bakery_slug || tenantId || "default_baker";
 
         if (id && String(id).startsWith && !String(id).startsWith('bulk_')) {
-            // Update
+            // Update (include bakery_slug)
             await db.query(
-                "UPDATE bakery_products SET name=?, description=?, price=?, category=?, image_url=? WHERE id=?",
-                [finalName, finalDesc, finalPrice, finalCat, finalImg, id]
+                "UPDATE bakery_products SET name=?, description=?, price=?, category=?, image_url=?, bakery_slug=? WHERE id=?",
+                [finalName, finalDesc, finalPrice, finalCat, finalImg, finalSlug, id]
             );
             res.json({ success: true, message: "Product updated" });
         } else {
-            // Insert
+            // Insert (include bakery_slug)
             const [result] = await db.query(
-                "INSERT INTO bakery_products (name, description, price, category, image_url) VALUES (?, ?, ?, ?, ?)",
-                [finalName, finalDesc, finalPrice, finalCat, finalImg]
+                "INSERT INTO bakery_products (name, description, price, category, image_url, bakery_slug) VALUES (?, ?, ?, ?, ?, ?)",
+                [finalName, finalDesc, finalPrice, finalCat, finalImg, finalSlug]
             );
             res.json({ success: true, id: result.insertId });
         }
