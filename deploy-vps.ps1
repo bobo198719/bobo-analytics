@@ -22,12 +22,12 @@ tar.exe -czf $ZIP_NAME --exclude="node_modules" -C $BACKEND_DIR .
 
 Write-Host "Uploading to VPS..."
 # Using pscp with -batch and -hostkey to bypass fingerprint prompt
-.\pscp.exe -batch -hostkey "ssh-ed25519 255 SHA256:ArgJxA/vyQ4U/ozwsF6FtdaR3mwE96TaoWIxP9/L1YI" -pw $VPS_PASS $ZIP_NAME "$($VPS_USER)@$($VPS_IP):$($REMOTE_PATH)backend_update.zip"
-.\pscp.exe -batch -hostkey "ssh-ed25519 255 SHA256:ArgJxA/vyQ4U/ozwsF6FtdaR3mwE96TaoWIxP9/L1YI" -pw $VPS_PASS "$BACKEND_DIR\deploy_server.sh" "$($VPS_USER)@$($VPS_IP):$($REMOTE_PATH)deploy_server.sh"
+.\pscp.exe -batch -P 65002 -hostkey "ssh-ed25519 255 SHA256:ArgJxA/vyQ4U/ozwsF6FtdaR3mwE96TaoWIxP9/L1YI" -pw $VPS_PASS $ZIP_NAME "$($VPS_USER)@$($VPS_IP):$($REMOTE_PATH)backend_update.zip"
+.\pscp.exe -batch -P 65002 -hostkey "ssh-ed25519 255 SHA256:ArgJxA/vyQ4U/ozwsF6FtdaR3mwE96TaoWIxP9/L1YI" -pw $VPS_PASS "$BACKEND_DIR\deploy_server.sh" "$($VPS_USER)@$($VPS_IP):$($REMOTE_PATH)deploy_server.sh"
 
 Write-Host "Executing remote update..."
 # Using plink with -batch and -hostkey to bypass fingerprint prompt
-.\plink.exe -batch -hostkey "ssh-ed25519 255 SHA256:ArgJxA/vyQ4U/ozwsF6FtdaR3mwE96TaoWIxP9/L1YI" -pw $VPS_PASS "$($VPS_USER)@$($VPS_IP)" "bash $($REMOTE_PATH)deploy_server.sh"
+.\plink.exe -batch -P 65002 -hostkey "ssh-ed25519 255 SHA256:ArgJxA/vyQ4U/ozwsF6FtdaR3mwE96TaoWIxP9/L1YI" -pw $VPS_PASS "$($VPS_USER)@$($VPS_IP)" "bash $($REMOTE_PATH)deploy_server.sh"
 
 Write-Host "Deployment Complete!" -ForegroundColor Green
 

@@ -315,7 +315,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
     }
 
     async function loadLogins() {
-      const res = await fetch('/api/admin/logins');
+      const res = await fetch('/api/v2/admin-ops?action=logins');
       const data = await res.json();
       const tbody = document.getElementById('loginTableBody');
       tbody.innerHTML = data.map(u => `
@@ -335,7 +335,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
     window.suspendUser = async (id) => {
       if(!confirm("Suspend access for this credential set?")) return;
-      await fetch('/api/admin/suspend-user', {
+      await fetch('/api/v2/admin-ops?action=suspend-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })
@@ -345,7 +345,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
     window.deleteMasterUser = async (id) => {
       if(!confirm("Are you sure? This only removes the credential tracking entry, not the tenant business.")) return;
-      await fetch('/api/admin/delete-master-user', {
+      await fetch('/api/v2/admin-ops?action=delete-master-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })
@@ -354,13 +354,13 @@ import MainLayout from "../../layouts/MainLayout.astro";
     };
 
     async function loadStats() {
-      const res = await fetch('/api/admin/dashboard');
+      const res = await fetch('/api/v2/admin-ops?action=dashboard');
       const data = await res.json();
       document.getElementById('stat-total').innerText = data.total;
       document.getElementById('stat-active').innerText = data.active;
       
       // Load security alerts count
-      const secRes = await fetch('/api/security/security-alerts');
+      const secRes = await fetch('/api/v2/admin-ops?action=security-alerts');
       const alerts = await secRes.json();
       document.getElementById('stat-alerts').innerText = alerts.length;
       document.getElementById('security-status-text').innerText = alerts.length > 0 ? `Detected ${alerts.length} threats` : "System Secure";
@@ -370,7 +370,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
     async function loadSecurity() {
       // Load Logs
-      const res = await fetch('/api/security/login-logs');
+      const res = await fetch('/api/v2/admin-ops?action=login-logs');
       const data = await res.json();
       const tbody = document.getElementById('loginLogsBody');
       tbody.innerHTML = data.map(l => `
@@ -387,7 +387,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
       `).join('');
 
       // Load Alerts
-      const alertRes = await fetch('/api/security/security-alerts');
+      const alertRes = await fetch('/api/v2/admin-ops?action=security-alerts');
       const alerts = await alertRes.json();
       const alertBox = document.getElementById('security-alerts-container');
       alertBox.innerHTML = alerts.map(a => `
@@ -398,7 +398,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
     }
 
     async function loadProvisioning() {
-      const res = await fetch('/api/admin/users');
+      const res = await fetch('/api/v2/admin-ops?action=users');
       const data = await res.json();
       const tbody = document.getElementById('provisionTableBody');
       const payUserSelect = document.getElementById('payUserId');
@@ -424,7 +424,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
     async function toggleStatus(id, current) {
       const status = current === 'active' ? 'inactive' : 'active';
-      await fetch('/api/admin/update-status', {
+      await fetch('/api/v2/admin-ops?action=update-status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: id, status })
@@ -440,7 +440,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
         amount: document.getElementById('payAmount').value,
         method: document.getElementById('payMethod').value
       };
-      const res = await fetch('/api/payment/manual', {
+      const res = await fetch('/api/v2/admin-ops?action=manual-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -452,7 +452,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
     };
 
     async function loadPlans() {
-      const res = await fetch('/api/admin/plans');
+      const res = await fetch('/api/v2/admin-ops?action=plans');
       const data = await res.json();
       const tbody = document.getElementById('plansTableBody');
       tbody.innerHTML = data.map(p => `
@@ -466,7 +466,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
     }
 
     async function loadRevenue() {
-      const res = await fetch('/api/admin/revenue');
+      const res = await fetch('/api/v2/admin-ops?action=revenue');
       const data = await res.json();
       const tbody = document.getElementById('revenueTableBody');
       tbody.innerHTML = data.records.map(r => `
@@ -481,7 +481,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
     }
 
     async function loadLeads() {
-      const res = await fetch('/api/admin/leads');
+      const res = await fetch('/api/v2/admin-ops?action=leads');
       const data = await res.json();
       const tbody = document.getElementById('leadsTableBody');
       tbody.innerHTML = data.map(l => `
@@ -508,7 +508,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
     window.blockUser = async (username) => {
       if(!confirm(`Block user ${username} permanently?`)) return;
-      await fetch('/api/security/block-user', {
+      await fetch('/api/v2/admin-ops?action=block-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username })
@@ -528,7 +528,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
         industry: document.getElementById('provIndustry').value,
         planType: document.getElementById('provPlan').value
       };
-      const res = await fetch('/api/admin/create-user', {
+      const res = await fetch('/api/v2/admin-ops?action=create-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -541,7 +541,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
     window.deleteUser = async (id) => {
       if(!confirm("Are you sure? This will terminate the tenant registry.")) return;
-      await fetch('/api/admin/delete-user', {
+      await fetch('/api/v2/admin-ops?action=delete-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: id })
