@@ -191,7 +191,7 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
                   <td><span class="last-val">${c.lastDate.getFullYear() > 1970 ? c.lastDate.toLocaleDateString('en-IN', {day:'2-digit', month:'short'}) : 'N/A'}</span></td>
                   <td>
                       <div class="engage-actions">
-                          <button class="e-btn wa" title="Quick WhatsApp" onclick="window.open('https://wa.me/${c.phone.replace(/\D/g, '')}')">💬</button>
+                          <button class="e-btn wa" title="Quick WhatsApp" onclick="whatsappCustomer('${c.phone}')">💬</button>
                           <button class="e-btn confirm" title="Update Status">🔔</button>
                           <button class="e-btn more">···</button>
                       </div>
@@ -230,9 +230,18 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
           }
       };
 
+      window.sanitizeWhatsAppNumber = (phone) => {
+          if (!phone || phone === 'N/A') return null;
+          let clean = phone.replace(/\D/g, ''); // Remove all non-digits
+          if (clean.length === 10) {
+              clean = '91' + clean; // Default to India prefix if 10 digits
+          }
+          return clean;
+      };
+
       window.whatsappCustomer = (phone) => {
-          if (!phone || phone === 'N/A') return alert("No phone number available");
-          const cleanPhone = phone.replace(/\D/g, '');
+          const cleanPhone = sanitizeWhatsAppNumber(phone);
+          if (!cleanPhone) return alert("No phone number available");
           window.open(`https://wa.me/${cleanPhone}`, '_blank');
       };
 
@@ -241,10 +250,10 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
           if (!confirm(`This will open ${customers.length} WhatsApp tabs. Continue?`)) return;
           
           customers.forEach((c, i) => {
-              if (c.phone && c.phone !== 'N/A') {
+              const cleanPhone = sanitizeWhatsAppNumber(c.phone);
+              if (cleanPhone) {
                   // Delay slightly to prevent browser blocking
                   setTimeout(() => {
-                      const cleanPhone = c.phone.replace(/\D/g, '');
                       window.open(`https://wa.me/${cleanPhone}?text=Hi ${c.name}, Check our latest cakes 🎂`, '_blank');
                   }, i * 1000);
               }
