@@ -13,11 +13,19 @@ export async function GET({ url }) {
             connectTimeout: 10000
         });
 
-        // 1. Fetch products for this tenant (using bakery_slug as per production schema)
-        const [rawRows] = await connection.query("SELECT * FROM bakery_products WHERE bakery_slug = ?", [tenantId]);
+        // 1. Fetch products for this tenant
+        let [dbRows] = await connection.query("SELECT * FROM bakery_products WHERE bakery_slug = ?", [tenantId]);
+        
+        // 2. Global Fallback if no specific tenant data
+        if (dbRows.length === 0) {
+            const [fallbackRows] = await connection.query("SELECT * FROM bakery_products LIMIT 50");
+            dbRows = fallbackRows;
+        }
+        
         await connection.end();
 
-        const rows = rawRows.map(p => {
+        // 3. Transform paths for proxy
+        const rows = dbRows.map(p => {
             if (p.image_url && !p.image_url.startsWith('http')) {
                 const filename = p.image_url.split('/').pop();
                 p.image_url = `/api/storage/bakery/images/${filename}`;
