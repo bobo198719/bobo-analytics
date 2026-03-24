@@ -9,6 +9,9 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             <p>Manage your signature bakes and pricing.</p>
         </div>
         <div class="actions" style="display: flex; gap: 12px; position: relative; z-index: 1000;">
+            <button class="btn btn-secondary" onclick="forceSyncAll()" id="sync-btn">
+                <span>🔄 Sync with Cloud</span>
+            </button>
             <div class="bulk-upload-wrapper">
                 <button class="btn btn-secondary" onclick="document.getElementById('bulk-upload-input').click()">
                     <span>📦 Bulk Images</span>
@@ -394,8 +397,12 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 const localBackup = localStorage.getItem('bobo_master_bakes_backup');
                 const localProducts = localBackup ? JSON.parse(localBackup) : [];
                 
-                // 3. Fetch Active Cloud Matrix
-                const res = await fetch(`/api/products?t=${Date.now()}`);
+                // 3. Fetch Active Cloud Matrix (Direct Database Bridge)
+                const host = window.location.host;
+                const isSubdomain = host.split('.').length > 2 && host.split('.')[0] !== 'www';
+                const tenantId = isSubdomain ? host.split('.')[0] : 'default_baker';
+
+                const res = await fetch(`/api/v2/products?tenantId=${tenantId}&t=${Date.now()}`);
                 const data = await res.json();
                 let cloudProducts = Array.isArray(data) ? data : [];
                 
@@ -455,7 +462,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
 
         async function saveToCloudSilent(p) {
             try {
-                fetch('/api/products', {
+                fetch('/api/v2/save-product', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(p)
@@ -576,7 +583,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             renderProducts(); 
 
             try {
-                const res = await fetch('/api/products', {
+                const res = await fetch('/api/v2/save-product', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(p)
@@ -995,12 +1002,12 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 if (!banned.includes(String(id))) banned.push(String(id));
                 localStorage.setItem('bobo_banned_bakes', JSON.stringify(banned));
 
-                /* 2. BACKGROUND CLOUD DELETE */
+                /* 2. BACKGROUND CLOUD DELETE (Direct Bridge) */
                 try {
-                    const res = await fetch("/api/products/" + id, {
+                    const res = await fetch("/api/v2/save-product?id=" + id, {
                         method: "DELETE"
                     });
-                    if (!res.ok) throw new Error("Cloud delete failed");
+                    if (!res.ok) throw new Error("Direct Bridge delete failed");
                     console.log(`✅ Bake ID ${id} purged from Master Data.`);
                 } catch (err) {
                     console.warn(`Sync Warning: Persistent memory wiped, Cloud sync will retry on next refresh.`);
@@ -1039,8 +1046,56 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             return false;
         };
 
+        // ── Force Sync Utility ─────────────────────────────────────────────
+        window.forceSyncAll = async () => {
+            if (products.length === 0) return alert('No products to sync.');
+            if (!confirm(`Are you sure you want to FORCE SYNC ${products.length} masterpieces to the Live Website? This will ensure the cloud matches your local screen.`)) return;
+            
+            const overlay = document.getElementById('processing-overlay');
+            const statusText = document.getElementById('processing-status');
+            const progress = document.getElementById('processing-progress');
+            overlay.style.display = 'flex';
+            
+            let success = 0;
+            for (let i = 0; i < products.length; i++) {
+                const p = products[i];
+                statusText.innerText = `Syncing [${i+1}/${products.length}] ${p.name}...`;
+                try {
+                    const res = await fetch('/api/v2/save-product', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(p)
+                    });
+                    if (res.ok) success++;
+                } catch(e) { console.error('Sync Fail:', e); }
+                progress.style.width = `${((i+1)/products.length)*100}%`;
+            }
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                progress.style.width = '0%';
+                alert(`✅ Cloud Sync Complete! ${success} bakes are now 100% LIVE on your website.`);
+                location.reload();
+            }, 800);
+        };
+
         // ── Bootstrap ──────────────────────────────────────────────────────
-        loadProducts();
-        document.addEventListener('DOMContentLoaded', renderProducts);
+        document.addEventListener('DOMContentLoaded', async () => {
+            const host = window.location.host;
+            const isSubdomain = host.split('.').length > 2 && host.split('.')[0] !== 'www';
+            const tenantId = isSubdomain ? host.split('.')[0] : 'default_baker';
+
+            // Update UI with real business name
+            try {
+                const sres = await fetch(`/api/v2/settings?slug=${tenantId}`);
+                const settings = await sres.json();
+                if (settings.bizName) {
+                    document.querySelector('.title-area h1').innerText = `${settings.bizName} Products`;
+                }
+            } catch(e) {}
+
+            loadProducts();
+            renderProducts();
+        });
     </script>
 </BakersOSLayout>

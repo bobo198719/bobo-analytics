@@ -14,7 +14,11 @@ export async function GET({ url }) {
         });
 
         // 1. Fetch products for this tenant (or untagged legacy products)
-        let [dbRows] = await connection.query("SELECT * FROM bakery_products WHERE bakery_slug = ? OR bakery_slug IS NULL", [tenantId]);
+        // Aggressive inclusion for default_baker to ensure no products are missed during the transition
+        let [dbRows] = await connection.query(
+            "SELECT * FROM bakery_products WHERE bakery_slug = ? OR bakery_slug IS NULL OR bakery_slug = ''", 
+            [tenantId]
+        );
         
         // 2. Global Fallback if absolutely no products found
         if (dbRows.length === 0) {

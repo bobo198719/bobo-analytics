@@ -256,9 +256,8 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
 
         document.addEventListener('DOMContentLoaded', async () => {
             const host = window.location.host;
-            const parts = host.split('.');
-            const isSubdomain = parts.length > 2 && !host.includes('localhost') && !host.includes('vercel.app') && parts[0] !== 'www';
-            tenantId = isSubdomain ? parts[0] : 'default_baker';
+            const isSubdomain = host.split('.').length > 2 && host.split('.')[0] !== 'www';
+            tenantId = isSubdomain ? host.split('.')[0] : 'default_baker';
 
             await fetchSettings();
             await fetchLiveProducts();
@@ -267,7 +266,7 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
 
         async function fetchSettings() {
             try {
-                const res = await fetch(`${API_BASE}/settings/${tenantId}`);
+                const res = await fetch(`/api/v2/settings?slug=${tenantId}&t=${Date.now()}`);
                 if (res.ok) {
                     const customData = await res.json();
                     applyBranding(customData);
