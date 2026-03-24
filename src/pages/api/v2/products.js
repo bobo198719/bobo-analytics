@@ -14,8 +14,16 @@ export async function GET({ url }) {
         });
 
         // 1. Fetch products for this tenant (using bakery_slug as per production schema)
-        const [rows] = await connection.query("SELECT * FROM bakery_products WHERE bakery_slug = ?", [tenantId]);
+        const [rawRows] = await connection.query("SELECT * FROM bakery_products WHERE bakery_slug = ?", [tenantId]);
         await connection.end();
+
+        const rows = rawRows.map(p => {
+            if (p.image_url && !p.image_url.startsWith('http')) {
+                const filename = p.image_url.split('/').pop();
+                p.image_url = `/api/storage/bakery/images/${filename}`;
+            }
+            return p;
+        });
 
         return new Response(JSON.stringify(rows), { 
             status: 200,
