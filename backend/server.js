@@ -98,6 +98,11 @@ app.use("/api/security", securityRoutes);
 app.use("/api", restaurantRoutes);
 app.use("/api/v2/restaurant", restaurantV2Routes);
 
+const diagRoutes = require("./routes/diag");
+const diagDbRoutes = require("./routes/diag-db");
+app.use("/api/diag", diagRoutes);
+app.use("/api/diag/db", diagDbRoutes);
+
 app.get("/", (req, res) => {
     res.send(`
     <html>
