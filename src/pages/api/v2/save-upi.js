@@ -1,11 +1,8 @@
-import mysql from 'mysql2/promise';
-
 export async function POST({ request }) {
     try {
-        const { upi, tenantId = "default_baker" } = await request.json();
+        const body = await request.json();
+        const { tenantId = "default_baker" } = body;
         
-        if (!upi) return new Response(JSON.stringify({ error: "UPI required" }), { status: 400 });
-
         const connection = await mysql.createConnection({
             host: 'srv1449576.hstgr.cloud',
             user: 'bobo_admin',
@@ -23,8 +20,12 @@ export async function POST({ request }) {
             try { settings = JSON.parse(settings); } catch(e) { settings = {}; }
         }
         
-        // 2. Update UPI
-        settings.upi = upi;
+        // 2. Blend current body values into settings
+        Object.keys(body).forEach(key => {
+            if (key !== 'tenantId') {
+                settings[key] = body[key];
+            }
+        });
 
         // 3. Upsert
         await connection.query(
@@ -34,11 +35,11 @@ export async function POST({ request }) {
 
         await connection.end();
 
-        return new Response(JSON.stringify({ success: true, message: "UPI updated via Direct Vercel Bridge" }), { status: 200 });
+        return new Response(JSON.stringify({ success: true, message: "Settings Synchronized Successfully" }), { status: 200 });
 
     } catch (err) {
         console.error("Vercel DB Error:", err);
-        return new Response(JSON.stringify({ error: "DATABASE_CONNECTION_FAILED", details: err.message }), { status: 500 });
+        return new Response(JSON.stringify({ error: "DATABASE_SYNC_FAILED", details: err.message }), { status: 500 });
     }
 }
 
