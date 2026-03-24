@@ -228,9 +228,13 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
 
       async function loadDashboardData() {
           try {
+              const host = window.location.host;
+              const isSubdomain = host.split('.').length > 2 && host.split('.')[0] !== 'www';
+              const tenantId = isSubdomain ? host.split('.')[0] : 'default_baker';
+
               const [ordersRes, productsRes] = await Promise.all([
-                  fetch('/api/orders'),
-                  fetch('/api/products')
+                  fetch(`/api/v2/orders?tenantId=${tenantId}&t=${Date.now()}`),
+                  fetch(`/api/v2/products?tenantId=${tenantId}&t=${Date.now()}`)
               ]);
               
               const orders = await ordersRes.json();
@@ -239,10 +243,10 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
               if (Array.isArray(orders)) {
                   updateStats(orders);
                   updateMiniOrders(orders);
-                  updateTrending(orders, products);
+                  updateTrending(orders, Array.isArray(products) ? products : []);
               }
           } catch (e) {
-              console.error('Dashboard load error:', e);
+              console.error('Dashboard Sync Error:', e);
           }
       }
 
