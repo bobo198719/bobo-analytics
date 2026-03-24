@@ -93,42 +93,21 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
       async function init() {
           await loadOrders();
           
-          // PART 1: AUTO REFRESH (LOOP FIX)
+          // PART 1: AUTO REFRESH (POLLED SYNC)
           setInterval(loadOrders, 5000);
-
-          // PART 2: REAL-TIME WEBSOCKET
-          try {
-              const socket = new WebSocket("ws://srv1449576.hstgr.cloud:8080");
-              socket.onmessage = (event) => {
-                  const data = JSON.parse(event.data);
-                  if (data.type === "NEW_ORDER") {
-                      // Professional push alert
-                      if (Notification.permission === "granted") {
-                          new Notification("New Order Received! 🚀", { body: `Order for ${data.order.customer_name}` });
-                      } else {
-                          alert("New Order Received! 🚀");
-                      }
-                      loadOrders();
-                  }
-              };
-              socket.onopen = () => console.log("✅ Joined Real-time Order Hub");
-          } catch(e) {
-              console.warn("WebSocket failed, falling back to polling.");
-          }
-          
-          if (Notification.permission === "default") {
-              Notification.requestPermission();
-          }
       }
 
       async function loadOrders() {
           const loading = document.getElementById('orders-loading');
           try {
-              const res = await fetch('/api/orders');
-              if (!res.ok) throw new Error('API down');
+              const host = window.location.host;
+              const isSubdomain = host.split('.').length > 2 && host.split('.')[0] !== 'www';
+              const tenantId = isSubdomain ? host.split('.')[0] : 'default_baker';
+
+              const res = await fetch(`/api/v2/orders?tenantId=${tenantId}&t=${Date.now()}`);
+              if (!res.ok) throw new Error('Cloud Bridge Down');
               const data = await res.json();
               
-              // Only re-render if data actually changed to save performance
               if (JSON.stringify(data) !== JSON.stringify(orders)) {
                   orders = Array.isArray(data) ? data : [];
                   renderOrders();
@@ -136,7 +115,7 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
               
               if(loading) loading.style.display = 'none';
           } catch (e) {
-              console.error('Fetch error:', e);
+              console.error('Order Sync Error:', e);
           }
       }
 
@@ -200,16 +179,16 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
 
       window.updateOrderStatus = async (id, status) => {
           try {
-              const res = await fetch('/api/orders/update', {
-                  method: 'POST',
+              const res = await fetch('/api/v2/orders', {
+                  method: 'PATCH',
                   headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ id, status })
+                  body: JSON.stringify({ id, status: status.toLowerCase() }) // Ensure lower-case for dispatch consistency
               });
               if (res.ok) {
                   await loadOrders();
               }
           } catch (e) {
-              alert('Update failed');
+              alert('Cloud Update failed');
           }
       };
 
