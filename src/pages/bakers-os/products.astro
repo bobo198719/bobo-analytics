@@ -453,7 +453,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
 
         async function saveToCloudSilent(p) {
             try {
-                fetch('/api/v2/save-product', {
+                await fetch('/api/v2/save-product', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(p)
@@ -781,9 +781,9 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             closeModal();
             overlay.style.display = 'none';
 
-            // 2. BACKGROUND CLOUD SYNC
+            // 2. BACKGROUND CLOUD SYNC (Direct V2 Bridge)
             try {
-                const res = await fetch('/api/products', {
+                const res = await fetch('/api/v2/save-product', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(productData)
@@ -810,7 +810,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             statusText.innerText = 'Deleting Image...';
 
             try {
-                const res = await fetch(`/api/products/${p.id}/image`, {
+                const res = await fetch(`/api/v2/save-product?id=${p.id}`, {
                     method: 'DELETE'
                 });
                 const result = await res.json();
@@ -844,7 +844,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                         image_url: null
                     };
 
-                    await fetch('/api/products', {
+                    await fetch('/api/v2/save-product', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(productData)

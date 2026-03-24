@@ -13,32 +13,55 @@ export async function POST({ request }) {
             connectTimeout: 10000
         });
 
+        // Ensure table exists with correct schema
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS bakery_products (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255),
+                description TEXT,
+                price INT,
+                category VARCHAR(100),
+                image_url VARCHAR(500),
+                status VARCHAR(50) DEFAULT 'approved',
+                prep VARCHAR(50) DEFAULT '4h',
+                bakery_slug VARCHAR(100),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+        // Check columns and add missing ones
+        const [cols] = await connection.query("SHOW COLUMNS FROM bakery_products");
+        const colNames = cols.map(c => c.Field);
+        if (!colNames.includes('status')) await connection.query("ALTER TABLE bakery_products ADD COLUMN status VARCHAR(50) DEFAULT 'approved'");
+        if (!colNames.includes('prep'))   await connection.query("ALTER TABLE bakery_products ADD COLUMN prep VARCHAR(50) DEFAULT '4h'");
+
         const finalSlug = bakery_slug || 'default_baker';
         const finalStatus = status || 'approved';
         const finalPrice = Number(price) || 0;
         const finalPrep = prep || '4h';
 
-        // Check if updating an internal ID vs an auto-increment ID
-        let dbId = null;
-        if (id && !isNaN(id)) dbId = Number(id);
+        // Check if updating via name+slug (for non-integer IDs)
+        const [existing] = await connection.query(
+            "SELECT id FROM bakery_products WHERE name = ? AND bakery_slug = ?",
+            [name, finalSlug]
+        );
 
-        if (dbId) {
+        if (existing.length > 0) {
             // Update Existing Product
             await connection.query(
-                "UPDATE bakery_products SET name=?, description=?, price=?, category=?, image_url=?, status=?, prep=?, bakery_slug=? WHERE id=?",
-                [name, description, finalPrice, category, image_path, finalStatus, finalPrep, finalSlug, dbId]
+                "UPDATE bakery_products SET description=?, price=?, category=?, image_url=?, status=?, prep=? WHERE id=?",
+                [description, finalPrice, category, image_path, finalStatus, finalPrep, existing[0].id]
             );
             await connection.end();
-            return new Response(JSON.stringify({ success: true, message: "Product updated in Direct Cloud Bridge" }));
+            return new Response(JSON.stringify({ success: true, message: "Product updated in Cloud Matrix" }));
         } else {
             // Insert New Product
             const [result] = await connection.query(
                 "INSERT INTO bakery_products (name, description, price, category, image_url, status, prep, bakery_slug) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 [name, description, finalPrice, category, image_path, finalStatus, finalPrep, finalSlug]
             );
-            const newId = result.insertId;
             await connection.end();
-            return new Response(JSON.stringify({ success: true, id: newId, message: "Product created in Direct Cloud Bridge" }));
+            return new Response(JSON.stringify({ success: true, id: result.insertId, message: "Product created in Cloud Matrix" }));
         }
 
     } catch (err) {
