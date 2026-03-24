@@ -44,7 +44,11 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         async function loadPortfolio() {
             const grid = document.getElementById('recipe-grid');
             try {
-                const res = await fetch("/api/recipes");
+                const host = window.location.host;
+                const isSubdomain = host.split('.').length > 2 && host.split('.')[0] !== 'www';
+                const tenantId = isSubdomain ? host.split('.')[0] : 'default_baker';
+
+                const res = await fetch(`/api/v2/recipes?tenantId=${tenantId}&t=${Date.now()}`);
                 const data = await res.json();
 
                 if (data.length === 0) {

@@ -346,14 +346,18 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
 
         // SAVE FUNCTION
         async function saveRecipe() {
-            try {
+                const host = window.location.host;
+                const isSubdomain = host.split('.').length > 2 && host.split('.')[0] !== 'www';
+                const tenantId = isSubdomain ? host.split('.')[0] : 'default_baker';
+
                 const payload = {
                     recipeName: document.getElementById("recipeName").value,
                     ingredients,
                     productionCost: Number(document.getElementById("productionCost").innerText),
                     sellingPrice: Number(document.getElementById("suggestedPrice").innerText),
                     profit: Number(document.getElementById("profit").innerText),
-                    margin: Number(document.getElementById("margin").innerText.replace('%', ''))
+                    margin: Number(document.getElementById("margin").innerText.replace('%', '')),
+                    bakery_slug: tenantId
                 };
 
                 // VALIDATION
@@ -367,10 +371,10 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 }
 
                 const saveBtn = document.getElementById("saveBtn");
-                saveBtn.innerText = "Saving...";
+                saveBtn.innerText = "Saving to Cloud...";
                 saveBtn.disabled = true;
 
-                const res = await fetch("/api/recipes/save", {
+                const res = await fetch("/api/v2/recipes", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload)
