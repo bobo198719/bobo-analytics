@@ -311,78 +311,44 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
 
         async function fetchLiveProducts() {
             try {
-                // 1. MASTER SEARCH: Expanded Legacy Recovery
-                const legacyKeys = ['bakers_products', 'bobo_products', 'baker_creations', 'products', 'menu_bakes', 'bobo_baker_products'];
-                let legacyData = [];
-                for (const key of legacyKeys) {
-                    const local = localStorage.getItem(key);
-                    if (local) {
-                      try {
-                        const parsed = JSON.parse(local);
-                        if (Array.isArray(parsed)) legacyData = [...legacyData, ...parsed];
-                      } catch(e) {}
-                    }
-                }
+                const host = window.location.host;
+                const isSubdomain = host.split('.').length > 2 && host.split('.')[0] !== 'www';
+                const currentTenant = isSubdomain ? host.split('.')[0] : 'default_baker';
 
-                // 2. Fetch Active Cloud Matrix (Direct DB Bridge)
-                const res = await fetch(`/api/v2/products?tenantId=${tenantId}&t=${Date.now()}`);
+                // 1. Fetch Cloud Matrix (Primary Source)
+                const res = await fetch(`/api/v2/products?tenantId=${currentTenant}&t=${Date.now()}`);
                 const cloudData = await res.json();
-                let cloudProducts = Array.isArray(cloudData) ? cloudData : [];
+                let cloudItems = Array.isArray(cloudData) ? cloudData : [];
+                console.log(`[Sync] Cloud Data Recv: ${cloudItems.length} items.`);
+
+                // 2. Local State Reconciliation
+                const localBackup = JSON.parse(localStorage.getItem('bobo_master_bakes_backup') || '[]');
+                const mergedMap = new Map();
                 
-                // 3. Normalization Update: Ensure all local images use the /api/ proxy
-                cloudProducts = cloudProducts.map(p => {
-                    let path = p.image_path || p.image_url || '';
-                    if (path && (path.startsWith('storage/') || path.startsWith('/storage/') || path.startsWith('menu-images/'))) {
-                        p.image_path = "/api" + (path.startsWith('/') ? '' : '/') + path;
+                // Priority Mapping: Cloud > Local
+                cloudItems.forEach(p => { if (p.id) mergedMap.set(String(p.id), p); });
+                localBackup.forEach(p => { if (p.id && !mergedMap.has(String(p.id))) mergedMap.set(String(p.id), p); });
+
+                // 3. Status Filtering & Image Normalization
+                liveProducts = Array.from(mergedMap.values()).map(p => {
+                    // Normalize Image ID / URL
+                    let rawImg = p.image_url || p.image_path || "";
+                    if (rawImg && !rawImg.startsWith('http') && !rawImg.startsWith('/api') && !rawImg.startsWith('data:')) {
+                        p.image_url = "/api/uploads/" + rawImg.split('/').pop();
                     }
                     return p;
                 });
-                
-                // 3. Load Local Backup (Physical Memory Primary)
-                const localBackup = localStorage.getItem('bobo_master_bakes_backup');
-                const localProducts = localBackup ? JSON.parse(localBackup) : [];
-                
-                // 4. Merging Matrix (Mirroring Catalog Resurrection)
-                const mergedMap = new Map();
-                
-                // Cloud & Local Backup Priority
-                cloudProducts.forEach(p => { if (p.id) mergedMap.set(String(p.id), p); });
-                localProducts.forEach(lp => { if (lp.id && !mergedMap.has(String(lp.id))) mergedMap.set(String(lp.id), lp); });
 
-                // Legacy Context Resurrection
-                legacyData.forEach(p => {
-                    const idStr = p.id ? String(p.id) : ('leg_' + Math.random().toString(36).substr(2, 5));
-                    if (!mergedMap.has(idStr)) mergedMap.set(idStr, {...p, id: idStr, status: 'approved'});
-                });
-
-                // Final Sanitization & UHD Path Normalization
-                const banned = JSON.parse(localStorage.getItem('bobo_banned_bakes') || '[]');
-                const wiped  = JSON.parse(localStorage.getItem('bobo_wiped_images') || '[]');
-
-                liveProducts = Array.from(mergedMap.values())
-                    .filter(p => !banned.includes(String(p.id)))
-                    .map(p => {
-                        let rawImg = p.image_path || p.image_url || p.high_res_url || "";
-                        if (wiped.includes(String(p.id))) {
-                             return { ...p, image_path: '', image_url: '', high_res_url: '', thumbnail_url: '', image_id: null };
-                        }
-                        if (rawImg && !rawImg.startsWith('http') && !rawImg.startsWith('/api')) {
-                            p.image_path = "/api" + (rawImg.startsWith('/') ? '' : '/') + rawImg;
-                        }
-                        return p;
-                    });
+                // Display Filter: Show everything except explicitly banned/draft items
+                const approved = liveProducts.filter(p => !p.status || p.status === 'approved' || p.status === 'Live' || p.status === 'active');
                 
-                const approved = liveProducts.filter(p => !p.status || p.status === 'approved' || p.status === 'Live');
                 renderMenu(approved);
                 renderGallery(approved);
+
             } catch (e) {
-                console.warn("Website Sync Pulse Weak - Recovering from Local Memory...", e);
-                const backup = localStorage.getItem('bobo_master_bakes_backup');
-                if (backup) {
-                    const banned = JSON.parse(localStorage.getItem('bobo_banned_bakes') || '[]');
-                    liveProducts = JSON.parse(backup).filter(p => !banned.includes(String(p.id)));
-                    renderMenu(liveProducts.filter(p => p.status === 'approved' || p.status === 'Live'));
-                }
+                console.warn("[Sync Failure] Recovering from Local Memory...", e);
+                const backup = JSON.parse(localStorage.getItem('bobo_master_bakes_backup') || '[]');
+                renderMenu(backup);
             }
         }
 
@@ -435,6 +401,10 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
 
         window.handleSearch = val => {
             const q = val.toLowerCase();
+            if (q === 'all delights' || q === 'all') {
+                renderMenu(liveProducts);
+                return;
+            }
             const filtered = liveProducts.filter(p => 
                 p.name.toLowerCase().includes(q) || (p.category || p.cat || '').toLowerCase().includes(q)
             );

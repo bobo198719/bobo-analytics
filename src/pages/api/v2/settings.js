@@ -12,6 +12,24 @@ export async function GET({ url }) {
             connectTimeout: 10000
         });
 
+        // Ensure table exists
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS bakery_settings (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                bizName VARCHAR(255),
+                phone VARCHAR(50),
+                address TEXT,
+                upi_id VARCHAR(100),
+                bizLogo TEXT,
+                brandColor VARCHAR(20),
+                heroTitle VARCHAR(255),
+                heroSubtitle TEXT,
+                heroBg TEXT,
+                bakery_slug VARCHAR(100) UNIQUE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
         const [rows] = await connection.query("SELECT * FROM bakery_settings WHERE bakery_slug = ?", [slug]);
         await connection.end();
 
