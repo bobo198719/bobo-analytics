@@ -24,22 +24,28 @@ export async function GET({ url }) {
         
         await connection.end();
 
-        // 3. Transform paths for proxy only if they are local filenames
+        // 3. Transform paths for proxy only if they are local filenames or broken internal URLs
         const rows = dbRows.map(p => {
             const rawImg = p.image_url || p.image_path || "";
             
-            // If it's already a full cloud URL (like Vercel Blob), keep it!
-            if (rawImg.startsWith('http')) {
+            // Pattern 1: Vercel Cloud Storage (KEEP)
+            if (rawImg.includes('blob.vercel-storage.com')) {
                 p.image_url = rawImg;
-            } else if (rawImg && rawImg.length > 0) {
-                // If it's just a filename, point to the Hostinger Proxy (via secure /api/uploads)
+            } 
+            // Pattern 2: Broken Internal Hostinger URLs (FIX: Route through Proxy)
+            else if (rawImg.includes('srv1449576.hstgr.cloud')) {
+                const filename = rawImg.split('/').pop();
+                p.image_url = `/api/uploads/${filename}`;
+            }
+            // Pattern 3: Local relative paths or filenames (FIX: Route through Proxy)
+            else if (rawImg && rawImg.length > 0) {
                 const filename = rawImg.split('/').pop();
                 p.image_url = `/api/uploads/${filename}`;
             }
             return p;
         });
 
-        console.log(`[Bridge] Dispatched ${rows.length} products for ${tenantId}`);
+        console.log(`[Bridge] Dispatched ${rows.length} products for ${tenantId}. Sample: ${rows[0]?.image_url}`);
 
         return new Response(JSON.stringify(rows), { 
             status: 200,

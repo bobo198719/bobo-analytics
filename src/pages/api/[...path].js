@@ -41,6 +41,16 @@ export async function ALL({ request, params }) {
             signal: AbortSignal.timeout(timeoutMs)
         });
 
+        // 🖼️ BINARY ASSET SHIELD: If it's an image or other binary file, don't parse as JSON
+        const contentType = resProxy.headers.get('Content-Type') || '';
+        if (contentType.includes('image/') || contentType.includes('video/') || contentType.includes('application/pdf') || contentType.includes('octet-stream')) {
+            const blob = await resProxy.arrayBuffer();
+            return new Response(blob, {
+                status: resProxy.status,
+                headers: { 'Content-Type': contentType, 'Cache-Control': 'public, max-age=3600' }
+            });
+        }
+
         let data = await resProxy.json();
         
         // 🔒 CORE REPAIR: If backend returns settings as a string, parse it for the frontend
