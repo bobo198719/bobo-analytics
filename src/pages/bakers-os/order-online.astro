@@ -218,7 +218,7 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         async function fetchSettings() {
             const tenantId = getTenantId();
             try {
-                const res = await fetch(`/api/settings/${tenantId}`);
+                const res = await fetch(`/api/v2/save-upi?tenantId=${tenantId}`);
                 if (res.ok) {
                     businessSettings = await res.json();
                     applySettings(businessSettings);

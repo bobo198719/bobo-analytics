@@ -203,7 +203,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             btn.disabled = true;
 
             try {
-                const res = await fetch("/api/settings/upi", {
+                const res = await fetch("/api/v2/save-upi", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ upi, tenantId: tenantId })
@@ -212,10 +212,10 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 if (res.ok) {
                     alert("✅ UPI Connected Successfully!");
                 } else {
-                    alert("❌ Error: " + (data.error || data.message || "Failed to save UPI"));
+                    alert("❌ Error: " + (data.error || data.details || "Failed to save UPI"));
                 }
             } catch (e) {
-                alert("🆘 Failed to connect UPI (Network Error)");
+                alert("🆘 Failed to connect UPI (Direct Bridge Error)");
             } finally {
                 btn.innerText = "Update UPI";
                 btn.style.opacity = "1";
@@ -226,7 +226,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
         async function loadSettings() {
             const tenantId = getTenantId();
             try {
-                const res = await fetch(`/api/settings/${tenantId}`);
+                const res = await fetch(`/api/v2/save-upi?tenantId=${tenantId}`);
                 if (res.ok) {
                     const settings = await res.json();
                     if (settings.upi) {
