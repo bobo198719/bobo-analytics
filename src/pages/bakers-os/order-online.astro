@@ -192,7 +192,6 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
         let orderDetails = {};
         let finalOrderId = '';
         let businessSettings = {};
-
         document.addEventListener('DOMContentLoaded', async () => {
             loadCart();
             await fetchSettings();
@@ -203,11 +202,21 @@ const dynamicName = subdomain ? subdomain.charAt(0).toUpperCase() + subdomain.sl
             });
         });
 
+        function getTenantId() {
+            try {
+                const host = window.location.host;
+                const parts = host.split('.');
+                if (parts.length > 2 && !host.includes('localhost') && !host.includes('vercel.app') && parts[0] !== 'www') {
+                    return parts[0];
+                }
+                return 'default_baker';
+            } catch(e) {
+                return 'default_baker';
+            }
+        }
+
         async function fetchSettings() {
-            const host = window.location.host;
-            const isSubdomain = host.split('.').length > 2 && !host.includes('localhost') && !host.includes('vercel.app');
-            const tenantId = isSubdomain ? host.split('.')[0] : 'default_baker';
-            
+            const tenantId = getTenantId();
             try {
                 const res = await fetch(`/api/settings/${tenantId}`);
                 if (res.ok) {

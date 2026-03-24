@@ -178,12 +178,10 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             try {
                 const host = window.location.host;
                 const parts = host.split('.');
-                // Handle cases like baker-os.vercel.app or my-baker.com
-                if (parts.length > 2 && !host.includes('localhost') && !host.includes('vercel.app')) {
+                // If it's a subdomain (e.g., myshop.boboanalytics.com) but not 'www'
+                if (parts.length > 2 && !host.includes('localhost') && !host.includes('vercel.app') && parts[0] !== 'www') {
                     return parts[0];
                 }
-                // If on vercel.app or localhost, we might be using a query param or path
-                // But for now, default_baker is the fallback
                 return 'default_baker';
             } catch(e) {
                 return 'default_baker';
@@ -198,6 +196,8 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
             if (!upi) return alert("Please enter a valid UPI ID");
 
             const tenantId = getTenantId();
+            console.log("Saving for tenant:", tenantId);
+            
             btn.innerText = "Saving...";
             btn.style.opacity = "0.7";
             btn.disabled = true;
@@ -206,7 +206,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
                 const res = await fetch("/api/settings/upi", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ upi, tenantId })
+                    body: JSON.stringify({ upi, tenantId: tenantId })
                 });
                 const data = await res.json();
                 if (res.ok) {
