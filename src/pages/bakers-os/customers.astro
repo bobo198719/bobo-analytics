@@ -91,33 +91,64 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
 
       async function loadData() {
           try {
-              const res = await fetch('/api/orders');
-              const orders = await res.json();
-              
+              const host = window.location.host;
+              const isSubdomain = host.split('.').length > 2 && host.split('.')[0] !== 'www';
+              const tenantId = isSubdomain ? host.split('.')[0] : 'default_baker';
+
+              // 1. Dual Matrix Fetch (Direct Leads + Legacy Orders)
+              const [leadsRes, ordersRes] = await Promise.all([
+                  fetch(`/api/v2/customers?tenantId=${tenantId}&t=${Date.now()}`),
+                  fetch(`/api/orders?t=${Date.now()}`)
+              ]);
+
+              const [leads, orders] = await Promise.all([
+                  leadsRes.json(),
+                  ordersRes.json()
+              ]);
+
               const custMap = {};
-              orders.forEach(o => {
-                  const key = o.phone || 'unknown';
-                  if (!custMap[key]) {
+
+              // Process Cloud Leads (Priority 1)
+              if (Array.isArray(leads)) {
+                  leads.forEach(l => {
+                      const key = (l.phone || '').replace(/\D/g, '') || ('lead_' + l.id);
                       custMap[key] = {
-                          name: o.customer_name || o.customer || 'Unknown',
-                          phone: o.phone || 'N/A',
-                          email: o.email || 'N/A',
+                          name: l.name || 'Unknown Lead',
+                          phone: l.phone || 'N/A',
+                          email: l.email || 'N/A',
                           orders: 0,
                           spent: 0,
-                          lastDate: new Date(0)
+                          lastDate: new Date(l.created_at || Date.now())
                       };
-                  }
-                  custMap[key].orders += 1;
-                  custMap[key].spent += parseFloat(o.amount || 0);
-                  const oDate = new Date(o.created_at || Date.now());
-                  if (oDate > custMap[key].lastDate) custMap[key].lastDate = oDate;
-              });
+                  });
+              }
 
-              customers = Object.values(custMap).sort((a,b) => b.spent - a.spent);
+              // Merge Order History (Priority 2 - Enrichment)
+              if (Array.isArray(orders)) {
+                  orders.forEach(o => {
+                      const key = (o.phone || '').replace(/\D/g, '') || 'unknown';
+                      if (!custMap[key]) {
+                          custMap[key] = {
+                              name: o.customer_name || o.customer || 'Unknown Patron',
+                              phone: o.phone || 'N/A',
+                              email: o.email || 'N/A',
+                              orders: 0,
+                              spent: 0,
+                              lastDate: new Date(0)
+                          };
+                      }
+                      custMap[key].orders += 1;
+                      custMap[key].spent += parseFloat(o.amount || 0);
+                      const oDate = new Date(o.created_at || Date.now());
+                      if (oDate > custMap[key].lastDate) custMap[key].lastDate = oDate;
+                  });
+              }
+
+              customers = Object.values(custMap).sort((a,b) => b.spent - a.spent || b.lastDate - a.lastDate);
               renderCustomers();
               updateStats(customers);
           } catch (e) {
-              console.error(e);
+              console.error("[CRM Matrix Sync Error]:", e);
           }
       }
 
@@ -173,19 +204,29 @@ import BakerSubNav from "../../components/BakerSubNav.astro";
           const name = prompt("Enter customer name:");
           if (!name) return;
           const phone = prompt("Enter phone number:");
+          if (!phone) return;
+          const email = prompt("Enter email (optional):");
+
+          const host = window.location.host;
+          const isSubdomain = host.split('.').length > 2 && host.split('.')[0] !== 'www';
+          const tenantId = isSubdomain ? host.split('.')[0] : 'default_baker';
           
           try {
-              const res = await fetch("/api/customers/add", {
+              const res = await fetch("/api/v2/customers", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ name, phone })
+                  body: JSON.stringify({ name, phone, email, bakery_slug: tenantId })
               });
-              if (res.ok) {
-                  alert("Lead added successfully!");
+              const data = await res.json();
+              if (data.success) {
+                  alert("✅ Lead added successfully and synced to Cloud Database!");
                   loadData();
+              } else {
+                  throw new Error(data.error);
               }
           } catch (e) {
-              alert("Failed to add lead");
+              console.error(e);
+              alert("🚨 Failed to sync lead to Cloud Bridge.");
           }
       };
 
