@@ -362,10 +362,16 @@ import MainLayout from "../../layouts/MainLayout.astro";
     .text-red { color: var(--neon-red); }
 
     /* Layout */
-    .dashboard-wrapper { display: flex; flex-direction: column; min-height: 100vh; width: 100%; background: var(--bg-dark); }
-    .main-layout { display: grid; grid-template-columns: 280px 1fr; flex: 1; padding: 20px 30px; gap: 30px; width: 100%; overflow: hidden; }
+    .dashboard-wrapper { display: flex; flex-direction: column; min-height: 100vh; width: 100%; background: var(--bg-dark); overflow-x: hidden; }
+    .main-layout { display: block; flex: 1; width: 100%; position: relative; }
     
-    .content-area { border-left: 1px solid var(--glass-border); padding: 0 0 40px 30px; overflow-x: auto; overflow-y: auto; scrollbar-width: thin; }
+    .content-area { 
+      margin-left: 310px; 
+      padding: 30px 40px; 
+      min-height: calc(100vh - 120px);
+      width: calc(100% - 310px);
+      overflow-x: auto;
+    }
     
     .billing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 25px; margin-bottom: 25px; }
 
@@ -375,7 +381,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
     .mini-stat .val { font-weight: 800; font-size: 1.2rem; }
 
     /* Header */
-    .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; margin: 20px 20px 0 20px; border-radius: 24px; z-index: 10; }
+    .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; margin: 20px 20px 0 310px; border-radius: 24px; z-index: 10; position: relative; }
     .nav-left { display: flex; align-items: center; gap: 15px; }
     .nav-left h1 { margin: 0; font-size: 1.5rem; font-weight: 800; }
     .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
@@ -399,7 +405,21 @@ import MainLayout from "../../layouts/MainLayout.astro";
     .role { font-size: 0.75rem; color: var(--neon-gold); text-transform: uppercase; letter-spacing: 1px; }
 
     /* Sidebar */
-    .sidebar { width: 280px; display: flex; flex-direction: column; justify-content: space-between; padding: 10px 0; border-radius: 24px; }
+    .sidebar { 
+      width: 290px; 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      height: 100vh; 
+      background: rgba(5, 5, 20, 0.95);
+      border-right: 1px solid var(--glass-border);
+      display: flex; 
+      flex-direction: column; 
+      justify-content: space-between; 
+      padding: 30px 20px; 
+      z-index: 100;
+      backdrop-filter: blur(20px);
+    }
     .nav-menu { display: flex; flex-direction: column; gap: 10px; }
     .nav-item { background: transparent; border: none; color: var(--text-muted); text-align: left; padding: 15px 20px; border-radius: 16px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 15px; font-family: 'Outfit'; }
     .nav-item:hover { background: rgba(255,255,255,0.05); color: white; transform: translateX(5px); }
