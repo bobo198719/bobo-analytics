@@ -2,7 +2,7 @@
 import MainLayout from "../../layouts/MainLayout.astro";
 ---
 
-<MainLayout title="Bobo Admin | SaaS Control Center" hideNav={true}>
+<MainLayout title="Bobo Admin | Master Dashboard" hideNav={true}>
   <style>
     :root {
       --bg-dark: #050810;
@@ -38,7 +38,6 @@ import MainLayout from "../../layouts/MainLayout.astro";
       display: flex;
       flex-direction: column;
       z-index: 1000;
-      transition: transform 0.3s ease;
     }
 
     .sidebar h2 {
@@ -46,7 +45,6 @@ import MainLayout from "../../layouts/MainLayout.astro";
       font-size: 1.2rem;
       font-weight: 800;
       letter-spacing: 1px;
-      color: #fff;
       padding: 0 15px;
     }
 
@@ -70,16 +68,8 @@ import MainLayout from "../../layouts/MainLayout.astro";
       font-size: 0.95rem;
     }
 
-    .menu-item:hover {
-      background: rgba(255, 255, 255, 0.04);
-      color: white;
-    }
-
-    .menu-item.active {
-      background: var(--neon-blue);
-      color: white;
-      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.25);
-    }
+    .menu-item:hover { background: rgba(255, 255, 255, 0.04); color: white; }
+    .menu-item.active { background: var(--neon-blue); color: white; box-shadow: 0 8px 16px rgba(59, 130, 246, 0.25); }
 
     /* MAIN AREA */
     .main {
@@ -89,20 +79,11 @@ import MainLayout from "../../layouts/MainLayout.astro";
       width: calc(100% - 260px);
     }
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
+    .container { max-width: 1200px; margin: 0 auto; }
 
     /* SECTIONS */
-    .section {
-      display: none;
-    }
-
-    .section.active {
-      display: block;
-      animation: fadeIn 0.3s ease-out;
-    }
+    .section { display: none; }
+    .section.active { display: block; animation: fadeIn 0.3s ease-out; }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(4px); }
@@ -125,7 +106,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
     }
 
     .card-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 8px; }
-    .value { font-size: 2rem; font-weight: 800; }
+    .value { font-size: 2.2rem; font-weight: 800; }
 
     /* TABLES */
     .table-box {
@@ -136,71 +117,44 @@ import MainLayout from "../../layouts/MainLayout.astro";
       overflow-x: auto;
     }
 
-    h3 { margin-top: 0; font-size: 1.25rem; }
+    h1, h3 { margin-top: 0; }
+    h1 { font-size: 1.8rem; margin-bottom: 24px; }
 
     table { width: 100%; border-collapse: collapse; min-width: 700px; }
     th { text-align: left; padding: 12px 16px; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; border-bottom: 1px solid var(--border-color); }
-    td { padding: 16px; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
+    td { padding: 16px; border-bottom: 1px solid var(--border-color); font-size: 0.95rem; }
 
-    /* MOBILE */
-    .mobile-header {
-      display: none;
-      height: 60px;
-      background: var(--sidebar-bg);
-      position: fixed;
-      top: 0; left: 0; width: 100%;
-      z-index: 1001;
-      padding: 0 20px;
+    /* ACTION BUTTON */
+    .btn-add {
+      background: var(--neon-blue);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
       align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border-color);
+      gap: 8px;
+      transition: 0.2s;
+      margin-bottom: 20px;
     }
 
-    .hamburger { font-size: 1.5rem; cursor: pointer; }
-
-    @media (max-width: 900px) {
-      .sidebar { transform: translateX(-100%); }
-      .sidebar.open { transform: translateX(0); }
-      .main { margin-left: 0; width: 100%; padding: 80px 20px; }
-      .mobile-header { display: flex; }
-    }
+    .btn-add:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
 
     .status-active { color: var(--neon-green); font-weight: bold; }
-    .status-inactive { color: var(--neon-red); font-weight: bold; }
   </style>
 
-  <div class="mobile-header">
-    <div class="hamburger" onclick="toggleSidebar()">☰</div>
-    <div style="font-weight: 800;">BOBO ADMIN</div>
-    <div style="color:var(--neon-blue); font-size: 0.8rem; font-weight: bold;">v12.1 RELEASE</div>
-  </div>
-
   <!-- SIDEBAR -->
-  <aside class="sidebar" id="sidebar">
+  <aside class="sidebar">
     <div class="sidebar-top">
-      <h2>BOBO ADMIN</h2>
+      <h2>BOBO OS</h2>
+      <div style="color:var(--neon-blue); font-size:0.7rem; font-weight:bold; padding-left:15px; margin-top:-20px; margin-bottom:20px;">DYNAMIC BACKEND ENABLED</div>
     </div>
     <nav class="nav-menu">
-      <button class="menu-item active" data-id="dashboard" onclick="switchTab('dashboard', this)">
-        <span class="icon">📊</span>
-        <span class="label">Dashboard</span>
-      </button>
-      <button class="menu-item" data-id="tenants" onclick="switchTab('tenants', this)">
-        <span class="icon">🏢</span>
-        <span class="label">Tenants</span>
-      </button>
-      <button class="menu-item" data-id="billing" onclick="switchTab('billing', this)">
-        <span class="icon">💸</span>
-        <span class="label">Billing</span>
-      </button>
-      <button class="menu-item" data-id="security" onclick="switchTab('security', this)">
-        <span class="icon">🛡️</span>
-        <span class="label">Security Logs</span>
-      </button>
-      <button class="menu-item" data-id="leads" onclick="switchTab('leads', this)">
-        <span class="icon">🎯</span>
-        <span class="label">Leads Management</span>
-      </button>
+      <button class="menu-item active" onclick="switchTab('dashboard', this)"><span>📊</span> Dashboard</button>
+      <button class="menu-item" onclick="switchTab('tenants', this)"><span>🏢</span> Tenants Register</button>
+      <button class="menu-item" onclick="switchTab('billing', this)"><span>💸</span> Revenue Trace</button>
     </nav>
   </aside>
 
@@ -210,16 +164,17 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
       <!-- DASHBOARD -->
       <div id="dashboard" class="section active">
-        <h1>Dashboard Overview</h1>
+        <h1>Dashboard Control Tower</h1>
         <div class="kpi-grid">
-          <div class="card"><div class="card-label">Total Users</div><div class="value" id="k-users">0</div></div>
-          <div class="card"><div class="card-label">Active Nodes</div><div class="value" id="k-active" style="color:var(--neon-green)">0</div></div>
-          <div class="card"><div class="card-label">Revenue</div><div class="value" id="k-revenue">₹0</div></div>
-          <div class="card"><div class="card-label">Alerts</div><div class="value" id="k-alerts" style="color:var(--neon-red)">0</div></div>
+          <div class="card"><div class="card-label">Total Users</div><div class="value" id="users">0</div></div>
+          <div class="card"><div class="card-label">Active Nodes</div><div class="value" id="active" style="color:var(--neon-green)">0</div></div>
+          <div class="card"><div class="card-label">Overall Revenue</div><div class="value" id="revenue">₹0</div></div>
+          <div class="card"><div class="card-label">Security Alerts</div><div class="value" id="alerts" style="color:var(--neon-red)">0</div></div>
         </div>
+
         <div class="table-box">
           <h3>Ecosystem Health</h3>
-          <div style="height:300px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.02); border-radius:12px;">
+          <div style="height:350px;">
             <canvas id="industryChart"></canvas>
           </div>
         </div>
@@ -228,163 +183,135 @@ import MainLayout from "../../layouts/MainLayout.astro";
       <!-- TENANTS -->
       <div id="tenants" class="section">
         <h1>Tenant Registry</h1>
+        <button class="btn-add" onclick="addTenant()">+ Provision New Tenant</button>
         <div class="table-box">
           <table>
-            <thead><tr><th>Business</th><th>Industry</th><th>Plan</th><th>Status</th></tr></thead>
-            <tbody id="tenantBody"></tbody>
+            <thead><tr><th>Establishment Name</th><th>Industry Hub</th><th>Operational Status</th><th>Monthly Yield</th></tr></thead>
+            <tbody id="tenantTable"></tbody>
           </table>
         </div>
       </div>
 
       <!-- BILLING -->
       <div id="billing" class="section">
-        <h1>Revenue Records</h1>
-        <div class="table-box">
-          <table>
-            <thead><tr><th>Date</th><th>Client</th><th>Plan</th><th>Amount</th></tr></thead>
-            <tbody id="billingBody"></tbody>
-          </table>
+        <h1>Financial Ledger</h1>
+        <div class="card">
+           <p style="color:var(--text-muted)">Live Transaction Streaming is active.</p>
+           <h2 id="billingStatus">Awaiting Data Pool...</h2>
         </div>
-      </div>
-
-      <!-- SECURITY -->
-      <div id="security" class="section">
-        <h1>Security Operations</h1>
-        <div class="table-box">
-          <table>
-            <thead><tr><th>User</th><th>IP Address</th><th>Status</th><th>Time</th></tr></thead>
-            <tbody id="logBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- LEADS -->
-      <div id="leads" class="section">
-        <h1>Leads Hub</h1>
-        <div class="card"><p>Global lead queue is empty.</p></div>
       </div>
 
     </div>
   </main>
 
-  <script is:inline>
-    // DEFINE TABS GLOBALLY BEFORE DATA LOADS
-    window.switchTab = function(id, el) {
-      console.log("[v12.1 DEBUG] Switching Tab to:", id);
-      
-      // 1. Hide all sections
-      const sections = document.querySelectorAll('.section');
-      sections.forEach(s => s.classList.remove('active'));
-      
-      // 2. Show target
-      const target = document.getElementById(id);
-      if(target) target.classList.add('active');
-
-      // 3. Update Menu Items
-      const items = document.querySelectorAll('.menu-item');
-      items.forEach(i => i.classList.remove('active'));
-      
-      if(el) {
-        el.classList.add('active');
-      } else {
-        const matchingBtn = document.querySelector(`.menu-item[data-id="${id}"]`);
-        if(matchingBtn) matchingBtn.classList.add('active');
-      }
-
-      // 4. Close mobile menu
-      const sidebar = document.getElementById('sidebar');
-      if(sidebar) sidebar.classList.remove('open');
-      
-      return false;
-    };
-
-    window.toggleSidebar = function() {
-      const sidebar = document.getElementById('sidebar');
-      if(sidebar) sidebar.classList.toggle('open');
-    };
-  </script>
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script is:inline>
+    const API = "http://localhost:5000/api";
     let myChart = null;
 
-    async function loadDashboardData() {
-      console.log("[ADMIN] Initializing Data Pipeline...");
+    // TAB SWITCHER
+    window.switchTab = function(id, el) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById(id);
+      if(target) target.classList.add('active');
+      document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+      if(el) el.classList.add('active');
+    };
+
+    // LOAD DASHBOARD STATS
+    async function loadStats() {
       try {
-        const [usersR, logsR, revR, dashR] = await Promise.all([
-          fetch('/api/v2/admin-ops?action=users'),
-          fetch('/api/v2/admin-ops?action=login-logs'),
-          fetch('/api/v2/admin-ops?action=revenue'),
-          fetch('/api/v2/admin-ops?action=dashboard')
-        ]);
+        const res = await fetch(API + "/stats");
+        const data = await res.json();
 
-        const users = await usersR.json();
-        const logs = await logsR.json();
-        const rev = await revR.json();
-        const dash = await dashR.json();
-
-        // Update KPIs
-        if(document.getElementById('k-users')) document.getElementById('k-users').innerText = users.length;
-        if(document.getElementById('k-active')) document.getElementById('k-active').innerText = users.filter(u=>u.status==='active').length;
-        if(document.getElementById('k-revenue')) document.getElementById('k-revenue').innerText = '₹' + dash.revenue.toLocaleString();
-        
-        // Populate Tables
-        const tBody = document.getElementById('tenantBody');
-        if(tBody) tBody.innerHTML = users.map(u => `<tr><td><strong>${u.business_name}</strong></td><td>${u.industry}</td><td>${u.plan_type}</td><td><span class="${u.status==='active'?'status-active':'status-inactive'}">${u.status}</span></td></tr>`).join('');
-        
-        const revBody = document.getElementById('billingBody');
-        if(revBody) revBody.innerHTML = (rev.records || []).map(r => `<tr><td>${new Date(r.created_at).toLocaleDateString()}</td><td>${r.business_name}</td><td>${r.plan_type}</td><td>₹${r.amount}</td></tr>`).join('');
-        
-        const logBody = document.getElementById('logBody');
-        if(logBody) logBody.innerHTML = logs.map(l => `<tr><td>${l.username}</td><td><code>${l.ip_address}</code></td><td><span class="${l.status==='success'?'status-active':'status-inactive'}">${l.status}</span></td><td>${new Date(l.created_at).toLocaleTimeString()}</td></tr>`).join('');
-
-        // Chart Data Prep
-        const counts = { Restaurant:0, Pharmacy:0, Retail:0, Bakery:0 };
-        users.forEach(u => { if(counts[u.industry]!==undefined) counts[u.industry]++; });
-        
-        // Add dummy data if empty so user see the chart working
-        const chartData = [counts.Restaurant, counts.Pharmacy, counts.Retail, counts.Bakery];
-        const hasData = chartData.some(v => v > 0);
-        const finalData = hasData ? chartData : [1, 1, 1, 1]; // Placeholder if no users yet
-
-        const ctx = document.getElementById('industryChart');
-        if(ctx && window.Chart) {
-           if(myChart) myChart.destroy();
-           myChart = new Chart(ctx, {
-             type: 'doughnut',
-             data: { 
-                labels: ['Restaurant', 'Pharmacy', 'Retail', 'Bakery'], 
-                datasets: [{ 
-                    data: finalData, 
-                    backgroundColor: ['#ef4444', '#10b981', '#3b82f6', '#f59e0b'], 
-                    borderWidth: 0,
-                    hoverOffset: 15
-                }] 
-             },
-             options: { 
-                responsive:true, 
-                maintainAspectRatio:false, 
-                cutout: '75%', 
-                plugins: { 
-                    legend: { position: 'bottom', labels: { color: '#fff', padding: 20 } },
-                    tooltip: { enabled: hasData }
-                } 
-             }
-           });
-        }
-
-        const secR = await fetch('/api/v2/admin-ops?action=security-alerts');
-        const alerts = await secR.json();
-        if(document.getElementById('k-alerts')) document.getElementById('k-alerts').innerText = alerts.length;
-
-      } catch (e) { 
-        console.error('[ADMIN] Pipeline Failed:', e); 
-      }
+        document.getElementById("users").innerText = data.users;
+        document.getElementById("active").innerText = data.active;
+        document.getElementById("revenue").innerText = "₹" + data.revenue.toLocaleString();
+        document.getElementById("alerts").innerText = data.alerts;
+      } catch (err) { console.error('Stats Sync Error:', err); }
     }
 
+    // LOAD TENANTS
+    async function loadTenants() {
+      try {
+        const res = await fetch(API + "/tenants");
+        const data = await res.json();
+
+        let html = "";
+        data.forEach(t => {
+          html += `
+            <tr>
+              <td><strong>${t.name}</strong></td>
+              <td>${t.industry}</td>
+              <td class="status-active">${t.status}</td>
+              <td>₹${t.revenue.toLocaleString()}</td>
+            </tr>
+          `;
+        });
+
+        document.getElementById("tenantTable").innerHTML = html || '<tr><td colspan="4">No Records in MongolDB.</td></tr>';
+        updateChart(data);
+      } catch (err) { console.error('Tenant Sync Error:', err); }
+    }
+
+    // ADD TENANT
+    window.addTenant = async function() {
+      const name = prompt("Enter Establishment Name:");
+      if(!name) return;
+      const industry = prompt("Enter Industry (e.g. Restaurant, Bakery, Retail, Pharmacy):", "Restaurant");
+      const revenue = prompt("Enter Monthly Revenue (INR):", "5000");
+
+      try {
+        await fetch(API + "/tenants", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({
+            name,
+            industry,
+            status: "active",
+            revenue: Number(revenue)
+          })
+        });
+        loadTenants();
+        loadStats();
+      } catch (err) { alert('Failed to provision tenant. Is Backend running?'); }
+    }
+
+    // UI CHART
+    function updateChart(data) {
+      const ctx = document.getElementById('industryChart');
+      if(!ctx || !window.Chart) return;
+
+      const sectors = { Restaurant:0, Bakery:0, Retail:0, Pharmacy:0 };
+      data.forEach(t => { if(sectors[t.industry] !== undefined) sectors[t.industry]++; });
+
+      const finalData = Object.values(sectors).some(v=>v>0) ? Object.values(sectors) : [1,1,1,1];
+
+      if(myChart) myChart.destroy();
+      myChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Restaurant', 'Bakery', 'Retail', 'Pharmacy'],
+          datasets: [{
+            data: finalData,
+            backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'],
+            borderWidth: 0,
+            hoverOffset: 20
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '75%',
+          plugins: { legend: { position: 'bottom', labels: { color: '#fff', padding: 25 } } }
+        }
+      });
+    }
+
+    // INIT
     document.addEventListener('DOMContentLoaded', () => {
-      loadDashboardData();
-      setInterval(loadDashboardData, 60000); // Pulse every minute
+      loadStats();
+      loadTenants();
     });
   </script>
 </MainLayout>
