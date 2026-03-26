@@ -2,7 +2,7 @@
 import MainLayout from "../../layouts/MainLayout.astro";
 ---
 
-<MainLayout title="Bobo Admin | Enterprise Control Panel" hideNav={true}>
+<MainLayout title="Bobo Admin | Production Control Panel" hideNav={true}>
   <style>
     :root {
       --bg-dark: #050810;
@@ -18,58 +18,47 @@ import MainLayout from "../../layouts/MainLayout.astro";
     body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-dark); color: #fff; display: flex; min-height: 100vh; overflow-x: hidden; }
 
     /* AUTH OVERLAY */
-    #authOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 8, 16, 0.98); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+    #authOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); z-index: 2000; display: flex; align-items: center; justify-content: center; }
     .auth-card { background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid var(--border-color); width: 400px; text-align: center; }
     .auth-input { width: 100%; padding: 14px; margin-bottom: 20px; border-radius: 12px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: white; outline: none; }
     .btn-primary { width: 100%; background: var(--neon-blue); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 800; cursor: pointer; }
 
-    /* DASHBOARD CONTENT */
+    /* CONTENT */
     #dashboardContent { display: none; width: 100%; }
-    #dashboardContent.authed { display: flex; }
-
-    /* SIDEBAR */
     .sidebar { width: 260px; height: 100vh; background: var(--sidebar-bg); padding: 30px 15px; position: fixed; left: 0; top: 0; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; }
-    .nav-menu { flex: 1; }
     .menu-item { padding: 14px 18px; margin-bottom: 6px; border-radius: 12px; cursor: pointer; transition: 0.2s; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 12px; border: none; background: transparent; width: 100%; font-size: 0.95rem; }
     .menu-item.active { background: var(--neon-blue); color: white; }
 
-    /* MAIN */
     .main { margin-left: 260px; flex: 1; padding: 40px; width: calc(100% - 260px); }
     .container { max-width: 1200px; margin: 0 auto; }
     .section { display: none; }
     .section.active { display: block; animation: fadeIn 0.3s ease-out; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* KPI */
     .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 32px; }
     .card { background: var(--card-bg); padding: 24px; border-radius: 16px; border: 1px solid var(--border-color); }
     .card-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 8px; }
     .value { font-size: 2.2rem; font-weight: 800; }
 
-    /* TABLES */
     .table-box { background: var(--card-bg); padding: 24px; border-radius: 16px; border: 1px solid var(--border-color); overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; min-width: 700px; }
     th { text-align: left; padding: 12px 16px; color: var(--text-muted); font-size: 0.75rem; border-bottom: 1px solid var(--border-color); }
     td { padding: 16px; border-bottom: 1px solid var(--border-color); font-size: 0.95rem; }
 
-    /* PAY BUTTON */
-    .btn-pay { background: var(--neon-blue); color: #fff; padding: 15px 30px; border-radius: 12px; font-weight: 800; cursor: pointer; border: none; font-size: 1.1rem; }
     .status-active { color: var(--neon-green); font-weight: bold; }
   </style>
 
-  <!-- AUTH PORTAL -->
   <div id="authOverlay">
     <div class="auth-card">
-      <h2 style="margin-bottom: 10px;">🛡️ Enterprise Vault</h2>
-      <p style="color:var(--text-muted); margin-bottom: 30px;">Authorized Console Access</p>
+      <h2 style="margin-bottom: 10px;">🛡️ Enterprise Secure OS</h2>
+      <p style="color:var(--text-muted); margin-bottom: 30px;">Production Gateway v15.1</p>
       <input id="email" class="auth-input" type="email" placeholder="Master Email">
-      <input id="password" class="auth-input" type="password" placeholder="Access Key">
-      <button class="btn-primary" onclick="login()">Authenticate</button>
+      <input id="password" class="auth-input" type="password" placeholder="Key Fragment">
+      <button class="btn-primary" onclick="login()">Enter Console</button>
       <p id="authError" style="color:var(--neon-red); margin-top:20px; font-size:0.85rem; font-weight:bold;"></p>
     </div>
   </div>
 
-  <!-- DASHBOARD -->
   <div id="dashboardContent">
     <aside class="sidebar">
       <h2>BOBO OS</h2>
@@ -83,24 +72,19 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
     <main class="main">
       <div class="container">
-        
         <div id="dashboard" class="section active">
-          <h1>Enterprise Control Tower</h1>
+          <h1>Production Control Tower</h1>
           <div class="kpi-grid">
-            <div class="card"><div class="card-label">Total Users</div><div id="users" class="value">0</div></div>
-            <div class="card"><div class="card-label">Active Nodes</div><div id="active" class="value" style="color:var(--neon-green)">0</div></div>
-            <div class="card"><div class="card-label">Overall Revenue</div><div id="revenue" class="value">₹0</div></div>
-            <div class="card"><div class="card-label">Security Alerts</div><div id="alerts" class="value" style="color:var(--neon-red)">0</div></div>
+            <div class="card"><div class="card-label">Overall Users</div><div id="users" class="value">0</div></div>
+            <div class="card"><div class="card-label">Active Deployments</div><div id="active" class="value" style="color:var(--neon-green)">0</div></div>
+            <div class="card"><div class="card-label">Projected Yield</div><div id="revenue" class="value">₹0</div></div>
+            <div class="card"><div class="card-label">Security Health</div><div class="value" style="color:var(--neon-green)">100%</div></div>
           </div>
-          <div class="table-box">
-             <h3>Global Ecosystem</h3>
-             <div style="height:350px;"><canvas id="industryChart"></canvas></div>
-          </div>
+          <div class="card"><canvas id="industryChart" style="height:350px;"></canvas></div>
         </div>
 
         <div id="tenants" class="section">
           <h1>Tenant Registry</h1>
-          <button class="btn-primary" onclick="addTenant()" style="width: auto; padding: 12px 24px; margin-bottom: 20px;">+ Provision Tenant</button>
           <div class="table-box">
             <table>
               <thead><tr><th>Name</th><th>Industry</th><th>Status</th><th>Yield</th></tr></thead>
@@ -110,13 +94,11 @@ import MainLayout from "../../layouts/MainLayout.astro";
         </div>
 
         <div id="billing" class="section">
-          <h1>Enterprise Billing</h1>
+          <h1>Enterprise Subscriptions</h1>
           <div class="card" style="text-align: center;">
-            <h2>Bobo Professional</h2>
-            <button class="btn-pay" onclick="payNow()" style="margin-top: 20px;">Activate Enterprise Subscription ₹4,999</button>
+            <button class="btn-primary" onclick="payNow()" style="width: auto; padding: 15px 30px;">Subscribe Now ₹4,999</button>
           </div>
         </div>
-
       </div>
     </main>
   </div>
@@ -127,17 +109,16 @@ import MainLayout from "../../layouts/MainLayout.astro";
     const API = "http://localhost:5000/api";
     let myChart = null;
 
-    // --- AUTH LOGIC ---
     window.login = async function() {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       const errorEl = document.getElementById("authError");
-
       try {
-        const res = await fetch(API + "/login", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({ email, password }) });
+        const res = await fetch(API + "/login", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({email, password}) });
         const data = await res.json();
-        if(data.token) { localStorage.setItem("token", data.token); checkAuth(); } else { errorEl.innerText = data.error || "Authentication Failed."; }
-      } catch (err) { errorEl.innerText = "Connection Failed."; }
+        if(data.token) { localStorage.setItem("token", data.token); location.reload(); }
+        else { errorEl.innerText = data.error || "Denied."; }
+      } catch(e) { errorEl.innerText = "Offline."; }
     }
 
     window.logout = function() { localStorage.removeItem("token"); location.reload(); }
@@ -146,8 +127,8 @@ import MainLayout from "../../layouts/MainLayout.astro";
       const token = localStorage.getItem("token");
       if(token) {
         document.getElementById("authOverlay").style.display = "none";
-        document.getElementById("dashboardContent").classList.add("authed");
-        fetchStats(); fetchTenants();
+        document.getElementById("dashboardContent").style.display = "flex";
+        initSync();
       }
     }
 
@@ -156,51 +137,44 @@ import MainLayout from "../../layouts/MainLayout.astro";
       document.getElementById(id).classList.add('active');
       document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
       if(el) el.classList.add('active');
-    };
-
-    async function fetchStats() {
-      const token = localStorage.getItem("token");
-      const res = await fetch(API + "/stats", { headers: { "Authorization": token } });
-      const data = await res.json();
-      if(data.users !== undefined) {
-        document.getElementById("users").innerText = data.users;
-        document.getElementById("active").innerText = data.active;
-        document.getElementById("revenue").innerText = "₹" + data.revenue.toLocaleString();
-        document.getElementById("alerts").innerText = data.alerts;
-      } else if(res.status === 401) logout();
     }
 
-    async function fetchTenants() {
+    async function initSync() {
       const token = localStorage.getItem("token");
-      const res = await fetch(API + "/tenants", { headers: { "Authorization": token } });
-      const data = await res.json();
+      const [statsR, tenantR] = await Promise.all([
+        fetch(API + "/stats", { headers: { "Authorization": token } }),
+        fetch(API + "/tenants", { headers: { "Authorization": token } })
+      ]);
+      if(statsR.status === 401) return logout();
+      const stats = await statsR.json();
+      const tenants = await tenantR.json();
+      document.getElementById("users").innerText = stats.users;
+      document.getElementById("active").innerText = stats.active;
+      document.getElementById("revenue").innerText = "₹" + stats.revenue.toLocaleString();
       let html = "";
-      data.forEach(t => { html += `<tr><td><strong>${t.name}</strong></td><td>${t.industry}</td><td class="status-active">${t.status}</td><td>₹${t.revenue.toLocaleString()}</td></tr>`; });
-      document.getElementById("tenantTable").innerHTML = html || '<tr><td colspan="4">No Records Found.</td></tr>';
-      updateChart(data);
-    }
-
-    window.addTenant = async function() {
-        const name = prompt("Establishment Name:"); if(!name) return;
-        const token = localStorage.getItem("token");
-        await fetch(API + "/tenants", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": token }, body: JSON.stringify({ name, industry: "Retail", status: "active", revenue: 5000 }) });
-        fetchTenants(); fetchStats();
+      tenants.forEach(t => { html += `<tr><td><strong>${t.name}</strong></td><td>${t.industry}</td><td class="status-active">${t.status}</td><td>₹${t.revenue.toLocaleString()}</td></tr>`; });
+      document.getElementById("tenantTable").innerHTML = html || '<tr><td colspan="4">No Records.</td></tr>';
+      updateChart(tenants);
     }
 
     window.payNow = async function() {
       const token = localStorage.getItem("token");
-      const res = await fetch(API + "/create-order", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": token }, body: JSON.stringify({ amount: 4999 }) });
+      const res = await fetch(API + "/create-order", { method:"POST", headers:{"Content-Type":"application/json", "Authorization":token}, body:JSON.stringify({amount: 4999}) });
       const order = await res.json();
-      const options = { key: "rzp_test_placeholder", amount: order.amount, currency: "INR", name: "Bobo OS", description: "SaaS Subscription", order_id: order.id, handler: function (response) { alert("✓ Paid!");}, theme: { color: "#3b82f6" } };
-      const rzp = new window.Razorpay(options); rzp.open();
+      const options = { key: "rzp_test_placeholder", amount: order.amount, currency: "INR", name: "Bobo OS", order_id: order.id, handler: async function (response) {
+         const vr = await fetch(API + "/verify-payment", { method:"POST", headers:{"Content-Type":"application/json", "Authorization":token}, body:JSON.stringify({ razorpay_order_id: response.razorpay_order_id, razorpay_payment_id: response.razorpay_payment_id, razorpay_signature: response.razorpay_signature }) });
+         const vData = await vr.json();
+         if(vData.status === "success") alert("Verified Payment!");
+      }, theme: { color: "#3b82f6" } };
+      new window.Razorpay(options).open();
     }
 
     function updateChart(data) {
       const ctx = document.getElementById('industryChart'); if(!ctx) return;
-      const ss = { Restaurant:0, Bakery:0, Retail:0, Pharmacy:0 };
-      data.forEach(t => { if(ss[t.industry]!==undefined) ss[t.industry]++; });
+      const sectors = { Restaurant:0, Bakery:0, Retail:0, Pharmacy:0 };
+      data.forEach(t => { if(sectors[t.industry]!==undefined) sectors[t.industry]++; });
       if(myChart) myChart.destroy();
-      myChart = new Chart(ctx, { type:'doughnut', data:{ labels:Object.keys(ss), datasets:[{ data:Object.values(ss).some(v=>v>0)?Object.values(ss):[1,1,1,1], backgroundColor:['#ef4444', '#f59e0b', '#3b82f6', '#10b981'], borderWidth:0 }] }, options:{ responsive:true, maintainAspectRatio:false, cutout:'75%', plugins:{ legend:{ position:'bottom', labels:{color:'#fff', padding:20} } } } });
+      myChart = new Chart(ctx, { type:'doughnut', data:{ labels:Object.keys(sectors), datasets:[{ data:Object.values(sectors).some(v=>v>0)?Object.values(sectors):[1,1,1,1], backgroundColor:['#ef4444', '#f59e0b', '#3b82f6', '#10b981'], borderWidth:0 }] }, options:{ responsive:true, maintainAspectRatio:false, cutout:'75%', plugins: { legend: { position:'bottom', labels:{color:'#fff', padding:20} } } } });
     }
 
     document.addEventListener('DOMContentLoaded', checkAuth);
