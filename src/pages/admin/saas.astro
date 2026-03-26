@@ -177,14 +177,31 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
-    <h2>BOBO ADMIN</h2>
-    <div class="nav-menu">
-      <div class="menu-item active" onclick="switchTab('dashboard', this)"><span>📊</span> Dashboard</div>
-      <div class="menu-item" onclick="switchTab('tenants', this)"><span>🏢</span> Tenants</div>
-      <div class="menu-item" onclick="switchTab('billing', this)"><span>💸</span> Billing</div>
-      <div class="menu-item" onclick="switchTab('security', this)"><span>🛡️</span> Security Logs</div>
-      <div class="menu-item" onclick="switchTab('leads', this)"><span>🎯</span> Leads Management</div>
+    <div class="sidebar-top">
+      <h2>BOBO ADMIN</h2>
     </div>
+    <nav class="nav-menu">
+      <button class="menu-item active" data-id="dashboard" onclick="switchTab('dashboard', this)">
+        <span class="icon">📊</span>
+        <span class="label">Dashboard</span>
+      </button>
+      <button class="menu-item" data-id="tenants" onclick="switchTab('tenants', this)">
+        <span class="icon">🏢</span>
+        <span class="label">Tenants</span>
+      </button>
+      <button class="menu-item" data-id="billing" onclick="switchTab('billing', this)">
+        <span class="icon">💸</span>
+        <span class="label">Billing</span>
+      </button>
+      <button class="menu-item" data-id="security" onclick="switchTab('security', this)">
+        <span class="icon">🛡️</span>
+        <span class="label">Security Logs</span>
+      </button>
+      <button class="menu-item" data-id="leads" onclick="switchTab('leads', this)">
+        <span class="icon">🎯</span>
+        <span class="label">Leads Management</span>
+      </button>
+    </nav>
   </aside>
 
   <!-- MAIN -->
@@ -250,37 +267,49 @@ import MainLayout from "../../layouts/MainLayout.astro";
     </div>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script is:inline>
-    // TAB SWITCHER
+    // DEFINE TABS GLOBALLY BEFORE DATA LOADS
     window.switchTab = function(id, el) {
-      console.log('Switching to', id);
-      // Hide all sections
+      console.log("[ADMIN] Switching Tab to:", id);
+      
+      // 1. Hide all sections
       const sections = document.querySelectorAll('.section');
       sections.forEach(s => s.classList.remove('active'));
       
-      // Show target
+      // 2. Show target
       const target = document.getElementById(id);
       if(target) target.classList.add('active');
 
-      // Update Menu
+      // 3. Update Menu Items
       const items = document.querySelectorAll('.menu-item');
       items.forEach(i => i.classList.remove('active'));
-      if(el) el.classList.add('active');
+      
+      if(el) {
+        el.classList.add('active');
+      } else {
+        const matchingBtn = document.querySelector(`.menu-item[data-id="${id}"]`);
+        if(matchingBtn) matchingBtn.classList.add('active');
+      }
 
-      // Close mobile sidebar
+      // 4. Close mobile menu
       const sidebar = document.getElementById('sidebar');
       if(sidebar) sidebar.classList.remove('open');
-    }
+      
+      return false;
+    };
 
     window.toggleSidebar = function() {
-      document.getElementById('sidebar').classList.toggle('open');
-    }
+      const sidebar = document.getElementById('sidebar');
+      if(sidebar) sidebar.classList.toggle('open');
+    };
+  </script>
 
-    // DATA v12.0
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script is:inline>
     let myChart = null;
 
-    async function fetchData() {
+    async function loadDashboardData() {
+      console.log("[ADMIN] Initializing Data Pipeline...");
       try {
         const [usersR, logsR, revR, dashR] = await Promise.all([
           fetch('/api/v2/admin-ops?action=users'),
@@ -294,42 +323,68 @@ import MainLayout from "../../layouts/MainLayout.astro";
         const rev = await revR.json();
         const dash = await dashR.json();
 
-        // KPIs
-        document.getElementById('k-users').innerText = users.length;
-        document.getElementById('k-active').innerText = users.filter(u=>u.status==='active').length;
-        document.getElementById('k-revenue').innerText = '₹' + dash.revenue.toLocaleString();
+        // Update KPIs
+        if(document.getElementById('k-users')) document.getElementById('k-users').innerText = users.length;
+        if(document.getElementById('k-active')) document.getElementById('k-active').innerText = users.filter(u=>u.status==='active').length;
+        if(document.getElementById('k-revenue')) document.getElementById('k-revenue').innerText = '₹' + dash.revenue.toLocaleString();
         
-        // Security Alerts
-        const secR = await fetch('/api/v2/admin-ops?action=security-alerts');
-        const alerts = await secR.json();
-        document.getElementById('k-alerts').innerText = alerts.length;
+        // Populate Tables
+        const tBody = document.getElementById('tenantBody');
+        if(tBody) tBody.innerHTML = users.map(u => `<tr><td><strong>${u.business_name}</strong></td><td>${u.industry}</td><td>${u.plan_type}</td><td><span class="${u.status==='active'?'status-active':'status-inactive'}">${u.status}</span></td></tr>`).join('');
+        
+        const revBody = document.getElementById('billingBody');
+        if(revBody) revBody.innerHTML = (rev.records || []).map(r => `<tr><td>${new Date(r.created_at).toLocaleDateString()}</td><td>${r.business_name}</td><td>${r.plan_type}</td><td>₹${r.amount}</td></tr>`).join('');
+        
+        const logBody = document.getElementById('logBody');
+        if(logBody) logBody.innerHTML = logs.map(l => `<tr><td>${l.username}</td><td><code>${l.ip_address}</code></td><td><span class="${l.status==='success'?'status-active':'status-inactive'}">${l.status}</span></td><td>${new Date(l.created_at).toLocaleTimeString()}</td></tr>`).join('');
 
-        // Tables
-        document.getElementById('tenantBody').innerHTML = users.map(u => `<tr><td><strong>${u.business_name}</strong></td><td>${u.industry}</td><td>${u.plan_type}</td><td><span class=\"${u.status==='active'?'status-active':'status-inactive'}\">${u.status}</span></td></tr>`).join('');
-        document.getElementById('billingBody').innerHTML = (rev.records || []).map(r => `<tr><td>${new Date(r.created_at).toLocaleDateString()}</td><td>${r.business_name}</td><td>${r.plan_type}</td><td>₹${r.amount}</td></tr>`).join('');
-        document.getElementById('logBody').innerHTML = logs.map(l => `<tr><td>${l.username}</td><td><code>${l.ip_address}</code></td><td><span class=\"${l.status==='success'?'status-active':'status-inactive'}\">${l.status}</span></td><td>${new Date(l.created_at).toLocaleTimeString()}</td></tr>`).join('');
+        // Chart Data Prep
+        const counts = { Restaurant:0, Pharmacy:0, Retail:0, Bakery:0 };
+        users.forEach(u => { if(counts[u.industry]!==undefined) counts[u.industry]++; });
+        
+        // Add dummy data if empty so user see the chart working
+        const chartData = [counts.Restaurant, counts.Pharmacy, counts.Retail, counts.Bakery];
+        const hasData = chartData.some(v => v > 0);
+        const finalData = hasData ? chartData : [1, 1, 1, 1]; // Placeholder if no users yet
 
-        // Chart
         const ctx = document.getElementById('industryChart');
         if(ctx && window.Chart) {
-           const counts = { Restaurant:0, Pharmacy:0, Retail:0, Bakery:0 };
-           users.forEach(u => { if(counts[u.industry]!==undefined) counts[u.industry]++; });
-           
            if(myChart) myChart.destroy();
            myChart = new Chart(ctx, {
              type: 'doughnut',
-             data: { labels: ['Restaurant', 'Pharmacy', 'Retail', 'Bakery'], datasets: [{ data: [counts.Restaurant, counts.Pharmacy, counts.Retail, counts.Bakery], backgroundColor: ['#ef4444', '#10b981', '#3b82f6', '#f59e0b'], borderWidth: 0 }] },
-             options: { responsive:true, maintainAspectRatio:false, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { color: '#fff' } } } }
+             data: { 
+                labels: ['Restaurant', 'Pharmacy', 'Retail', 'Bakery'], 
+                datasets: [{ 
+                    data: finalData, 
+                    backgroundColor: ['#ef4444', '#10b981', '#3b82f6', '#f59e0b'], 
+                    borderWidth: 0,
+                    hoverOffset: 15
+                }] 
+             },
+             options: { 
+                responsive:true, 
+                maintainAspectRatio:false, 
+                cutout: '75%', 
+                plugins: { 
+                    legend: { position: 'bottom', labels: { color: '#fff', padding: 20 } },
+                    tooltip: { enabled: hasData }
+                } 
+             }
            });
         }
 
-      } catch (e) { console.error('Data error:', e); }
+        const secR = await fetch('/api/v2/admin-ops?action=security-alerts');
+        const alerts = await secR.json();
+        if(document.getElementById('k-alerts')) document.getElementById('k-alerts').innerText = alerts.length;
+
+      } catch (e) { 
+        console.error('[ADMIN] Pipeline Failed:', e); 
+      }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      fetchData();
-      // Periodically refresh data
-      setInterval(fetchData, 30000);
+      loadDashboardData();
+      setInterval(loadDashboardData, 60000); // Pulse every minute
     });
   </script>
 </MainLayout>
