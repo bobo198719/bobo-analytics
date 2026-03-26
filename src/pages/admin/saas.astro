@@ -172,7 +172,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
   <div class="mobile-header">
     <div class="hamburger" onclick="toggleSidebar()">☰</div>
     <div style="font-weight: 800;">BOBO ADMIN</div>
-    <div style="color:var(--neon-blue);">v12.0</div>
+    <div style="color:var(--neon-blue); font-size: 0.8rem; font-weight: bold;">v12.1 RELEASE</div>
   </div>
 
   <!-- SIDEBAR -->
@@ -270,7 +270,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
   <script is:inline>
     // DEFINE TABS GLOBALLY BEFORE DATA LOADS
     window.switchTab = function(id, el) {
-      console.log("[ADMIN] Switching Tab to:", id);
+      console.log("[v12.1 DEBUG] Switching Tab to:", id);
       
       // 1. Hide all sections
       const sections = document.querySelectorAll('.section');
