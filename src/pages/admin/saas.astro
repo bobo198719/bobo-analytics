@@ -27,7 +27,25 @@ import MainLayout from "../../layouts/MainLayout.astro";
     .menu-item { padding:12px 16px; margin-bottom:4px; border-radius:10px; cursor:pointer; transition:0.15s; color:var(--muted); font-weight:600; display:flex; align-items:center; gap:10px; border:none; background:transparent; width:100%; font-size:0.9rem; }
     .menu-item.active { background:var(--blue); color:#fff; }
     .menu-item:hover:not(.active) { background:rgba(255,255,255,0.05); color:#fff; }
-    .main { margin-left:240px; flex:1; padding:32px 40px; overflow-x:hidden; }
+    .main { margin-left:240px; flex:1; padding:24px 40px; overflow-x:hidden; transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); min-height:100vh; }
+    
+    /* ── TOPBAR ── */
+    .main-topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:32px; padding:16px 24px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:16px; backdrop-filter:blur(10px); }
+    .topbar-search { background:transparent; border:none; color:#fff; font-size:0.9rem; outline:none; width:200px; margin-left:8px; }
+    .topbar-icons { display:flex; gap:16px; align-items:center; }
+    .topbar-icon { font-size:1.1rem; cursor:pointer; opacity:0.8; transition:0.2s; }
+    .topbar-icon:hover { opacity:1; }
+    .profile-bubble { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg, var(--blue), #6366f1); display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.85rem; cursor:pointer; box-shadow:0 4px 12px rgba(59,130,246,0.3); }
+    
+    .mobile-toggle { display:none; background:transparent; border:none; color:#fff; font-size:1.4rem; cursor:pointer; margin-right:12px; }
+
+    @media(max-width: 900px) {
+      .sidebar { transform:translateX(-100%); z-index:2500; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 4px 0 20px rgba(0,0,0,0.5); }
+      .sidebar.open { transform:translateX(0); }
+      .main { margin-left:0; padding:16px 20px; }
+      .mobile-toggle { display:inline-block; }
+      .main-topbar { border-radius:12px; padding:12px 16px; margin-bottom:24px; }
+    }
     .section { display:none; }
     .section.active { display:block; animation:fadeIn 0.25s ease; }
     @keyframes fadeIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
@@ -214,6 +232,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
       <nav class="nav-menu">
         <button class="menu-item active" onclick="switchTab('dashboard',this)"><span>📊</span> Dashboard</button>
         <button class="menu-item" onclick="switchTab('users',this)"><span>👥</span> User Management</button>
+        <button class="menu-item" onclick="switchTab('roles',this)"><span>🔐</span> Roles & Permissions</button>
         <button class="menu-item" onclick="switchTab('tenants',this)"><span>🏢</span> Tenant Registry</button>
         <button class="menu-item" onclick="switchTab('campaigns',this)"><span>📧</span> Email Campaigns</button>
         <button class="menu-item" onclick="switchTab('onboarding',this)"><span>📩</span> Incoming Leads</button>
@@ -223,6 +242,20 @@ import MainLayout from "../../layouts/MainLayout.astro";
     </aside>
 
     <main class="main">
+    
+      <!-- GLOBAL TOPBAR -->
+      <div class="main-topbar">
+        <div style="display:flex; align-items:center;">
+          <button class="mobile-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+          <span>🔍</span>
+          <input type="text" class="topbar-search" placeholder="Quick Search..."/>
+        </div>
+        <div class="topbar-icons">
+          <span class="topbar-icon" title="Notifications">🔔</span>
+          <span class="topbar-icon" title="Settings">⚙️</span>
+          <div class="profile-bubble" title="Admin Profile">A</div>
+        </div>
+      </div>
 
       <!-- DASHBOARD TAB -->
       <div id="dashboard" class="section active">
@@ -234,6 +267,55 @@ import MainLayout from "../../layouts/MainLayout.astro";
           <div class="card"><div class="card-label">System Health</div><div class="kpi-val" style="color:var(--green);">100%</div></div>
         </div>
         <div class="card"><canvas id="industryChart" style="height:300px;"></canvas></div>
+      </div>
+      
+      <!-- ROLES & PERMISSIONS TAB -->
+      <div id="roles" class="section">
+        <div class="topbar">
+          <div>
+            <p class="sec-title">Roles & Access Control</p>
+            <p style="color:var(--muted);font-size:0.9rem;margin:0;">Manage organizational security boundaries & permissions</p>
+          </div>
+          <button class="btn-primary" onclick="toast('Role editor deployed!')">Create New Role</button>
+        </div>
+
+        <div class="card" style="margin-top:20px;">
+          <h3 style="margin:0 0 4px; display:flex; justify-content:space-between; align-items:center;">
+            <span>🛡️ Master Admin Role <span style="font-size:0.7rem; background:rgba(16,185,129,.14); color:var(--green); padding:3px 8px; border-radius:12px; margin-left:8px; vertical-align:middle;">SYSTEM</span></span>
+            <button class="btn-cancel" style="padding:6px 12px; font-size:0.8rem;">Edit Role</button>
+          </h3>
+          <p style="color:var(--muted);font-size:0.85rem;margin:0 0 16px;">Superuser level. Unrestricted system mapping privileges and full data visibility.</p>
+          
+          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:12px; border-top:1px solid var(--border); padding-top:16px;">
+            <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Dashboard Access</span></label>
+            <label class="checkbox-label"><input type="checkbox" checked disabled> <span>User Management</span></label>
+            <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Create/Manage Tenant</span></label>
+            <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Billing & Accounting</span></label>
+            <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Campaign Composer</span></label>
+            <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Analytics Global View</span></label>
+            <label class="checkbox-label"><input type="checkbox" checked disabled> <span>View Audit Security Logs</span></label>
+            <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Network Settings</span></label>
+          </div>
+        </div>
+        
+        <div class="card" style="margin-top:20px;">
+          <h3 style="margin:0 0 4px; display:flex; justify-content:space-between; align-items:center;">
+            <span>🎧 Customer Support Agent</span>
+            <button class="btn-cancel" style="padding:6px 12px; font-size:0.8rem;">Edit Role</button>
+          </h3>
+          <p style="color:var(--muted);font-size:0.85rem;margin:0 0 16px;">Customer service and onboarding bounds. Prevents access to system finance.</p>
+          
+          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:12px; border-top:1px solid var(--border); padding-top:16px;">
+            <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Dashboard Access</span></label>
+            <label class="checkbox-label"><input type="checkbox" disabled> <span>User Management</span></label>
+            <label class="checkbox-label"><input type="checkbox" disabled> <span>Create/Manage Tenant</span></label>
+            <label class="checkbox-label"><input type="checkbox" disabled> <span>Billing & Accounting</span></label>
+            <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Campaign Composer</span></label>
+            <label class="checkbox-label"><input type="checkbox" disabled> <span>Analytics Global View</span></label>
+            <label class="checkbox-label"><input type="checkbox" checked disabled> <span>View Audit Security Logs</span></label>
+            <label class="checkbox-label"><input type="checkbox" disabled> <span>Network Settings</span></label>
+          </div>
+        </div>
       </div>
 
       <!-- USERS TAB -->
@@ -366,6 +448,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
       document.getElementById(id).classList.add("active");
       document.querySelectorAll(".menu-item").forEach(m=>m.classList.remove("active"));
       if(el) el.classList.add("active");
+      document.querySelector('.sidebar').classList.remove('open');
       if(id==="users") loadUsers();
     };
 
