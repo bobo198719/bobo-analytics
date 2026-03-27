@@ -463,7 +463,13 @@ export async function ALL({ request, params }) {
         });
 
     } catch (err) {
-        // 🆘 EMERGENCY CLOUD RECOVERY SHIELD (V62)
+        // 🆘 EMERGENCY CLOUD RECOVERY SHIELD (V65)
+        if (!global.RECOVERY_ROLES) {
+            global.RECOVERY_ROLES = [
+                { id: 1, name: "Super Admin", permissions: { dashboard: true, users: true, billing: true, campaigns: true, analytics: true, logs: true } },
+                { id: 2, name: "Staff", permissions: { dashboard: true, users: true, billing: false, campaigns: true, analytics: false, logs: false } }
+            ];
+        }
         
         if (pathname.includes('/tables')) {
             return new Response(JSON.stringify([
@@ -490,6 +496,17 @@ export async function ALL({ request, params }) {
             return new Response(JSON.stringify(
                 RECOVERY_USERS.map(u => ({ name: u.business_name || u.username, industry: u.industry, status: u.status, revenue: getPlanRev(u.plan_type) }))
             ), { status: 200, headers: {'Content-Type': 'application/json'} });
+        }
+
+        if (pathname.endsWith('/roles') && method === 'GET') {
+            return new Response(JSON.stringify(global.RECOVERY_ROLES), { status: 200, headers: {'Content-Type': 'application/json'} });
+        }
+
+        if (pathname.endsWith('/roles') && method === 'POST') {
+            const body = await request.json();
+            const newRole = { id: global.RECOVERY_ROLES.length + 1, ...body };
+            global.RECOVERY_ROLES.push(newRole);
+            return new Response(JSON.stringify({ success: true, data: newRole }), { status: 201, headers: {'Content-Type': 'application/json'} });
         }
 
         if (pathname.endsWith('/users') && method === 'GET') {

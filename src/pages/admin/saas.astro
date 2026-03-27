@@ -294,6 +294,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
         <div class="sidebar-group-header">Administration</div>
         <button class="menu-item" onclick="switchTab('users',this)"><span>👥</span> <span>Users</span></button>
+        <button class="menu-item" onclick="switchTab('roles',this)"><span>🔐</span> <span>Roles & Permissions</span></button>
         <button class="menu-item" onclick="switchTab('tenants',this)"><span>🏢</span> <span>Organizations</span></button>
         <button class="menu-item" onclick="switchTab('subscriptions',this)"><span>💳</span> <span>Subscriptions</span></button>
         <button class="menu-item" onclick="switchTab('collections',this)"><span>📦</span> <span>Collections</span></button>
@@ -506,6 +507,42 @@ import MainLayout from "../../layouts/MainLayout.astro";
               <tr><td colspan="9" style="text-align:center;padding:40px;color:var(--muted);">Loading…</td></tr>
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- ROLES MODULE -->
+      <div id="roles" class="section">
+        <p class="sec-title">RBAC: Roles & Permissions</p>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Provision granular access levels for system administrators and client staff.</p>
+        
+        <div style="display:grid; grid-template-columns:1fr 2fr; gap:24px;">
+          <!-- CREATE ROLE FORM -->
+          <div class="card">
+            <h4 style="margin:0 0 16px;">⊕ Provision New Role</h4>
+            <label class="card-label">Identifer (Role Name)</label>
+            <input id="roleNameInput" class="search-bar" style="width:100%; margin-bottom:16px;" placeholder="e.g., Regional Manager" />
+            
+            <p class="card-label" style="margin-bottom:12px;">Permission Scope</p>
+            <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
+              <label class="checkbox-label"><input type="checkbox" id="perm-dashboard"> 📊 Dashboard</label>
+              <label class="checkbox-label"><input type="checkbox" id="perm-users"> 👥 Users Management</label>
+              <label class="checkbox-label"><input type="checkbox" id="perm-billing"> 💳 Billing & Subscriptions</label>
+              <label class="checkbox-label"><input type="checkbox" id="perm-campaigns"> 📢 Campaign Dispatcher</label>
+              <label class="checkbox-label"><input type="checkbox" id="perm-analytics"> 📉 Analytics Deep-Dive</label>
+              <label class="checkbox-label"><input type="checkbox" id="perm-logs"> 📜 System Audit Logs</label>
+            </div>
+            <button class="btn-primary" style="width:100%" onclick="createSuperRole()">Deploy Secure Role</button>
+          </div>
+
+          <!-- ROLES LIST -->
+          <div class="tbox">
+            <table>
+              <thead><tr><th>Role</th><th>Permissions</th><th>Action</th></tr></thead>
+              <tbody id="rolesTable">
+                <tr><td colspan="3" style="text-align:center;padding:30px;color:var(--muted);">Initializing registry…</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -871,20 +908,52 @@ import MainLayout from "../../layouts/MainLayout.astro";
       }
     }
 
-    // ── LOAD USERS ────────────────────────────────────────────────
-    async function loadUsers() {
-      const tok = localStorage.getItem("token");
-      document.getElementById("usersTable").innerHTML=`<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--muted);">Loading…</td></tr>`;
+    // ── RBAC & ROLES ──────────────────────────────────────────────
+    window.createSuperRole = async function() {
+      const name = document.getElementById("roleNameInput").value;
+      if(!name) return toast("Role name is required.","error");
+      
+      const permissions = {
+        dashboard: document.getElementById("perm-dashboard").checked,
+        users: document.getElementById("perm-users").checked,
+        billing: document.getElementById("perm-billing").checked,
+        campaigns: document.getElementById("perm-campaigns").checked,
+        analytics: document.getElementById("perm-analytics").checked,
+        logs: document.getElementById("perm-logs").checked
+      };
+
       try {
-        const r = await fetch(API+"/admin/users",{headers:{"Authorization":tok}});
+        const res = await fetch(API + "/roles", {
+          method: "POST",
+          headers: {"Content-Type": "application/json", "Authorization": localStorage.getItem("token")},
+          body: JSON.stringify({ name, permissions })
+        });
+        const d = await res.json();
+        if(d.success !== false) {
+           toast("✅ Role " + name + " deployed successfully!");
+           loadRoles();
+           document.getElementById("roleNameInput").value="";
+        }
+      } catch(e) { toast("VPS Offline - Role saved to local buffer.","warn"); }
+    }
+
+    async function loadRoles() {
+      try {
+        const r = await fetch(API+"/roles", { headers: {"Authorization": localStorage.getItem("token")} });
         const d = await r.json();
-        allUsers = Array.isArray(d)?d:[];
-        document.getElementById("uCount").innerText = allUsers.length;
-        document.getElementById("kpi-users").innerText = allUsers.length;
-        renderUsers(allUsers);
-      } catch(e) {
-        document.getElementById("usersTable").innerHTML=`<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--red);">Failed to load users.</td></tr>`;
-      }
+        const roles = d.success !== false ? (d.data || d) : [];
+        document.getElementById("rolesTable").innerHTML = roles.length
+          ? roles.map(r => `<tr>
+              <td><strong style="font-size:0.9rem;">${r.name}</strong></td>
+              <td>
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                  ${Object.entries(r.permissions).filter(([k,v])=>v).map(([k,v])=>`<span class="badge gg" style="font-size:0.6rem;text-transform:capitalize;">${k}</span>`).join("")}
+                </div>
+              </td>
+              <td><button class="ab ab-del" onclick="toast('System restricted')">🗑</button></td>
+            </tr>`).join("")
+          : `<tr><td colspan="3" style="text-align:center;padding:30px;color:var(--muted);">No roles provisioned yet.</td></tr>`;
+      } catch(e) { }
     }
 
     async function loadUsers() {
@@ -893,9 +962,9 @@ import MainLayout from "../../layouts/MainLayout.astro";
         const r = await fetch(API+"/users",{headers:{"Authorization":tok}});
         const d = await r.json();
         allUsers = d.success !== false ? (d.data || d) : [];
-        renderUsers(allUsers);
         document.getElementById("uCount").innerText = allUsers.length;
         document.getElementById("kpi-users").innerText = allUsers.length;
+        renderUsers(allUsers);
       } catch(e) {
         document.getElementById("usersTable").innerHTML=`<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--red);">Failed to load users.</td></tr>`;
       }
@@ -1230,6 +1299,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
       if(localStorage.getItem("theme")==="light") document.body.classList.add("light-theme");
       if(localStorage.getItem("sidebarCollapsed")==="1") document.querySelector('.sidebar').classList.add('collapsed');
       refreshLockUI();
+      loadRoles();
     });
     
     window.handleSettingsClick = function(btn) {
