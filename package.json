@@ -14,10 +14,10 @@
     "node": "20.x"
   },
   "dependencies": {
-    "@astrojs/node": "^10.0.3",
-    "@astrojs/react": "^5.0.0",
-    "@astrojs/tailwind": "^6.0.2",
-    "@astrojs/vercel": "7.8.2",
+    "@astrojs/node": "^8.3.4",
+    "@astrojs/react": "^3.6.3",
+    "@astrojs/tailwind": "^5.1.5",
+    "@astrojs/vercel": "^7.8.2",
     "@vercel/blob": "^2.3.1",
     "astro": "^4.16.19",
     "bcryptjs": "^3.0.3",
@@ -35,6 +35,7 @@
     "morgan": "^1.10.1",
     "multer": "^2.1.1",
     "mysql2": "^3.20.0",
+    "nodemailer": "^8.0.4",
     "pg": "^8.20.0",
     "razorpay": "^2.9.6",
     "react": "^18.3.1",

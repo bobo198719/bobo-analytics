@@ -147,10 +147,12 @@ export async function ALL({ request, params }) {
         } catch(e) { return new Response(JSON.stringify({ success: false, error: e.message }), { status: 500, headers: {'Content-Type': 'application/json'} }); }
     }
 
-    // 🛡️ SEND PROMO — recovery handler
+    // 🛡️ SEND PROMO — Edge Dispatch (Native NodeMailer capability)
     if (pathname.includes('/admin/send-promo') && method === 'POST') {
         try {
             const bodyText = await request.text();
+            
+            // Try Live VPS First
             try {
                 const liveRes = await fetch(`http://187.124.97.144:5000${pathname}`, {
                     method: 'POST',
@@ -158,9 +160,58 @@ export async function ALL({ request, params }) {
                     body: bodyText, signal: AbortSignal.timeout(5000)
                 });
                 if (liveRes.ok) { const d = await liveRes.json(); return new Response(JSON.stringify(d), { status: 200, headers: {'Content-Type': 'application/json'} }); }
-            } catch(e) { /* offline */ }
-            // Mock success in recovery mode
-            return new Response(JSON.stringify({ success: true, message: "Promo sent (Recovery Mode)" }), { status: 200, headers: {'Content-Type': 'application/json'} });
+            } catch(e) { /* offline -> handle locally */ }
+
+            // ⚡ SERVERLESS EDGE DISPATCH
+            const { targetType, targetValue, channels, message } = JSON.parse(bodyText);
+            const nodemailer = await import("nodemailer");
+
+            let emailCount = 0; let waCount = 0;
+            
+            // Collect targets from recovery array
+            let users = [];
+            if (targetType === 'user') { users = RECOVERY_USERS.filter(u => String(u.id) === String(targetValue)); }
+            else if (targetType === 'industry') { users = RECOVERY_USERS.filter(u => u.industry === targetValue); }
+            else { users = RECOVERY_USERS; }
+
+            const mailTransporter = nodemailer.createTransport({
+                host: process.env.SMTP_HOST || "smtp.hostinger.com", port: parseInt(process.env.SMTP_PORT || "465", 10), secure: true,
+                auth: { user: process.env.SMTP_USER || "support@boboanalytics.com", pass: process.env.SMTP_PASS || "" }
+            });
+
+            for (const u of users) {
+                const toPhone = /^\\+?[0-9]{10,15}$/.test(u.username) ? u.username : null;
+                const toEmail = u.email || (u.username.includes('@') ? u.username : null);
+
+                // 1. Email (support@)
+                if (channels.includes('email') && toEmail && process.env.SMTP_PASS) {
+                    try {
+                        await mailTransporter.sendMail({
+                            from: '"Bobo Analytics" <support@boboanalytics.com>', to: toEmail,
+                            subject: "Important Update from Bobo Analytics 🚀",
+                            html: `<div style="font-family:sans-serif;">${message.replace(/\\n/g, '<br>')}<br><br><small>Sent officially via Bobo Analytics (support@boboanalytics.com)</small></div>`
+                        });
+                        emailCount++;
+                    } catch(e) { console.error("Edge Email Error:", e); }
+                }
+
+                // 2. WhatsApp (+91 9518525420)
+                if (channels.includes('whatsapp') && process.env.WHATSAPP_API_TOKEN && toPhone) {
+                    try {
+                        const waPhoneId = process.env.WA_PHONE_ID || "wa_id";
+                        await fetch(`https://graph.facebook.com/v17.0/${waPhoneId}/messages`, {
+                            method: "POST", headers: { "Authorization": `Bearer ${process.env.WHATSAPP_API_TOKEN}`, "Content-Type": "application/json" },
+                            body: JSON.stringify({ messaging_product: "whatsapp", to: toPhone, type: "text", text: { body: message } })
+                        }).catch(()=>{});
+                        waCount++;
+                    } catch(e){ console.error("Edge WA Error:", e); }
+                }
+            }
+
+            return new Response(JSON.stringify({ 
+                success: true, 
+                message: `Edge Dispatch processed: ${emailCount} Emails (support@), ${waCount} WhatsApps (+91 9518525420).` 
+            }), { status: 200, headers: {'Content-Type': 'application/json'} });
         } catch(e) { return new Response(JSON.stringify({ success: false, error: e.message }), { status: 500, headers: {'Content-Type': 'application/json'} }); }
     }
 
