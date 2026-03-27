@@ -145,10 +145,19 @@ import MainLayout from "../../layouts/MainLayout.astro";
       </select>
       <select id="promoSpecificUserSel" style="display:none;"></select>
 
-      <div class="checkbox-group">
-        <label class="checkbox-label"><input type="checkbox" id="chanEmail" checked> ✉️ Email</label>
-        <label class="checkbox-label"><input type="checkbox" id="chanSms"> 💬 SMS</label>
-        <label class="checkbox-label"><input type="checkbox" id="chanWa" checked> 📱 WhatsApp</label>
+      <div class="checkbox-group" style="flex-direction:column; gap:8px;">
+        <label class="checkbox-label" style="background:rgba(255,255,255,0.03); padding:10px 14px; border-radius:10px; border:1px solid var(--border);">
+          <input type="checkbox" id="chanEmail" checked> 
+          <span>✉️ Email <small style="color:var(--muted);display:block;margin-top:2px;">From: <strong>support@boboanalytics.com</strong></small></span>
+        </label>
+        <label class="checkbox-label" style="background:rgba(255,255,255,0.03); padding:10px 14px; border-radius:10px; border:1px solid var(--border);">
+          <input type="checkbox" id="chanWa" checked> 
+          <span>📱 WhatsApp <small style="color:var(--muted);display:block;margin-top:2px;">From: <strong>+91 9518525420</strong></small></span>
+        </label>
+        <label class="checkbox-label" style="background:rgba(255,255,255,0.03); padding:10px 14px; border-radius:10px; border:1px solid var(--border);">
+          <input type="checkbox" id="chanSms"> 
+          <span>💬 SMS <small style="color:var(--muted);display:block;margin-top:2px;">From: Bobo System</small></span>
+        </label>
       </div>
 
       <textarea id="promoMsg" placeholder="Type your promotional message here...&#10;Hi [Name], get 50% off..."></textarea>
