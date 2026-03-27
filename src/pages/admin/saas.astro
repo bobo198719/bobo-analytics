@@ -140,8 +140,10 @@ import MainLayout from "../../layouts/MainLayout.astro";
         <option value="healthcare">🏥 Healthcare Industry</option>
         <option value="fashion">👗 Fashion Industry</option>
         <option value="general">💼 General Industry</option>
+        <option value="select" id="promoSelectOpt">👤 Select Specific Client...</option>
         <option value="specific" id="promoSpecificOpt" style="display:none;" selected>👤 Specific User</option>
       </select>
+      <select id="promoSpecificUserSel" style="display:none;"></select>
 
       <div class="checkbox-group">
         <label class="checkbox-label"><input type="checkbox" id="chanEmail" checked> ✉️ Email</label>
@@ -435,31 +437,51 @@ import MainLayout from "../../layouts/MainLayout.astro";
     };
 
     // ── PROMO MODAL ───────────────────────────────────────────────
+    window.handlePromoTarget = function() {
+      const tg = document.getElementById("promoTarget").value;
+      const sel = document.getElementById("promoSpecificUserSel");
+      sel.style.display = tg === "select" ? "block" : "none";
+    };
+
     window.openPromo = function(mode, username="") {
       document.getElementById("promoErr").innerText="";
       const specOpt = document.getElementById("promoSpecificOpt");
+      const selOpt  = document.getElementById("promoSelectOpt");
       const sel = document.getElementById("promoTarget");
+      const usrSel = document.getElementById("promoSpecificUserSel");
+      
+      // Populate dropdown with all users
+      usrSel.innerHTML = allUsers.map(u => `<option value="${u.id}">${u.business_name || u.username} (#${u.id})</option>`).join("");
+
       if (mode === 'bulk') {
         document.getElementById("promoUserId").value = "";
         document.getElementById("promoSub").innerText = "Broadcast an offer via Email, SMS, or WhatsApp.";
         specOpt.style.display = "none";
-        sel.value = "all";
+        selOpt.style.display  = "block";
         sel.disabled = false;
+        sel.value = "all";
       } else {
         document.getElementById("promoUserId").value = mode; // mode is userId here
         document.getElementById("promoSub").innerText = "Send an offer specifically to: " + username;
         specOpt.innerText = "👤 Specific User: " + username;
         specOpt.style.display = "block";
-        sel.value = "specific";
+        selOpt.style.display  = "none";
         sel.disabled = true;
+        sel.value = "specific";
       }
+      handlePromoTarget();
       document.getElementById("promoModal").classList.add("open");
     };
+
+    // Attach to Target select
+    document.getElementById("promoTarget").addEventListener("change", handlePromoTarget);
+
     window.closePromo = ()=>document.getElementById("promoModal").classList.remove("open");
 
     window.submitPromo = async function() {
       const uId   = document.getElementById("promoUserId").value;
       const tval  = document.getElementById("promoTarget").value;
+      const usrSelVal = document.getElementById("promoSpecificUserSel").value;
       const msg   = document.getElementById("promoMsg").value.trim();
       const er    = document.getElementById("promoErr");
       
@@ -473,6 +495,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
       if(channels.length === 0){er.innerText="Select at least one channel.";return;}
       if(!msg){er.innerText="Message body cannot be empty.";return;}
+      if(tval === "select" && !usrSelVal){er.innerText="Please select a specific client.";return;}
 
       er.innerText="🚀 Sending Broadcast...";
       
@@ -480,6 +503,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
       let targetType = tval;
       let targetValue = null;
       if (tval === "specific") { targetType = "user"; targetValue = uId; }
+      else if (tval === "select") { targetType = "user"; targetValue = usrSelVal; }
       else if (tval !== "all") { targetType = "industry"; targetValue = tval; }
 
       try {
