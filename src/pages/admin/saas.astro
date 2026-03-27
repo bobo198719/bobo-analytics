@@ -338,7 +338,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
               <div class="dd-item" style="color:var(--blue); font-weight:bold; border-top:1px solid var(--border);">View all (5)</div>
             </div>
           </div>
-          <span class="topbar-icon" title="Settings">⚙️</span>
+          <span class="topbar-icon" title="Settings" onclick="handleSettingsClick(this)">⚙️</span>
           <div class="profile-bubble" title="Admin Profile" onclick="document.getElementById('dd-profile').classList.toggle('visible')">
             A
             <div id="dd-profile" class="dropdown-menu">
