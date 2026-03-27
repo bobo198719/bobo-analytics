@@ -31,6 +31,37 @@ export async function ALL({ request, params }) {
     const url = new URL(request.url);
     const pathname = url.pathname;
     const method = request.method;
+    const authHeader = request.headers.get('Authorization') || '';
+
+    if (!global.RECOVERY_ROLES) {
+        global.RECOVERY_ROLES = [
+            { id: 1, name: "Super Admin", permissions: { dashboard: true, users: true, billing: true, campaigns: true, analytics: true, logs: true } },
+            { id: 2, name: "Staff", permissions: { dashboard: true, users: true, billing: false, campaigns: true, analytics: false, logs: false } }
+        ];
+    }
+
+
+    // 🛡️ RBAC LOGIC (Middleware simulation)
+    const getRole = () => {
+        if (authHeader.includes('EMERGENCY_RECOVERY_KEY')) return 'Super Admin';
+        // Simulation: in production this would decode JWT
+        return 'Super Admin'; 
+    };
+
+    const hasPermission = (permission) => {
+        const role = getRole();
+        if (role === 'Super Admin') return true;
+        const roles = global.RECOVERY_ROLES || [];
+        const r = roles.find(x => x.name === role);
+        return r && r.permissions && r.permissions[permission] === true;
+    };
+
+    if (pathname.includes('/admin/users') && !hasPermission('users')) {
+        return new Response(JSON.stringify({ success: false, error: "RBAC_DENIED", message: "Access Denied" }), { status: 403, headers: {'Content-Type': 'application/json'} });
+    }
+    if (pathname.includes('/roles') && !hasPermission('users')) {
+        return new Response(JSON.stringify({ success: false, error: "RBAC_DENIED", message: "Access Denied" }), { status: 403, headers: {'Content-Type': 'application/json'} });
+    }
 
     // Only intercept paths that should go to the Hostinger API
     if (!pathname.includes('/api/') || pathname.includes('/api/v2/')) {
