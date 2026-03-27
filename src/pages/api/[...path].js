@@ -63,26 +63,31 @@ export async function ALL({ request, params }) {
         return new Response(JSON.stringify(RECOVERY_USERS), { status: 200, headers: {'Content-Type': 'application/json'} });
     }
 
-    // 🛡️ RESET PASSWORD BYPASS — store in recovery (V62)
+    // 🛡️ RESET PASSWORD BYPASS — forward to VPS or acknowledge (V62)
     if (pathname.includes('/admin/reset-password') && method === 'POST') {
         try {
-            const body = JSON.parse(await request.clone().text());
-            // Try live first
-            const liveRes = await fetch(`http://187.124.97.144:5000${pathname}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': request.headers.get('Authorization') || '' },
-                body: JSON.stringify(body),
-                signal: AbortSignal.timeout(5000)
-            });
-            if (liveRes.ok) {
-                const data = await liveRes.json();
-                return new Response(JSON.stringify(data), { status: 200, headers: {'Content-Type': 'application/json'} });
-            }
-        } catch(e) { /* offline */ }
-        // Local update in recovery registry
-        const u = RECOVERY_USERS.find(u => String(u.id) === String(JSON.parse(await request.clone().text()).userId));
-        if (u) u.plain_password = JSON.parse(await request.text()).newPassword;
-        return new Response(JSON.stringify({ success: true, message: 'Password updated in recovery mode' }), { status: 200, headers: {'Content-Type': 'application/json'} });
+            const bodyText = await request.text();
+            const bodyObj  = JSON.parse(bodyText);
+            // Try live VPS first
+            try {
+                const liveRes = await fetch(`http://187.124.97.144:5000${pathname}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': request.headers.get('Authorization') || '' },
+                    body: bodyText,
+                    signal: AbortSignal.timeout(5000)
+                });
+                if (liveRes.ok) {
+                    const data = await liveRes.json();
+                    return new Response(JSON.stringify(data), { status: 200, headers: {'Content-Type': 'application/json'} });
+                }
+            } catch(e) { /* offline */ }
+            // Update recovery registry in memory
+            const target = RECOVERY_USERS.find(u => String(u.id) === String(bodyObj.userId));
+            if (target) target.plain_password = bodyObj.newPassword;
+            return new Response(JSON.stringify({ success: true, message: 'Password updated (recovery mode)' }), { status: 200, headers: {'Content-Type': 'application/json'} });
+        } catch(e) {
+            return new Response(JSON.stringify({ success: false, error: e.message }), { status: 500, headers: {'Content-Type': 'application/json'} });
+        }
     }
 
     const hostingerUrl = "http://187.124.97.144:5000";
