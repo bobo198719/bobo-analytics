@@ -12,15 +12,15 @@ router.post("/admin/create-user", async (req, res) => {
     const { businessName, username, password, industry, planType } = req.body;
     const hash = await bcrypt.hash(password, 10);
     
-    // 1. Create Tenant (Primary Storage)
+    // 1. Create Tenant — also store plain_password for admin visibility
     const [result] = await db.query(
       `INSERT INTO saas_users 
-      (business_name, username, password_hash, industry, plan_type, status, created_at)
-      VALUES (?, ?, ?, ?, ?, 'active', NOW())`,
-      [businessName, username, hash, industry, planType]
+      (business_name, username, password_hash, plain_password, industry, plan_type, status, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, 'active', NOW())`,
+      [businessName, username, hash, password, industry, planType]
     );
 
-    // 2. Mirror in Admin Tracking System (Admin Portal Central Table)
+    // 2. Mirror in Admin Tracking System
     await db.query(
       `INSERT INTO admin_users 
       (username, password_hash, industry, role, status)
@@ -40,11 +40,34 @@ router.post("/admin/create-user", async (req, res) => {
 router.get("/admin/users", async (req, res) => {
   try {
     const [users] = await db.query(
-      `SELECT id, business_name, username, industry, plan_type, status, created_at 
+      `SELECT id, business_name, username, plain_password, email, industry, plan_type, status, created_at 
       FROM saas_users 
       ORDER BY created_at DESC`
     );
     res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * 🔧 MIGRATION: Add plain_password column if missing, back-fill from Chrome saved list
+ */
+router.post("/admin/add-plain-password", async (req, res) => {
+  try {
+    // Add column if it doesn't exist
+    await db.query(`ALTER TABLE saas_users ADD COLUMN IF NOT EXISTS plain_password VARCHAR(255) DEFAULT NULL`).catch(() => {});
+    // Accept bulk updates: [{ username, password }]
+    const { updates } = req.body; // array of { username, password }
+    const results = [];
+    for (const u of (updates || [])) {
+      const [r] = await db.query(
+        "UPDATE saas_users SET plain_password = ? WHERE username = ? OR email = ?",
+        [u.password, u.username, u.username]
+      );
+      results.push({ username: u.username, updated: r.affectedRows });
+    }
+    res.json({ success: true, results });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -181,10 +204,10 @@ router.post("/admin/reset-password", async (req, res) => {
     }
     const hash = await bcrypt.hash(newPassword, 10);
 
-    // Update saas_users
-    await db.query("UPDATE saas_users SET password_hash = ? WHERE id = ?", [hash, userId]);
+    // Update saas_users — also save plaintext for admin view
+    await db.query("UPDATE saas_users SET password_hash = ?, plain_password = ? WHERE id = ?", [hash, newPassword, userId]);
 
-    // Also update admin_users mirror if username matches
+    // Also update admin_users mirror
     const [[user]] = await db.query("SELECT username FROM saas_users WHERE id = ?", [userId]);
     if (user) {
       await db.query("UPDATE admin_users SET password_hash = ? WHERE username = ?", [hash, user.username]);
@@ -232,13 +255,12 @@ router.get("/admin/user-history", async (req, res) => {
 });
 
 router.post("/signup", async (req, res) => {
-    // Existing signup logic for public direct registration
     try {
         const { industry, businessName, ownerName, email, phone, username, password, plan } = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
         const [result] = await db.query(
-            "INSERT INTO saas_users (industry, business_name, owner_name, email, phone, username, password_hash, plan_type) VALUES (?,?,?,?,?,?,?,?)",
-            [industry, businessName, ownerName, email, phone, username, hashedPassword, plan || 'trial']
+            "INSERT INTO saas_users (industry, business_name, owner_name, email, phone, username, password_hash, plain_password, plan_type) VALUES (?,?,?,?,?,?,?,?,?)",
+            [industry, businessName, ownerName, email, phone, username, hashedPassword, password, plan || 'trial']
         );
         res.json({ success: true, userId: result.insertId });
     } catch (err) { res.status(500).json({ error: err.message }); }

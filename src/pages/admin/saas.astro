@@ -303,21 +303,24 @@ import MainLayout from "../../layouts/MainLayout.astro";
         const planBadge = u.plan_type === "enterprise" ? "badge-blue" : u.plan_type === "pro" ? "badge-green" : "badge-amber";
         const statBadge = u.status === "active" ? "badge-green" : u.status === "suspended" ? "badge-red" : "badge-amber";
         const created   = u.created_at ? new Date(u.created_at).toLocaleDateString("en-IN") : "—";
+        const hasPlain  = u.plain_password && u.plain_password.length > 0;
+        const passHtml  = hasPlain
+          ? `<div class="pass-cell">
+               <span style="font-family:monospace;color:var(--text-muted);" id="pass-${u.id}">••••••••</span>
+               <button class="reveal-btn" id="passbtn-${u.id}" onclick="togglePass(${u.id}, \`${u.plain_password.replace(/`/g,'\\`')}\`)">👁 Show</button>
+             </div>`
+          : `<span style="font-size:0.75rem;color:var(--neon-amber);">⚠ Use Reset to save</span>`;
+
         return `<tr>
           <td><code style="background:rgba(255,255,255,0.07);padding:2px 8px;border-radius:5px;font-size:0.8rem;">#${u.id}</code></td>
           <td><strong>${u.business_name || "—"}</strong></td>
-          <td style="font-family:monospace;font-size:0.85rem;">${u.username}</td>
-          <td>
-            <div class="pass-cell">
-              <span style="font-family:monospace;letter-spacing:2px;color:var(--text-muted);" id="pass-${u.id}">••••••••</span>
-              <button class="reveal-btn" id="passbtn-${u.id}" onclick="togglePass(${u.id})">👁 Show</button>
-            </div>
-          </td>
+          <td style="font-family:monospace;font-size:0.85rem;">${u.username}${u.email ? `<br><span style='font-size:0.72rem;color:var(--text-muted);'>${u.email}</span>` : ''}</td>
+          <td>${passHtml}</td>
           <td><span class="badge badge-blue">${u.industry || "—"}</span></td>
           <td><span class="badge ${planBadge}">${u.plan_type || "trial"}</span></td>
           <td><span class="badge ${statBadge}">${u.status}</span></td>
           <td style="color:var(--text-muted);font-size:0.82rem;">${created}</td>
-          <td><button class="btn-sm btn-reset" onclick="openResetModal(${u.id},'${u.username}')">🔑 Reset Password</button></td>
+          <td><button class="btn-sm btn-reset" onclick="openResetModal(${u.id},'${u.username}')">🔑 Reset</button></td>
         </tr>`;
       }).join("");
     }
@@ -333,21 +336,23 @@ import MainLayout from "../../layouts/MainLayout.astro";
     };
 
     // ── PASS REVEAL ───────────────────────────────────────────────
-    window.togglePass = function(id) {
+    window.togglePass = function(id, plainPass) {
       const el  = document.getElementById("pass-" + id);
       const btn = document.getElementById("passbtn-" + id);
       if (el.dataset.revealed === "true") {
         el.innerText = "••••••••";
         el.style.color = "var(--text-muted)";
-        el.style.fontSize = "";
+        el.style.letterSpacing = "2px";
         el.dataset.revealed = "false";
         btn.innerText = "👁 Show";
       } else {
-        el.innerText = "Stored as bcrypt hash — use Reset to set new";
-        el.style.color = "var(--neon-amber)";
-        el.style.fontSize = "0.7rem";
+        el.innerText = plainPass;
+        el.style.color = "#fff";
+        el.style.letterSpacing = "normal";
         el.dataset.revealed = "true";
         btn.innerText = "🔒 Hide";
+        // Copy to clipboard
+        navigator.clipboard.writeText(plainPass).catch(() => {});
       }
     };
 
