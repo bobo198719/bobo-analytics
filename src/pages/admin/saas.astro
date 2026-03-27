@@ -398,7 +398,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
                   </h3>
                   <p style="color:var(--muted);font-size:0.85rem;margin:0 0 24px;">Users can create their own APIs and organizations within the environment.</p>
                 </div>
-                <button class="btn-cancel" style="border:none; color:var(--blue); background:transparent; font-size:0.9rem; padding:0; cursor:pointer;" onclick="toast('Permission editing locked for Default role.')">Edit</button>
+                <button class="btn-cancel" style="border:none; color:var(--blue); background:transparent; font-size:0.9rem; padding:0; cursor:pointer;" onclick="toast('Role updated successfully.')">Save</button>
               </div>
 
               <!-- PERMISSIONS GRID -->
@@ -407,18 +407,18 @@ import MainLayout from "../../layouts/MainLayout.astro";
                 <div style="display:flex; flex:1; justify-content:space-between; flex-wrap:wrap; gap:32px;">
                   
                   <div style="display:flex; flex-direction:column; gap:12px;">
-                    <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Personal Context</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
+                    <label class="checkbox-label"><input type="checkbox" checked> <span>Personal Context</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
                     <div class="perm-branch">
-                      <label class="checkbox-label" style="color:var(--muted)"><input type="checkbox" checked disabled> <span>Access Provider Dashboard</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
+                      <label class="checkbox-label" style="color:var(--muted)"><input type="checkbox" checked> <span>Access Provider Dashboard</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
                     </div>
                   </div>
 
                   <div style="display:flex; flex-direction:column; gap:12px;">
-                    <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Create Organization</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
+                    <label class="checkbox-label"><input type="checkbox" checked> <span>Create Organization</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
                   </div>
 
                   <div style="display:flex; flex-direction:column; gap:12px;">
-                    <label class="checkbox-label" style="opacity:0.6;"><input type="checkbox" disabled> <span>Admin Panel Access</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
+                    <label class="checkbox-label"><input type="checkbox" checked> <span>Admin Panel Access</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
                   </div>
                 </div>
               </div>
@@ -431,23 +431,23 @@ import MainLayout from "../../layouts/MainLayout.astro";
                   <h3 style="margin:0 0 8px; font-size:1.1rem; font-weight:700;">Environment Admin</h3>
                   <p style="color:var(--muted);font-size:0.85rem;margin:0 0 24px;">Access to the Admin Panel and the ability to create their own APIs and organizations within the environment.</p>
                 </div>
-                <button class="btn-cancel" style="border:none; color:var(--blue); background:transparent; font-size:0.9rem; padding:0; cursor:pointer;">Edit</button>
+                <button class="btn-cancel" style="border:none; color:var(--blue); background:transparent; font-size:0.9rem; padding:0; cursor:pointer;" onclick="toast('Role updated successfully.')">Save</button>
               </div>
 
               <div style="display:flex; align-items:flex-start; padding:20px; border-radius:12px; border:1px solid var(--border); background:rgba(255,255,255,0.015);">
                 <span style="font-size:0.9rem; color:var(--muted); width:130px; flex-shrink:0; font-weight:600;">Permissions:</span>
                 <div style="display:flex; flex:1; justify-content:space-between; flex-wrap:wrap; gap:32px;">
                   <div style="display:flex; flex-direction:column; gap:12px;">
-                    <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Personal Context</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
+                    <label class="checkbox-label"><input type="checkbox" checked> <span>Personal Context</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
                     <div class="perm-branch">
-                      <label class="checkbox-label" style="color:var(--muted)"><input type="checkbox" checked disabled> <span>Access Provider Dashboard</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
+                      <label class="checkbox-label" style="color:var(--muted)"><input type="checkbox" checked> <span>Access Provider Dashboard</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
                     </div>
                   </div>
                   <div style="display:flex; flex-direction:column; gap:12px;">
-                    <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Create Organization</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
+                    <label class="checkbox-label"><input type="checkbox" checked> <span>Create Organization</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
                   </div>
                   <div style="display:flex; flex-direction:column; gap:12px;">
-                    <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Admin Panel Access</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
+                    <label class="checkbox-label"><input type="checkbox" checked> <span>Admin Panel Access</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
                   </div>
                 </div>
               </div>
