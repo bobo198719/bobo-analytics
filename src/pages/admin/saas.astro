@@ -4,14 +4,37 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
 <MainLayout title="Bobo Admin | Secure Master Console" hideNav={true}>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
     :root {
-      --bg-dark: #050810; --sidebar-bg: #0c111d; --card-bg: #141c2d;
+      --bg-dark: #0f172a; --sidebar-bg: #1e293b; --card-bg: #1e293b;
       --blue: #3b82f6; --green: #10b981; --red: #ef4444; --amber: #f59e0b;
-      --border: rgba(255,255,255,0.08); --muted: #94a3b8;
+      --border: rgba(255,255,255,0.08); --muted: #94a3b8; --text-main: #f8fafc;
     }
+    
+    body.light-theme {
+      --bg-dark: #f8fafc; --sidebar-bg: #ffffff; --card-bg: #ffffff;
+      --border: #e2e8f0; --muted: #64748b; --text-main: #0f172a;
+    }
+    body.light-theme .main-topbar { background:#ffffff; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+    body.light-theme .topbar-search { color: var(--text-main); }
+    body.light-theme .topbar-search::placeholder { color: #94a3b8; border:1px solid var(--border); }
+    body.light-theme .menu-item { color: #475569; }
+    body.light-theme .menu-item:hover:not(.active) { background: #f1f5f9; color: #0f172a; }
+    body.light-theme .menu-item.active { background: #eff6ff; color: var(--blue); }
+    body.light-theme input, body.light-theme select, body.light-theme textarea { background: #fff; color: var(--text-main); border: 1px solid #cbd5e1; }
+    body.light-theme input::placeholder, body.light-theme textarea::placeholder { color: #94a3b8; }
+    body.light-theme th { background: #f8fafc; color: #64748b; border-bottom: 2px solid #e2e8f0; }
+    body.light-theme td { border-top: 1px solid #e2e8f0; }
+    body.light-theme tr:hover td { background: #f1f5f9; }
+    body.light-theme .btn-cancel { background: #fff; border: 1px solid #cbd5e1; color: #475569; }
+    body.light-theme .btn-cancel:hover { background: #f1f5f9; color: #0f172a; }
+    body.light-theme .card { box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    body.light-theme .checkbox-label { color: #0f172a; }
+    body.light-theme #authOverlay { background: #f8fafc; }
+    body.light-theme .auth-card { box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+    
     * { box-sizing: border-box; }
-    body { margin:0; font-family:'Inter',sans-serif; background:var(--bg-dark); color:#fff; display:flex; min-height:100vh; }
+    body { margin:0; font-family:'Inter',sans-serif; background:var(--bg-dark); color:var(--text-main); display:flex; min-height:100vh; transition: background 0.3s, color 0.3s; }
 
     /* ── AUTH ── */
     #authOverlay { position:fixed; inset:0; background:rgba(5,8,16,0.98); z-index:2000; display:flex; align-items:center; justify-content:center; }
@@ -28,23 +51,40 @@ import MainLayout from "../../layouts/MainLayout.astro";
     .menu-item.active { background:var(--blue); color:#fff; }
     .menu-item:hover:not(.active) { background:rgba(255,255,255,0.05); color:#fff; }
     .main { margin-left:240px; flex:1; padding:24px 40px; overflow-x:hidden; transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); min-height:100vh; }
+    .sidebar.collapsed { width:70px; }
+    .sidebar.collapsed ~ .main { margin-left:70px; }
+    .sidebar.collapsed .menu-item span:last-child { display:none; }
+    .sidebar.collapsed h2, .sidebar.collapsed div[style*="font-size:0.65rem"], .sidebar.collapsed #connStatus { display:none; }
+    .sidebar.collapsed .menu-item { justify-content:center; padding:12px 0; }
+    .sidebar.collapsed .menu-item span:first-child { margin:0; }
     
     /* ── TOPBAR ── */
-    .main-topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:32px; padding:16px 24px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:16px; backdrop-filter:blur(10px); }
+    .main-topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:32px; padding:16px 24px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:16px; backdrop-filter:blur(10px); position:sticky; top:20px; z-index:1000; }
     .topbar-search { background:transparent; border:none; color:#fff; font-size:0.9rem; outline:none; width:200px; margin-left:8px; }
-    .topbar-icons { display:flex; gap:16px; align-items:center; }
-    .topbar-icon { font-size:1.1rem; cursor:pointer; opacity:0.8; transition:0.2s; }
+    .topbar-icons { display:flex; gap:16px; align-items:center; position:relative; }
+    .topbar-icon { font-size:1.1rem; cursor:pointer; opacity:0.8; transition:0.2s; position:relative; }
     .topbar-icon:hover { opacity:1; }
     .profile-bubble { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg, var(--blue), #6366f1); display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.85rem; cursor:pointer; box-shadow:0 4px 12px rgba(59,130,246,0.3); }
     
+    /* ── DROPDOWNS ── */
+    .dropdown-menu { position:absolute; top:45px; right:0; background:var(--card-bg); border:1px solid var(--border); border-radius:12px; min-width:180px; display:none; flex-direction:column; padding:8px; box-shadow:0 10px 30px rgba(0,0,0,0.5); z-index:1100; }
+    .dropdown-menu.visible { display:flex; animation:slideDown 0.2s ease; }
+    @keyframes slideDown { from{opacity:0; transform:translateY(-10px)} to{opacity:1; transform:translateY(0)} }
+    .dd-item { padding:10px 14px; border-radius:8px; font-size:0.85rem; cursor:pointer; color:var(--muted); transition:0.2s; }
+    .dd-item:hover { background:rgba(255,255,255,0.05); color:#fff; }
+    
     .mobile-toggle { display:none; background:transparent; border:none; color:#fff; font-size:1.4rem; cursor:pointer; margin-right:12px; }
+
+    /* ── ROLES BRANCH LINES ── */
+    .perm-branch { position:relative; padding-left:24px; margin-left:8px; border-left:1px solid var(--border); margin-top:12px; }
+    .perm-branch::before { content:''; position:absolute; left:0; top:12px; width:12px; height:1px; background:var(--border); }
 
     @media(max-width: 900px) {
       .sidebar { transform:translateX(-100%); z-index:2500; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 4px 0 20px rgba(0,0,0,0.5); }
       .sidebar.open { transform:translateX(0); }
-      .main { margin-left:0; padding:16px 20px; }
+      .main { margin-left:0 !important; padding:16px 20px; }
       .mobile-toggle { display:inline-block; }
-      .main-topbar { border-radius:12px; padding:12px 16px; margin-bottom:24px; }
+      .main-topbar { border-radius:12px; padding:12px 16px; margin-bottom:24px; top:10px; }
     }
     .section { display:none; }
     .section.active { display:block; animation:fadeIn 0.25s ease; }
@@ -52,7 +92,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
     /* ── KPI ── */
     .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:28px; }
-    .card { background:var(--card-bg); padding:20px 24px; border-radius:14px; border:1px solid var(--border); }
+    .card { background:var(--card-bg); padding:20px 24px; border-radius:14px; border:1px solid var(--border); transition:0.3s; }
     .card-label { font-size:0.68rem; color:var(--muted); text-transform:uppercase; font-weight:700; letter-spacing:.06em; margin-bottom:6px; }
     .kpi-val { font-size:2rem; font-weight:800; }
 
@@ -62,6 +102,18 @@ import MainLayout from "../../layouts/MainLayout.astro";
     .gg { background:rgba(16,185,129,.14); color:var(--green); }
     .rr { background:rgba(239,68,68,.14); color:var(--red); }
     .aa { background:rgba(245,158,11,.14); color:var(--amber); }
+
+    /* ── TABS UI ── */
+    .role-tabs { display:flex; border-bottom:1px solid var(--border); margin-bottom:24px; gap:24px; }
+    .role-tab { font-size:0.95rem; font-weight:600; color:var(--muted); padding-bottom:12px; cursor:pointer; position:relative; }
+    .role-tab.active { color:var(--blue); }
+    .role-tab.active::after { content:''; position:absolute; bottom:-1px; left:0; width:100%; height:2px; background:var(--blue); }
+    
+    .sub-tabs { display:flex; gap:24px; border-bottom:1px solid var(--border); padding:16px 24px; }
+    .sub-tab { font-weight:600; color:var(--muted); font-size:0.9rem; cursor:pointer; padding-bottom:12px; margin-bottom:-12px; position:relative; }
+    .sub-tab.active { color:var(--blue); }
+    .sub-tab.active::after { content:''; position:absolute; bottom:0; left:0; width:100%; height:2px; background:var(--blue); }
+
 
     /* ── TABLE ── */
     .tbox { border-radius:14px; border:1px solid var(--border); overflow:hidden; }
@@ -107,13 +159,13 @@ import MainLayout from "../../layouts/MainLayout.astro";
     /* ── MODAL ── */
     .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:3000; display:none; align-items:center; justify-content:center; }
     .modal-overlay.open { display:flex; }
-    .modal { background:#1a2235; border-radius:18px; border:1px solid var(--border); padding:32px; width:420px; max-width:95vw; }
+    .modal { background:var(--card-bg); border-radius:18px; border:1px solid var(--border); padding:32px; width:420px; max-width:95vw; }
     .modal h3 { margin:0 0 4px; font-size:1.1rem; }
     .modal>p { color:var(--muted); font-size:0.83rem; margin:0 0 20px; }
-    .modal input, .modal select, .modal textarea { width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:#fff; font-size:0.9rem; outline:none; margin-bottom:10px; font-family:'Inter',sans-serif; }
+    .modal input, .modal select, .modal textarea { width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:var(--text-main); font-size:0.9rem; outline:none; margin-bottom:10px; font-family:'Inter',sans-serif; }
     .modal textarea { resize:vertical; min-height:80px; }
     .modal-actions { display:flex; gap:8px; margin-top:6px; }
-    .btn-cancel { background:rgba(255,255,255,0.06); color:#fff; border:1px solid var(--border); padding:10px 16px; border-radius:10px; font-weight:700; cursor:pointer; }
+    .btn-cancel { background:rgba(255,255,255,0.06); color:var(--text-main); border:1px solid var(--border); padding:10px 16px; border-radius:10px; font-weight:700; cursor:pointer; }
     .btn-green { background:var(--green); color:#fff; border:none; padding:10px 16px; border-radius:10px; font-weight:800; cursor:pointer; }
 
     /* CHECKBOXES */
@@ -225,20 +277,31 @@ import MainLayout from "../../layouts/MainLayout.astro";
   <!-- DASHBOARD -->
   <div id="dashboardContent" style="width:100%">
     <aside class="sidebar">
-      <div style="margin-bottom:28px;">
-        <h2 style="margin:0 0 2px 8px;font-size:1.1rem;">BOBO OS</h2>
-        <div id="connStatus" style="color:var(--green);font-size:0.6rem;padding-left:8px;">● SECURE NODE CONNECTED</div>
+      <div style="margin-bottom:28px; padding:0 8px;">
+        <h2 style="margin:0 0 2px; font-size:1.1rem; color:var(--text-main); font-weight:800; letter-spacing:-0.5px;">BOBO OS</h2>
+        <div id="connStatus" style="color:var(--green); font-size:0.6rem; font-weight:700;">● SECURE NODE CONNECTED</div>
       </div>
+      
       <nav class="nav-menu">
-        <button class="menu-item active" onclick="switchTab('dashboard',this)"><span>📊</span> Dashboard</button>
-        <button class="menu-item" onclick="switchTab('users',this)"><span>👥</span> User Management</button>
-        <button class="menu-item" onclick="switchTab('roles',this)"><span>🔐</span> Roles & Permissions</button>
-        <button class="menu-item" onclick="switchTab('tenants',this)"><span>🏢</span> Tenant Registry</button>
-        <button class="menu-item" onclick="switchTab('campaigns',this)"><span>📧</span> Email Campaigns</button>
-        <button class="menu-item" onclick="switchTab('onboarding',this)"><span>📩</span> Incoming Leads</button>
-        <button class="menu-item" onclick="switchTab('audit',this)"><span>📜</span> Audit Logs</button>
+        <div style="font-size:0.65rem; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:1px; margin:24px 0 8px 16px;">Governance</div>
+        <button class="menu-item active" onclick="switchTab('dashboard',this)"><span>📊</span> <span>Dashboard</span></button>
+        <button class="menu-item" onclick="switchTab('audit',this)"><span>📜</span> <span>Audit Trails</span></button>
+        <button class="menu-item" onclick="switchTab('roles',this)"><span>🔐</span> <span>Roles & Permissions</span></button>
+
+        <div style="font-size:0.65rem; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:1px; margin:24px 0 8px 16px;">Administration</div>
+        <button class="menu-item" onclick="switchTab('users',this)"><span>👥</span> <span>User Accounts</span></button>
+        <button class="menu-item" onclick="switchTab('tenants',this)"><span>🏢</span> <span>Tenant Registry</span></button>
+        <button class="menu-item" onclick="switchTab('campaigns',this)"><span>📧</span> <span>Campaign Hub</span></button>
+        <button class="menu-item" onclick="switchTab('onboarding',this)"><span>📩</span> <span>Incoming Leads</span></button>
+        
+        <div style="font-size:0.65rem; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:1px; margin:24px 0 8px 16px;">Settings</div>
+        <button class="menu-item" onclick="toast('System configuration locked.')"><span>⚙️</span> <span>System Setup</span></button>
       </nav>
-      <button class="menu-item" onclick="logout()" style="margin-top:auto;color:var(--red);"><span>🚪</span> Logout</button>
+
+      <div style="margin-top:auto; padding-top:20px; border-top:1px solid var(--border);">
+        <button class="menu-item" onclick="toggleSidebar()" style="opacity:0.6;"><span>⬅️</span> <span>Collapse Sidebar</span></button>
+        <button class="menu-item" onclick="logout()" style="color:var(--red);"><span>🚪</span> <span>Logout System</span></button>
+      </div>
     </aside>
 
     <main class="main">
@@ -251,9 +314,24 @@ import MainLayout from "../../layouts/MainLayout.astro";
           <input type="text" class="topbar-search" placeholder="Quick Search..."/>
         </div>
         <div class="topbar-icons">
-          <span class="topbar-icon" title="Notifications">🔔</span>
+          <span class="topbar-icon" title="Toggle Light/Dark Theme" onclick="toggleTheme()">🌗</span>
+          <div class="topbar-icon" onclick="document.getElementById('dd-notify').classList.toggle('visible')">
+            🔔 
+            <div id="dd-notify" class="dropdown-menu">
+              <div class="dd-item"><strong>New Lead:</strong> TechFlow Solutions</div>
+              <div class="dd-item"><strong>Alert:</strong> SMTP Server Connected</div>
+              <div class="dd-item" style="color:var(--blue); font-weight:bold; border-top:1px solid var(--border);">View all (5)</div>
+            </div>
+          </div>
           <span class="topbar-icon" title="Settings">⚙️</span>
-          <div class="profile-bubble" title="Admin Profile">A</div>
+          <div class="profile-bubble" title="Admin Profile" onclick="document.getElementById('dd-profile').classList.toggle('visible')">
+            A
+            <div id="dd-profile" class="dropdown-menu">
+              <div class="dd-item">👤 Account Profile</div>
+              <div class="dd-item">🛡️ Two-Factor Auth</div>
+              <div class="dd-item" style="color:var(--red); border-top:1px solid var(--border);" onclick="logout()">🚪 Sign Out</div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -269,51 +347,100 @@ import MainLayout from "../../layouts/MainLayout.astro";
         <div class="card"><canvas id="industryChart" style="height:300px;"></canvas></div>
       </div>
       
-      <!-- ROLES & PERMISSIONS TAB -->
+      <!-- ROLES & PERMISSIONS TAB MATCHING RAPIDAPI -->
       <div id="roles" class="section">
-        <div class="topbar">
+        <div class="topbar" style="margin-bottom:12px;">
           <div>
-            <p class="sec-title">Roles & Access Control</p>
-            <p style="color:var(--muted);font-size:0.9rem;margin:0;">Manage organizational security boundaries & permissions</p>
+            <p class="sec-title" style="margin-bottom:6px;">Roles and Permissions</p>
+            <p style="color:var(--muted);font-size:0.85rem;margin:0;">Home / Enterprise Settings / <strong>Roles And Permissions</strong></p>
           </div>
-          <button class="btn-primary" onclick="toast('Role editor deployed!')">Create New Role</button>
         </div>
 
-        <div class="card" style="margin-top:20px;">
-          <h3 style="margin:0 0 4px; display:flex; justify-content:space-between; align-items:center;">
-            <span>🛡️ Master Admin Role <span style="font-size:0.7rem; background:rgba(16,185,129,.14); color:var(--green); padding:3px 8px; border-radius:12px; margin-left:8px; vertical-align:middle;">SYSTEM</span></span>
-            <button class="btn-cancel" style="padding:6px 12px; font-size:0.8rem;">Edit Role</button>
-          </h3>
-          <p style="color:var(--muted);font-size:0.85rem;margin:0 0 16px;">Superuser level. Unrestricted system mapping privileges and full data visibility.</p>
-          
-          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:12px; border-top:1px solid var(--border); padding-top:16px;">
-            <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Dashboard Access</span></label>
-            <label class="checkbox-label"><input type="checkbox" checked disabled> <span>User Management</span></label>
-            <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Create/Manage Tenant</span></label>
-            <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Billing & Accounting</span></label>
-            <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Campaign Composer</span></label>
-            <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Analytics Global View</span></label>
-            <label class="checkbox-label"><input type="checkbox" checked disabled> <span>View Audit Security Logs</span></label>
-            <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Network Settings</span></label>
-          </div>
+        <!-- TABS -->
+        <div class="role-tabs">
+          <div id="rtab-org" class="role-tab" onclick="switchRoleTab('org')">Organization Roles</div>
+          <div id="rtab-usr" class="role-tab active" onclick="switchRoleTab('usr')">User Roles</div>
         </div>
-        
-        <div class="card" style="margin-top:20px;">
-          <h3 style="margin:0 0 4px; display:flex; justify-content:space-between; align-items:center;">
-            <span>🎧 Customer Support Agent</span>
-            <button class="btn-cancel" style="padding:6px 12px; font-size:0.8rem;">Edit Role</button>
-          </h3>
-          <p style="color:var(--muted);font-size:0.85rem;margin:0 0 16px;">Customer service and onboarding bounds. Prevents access to system finance.</p>
+
+        <div id="role-content">
+          <p style="color:var(--muted); font-size:0.9rem; margin-bottom:20px;">Roles composed of permissions assigned to specific users.</p>
           
-          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:12px; border-top:1px solid var(--border); padding-top:16px;">
-            <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Dashboard Access</span></label>
-            <label class="checkbox-label"><input type="checkbox" disabled> <span>User Management</span></label>
-            <label class="checkbox-label"><input type="checkbox" disabled> <span>Create/Manage Tenant</span></label>
-            <label class="checkbox-label"><input type="checkbox" disabled> <span>Billing & Accounting</span></label>
-            <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Campaign Composer</span></label>
-            <label class="checkbox-label"><input type="checkbox" disabled> <span>Analytics Global View</span></label>
-            <label class="checkbox-label"><input type="checkbox" checked disabled> <span>View Audit Security Logs</span></label>
-            <label class="checkbox-label"><input type="checkbox" disabled> <span>Network Settings</span></label>
+          <div style="margin-bottom:24px; font-weight:600; color:var(--blue); cursor:pointer; display:flex; align-items:center; gap:8px;" onclick="toast('Initializing role creator...')">
+            <span style="font-size:1.8rem; line-height:0; display:inline-block; margin-top:-2px;">⊕</span> Add a User Role
+          </div>
+
+          <!-- USER ROLE CARD -->
+          <div class="card" style="padding:0; overflow:hidden;">
+            <!-- Card Header Tabs -->
+            <div class="sub-tabs">
+              <div class="sub-tab active">Environment</div>
+              <div class="sub-tab">Organization</div>
+              <div class="sub-tab">Team</div>
+            </div>
+
+            <div style="padding:24px;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div>
+                  <h3 style="margin:0 0 8px; display:flex; align-items:center;">
+                    <span style="font-size:1.1rem; margin-right:8px; font-weight:700;">User</span>
+                    <span style="font-size:0.75rem; background:rgba(148,163,184,0.15); color:var(--muted); padding:3px 8px; border-radius:12px;">Default</span>
+                  </h3>
+                  <p style="color:var(--muted);font-size:0.85rem;margin:0 0 24px;">Users can create their own APIs and organizations within the environment.</p>
+                </div>
+                <button class="btn-cancel" style="border:none; color:var(--blue); background:transparent; font-size:0.9rem; padding:0; cursor:pointer;" onclick="toast('Permission editing locked for Default role.')">Edit</button>
+              </div>
+
+              <!-- PERMISSIONS GRID -->
+              <div style="display:flex; align-items:flex-start; padding:20px; border-radius:12px; border:1px solid var(--border); background:rgba(255,255,255,0.015);">
+                <span style="font-size:0.9rem; color:var(--muted); width:130px; flex-shrink:0; font-weight:600;">Permissions:</span>
+                <div style="display:flex; flex:1; justify-content:space-between; flex-wrap:wrap; gap:32px;">
+                  
+                  <div style="display:flex; flex-direction:column; gap:12px;">
+                    <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Personal Context</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
+                    <div class="perm-branch">
+                      <label class="checkbox-label" style="color:var(--muted)"><input type="checkbox" checked disabled> <span>Access Provider Dashboard</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
+                    </div>
+                  </div>
+
+                  <div style="display:flex; flex-direction:column; gap:12px;">
+                    <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Create Organization</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
+                  </div>
+
+                  <div style="display:flex; flex-direction:column; gap:12px;">
+                    <label class="checkbox-label" style="opacity:0.6;"><input type="checkbox" disabled> <span>Admin Panel Access</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- ENVIRONMENT ADMIN CARD SEPARATOR -->
+            <div style="border-top:1px solid var(--border); padding:24px;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div>
+                  <h3 style="margin:0 0 8px; font-size:1.1rem; font-weight:700;">Environment Admin</h3>
+                  <p style="color:var(--muted);font-size:0.85rem;margin:0 0 24px;">Access to the Admin Panel and the ability to create their own APIs and organizations within the environment.</p>
+                </div>
+                <button class="btn-cancel" style="border:none; color:var(--blue); background:transparent; font-size:0.9rem; padding:0; cursor:pointer;">Edit</button>
+              </div>
+
+              <div style="display:flex; align-items:flex-start; padding:20px; border-radius:12px; border:1px solid var(--border); background:rgba(255,255,255,0.015);">
+                <span style="font-size:0.9rem; color:var(--muted); width:130px; flex-shrink:0; font-weight:600;">Permissions:</span>
+                <div style="display:flex; flex:1; justify-content:space-between; flex-wrap:wrap; gap:32px;">
+                  <div style="display:flex; flex-direction:column; gap:12px;">
+                    <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Personal Context</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
+                    <div class="perm-branch">
+                      <label class="checkbox-label" style="color:var(--muted)"><input type="checkbox" checked disabled> <span>Access Provider Dashboard</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
+                    </div>
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:12px;">
+                    <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Create Organization</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:12px;">
+                    <label class="checkbox-label"><input type="checkbox" checked disabled> <span>Admin Panel Access</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -832,6 +959,38 @@ import MainLayout from "../../layouts/MainLayout.astro";
       myChart=new Chart(ctx,{type:"doughnut",data:{labels:Object.keys(s),datasets:[{data:Object.values(s).some(v=>v>0)?Object.values(s):[1,1,1,1,1,1],backgroundColor:["#ef4444","#f59e0b","#3b82f6","#10b981","#8b5cf6","#64748b"],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:"72%",plugins:{legend:{position:"bottom",labels:{color:"#fff",padding:16}}}}});
     }
 
-    document.addEventListener("DOMContentLoaded",checkAuth);
+    document.addEventListener("DOMContentLoaded", () => {
+      checkAuth();
+      if(localStorage.getItem("theme")==="light") document.body.classList.add("light-theme");
+      if(localStorage.getItem("sidebarCollapsed")==="1") document.querySelector('.sidebar').classList.add('collapsed');
+    });
+    
+    window.toggleTheme = function() {
+      document.body.classList.toggle('light-theme');
+      localStorage.setItem("theme", document.body.classList.contains('light-theme')?"light":"dark");
+    }
+
+    window.toggleSidebar = function() {
+      document.querySelector('.sidebar').classList.toggle('collapsed');
+      localStorage.setItem("sidebarCollapsed", document.querySelector('.sidebar').classList.contains('collapsed')?"1":"0");
+    }
+
+    window.switchRoleTab = function(type) {
+      const tabs = document.querySelectorAll('.role-tab');
+      tabs.forEach(t => t.classList.remove('active'));
+      if(type==='org') {
+        document.getElementById('rtab-org').classList.add('active');
+        document.getElementById('role-content').innerHTML = `<p style="color:var(--muted); font-size:0.9rem; padding:40px; text-align:center;">Organization roles are inherited from Enterprise level. <br> <button class="btn-cancel" style="margin-top:12px">View Enterprise Settings</button></p>`;
+      } else {
+        location.reload(); // Just for demo to reset to User Roles
+      }
+    }
+
+    // Close dropdowns on outside click
+    window.addEventListener('click', (e) => {
+      if(!e.target.closest('.topbar-icons')) {
+        document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.remove('visible'));
+      }
+    });
   </script>
 </MainLayout>
