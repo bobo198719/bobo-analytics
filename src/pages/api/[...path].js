@@ -166,7 +166,7 @@ export async function ALL({ request, params }) {
             const { targetType, targetValue, channels, message } = JSON.parse(bodyText);
             const nodemailer = await import("nodemailer");
 
-            let emailCount = 0; let waCount = 0;
+            let emailCount = 0; let waCount = 0; let smsCount = 0;
             
             // Collect targets from recovery array
             let users = [];
@@ -179,8 +179,12 @@ export async function ALL({ request, params }) {
                 auth: { user: process.env.SMTP_USER || "support@boboanalytics.com", pass: process.env.SMTP_PASS || "" }
             });
 
+            const twilioSid = process.env.TWILIO_ACCOUNT_SID;
+            const twilioAuth = process.env.TWILIO_AUTH_TOKEN;
+            const twilioFrom = process.env.TWILIO_PHONE_NUMBER || "+15017122661"; // Valid Twilio from-number
+
             for (const u of users) {
-                const toPhone = /^\\+?[0-9]{10,15}$/.test(u.username) ? u.username : null;
+                const toPhone = /^\\+?[0-9]{10,15}$/.test(u.username) ? (u.username.startsWith('+') ? u.username : '+' + u.username) : null;
                 const toEmail = u.email || (u.username.includes('@') ? u.username : null);
 
                 // 1. Email (support@)
@@ -206,11 +210,31 @@ export async function ALL({ request, params }) {
                         waCount++;
                     } catch(e){ console.error("Edge WA Error:", e); }
                 }
+
+                // 3. SMS (Twilio Default)
+                if (channels.includes('sms') && twilioSid && twilioAuth && toPhone) {
+                    try {
+                        const formData = new URLSearchParams();
+                        formData.append('To', toPhone);
+                        formData.append('From', twilioFrom);
+                        formData.append('Body', message);
+
+                        await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
+                            method: 'POST',
+                            headers: { 
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                                'Authorization': 'Basic ' + Buffer.from(twilioSid + ':' + twilioAuth).toString('base64')
+                            },
+                            body: formData.toString()
+                        }).catch(()=>{});
+                        smsCount++;
+                    } catch(e) { console.error("Edge SMS Error:", e); }
+                }
             }
 
             return new Response(JSON.stringify({ 
                 success: true, 
-                message: `Edge Dispatch processed: ${emailCount} Emails (support@), ${waCount} WhatsApps (+91 9518525420).` 
+                message: `Edge Dispatch processed: ${emailCount} Emails, ${waCount} WhatsApps, ${smsCount} SMS.` 
             }), { status: 200, headers: {'Content-Type': 'application/json'} });
         } catch(e) { return new Response(JSON.stringify({ success: false, error: e.message }), { status: 500, headers: {'Content-Type': 'application/json'} }); }
     }
