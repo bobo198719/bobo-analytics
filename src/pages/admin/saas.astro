@@ -465,10 +465,8 @@ import MainLayout from "../../layouts/MainLayout.astro";
         <div class="tbox">
           <table>
             <thead><tr><th>Timestamp</th><th>Subject</th><th>Action</th><th>Result</th></tr></thead>
-            <tbody>
-              <tr><td>10:42:01</td><td>admin@bobo.com</td><td>Created Role "Staff"</td><td><span class="badge gg">Success</span></td></tr>
-              <tr><td>09:15:30</td><td>system-cron</td><td>Cleaned Cache Layers</td><td><span class="badge gg">Success</span></td></tr>
-              <tr><td>Yesterday</td><td>support@bobo.com</td><td>Deleted User #1042</td><td><span class="badge gg">Success</span></td></tr>
+            <tbody id="auditTable">
+              <tr><td colspan="4" style="text-align:center;padding:30px;color:var(--muted);">Initializing logs…</td></tr>
             </tbody>
           </table>
         </div>
@@ -948,7 +946,13 @@ import MainLayout from "../../layouts/MainLayout.astro";
           : `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--muted);">No campaigns have been broadcasted yet.</td></tr>`;
 
         updateChart(tenants);
+
+        // ✅ MARK AS SUCCESSFUL
+        const stat = document.getElementById("connStatus");
+        stat.innerText="● SYSTEM OPERATIONAL";
+        stat.style.color="var(--green)";
       } catch(e) {
+        console.error("SYNC_ERROR:", e);
         document.getElementById("connStatus").innerText="● VPS OFFLINE — RECOVERY MODE";
         document.getElementById("connStatus").style.color="var(--red)";
       }
