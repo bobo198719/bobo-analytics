@@ -1,0 +1,132 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+---
+
+<MainLayout title="Bobo Analytics | Secure Client Onboarding" hideNav={true}>
+  <style>
+    :root {
+      --bg-dark: #050810;
+      --card-bg: #141c2d;
+      --neon-blue: #3b82f6;
+      --neon-green: #10b981;
+      --border-color: rgba(255,255,255,0.08);
+      --text-muted: #94a3b8;
+    }
+
+    body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-dark); color: #fff; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow-x: hidden; }
+
+    .form-container { background: var(--card-bg); padding: 40px; border-radius: 20px; border: 1px solid var(--border-color); width: 100%; max-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+    h2 { margin: 0 0 8px; font-size: 1.8rem; font-weight: 800; background: linear-gradient(90deg, #fff, var(--neon-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    p.sub { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 30px; }
+
+    .input-grp { margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
+    .input-grp label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+    .input-ctrl { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: white; outline: none; transition: 0.2s; box-sizing: border-box; }
+    .input-ctrl:focus { border-color: var(--neon-blue); background: rgba(59,130,246,0.05); }
+    
+    .btn-submit { width: 100%; background: var(--neon-blue); color: white; border: none; padding: 14px; border-radius: 10px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: 0.2s; margin-top: 10px; }
+    .btn-submit:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    #msg { margin-top: 16px; font-size: 0.9rem; font-weight: bold; text-align: center; }
+  </style>
+
+  <div class="form-container" id="formCard">
+    <h2>Client Onboarding</h2>
+    <p class="sub">Register your enterprise portal inside Bobo Analytics.</p>
+
+    <div class="input-grp">
+      <label>Business Name</label>
+      <input type="text" id="businessName" class="input-ctrl" placeholder="e.g. Apollo Hospital" required>
+    </div>
+
+    <div class="input-grp">
+      <label>Owner Name</label>
+      <input type="text" id="ownerName" class="input-ctrl" placeholder="Your full name" required>
+    </div>
+
+    <div style="display:flex; gap:16px;">
+      <div class="input-grp" style="flex:1;">
+        <label>Official Email</label>
+        <input type="email" id="email" class="input-ctrl" placeholder="admin@bobo.com" required>
+      </div>
+      <div class="input-grp" style="flex:1;">
+        <label>Phone Number</label>
+        <input type="text" id="phone" class="input-ctrl" placeholder="+91..." required>
+      </div>
+    </div>
+
+    <div class="input-grp">
+      <label>Industry Segment</label>
+      <select id="industry" class="input-ctrl">
+        <option value="restaurant">🍽 Restaurant (Restaurant OS)</option>
+        <option value="bakery">🥐 Bakery (Baker OS)</option>
+        <option value="pharmacy">💊 Pharmacy</option>
+        <option value="grocery">🛒 Grocery</option>
+        <option value="retail">🛍 Retail</option>
+        <option value="healthcare">🏥 Healthcare</option>
+        <option value="fashion">👗 Fashion</option>
+        <option value="general">💼 General / Other</option>
+      </select>
+    </div>
+
+    <div class="input-grp">
+      <label>City Location</label>
+      <input type="text" id="city" class="input-ctrl" placeholder="e.g. Mumbai" required>
+    </div>
+
+    <button class="btn-submit" id="subBtn" onclick="submitForm()">Request Access Pipeline</button>
+    <div id="msg"></div>
+  </div>
+
+  <div class="form-container" id="successCard" style="display:none; text-align:center;">
+    <h2 style="font-size:3rem; margin-bottom:10px;">✅</h2>
+    <h2>Application Received</h2>
+    <p class="sub" style="margin-bottom:0;">Our automated system has notified the administrators. Once approved, you will receive an official email containing your secure credentials and login link.</p>
+  </div>
+
+  <script is:inline>
+    async function submitForm() {
+      const bn = document.getElementById("businessName").value.trim();
+      const on = document.getElementById("ownerName").value.trim();
+      const em = document.getElementById("email").value.trim();
+      const ph = document.getElementById("phone").value.trim();
+      const ind = document.getElementById("industry").value;
+      const ci = document.getElementById("city").value.trim();
+      const msg = document.getElementById("msg");
+      const btn = document.getElementById("subBtn");
+
+      if (!bn || !on || !em || !ph || !ci) {
+        msg.style.color = "var(--neon-red)";
+        msg.innerText = "Please fill in all mandatory fields.";
+        return;
+      }
+
+      msg.style.color = "var(--text-muted)";
+      msg.innerText = "Submitting securely...";
+      btn.disabled = true;
+
+      try {
+        const r = await fetch("/api/lead", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ businessName: bn, ownerName: on, email: em, phone: ph, industry: ind, city: ci })
+        });
+        const d = await r.json();
+        
+        if (d.success) {
+          document.getElementById("formCard").style.display = "none";
+          document.getElementById("successCard").style.display = "block";
+        } else {
+          msg.style.color = "var(--neon-red)";
+          msg.innerText = d.error || "Submission failed.";
+          btn.disabled = false;
+        }
+      } catch(e) {
+        msg.style.color = "var(--neon-red)";
+        msg.innerText = "Network Error.";
+        btn.disabled = false;
+      }
+    }
+  </script>
+</MainLayout>

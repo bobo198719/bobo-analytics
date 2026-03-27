@@ -21,6 +21,9 @@ const RECOVERY_USERS = [
 // 🕵️ AUDIT LOG REGISTRY
 const AUTH_LOGS = [];
 
+// 📝 ONBOARDING LEADS ENGINE (Memory Store for VPS bypass)
+const PENDING_LEADS = [];
+
 export async function ALL({ request, params }) {
     const url = new URL(request.url);
     const pathname = url.pathname;
@@ -330,7 +333,86 @@ export async function ALL({ request, params }) {
             return new Response(JSON.stringify(AUTH_LOGS), { status: 200, headers: {'Content-Type': 'application/json'} });
         }
 
+        // ==========================================
+        // 🚀 CLIENT ONBOARDING & PIPELINE ENGINE
+        // ==========================================
+        if (pathname.includes('/lead') && method === 'POST') {
+            const body = await request.text();
+            const lead = JSON.parse(body);
+            lead.id = "L_" + Math.random().toString(36).substr(2, 9);
+            lead.status = "pending";
+            lead.created_at = new Date().toISOString();
+            PENDING_LEADS.unshift(lead);
+            
+            // Background Admin Notification
+            if (process.env.SMTP_PASS) {
+                import("nodemailer").then(mail => {
+                    const m = mail.createTransport({ host: process.env.SMTP_HOST || "smtp.hostinger.com", port: 465, secure: true, auth: { user: process.env.SMTP_USER || "support@boboanalytics.com", pass: process.env.SMTP_PASS } });
+                    m.sendMail({ from: '"Bobo System" <support@boboanalytics.com>', to: "support@boboanalytics.com", subject: "New SaaS Tenant Lead: " + lead.businessName, text: JSON.stringify(lead, null, 2) }).catch(()=>{});
+                });
+            }
+            return new Response(JSON.stringify({ success: true, leadId: lead.id }), { status: 200, headers: {'Content-Type': 'application/json'} });
+        }
         
+        if (pathname.includes('/admin/leads') && method === 'GET') {
+            return new Response(JSON.stringify(PENDING_LEADS), { status: 200, headers: {'Content-Type': 'application/json'} });
+        }
+
+        if (pathname.includes('/admin/approve-lead') && method === 'POST') {
+            const body = await request.text();
+            const { leadId } = JSON.parse(body);
+            const leadIdx = PENDING_LEADS.findIndex(l => l.id === leadId);
+            if (leadIdx === -1) return new Response(JSON.stringify({ success: false, error: "Lead not found" }), { status: 404, headers: {'Content-Type': 'application/json'} });
+            
+            const lead = PENDING_LEADS[leadIdx];
+            const password = Math.random().toString(36).slice(-8) + "X!";
+            
+            // Create user in registry
+            const newUser = {
+                id: Math.floor(Math.random() * 1000) + 100,
+                username: lead.phone || lead.email.split('@')[0],
+                email: lead.email,
+                plain_password: password,
+                business_name: lead.businessName,
+                industry: lead.industry,
+                plan_type: 'trial',
+                status: 'active',
+                created_at: new Date().toISOString()
+            };
+            RECOVERY_USERS.push(newUser);
+            
+            lead.status = "approved";
+            PENDING_LEADS[leadIdx] = lead; // Update status in leads db
+
+            // Send Official Login Credentials
+            if (process.env.SMTP_PASS) {
+                const mail = await import("nodemailer");
+                const m = mail.createTransport({ host: process.env.SMTP_HOST || "smtp.hostinger.com", port: 465, secure: true, auth: { user: process.env.SMTP_USER || "support@boboanalytics.com", pass: process.env.SMTP_PASS } });
+                await m.sendMail({ 
+                    from: '"Bobo Analytics" <support@boboanalytics.com>', 
+                    to: lead.email, 
+                    subject: "Welcome to Bobo Analytics! 🚀 Your Infrastructure is Ready.", 
+                    html: `
+                        <div style="font-family:sans-serif; padding: 20px;">
+                            <h2>Your Infrastructure is Secure and Ready</h2>
+                            <p>Hello ${lead.ownerName}, your application for <strong>${lead.businessName}</strong> has been officially approved.</p>
+                            <p>Here are your secure master credentials to access the portal:</p>
+                            <div style="background:#f4f4f4; padding:15px; border-radius:8px;">
+                                <p><strong>Email / Login ID:</strong> ${lead.email}</p>
+                                <p><strong>Temporary Password:</strong> ${password}</p>
+                            </div>
+                            <br>
+                            <p><a href="https://boboanalytics.com/" style="background:#3b82f6;color:white;padding:10px 20px;text-decoration:none;border-radius:6px;">Access Secure Panel</a></p>
+                            <br>
+                            <p>For security, please change your password instantly after logging in.</p>
+                        </div>
+                    ` 
+                }).catch(e => console.error("Lead Error Mail:", e));
+            }
+
+            return new Response(JSON.stringify({ success: true, message: "Lead Approved & User Provisioned" }), { status: 200, headers: {'Content-Type': 'application/json'} });
+        }
+        // ==========================================
         if (pathname.includes('/tables')) {
             return new Response(JSON.stringify([
                 {id: 1, table_number: '1', status: 'available'},

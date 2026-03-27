@@ -65,6 +65,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
       <nav class="nav-menu">
         <button class="menu-item active" onclick="switchTab('dashboard', this)"><span>📊</span> Dashboard</button>
         <button class="menu-item" onclick="switchTab('tenants', this)"><span>🏢</span> Tenants</button>
+        <button class="menu-item" onclick="switchTab('onboarding', this)"><span>📩</span> Incoming Leads</button>
         <button class="menu-item" onclick="switchTab('audit', this)"><span>📜</span> Audit Logs</button>
         <button class="menu-item" onclick="switchTab('billing', this)"><span>💸</span> Billing</button>
       </nav>
@@ -90,6 +91,18 @@ import MainLayout from "../../layouts/MainLayout.astro";
             <table>
               <thead><tr><th>Name</th><th>Industry</th><th>Status</th><th>Yield</th></tr></thead>
               <tbody id="tenantTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- LEADS ONBOARDING PIPELINE -->
+        <div id="onboarding" class="section">
+          <h1>Incoming Leads & Onboarding</h1>
+          <p style="color:var(--text-muted); margin-top:-10px; margin-bottom:20px;">Review and provision infrastructure for incoming clients.</p>
+          <div class="table-box">
+            <table>
+              <thead><tr><th>Date</th><th>Business</th><th>Owner</th><th>Phone</th><th>Email</th><th>Industry</th><th>City</th><th>Action</th></tr></thead>
+              <tbody id="leadsTable"></tbody>
             </table>
           </div>
         </div>
@@ -156,15 +169,17 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
     async function initSync() {
       const token = localStorage.getItem("token");
-      const [statsR, tenantR, auditR] = await Promise.all([
+      const [statsR, tenantR, auditR, leadsR] = await Promise.all([
         fetch(API + "/stats", { headers: { "Authorization": token } }),
         fetch(API + "/tenants", { headers: { "Authorization": token } }),
-        fetch(API + "/admin/audit-logs", { headers: { "Authorization": token } })
+        fetch(API + "/admin/audit-logs", { headers: { "Authorization": token } }),
+        fetch(API + "/admin/leads", { headers: { "Authorization": token } })
       ]);
       if(statsR.status === 401) return logout();
       const stats = await statsR.json();
       const tenants = await tenantR.json();
       const audits = auditR.ok ? await auditR.json() : [];
+      const leads = leadsR.ok ? await leadsR.json() : [];
 
       document.getElementById("users").innerText = stats.users;
       document.getElementById("active").innerText = stats.active;
@@ -173,6 +188,25 @@ import MainLayout from "../../layouts/MainLayout.astro";
       let html = "";
       tenants.forEach(t => { html += `<tr><td><strong>${t.name}</strong></td><td>${t.industry}</td><td class="status-active">${t.status}</td><td>₹${t.revenue.toLocaleString()}</td></tr>`; });
       document.getElementById("tenantTable").innerHTML = html || '<tr><td colspan="4">No Records.</td></tr>';
+      
+      let leadsHtml = "";
+      leads.forEach(l => {
+         leadsHtml += `<tr>
+           <td style="color:var(--text-muted); font-size:0.8rem;">${new Date(l.created_at).toLocaleString()}</td>
+           <td><strong>${l.businessName}</strong></td>
+           <td>${l.ownerName}</td>
+           <td>${l.phone}</td>
+           <td>${l.email}</td>
+           <td><span style="background:var(--neon-blue); padding:4px 8px; border-radius:6px; font-size:0.75rem;">${l.industry}</span></td>
+           <td>${l.city}</td>
+           <td>
+              ${l.status === 'pending' 
+                ? `<button onclick="approveLead('${l.id}')" style="background:var(--neon-green); color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">✅ Approve & Dispatch</button>` 
+                : `<span style="color:var(--neon-green); font-weight:bold;">Provisioned</span>`}
+           </td>
+         </tr>`;
+      });
+      document.getElementById("leadsTable").innerHTML = leadsHtml || '<tr><td colspan="8">No incoming leads.</td></tr>';
       
       let auditHtml = "";
       audits.forEach(a => { 
@@ -200,6 +234,28 @@ import MainLayout from "../../layouts/MainLayout.astro";
          if(vData.status === "success") alert("Verified Payment!");
       }, theme: { color: "#3b82f6" } };
       new window.Razorpay(options).open();
+    }
+
+    window.approveLead = async function(id) {
+      if(!confirm("Create infrastructure and dispatch welcome credentials?")) return;
+      const btn = event.currentTarget;
+      btn.innerText = "Dispatching...";
+      btn.disabled = true;
+      try {
+        const res = await fetch(API + "/admin/approve-lead", {
+          method: "POST",
+          headers: {"Content-Type": "application/json", "Authorization": localStorage.getItem("token")},
+          body: JSON.stringify({ leadId: id })
+        });
+        const data = await res.json();
+        if(data.success) {
+          alert("✅ Infrastructure provisioned! Credentials sent successfully.");
+          initSync();
+        } else {
+          alert("Error: " + data.error);
+          btn.innerText = "Error";
+        }
+      } catch(e) { alert("Network error"); btn.innerText = "✅ Approve & Dispatch"; btn.disabled = false;}
     }
 
     function updateChart(data) {
