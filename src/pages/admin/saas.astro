@@ -54,9 +54,11 @@ import MainLayout from "../../layouts/MainLayout.astro";
     .sidebar.collapsed { width:70px; }
     .sidebar.collapsed ~ .main { margin-left:70px; }
     .sidebar.collapsed .menu-item span:last-child { display:none; }
-    .sidebar.collapsed h2, .sidebar.collapsed div[style*="font-size:0.65rem"], .sidebar.collapsed #connStatus { display:none; }
+    .sidebar.collapsed h2, .sidebar.collapsed .sidebar-group-header, .sidebar.collapsed #connStatus { display:none; }
     .sidebar.collapsed .menu-item { justify-content:center; padding:12px 0; }
     .sidebar.collapsed .menu-item span:first-child { margin:0; }
+    
+    .sidebar-group-header { font-size:0.65rem; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:1px; margin:24px 0 8px 16px; }
     
     /* ── TOPBAR ── */
     .main-topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:32px; padding:16px 24px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:16px; backdrop-filter:blur(10px); position:sticky; top:20px; z-index:1000; }
@@ -279,24 +281,30 @@ import MainLayout from "../../layouts/MainLayout.astro";
     <aside class="sidebar">
       <div style="margin-bottom:28px; padding:0 8px;">
         <h2 style="margin:0 0 2px; font-size:1.1rem; color:var(--text-main); font-weight:800; letter-spacing:-0.5px;">BOBO OS</h2>
-        <div id="connStatus" style="color:var(--green); font-size:0.6rem; font-weight:700;">● SECURE NODE CONNECTED</div>
+        <div id="connStatus" style="color:var(--green); font-size:0.6rem; font-weight:700;">● SYSTEM OPERATIONAL</div>
       </div>
       
       <nav class="nav-menu">
-        <div style="font-size:0.65rem; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:1px; margin:24px 0 8px 16px;">Governance</div>
+        <div class="sidebar-group-header">Governance</div>
         <button class="menu-item active" onclick="switchTab('dashboard',this)"><span>📊</span> <span>Dashboard</span></button>
+        <button class="menu-item" onclick="switchTab('apis',this)"><span>🔌</span> <span>APIs</span></button>
+        <button class="menu-item" onclick="switchTab('approvals',this)"><span>⚖️</span> <span>Approvals</span></button>
         <button class="menu-item" onclick="switchTab('audit',this)"><span>📜</span> <span>Audit Trails</span></button>
-        <button class="menu-item" onclick="switchTab('roles',this)"><span>🔐</span> <span>Roles & Permissions</span></button>
+        <button class="menu-item" onclick="switchTab('events',this)"><span>🔔</span> <span>Events</span></button>
 
-        <div style="font-size:0.65rem; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:1px; margin:24px 0 8px 16px;">Administration</div>
-        <button class="menu-item" onclick="switchTab('users',this)"><span>👥</span> <span>User Accounts</span></button>
-        <button class="menu-item" onclick="switchTab('tenants',this)"><span>🏢</span> <span>Tenant Registry</span></button>
-        <button class="menu-item" onclick="switchTab('campaigns',this)"><span>📧</span> <span>Campaign Hub</span></button>
-        <button class="menu-item" onclick="switchTab('onboarding',this)"><span>📩</span> <span>Incoming Leads</span></button>
+        <div class="sidebar-group-header">Administration</div>
+        <button class="menu-item" onclick="switchTab('users',this)"><span>👥</span> <span>Users</span></button>
+        <button class="menu-item" onclick="switchTab('tenants',this)"><span>🏢</span> <span>Organizations</span></button>
+        <button class="menu-item" onclick="switchTab('subscriptions',this)"><span>💳</span> <span>Subscriptions</span></button>
+        <button class="menu-item" onclick="switchTab('collections',this)"><span>📦</span> <span>Collections</span></button>
+        <button class="menu-item" onclick="switchTab('categories',this)"><span>🏷️</span> <span>Categories & Tags</span></button>
         
-        <div style="font-size:0.65rem; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:1px; margin:24px 0 8px 16px;">Settings</div>
+        <div class="sidebar-group-header">System</div>
+        <button class="menu-item" onclick="switchTab('theming',this)"><span>🎨</span> <span>Theming & Language</span></button>
+        <button class="menu-item" onclick="switchTab('gateway',this)"><span>🌐</span> <span>API Gateways</span></button>
+        <button class="menu-item" onclick="switchTab('seo',this)"><span>📈</span> <span>SEO</span></button>
         <button id="sysSetupBtn" class="menu-item" onclick="handleSettingsClick(this)">
-          <span id="sysLockIcon">🔒</span> <span id="sysSetupText">System Setup (Locked)</span>
+          <span id="sysLockIcon">🔒</span> <span id="sysSetupText">Settings (Locked)</span>
         </button>
       </nav>
 
@@ -568,15 +576,170 @@ import MainLayout from "../../layouts/MainLayout.astro";
         </div>
       </div>
 
-      <!-- AUDIT TAB -->
-      <div id="audit" class="section">
-        <p style="font-size:1.4rem;font-weight:800;margin:0 0 4px;">Security & Auth Logs</p>
-        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:20px;">Trace failed and successful authentication events dynamically via the edge shield.</p>
+      <!-- APIs MODULE -->
+      <div id="apis" class="section">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+          <div>
+            <p class="sec-title">API Management</p>
+            <p style="color:var(--muted);font-size:0.9rem;">Create endpoints, manage keys, and set global rate limits.</p>
+          </div>
+          <button class="btn-primary" onclick="toast('Generating new API key...')">⊕ Create API Key</button>
+        </div>
+        <div class="kpi-grid">
+          <div class="card"><div class="card-label">Active Keys</div><div class="kpi-val">12</div></div>
+          <div class="card"><div class="card-label">Req/Minute</div><div class="kpi-val">452</div></div>
+          <div class="card"><div class="card-label">Errors</div><div class="kpi-val" style="color:var(--red);">0.1%</div></div>
+        </div>
+        <div class="tbox" style="margin-top:24px;">
+          <table>
+            <thead><tr><th>API Name</th><th>Key Profile</th><th>Usage</th><th>Quota</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Production Core</td><td><code>live_...8a9</code></td><td>82k</td><td>100k</td><td><span class="badge gg">Healthy</span></td></tr>
+              <tr><td>Staging Sandbox</td><td><code>test_...f21</code></td><td>4k</td><td>Unlimited</td><td><span class="badge bg">Testing</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- APPROVALS MODULE -->
+      <div id="approvals" class="section">
+        <p class="sec-title">Pending Approvals</p>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Review access requests for organizations and high-tier APIs.</p>
         <div class="tbox">
           <table>
-            <thead><tr><th>Timestamp</th><th>User / Identity</th><th>Outcome Status</th><th>Diagnostics / Message</th></tr></thead>
-            <tbody id="auditTable"></tbody>
+            <thead><tr><th>Type</th><th>Requester</th><th>Object</th><th>Reason</th><th>Action</th></tr></thead>
+            <tbody id="approvalsTable">
+              <tr>
+                <td><span class="badge aa">Tenant</span></td>
+                <td>Global Retail Inc</td>
+                <td>Retail POS Instance</td>
+                <td>New Branch Setup</td>
+                <td><button class="ab ab-act" onclick="toast('Approved')">✅</button> <button class="ab ab-del" onclick="toast('Rejected')">❌</button></td>
+              </tr>
+            </tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- EVENTS MODULE -->
+      <div id="events" class="section">
+        <p class="sec-title">System Events & Webhooks</p>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Real-time stream of low-level system events and automated hook triggers.</p>
+        <div class="card" style="font-family:monospace; background:#000; height:300px; overflow-y:auto; font-size:0.8rem; line-height:1.6;">
+          <div style="color:var(--green)">[22:04:12] INFO: Edge node 'India-West' synchronized successfully.</div>
+          <div style="color:var(--blue)">[22:04:30] WEBHOOK: Campaign.Sent -> Triggered for 1,240 recipients.</div>
+          <div style="color:var(--amber)">[22:04:45] WARN: Database latency peaked at 150ms.</div>
+          <div style="color:var(--green)">[22:05:01] INFO: User #829 logged in from Mumbai.</div>
+        </div>
+      </div>
+
+      <!-- SUBSCRIPTIONS MODULE -->
+      <div id="subscriptions" class="section">
+        <p class="sec-title">Billing & Subscriptions</p>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Manage pricing tiers, view recurring revenue logs, and handle refunds.</p>
+        <div class="kpi-grid">
+          <div class="card"><div class="card-label">Monthly MRR</div><div class="kpi-val">₹4,25,000</div></div>
+          <div class="card"><div class="card-label">Churn Rate</div><div class="kpi-val">1.2%</div></div>
+          <div class="card"><div class="card-label">Expiring Soon</div><div class="kpi-val" style="color:var(--amber);">18</div></div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:24px;">
+          <div class="card" style="text-align:center;"><h3>Basic</h3><p>₹999 / mo</p><button class="btn-cancel" style="width:100%">Edit Plan</button></div>
+          <div class="card" style="text-align:center; border:2px solid var(--blue)"><h3>Pro</h3><p>₹2,999 / mo</p><button class="btn-primary" style="width:100%">Edit Plan</button></div>
+          <div class="card" style="text-align:center;"><h3>Enterprise</h3><p>Custom</p><button class="btn-cancel" style="width:100%">Edit Plan</button></div>
+        </div>
+      </div>
+
+      <!-- COLLECTIONS MODULE -->
+      <div id="collections" class="section">
+        <p class="sec-title">Data Collections</p>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Underlying MongoDB collections and data groups for global storage.</p>
+        <div class="tbox">
+          <table>
+            <thead><tr><th>Collection</th><th>Documents</th><th>Storage</th><th>Indexes</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td><code>Users</code></td><td>1,240</td><td>2.4 MB</td><td>5</td><td><button class="btn-cancel">Explore</button></td></tr>
+              <tr><td><code>Tenants</code></td><td>45</td><td>0.8 MB</td><td>3</td><td><button class="btn-cancel">Explore</button></td></tr>
+              <tr><td><code>CampaignLogs</code></td><td>8,200</td><td>15.2 MB</td><td>2</td><td><button class="btn-cancel">Explore</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CATEGORIES MODULE -->
+      <div id="categories" class="section">
+        <p class="sec-title">Categories & Taxonomy</p>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Organize system entities using global categories and tags.</p>
+        <div class="card">
+          <h4>🏷️ Global Tags</h4>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+            <span class="badge bg" style="padding:6px 12px;">Priority</span>
+            <span class="badge gg" style="padding:6px 12px;">Verified</span>
+            <span class="badge rr" style="padding:6px 12px;">High-Risk</span>
+            <span class="badge aa" style="padding:6px 12px;">Beta-User</span>
+            <span class="btn-cancel" style="font-size:0.7rem;">+ Add Tag</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- THEMING & LANGUAGE MODULE -->
+      <div id="theming" class="section">
+        <p class="sec-title">Theming & Localization</p>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Control the global UI aesthetics and language preferences.</p>
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <h4 style="margin:0;">Global Mode</h4>
+              <p style="color:var(--muted); font-size:0.8rem;">Switch between system-wide Dark and Light themes.</p>
+            </div>
+            <button class="btn-primary" onclick="toggleTheme()">🌓 Toggle Mode</button>
+          </div>
+          <hr style="border:0; border-top:1px solid var(--border); margin:20px 0;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <h4 style="margin:0;">Active Language</h4>
+              <p style="color:var(--muted); font-size:0.8rem;">Select the primary locale for the dashboard.</p>
+            </div>
+            <select class="search-bar" style="width:150px;">
+              <option>English (US)</option>
+              <option>Hindi (IN)</option>
+              <option>Spanish (ES)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- API GATEWAYS MODULE -->
+      <div id="gateway" class="section">
+        <p class="sec-title">Global API Gateways</p>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Manage edge routing and traffic shielding across multiple regions.</p>
+        <div class="card" style="display:flex; flex-direction:column; gap:20px;">
+          <div style="display:flex; justify-content:space-between;">
+            <span>Edge Cluster #1 (NA-East)</span>
+            <span class="badge gg">Active</span>
+          </div>
+          <div style="display:flex; justify-content:space-between;">
+            <span>Edge Cluster #2 (Asia-South)</span>
+            <span class="badge gg">Active</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; opacity:0.5;">
+            <span>Edge Cluster #3 (EU-Central)</span>
+            <span class="badge bg">Provisioning...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEO MODULE -->
+      <div id="seo" class="section">
+        <p class="sec-title">SEO Optimization</p>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Manage public metadata, sitemaps, and indexing status.</p>
+        <div class="card">
+          <label class="card-label">Master Page Title</label>
+          <input type="text" class="search-bar" style="width:100%; margin-bottom:16px;" value="Bobo OS | Next-Gen SaaS Admin" />
+          <label class="card-label">Meta Description</label>
+          <textarea class="search-bar" style="width:100%; height:80px;" placeholder="Describe your platform for search engines..."></textarea>
+          <div style="margin-top:20px;">
+            <button class="btn-primary">Update Metadata</button>
+          </div>
         </div>
       </div>
 

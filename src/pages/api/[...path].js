@@ -492,6 +492,34 @@ export async function ALL({ request, params }) {
             ), { status: 200, headers: {'Content-Type': 'application/json'} });
         }
 
+        if (pathname.includes('/admin/apis')) {
+            return new Response(JSON.stringify({ success: true, count: 2, data: [
+                { name: "Production Core", key: "live_...8a9", usage: 82000, quota: 100000, status: "Healthy" },
+                { name: "Staging Sandbox", key: "test_...f21", usage: 4000, quota: -1, status: "Testing" }
+            ] }), { status: 200, headers: {'Content-Type': 'application/json'} });
+        }
+
+        if (pathname.includes('/admin/events')) {
+            return new Response(JSON.stringify({ success: true, events: [
+                { time: Date.now()-50000, level: "INFO", msg: "Edge node 'India-West' synchronized successfully." },
+                { time: Date.now()-20000, level: "WEBHOOK", msg: "Campaign.Sent -> Triggered for 1,240 recipients." },
+                { time: Date.now()-5000, level: "WARN", msg: "Database latency peaked at 150ms." }
+            ] }), { status: 200, headers: {'Content-Type': 'application/json'} });
+        }
+
+        if (pathname.includes('/admin/subscriptions')) {
+            const totalRev = RECOVERY_USERS.reduce((acc, u) => acc + getPlanRev(u.plan_type), 0);
+            return new Response(JSON.stringify({ mrr: totalRev, churn: 1.2, expiring: 18, plans: ["Basic", "Pro", "Enterprise"] }), { status: 200, headers: {'Content-Type': 'application/json'} });
+        }
+
+        if (pathname.includes('/admin/collections')) {
+            return new Response(JSON.stringify({ data: [
+                { name: "Users", count: RECOVERY_USERS.length, size: "2.4MB" },
+                { name: "Tenants", count: RECOVERY_USERS.length, size: "0.8MB" },
+                { name: "CampaignLogs", count: 8200, size: "15.2MB" }
+            ] }), { status: 200, headers: {'Content-Type': 'application/json'} });
+        }
+
         return new Response(JSON.stringify({ 
             success: false, 
             error: "VPS_OFFLINE_V62", 
