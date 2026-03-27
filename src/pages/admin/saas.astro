@@ -145,6 +145,10 @@ import MainLayout from "../../layouts/MainLayout.astro";
       </select>
       <select id="promoSpecificUserSel" style="display:none;"></select>
 
+      <div id="promoTargetClients" style="display:none; max-height:160px; overflow-y:auto; background:rgba(0,0,0,0.2); padding:10px; border-radius:10px; border:1px solid var(--border); margin-bottom:10px; flex-direction:column; gap:6px;">
+        <!-- Checkboxes injected by JS -->
+      </div>
+
       <div class="checkbox-group" style="flex-direction:column; gap:8px;">
         <label class="checkbox-label" style="background:rgba(255,255,255,0.03); padding:10px 14px; border-radius:10px; border:1px solid var(--border);">
           <input type="checkbox" id="chanEmail" checked> 
@@ -449,7 +453,27 @@ import MainLayout from "../../layouts/MainLayout.astro";
     window.handlePromoTarget = function() {
       const tg = document.getElementById("promoTarget").value;
       const sel = document.getElementById("promoSpecificUserSel");
+      const multi = document.getElementById("promoTargetClients");
+      
       sel.style.display = tg === "select" ? "block" : "none";
+      
+      if (tg !== "select" && tg !== "specific" && tg !== "all") {
+          multi.style.display = "flex";
+          const filtered = allUsers.filter(u => u.industry === tg);
+          if (filtered.length === 0) {
+             multi.innerHTML = `<span style="color:var(--muted);font-size:0.8rem;">No clients found in this industry.</span>`;
+          } else {
+             multi.innerHTML = `<label style="font-size:0.8rem; font-weight:bold; color:#a78bfa; margin-bottom:4px; padding-bottom:4px; border-bottom:1px solid var(--border); cursor:pointer"><input type="checkbox" id="promoToggleAll" checked onchange="document.querySelectorAll('.promo-user-cb').forEach(c=>c.checked=this.checked)"> Select / Deselect All</label>` 
+             + filtered.map(u => `<label style="font-size:0.8rem; display:flex; align-items:center; gap:6px; cursor:pointer"><input type="checkbox" class="promo-user-cb" value="${u.id}" checked> ${u.business_name || u.username} (#${u.id})</label>`).join("");
+          }
+      } else if (tg === "all") {
+          multi.style.display = "flex";
+          multi.innerHTML = `<label style="font-size:0.8rem; font-weight:bold; color:#a78bfa; margin-bottom:4px; padding-bottom:4px; border-bottom:1px solid var(--border); cursor:pointer"><input type="checkbox" id="promoToggleAll" checked onchange="document.querySelectorAll('.promo-user-cb').forEach(c=>c.checked=this.checked)"> Select / Deselect All</label>` 
+          + allUsers.map(u => `<label style="font-size:0.8rem; display:flex; align-items:center; gap:6px; cursor:pointer"><input type="checkbox" class="promo-user-cb" value="${u.id}" checked> ${u.business_name || u.username} (#${u.id})</label>`).join("");
+      } else {
+          multi.style.display = "none";
+          multi.innerHTML = "";
+      }
     };
 
     window.openPromo = function(mode, username="") {
@@ -513,7 +537,13 @@ import MainLayout from "../../layouts/MainLayout.astro";
       let targetValue = null;
       if (tval === "specific") { targetType = "user"; targetValue = uId; }
       else if (tval === "select") { targetType = "user"; targetValue = usrSelVal; }
-      else if (tval !== "all") { targetType = "industry"; targetValue = tval; }
+      else { 
+          // Dynamic multiple-selection mode (handles All or Industry granular picks)
+          const checkedBoxes = Array.from(document.querySelectorAll('.promo-user-cb:checked')).map(cb => cb.value);
+          if(checkedBoxes.length === 0) { er.innerText = "Please select at least one client."; return; }
+          targetType = "multiple";
+          targetValue = checkedBoxes;
+      }
 
       try {
         const r=await fetch(API+"/admin/send-promo",{

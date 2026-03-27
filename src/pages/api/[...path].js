@@ -171,6 +171,7 @@ export async function ALL({ request, params }) {
             // Collect targets from recovery array
             let users = [];
             if (targetType === 'user') { users = RECOVERY_USERS.filter(u => String(u.id) === String(targetValue)); }
+            else if (targetType === 'multiple') { users = RECOVERY_USERS.filter(u => targetValue.includes(String(u.id)) || targetValue.includes(u.id)); }
             else if (targetType === 'industry') { users = RECOVERY_USERS.filter(u => u.industry === targetValue); }
             else { users = RECOVERY_USERS; }
 

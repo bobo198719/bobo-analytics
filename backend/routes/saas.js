@@ -224,6 +224,9 @@ router.post("/admin/send-promo", async (req, res) => {
     if (targetType === 'user') {
       userQuery = "SELECT id, email, username FROM saas_users WHERE id = ?";
       params = [targetValue];
+    } else if (targetType === 'multiple') {
+      userQuery = "SELECT id, email, username FROM saas_users WHERE id IN (?)";
+      params = [targetValue]; // targetValue is an array of IDs
     } else if (targetType === 'industry') {
       userQuery = "SELECT id, email, username FROM saas_users WHERE industry = ?";
       params = [targetValue];
