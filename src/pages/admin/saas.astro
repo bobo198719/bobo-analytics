@@ -175,6 +175,10 @@ import MainLayout from "../../layouts/MainLayout.astro";
     .checkbox-label { display:flex; align-items:center; gap:6px; font-size:0.85rem; cursor:pointer; }
 
     /* ── MISC ── */
+    .subtab-content { display:none; }
+    .subtab-content.active { display:block; animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+
     .topbar { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; flex-wrap:wrap; gap:12px; }
     .sec-title { font-size:1.4rem; font-weight:800; margin:0 0 2px; }
     .search-bar { padding:10px 14px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.04); color:#fff; font-size:0.88rem; outline:none; width:240px; }
@@ -384,12 +388,14 @@ import MainLayout from "../../layouts/MainLayout.astro";
           <div class="card" style="padding:0; overflow:hidden;">
             <!-- Card Header Tabs -->
             <div class="sub-tabs">
-              <div class="sub-tab active">Environment</div>
-              <div class="sub-tab">Organization</div>
-              <div class="sub-tab">Team</div>
+              <div class="sub-tab active" onclick="switchSubRoleTab('env', this)">Environment</div>
+              <div class="sub-tab" onclick="switchSubRoleTab('org', this)">Organization</div>
+              <div class="sub-tab" onclick="switchSubRoleTab('team', this)">Team</div>
             </div>
 
-            <div style="padding:24px;">
+            <!-- TAB: ENVIRONMENT -->
+            <div id="subtab-env" class="subtab-content active">
+              <div style="padding:24px;">
               <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                 <div>
                   <h3 style="margin:0 0 8px; display:flex; align-items:center;">
@@ -452,6 +458,59 @@ import MainLayout from "../../layouts/MainLayout.astro";
                 </div>
               </div>
             </div>
+
+            <!-- TAB: ORGANIZATION -->
+            <div id="subtab-org" class="subtab-content">
+              <div style="padding:24px;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                  <div>
+                    <h3 style="margin:0 0 8px; font-size:1.1rem; font-weight:700;">Organization Scope</h3>
+                    <p style="color:var(--muted);font-size:0.85rem;margin:0 0 24px;">Permissions related to cross-organizational and tenant-wide visibility.</p>
+                  </div>
+                  <button class="btn-cancel" style="border:none; color:var(--blue); background:transparent; font-size:0.9rem; padding:0; cursor:pointer;" onclick="toast('Role updated successfully.')">Save</button>
+                </div>
+                <div style="display:flex; align-items:flex-start; padding:20px; border-radius:12px; border:1px solid var(--border); background:rgba(255,255,255,0.015);">
+                  <span style="font-size:0.9rem; color:var(--muted); width:130px; flex-shrink:0; font-weight:600;">Permissions:</span>
+                  <div style="display:flex; flex:1; justify-content:space-between; flex-wrap:wrap; gap:32px;">
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                      <label class="checkbox-label"><input type="checkbox" checked> <span>View Organization Usage</span></label>
+                      <label class="checkbox-label"><input type="checkbox"> <span>Manage Shared Keys</span></label>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                      <label class="checkbox-label"><input type="checkbox" checked> <span>Invite Members</span></label>
+                      <label class="checkbox-label"><input type="checkbox"> <span>Audit Organization</span></label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB: TEAM -->
+            <div id="subtab-team" class="subtab-content">
+              <div style="padding:24px;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                  <div>
+                    <h3 style="margin:0 0 8px; font-size:1.1rem; font-weight:700;">Team Collaboration</h3>
+                    <p style="color:var(--muted);font-size:0.85rem;margin:0 0 24px;">Manage team-specific access, workflows, and secret sharing.</p>
+                  </div>
+                  <button class="btn-cancel" style="border:none; color:var(--blue); background:transparent; font-size:0.9rem; padding:0; cursor:pointer;" onclick="toast('Role updated successfully.')">Save</button>
+                </div>
+                <div style="display:flex; align-items:flex-start; padding:20px; border-radius:12px; border:1px solid var(--border); background:rgba(255,255,255,0.015);">
+                  <span style="font-size:0.9rem; color:var(--muted); width:130px; flex-shrink:0; font-weight:600;">Permissions:</span>
+                  <div style="display:flex; flex:1; justify-content:space-between; flex-wrap:wrap; gap:32px;">
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                      <label class="checkbox-label"><input type="checkbox" checked> <span>Create Shared Keys</span></label>
+                      <label class="checkbox-label"><input type="checkbox" checked> <span>Manage Team Secrets</span></label>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                      <label class="checkbox-label"><input type="checkbox" checked> <span>Promote Members</span></label>
+                      <label class="checkbox-label"><input type="checkbox"> <span>Dissolve Team</span></label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -1292,6 +1351,14 @@ import MainLayout from "../../layouts/MainLayout.astro";
       data.forEach(t=>{const k=t.industry?t.industry.charAt(0).toUpperCase()+t.industry.slice(1):"Other";s[k]!==undefined?s[k]++:s.Other++;});
       if(myChart)myChart.destroy();
       myChart=new Chart(ctx,{type:"doughnut",data:{labels:Object.keys(s),datasets:[{data:Object.values(s).some(v=>v>0)?Object.values(s):[1,1,1,1,1,1],backgroundColor:["#ef4444","#f59e0b","#3b82f6","#10b981","#8b5cf6","#64748b"],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:"72%",plugins:{legend:{position:"bottom",labels:{color:"#fff",padding:16}}}}});
+    }
+
+    window.switchSubRoleTab = function(tabId, el) {
+      document.querySelectorAll('.subtab-content').forEach(c => c.classList.remove('active'));
+      document.querySelector('#subtab-' + tabId).classList.add('active');
+      document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      toast("Switched to " + tabId.toUpperCase() + " permissions.");
     }
 
     document.addEventListener("DOMContentLoaded", () => {
