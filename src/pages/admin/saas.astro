@@ -1119,7 +1119,6 @@ import MainLayout from "../../layouts/MainLayout.astro";
         const d = await r.json();
         allUsers = d.success !== false ? (d.data || d) : [];
         document.getElementById("uCount").innerText = allUsers.length;
-        document.getElementById("kpi-users").innerText = allUsers.length;
         renderUsers(allUsers);
       } catch(e) {
         document.getElementById("usersTable").innerHTML=`<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--red);">Failed to load users.</td></tr>`;
