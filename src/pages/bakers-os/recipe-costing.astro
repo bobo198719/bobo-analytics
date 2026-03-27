@@ -346,6 +346,7 @@ import BakersOSLayout from "../../layouts/BakersOSLayout.astro";
 
         // SAVE FUNCTION
         async function saveRecipe() {
+            try {
                 const host = window.location.host;
                 const isSubdomain = host.split('.').length > 2 && host.split('.')[0] !== 'www';
                 const tenantId = isSubdomain ? host.split('.')[0] : 'default_baker';

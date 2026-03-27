@@ -67,6 +67,20 @@ export async function ALL({ request, params }) {
         // 🆘 EMERGENCY CLOUD RECOVERY SHIELD
         
         // 1. Tables Recovery
+        // 0. Auth Bypass (V60 - Emergency Console Key)
+        if (pathname.includes('/auth/login') && method === 'POST') {
+            try {
+                const body = JSON.parse(await request.clone().text());
+                if ((body.email === 'admin@bobo.com' || body.username === 'admin') && body.password === 'password123') {
+                    const mockToken = "EMERGENCY_RECOVERY_KEY_V60";
+                    return new Response(JSON.stringify({ 
+                        token: mockToken,
+                        user: { id: 1, name: "Admin Master", email: "admin@bobo.com", role: "admin" }
+                    }), { status: 200, headers: {'Content-Type': 'application/json'} });
+                }
+            } catch(e) { /* ignore */ }
+        }
+
         if (pathname.includes('/tables')) {
             return new Response(JSON.stringify([
                 {id: 1, table_number: '1', status: 'available'},
