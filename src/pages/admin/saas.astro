@@ -75,7 +75,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
       <nav class="nav-menu">
         <button class="menu-item active" onclick="switchTab('dashboard', this)"><span>📊</span> Dashboard Control</button>
         <button class="menu-item" onclick="switchTab('tenants', this)"><span>🏢</span> Tenant Registry</button>
-        <button class="menu-item" onclick="switchTab('billing', this)"><span>💸</span> Subscription Engine</button>
+
       </nav>
       <button class="menu-item" onclick="logout()" style="margin-top:auto; color:var(--neon-red)"><span>🚪</span> Destroy Session</button>
     </aside>
@@ -108,21 +108,13 @@ import MainLayout from "../../layouts/MainLayout.astro";
            </div>
         </div>
 
-        <div id="billing" class="section">
-          <h1>Subscription Engine (Production)</h1>
-          <div class="pay-banner">
-             <h2>Enterprise Tier Activation</h2>
-             <p style="color:var(--text-muted); margin-bottom:30px;">Upgrade to Production Tier Node Access with Verified SSL and Premium DB Bandwidth.</p>
-             <button class="btn-pay" onclick="payNow()">Subscribe Now (₹4,999 / yr)</button>
-             <p style="margin-top:20px; font-size:0.75rem; color:var(--text-muted)">Verification handled via Secure Razorpay Signature Bridge</p>
-          </div>
-        </div>
+
 
       </div>
     </main>
   </div>
 
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script is:inline>
     const API = "/api";
@@ -199,46 +191,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
       }
     }
 
-    // --- SECURE PAYMENT VERIFICATION ---
-    window.payNow = async function() {
-      const token = localStorage.getItem("token");
-      try {
-         const res = await fetch(API + "/create-order", {
-           method: "POST",
-           headers: { "Content-Type": "application/json", "Authorization": token },
-           body: JSON.stringify({ amount: 4999 })
-         });
-         const order = await res.json();
 
-         const options = {
-           key: "rzp_test_placeholder", 
-           amount: order.amount,
-           currency: "INR",
-           name: "Bobo Master OS",
-           order_id: order.id,
-           handler: async function (response) {
-              // FORWARD TO BACKEND FOR VERIFICATION
-              const verifyRes = await fetch(API + "/verify-payment", {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "Authorization": token },
-                body: JSON.stringify({
-                   razorpay_order_id: response.razorpay_order_id,
-                   razorpay_payment_id: response.razorpay_payment_id,
-                   razorpay_signature: response.razorpay_signature
-                })
-              });
-              const vData = await verifyRes.json();
-              if(vData.status === "success") {
-                 alert("✓ SECURE VERIFICATION COMPLETE: Payment Authenticated.");
-              } else {
-                 alert("✘ SECURITY ALERT: Payment signature failed verification.");
-              }
-           },
-           theme: { color: "#3b82f6" }
-         };
-         const rzp = new window.Razorpay(options); rzp.open();
-      } catch(e) { console.error(e); }
-    }
 
     function updateChart(data) {
       const ctx = document.getElementById('industryChart'); if(!ctx) return;
