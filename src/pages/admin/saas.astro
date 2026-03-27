@@ -204,6 +204,8 @@ import MainLayout from "../../layouts/MainLayout.astro";
         <button class="menu-item active" onclick="switchTab('dashboard',this)"><span>📊</span> Dashboard</button>
         <button class="menu-item" onclick="switchTab('users',this)"><span>👥</span> User Management</button>
         <button class="menu-item" onclick="switchTab('tenants',this)"><span>🏢</span> Tenant Registry</button>
+        <button class="menu-item" onclick="switchTab('onboarding',this)"><span>📩</span> Incoming Leads</button>
+        <button class="menu-item" onclick="switchTab('audit',this)"><span>📜</span> Audit Logs</button>
       </nav>
       <button class="menu-item" onclick="logout()" style="margin-top:auto;color:var(--red);"><span>🚪</span> Logout</button>
     </aside>
@@ -272,6 +274,30 @@ import MainLayout from "../../layouts/MainLayout.astro";
         </div>
       </div>
 
+      <!-- ONBOARDING TAB -->
+      <div id="onboarding" class="section">
+        <p style="font-size:1.4rem;font-weight:800;margin:0 0 4px;">Incoming Leads & Onboarding</p>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:20px;">Review and provision infrastructure for clients originating from boboanalytics.com/join.</p>
+        <div class="tbox">
+          <table>
+            <thead><tr><th>Date</th><th>Business</th><th>Owner</th><th>Contact</th><th>Industry</th><th>City</th><th>Action</th></tr></thead>
+            <tbody id="leadsTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- AUDIT TAB -->
+      <div id="audit" class="section">
+        <p style="font-size:1.4rem;font-weight:800;margin:0 0 4px;">Security & Auth Logs</p>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:20px;">Trace failed and successful authentication events dynamically via the edge shield.</p>
+        <div class="tbox">
+          <table>
+            <thead><tr><th>Timestamp</th><th>User / Identity</th><th>Outcome Status</th><th>Diagnostics / Message</th></tr></thead>
+            <tbody id="auditTable"></tbody>
+          </table>
+        </div>
+      </div>
+
     </main>
   </div>
 
@@ -318,18 +344,45 @@ import MainLayout from "../../layouts/MainLayout.astro";
     async function initSync() {
       const tok = localStorage.getItem("token");
       try {
-        const [sR,tR] = await Promise.all([
+        const [sR,tR,aR,lR] = await Promise.all([
           fetch(API+"/stats",{headers:{"Authorization":tok}}),
-          fetch(API+"/tenants",{headers:{"Authorization":tok}})
+          fetch(API+"/tenants",{headers:{"Authorization":tok}}),
+          fetch(API+"/admin/audit-logs",{headers:{"Authorization":tok}}),
+          fetch(API+"/admin/leads",{headers:{"Authorization":tok}})
         ]);
         if(sR.status===401) return logout();
+        
         const stats=await sR.json(), tenants=await tR.json();
+        const audits = aR.ok ? await aR.json() : [];
+        const leads = lR.ok ? await lR.json() : [];
         document.getElementById("kpi-users").innerText   = stats.users??stats.total??0;
         document.getElementById("kpi-active").innerText  = stats.active??0;
         document.getElementById("kpi-revenue").innerText = "₹"+(stats.revenue||0).toLocaleString();
         document.getElementById("tenantTable").innerHTML = tenants.length
-          ? tenants.map(t=>`<tr><td><strong>${t.name}</strong></td><td>${t.industry}</td><td class="status-active">${t.status}</td><td>₹${(t.revenue||0).toLocaleString()}</td></tr>`).join("")
+          ? tenants.map(t=>`<tr><td><strong>${t.name}</strong></td><td><span class="badg">${t.industry}</span></td><td class="status-active" style="color:var(--green);font-weight:bold;">${t.status}</td><td>₹${(t.revenue||0).toLocaleString()}</td></tr>`).join("")
           : `<tr><td colspan="4" style="text-align:center;padding:30px;color:var(--muted);">No nodes.</td></tr>`;
+          
+        document.getElementById("leadsTable").innerHTML = leads.length
+          ? leads.map(l=>`<tr>
+              <td style="color:var(--muted);font-size:0.8rem">${new Date(l.created_at).toLocaleString()}</td>
+              <td><strong>${l.businessName}</strong></td>
+              <td>${l.ownerName}</td>
+              <td style="font-size:0.85rem">${l.email}<br><span style="color:var(--muted)">${l.phone}</span></td>
+              <td><span class="badg">${l.industry}</span></td>
+              <td>${l.city}</td>
+              <td>${l.status==='pending' ? `<button onclick="approveLead('${l.id}', this)" class="btn-green" style="padding:6px 10px;font-size:0.8rem;">✅ Approve</button>` : `<span style="color:var(--green);font-weight:bold;">Provisioned</span>`}</td>
+             </tr>`).join("")
+          : `<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted);">No pending leads pipeline.</td></tr>`;
+
+        document.getElementById("auditTable").innerHTML = audits.length
+          ? audits.map(a=>`<tr>
+              <td style="color:var(--muted);font-size:0.8rem">${new Date(a.time).toLocaleString()}</td>
+              <td style="font-weight:bold">${a.user}</td>
+              <td style="color:${a.status==='Failed'?'var(--red)':'var(--green)'};font-weight:bold">${a.status}</td>
+              <td style="color:var(--muted)">${a.error || 'Authed OK'}</td>
+             </tr>`).join("")
+          : `<tr><td colspan="4" style="text-align:center;padding:30px;color:var(--muted);">No edge auth logs collected.</td></tr>`;
+
         updateChart(tenants);
       } catch(e) {
         document.getElementById("connStatus").innerText="● VPS OFFLINE — RECOVERY MODE";
@@ -373,6 +426,17 @@ import MainLayout from "../../layouts/MainLayout.astro";
         const created   = u.created_at?new Date(u.created_at).toLocaleDateString("en-IN"):"—";
         const safePass  = (u.plain_password||"").replace(/`/g,"\\`").replace(/'/g,"\\'");
         const hasPass   = u.plain_password&&u.plain_password.length>0;
+
+        window.approveLead = async function(id, btn) {
+           if(!confirm("Create infrastructure and send secure credentials via email?")) return;
+           btn.innerText = "Processing..."; btn.disabled = true;
+           try {
+             const r = await fetch(API+"/admin/approve-lead", { method:"POST", headers:{"Content-Type":"application/json","Authorization":localStorage.getItem("token")}, body:JSON.stringify({leadId:id}) });
+             const d = await r.json();
+             if(d.success) { alert("✅ Client Infrastructure Provisioned!"); initSync(); loadUsers(); }
+             else { alert("Error: "+d.error); btn.innerText="Error"; }
+           } catch(e) { alert("Network Error"); btn.innerText="✅ Approve"; btn.disabled=false; }
+        };
 
         return `<tr id="row-${u.id}">
           <td><code style="background:rgba(255,255,255,0.07);padding:1px 6px;border-radius:4px;font-size:0.75rem;">#${u.id}</code></td>
