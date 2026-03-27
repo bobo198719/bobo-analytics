@@ -171,11 +171,12 @@ export async function ALL({ request, params }) {
             } catch(e) { /* offline -> handle locally */ }
 
             // ⚡ SERVERLESS EDGE DISPATCH
-            const { targetType, targetValue, channels, subject, message } = JSON.parse(bodyText);
+            const { targetType, targetValue, channels, subject, message, scheduledAt } = JSON.parse(bodyText);
             const safeSubject = subject || "Secure Update from Bobo Analytics 🚀";
             const nodemailer = await import("nodemailer");
 
             let emailCount = 0; let waCount = 0; let smsCount = 0;
+            const campId = "C_" + Math.random().toString(36).substr(2, 9);
             
             // Collect targets from recovery array
             let users = [];
@@ -193,17 +194,23 @@ export async function ALL({ request, params }) {
             const twilioAuth = process.env.TWILIO_AUTH_TOKEN;
             const twilioFrom = process.env.TWILIO_PHONE_NUMBER || "+15017122661"; // Valid Twilio from-number
 
-            for (const u of users) {
-                const toPhone = /^\\+?[0-9]{10,15}$/.test(u.username) ? (u.username.startsWith('+') ? u.username : '+' + u.username) : null;
+            if (!scheduledAt) {
+                for (const u of users) {
+                    const toPhone = /^\\+?[0-9]{10,15}$/.test(u.username) ? (u.username.startsWith('+') ? u.username : '+' + u.username) : null;
                 const toEmail = u.email || (u.username.includes('@') ? u.username : null);
 
                 // 1. Email (support@)
                 if (channels.includes('email') && toEmail && process.env.SMTP_PASS) {
                     try {
+                        let trackedHtml = message.replace(/\\n/g, '<br>');
+                        trackedHtml = trackedHtml.replace(/href="([^"]*)"/g, 'href="https://boboanalytics.com/api/track/click/' + campId + '?url=$1"');
+                        trackedHtml += `<br><br><small>Sent officially via Bobo Analytics Support Engine</small>`;
+                        trackedHtml += `<img src="https://boboanalytics.com/api/track/open/${campId}" width="1" height="1" style="display:none;" />`;
+
                         await mailTransporter.sendMail({
                             from: '"Bobo Analytics" <support@boboanalytics.com>', to: toEmail,
                             subject: safeSubject,
-                            html: `<div style="font-family:sans-serif;">${message.replace(/\\n/g, '<br>')}<br><br><small>Sent officially via Bobo Analytics (support@boboanalytics.com)</small></div>`
+                            html: `<div style="font-family:sans-serif;">${trackedHtml}</div>`
                         });
                         emailCount++;
                     } catch(e) { console.error("Edge Email Error:", e); }
@@ -241,14 +248,19 @@ export async function ALL({ request, params }) {
                     } catch(e) { console.error("Edge SMS Error:", e); }
                 }
             }
+            } // end if !scheduledAt
             
             EMAIL_HISTORY.unshift({ 
+                id: campId,
                 time: new Date().toISOString(), 
                 subject: safeSubject, 
                 message: message, 
                 targetRoute: targetType === 'user' ? 'Specific Client' : (targetType === 'multiple' ? 'Custom Segment' : targetType.toUpperCase()), 
                 channels, 
-                recipients: users.length 
+                recipients: scheduledAt ? 'scheduled' : users.length,
+                status: scheduledAt ? 'scheduled' : 'sent',
+                opened: 0,
+                clicks: 0
             });
             if(EMAIL_HISTORY.length > 50) EMAIL_HISTORY.pop();
 
@@ -263,6 +275,24 @@ export async function ALL({ request, params }) {
     // 🛡️ EDGE-ONLY CONTROLLERS (Bypass Live VPS)
     // ==========================================
     
+    // CAMPAIGN TRACKING: PIXEL & CLICKS
+    if (pathname.startsWith('/track/open/')) {
+        const id = pathname.replace('/track/open/', '');
+        const c = EMAIL_HISTORY.find(x => x.id === id);
+        if(c) c.opened++;
+        const pixelParams = { status: 200, headers: {'Content-Type': 'image/gif', 'Cache-Control': 'no-store, no-cache, must-revalidate, private'} };
+        const pixelBuf = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64');
+        return new Response(pixelBuf, pixelParams);
+    }
+
+    if (pathname.startsWith('/track/click/')) {
+        const id = pathname.replace('/track/click/', '');
+        const c = EMAIL_HISTORY.find(x => x.id === id);
+        if(c) c.clicks++;
+        const redirectUrl = url.searchParams.get('url') || 'https://boboanalytics.com';
+        return Response.redirect(redirectUrl, 302);
+    }
+
     // INTERCEPT AUDIT LOGS
     if (pathname.includes('/admin/audit-logs')) {
         return new Response(JSON.stringify(AUTH_LOGS), { status: 200, headers: {'Content-Type': 'application/json'} });

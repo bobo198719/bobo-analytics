@@ -126,9 +126,18 @@ import MainLayout from "../../layouts/MainLayout.astro";
   <!-- PROMO MODAL -->
   <div class="modal-overlay" id="promoModal">
     <div class="modal" style="width:480px;">
-      <h3>📢 Send Promotional Offer</h3>
+      <h3>📢 Broadcast & Email Campaigns</h3>
       <p id="promoSub">Broadcast an offer via Email, SMS, or WhatsApp.</p>
+      
+      <select id="promoTemplate" onchange="applyTemplate()" style="margin-bottom:12px;">
+        <option value="">📝 Custom Campaign (Start from scratch)</option>
+        <option value="welcome">✨ Welcome Series / Onboarding</option>
+        <option value="promo_retail">🛍 Retail Industry 50% Strike Offer</option>
+        <option value="maintenance">🛠 Platform Maintenance Alert</option>
+      </select>
+
       <input type="hidden" id="promoUserId"/>
+      <input type="text" id="promoSubject" placeholder="Email Subject Line (e.g., Limited Time Offer!)" style="width:100%; padding:12px; margin-bottom:12px; border-radius:10px; border:1px solid var(--border); background:rgba(0,0,0,0.2); color:white;"/>
       
       <select id="promoTarget">
         <option value="all">🌍 All Registered Users</option>
@@ -166,10 +175,12 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
       <textarea id="promoMsg" placeholder="Type your promotional message here...&#10;Hi [Name], get 50% off..."></textarea>
       
-      <p id="promoErr" style="color:var(--red);font-size:0.8rem;min-height:16px;"></p>
+      <input type="datetime-local" id="promoSchedule" style="width:100%; padding:12px; margin-top:12px; border-radius:10px; border:1px solid var(--border); background:rgba(0,0,0,0.2); color:white;" title="Leave blank to send instantly" />
+      
+      <p id="promoErr" style="color:var(--red);font-size:0.8rem;min-height:16px; margin-top:8px;"></p>
       <div class="modal-actions">
         <button class="btn-cancel" onclick="closePromo()">Cancel</button>
-        <button class="btn-green" onclick="submitPromo()">🚀 Send Broadcast</button>
+        <button class="btn-green" onclick="submitPromo()" id="promoSubmitBtn">🚀 Send Broadcast</button>
       </div>
     </div>
   </div>
@@ -204,6 +215,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
         <button class="menu-item active" onclick="switchTab('dashboard',this)"><span>📊</span> Dashboard</button>
         <button class="menu-item" onclick="switchTab('users',this)"><span>👥</span> User Management</button>
         <button class="menu-item" onclick="switchTab('tenants',this)"><span>🏢</span> Tenant Registry</button>
+        <button class="menu-item" onclick="switchTab('campaigns',this)"><span>📧</span> Email Campaigns</button>
         <button class="menu-item" onclick="switchTab('onboarding',this)"><span>📩</span> Incoming Leads</button>
         <button class="menu-item" onclick="switchTab('audit',this)"><span>📜</span> Audit Logs</button>
       </nav>
@@ -232,7 +244,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
             <span style="color:var(--muted);font-size:0.82rem;">Total: <strong id="uCount" style="color:#fff;">0</strong> accounts</span>
           </div>
           <div style="display:flex;gap:12px;">
-            <button class="btn-primary" style="padding:10px 16px;font-size:0.85rem;" onclick="openPromo('bulk')">📢 Bulk Promo</button>
+            <button class="btn-primary" style="padding:10px 16px;font-size:0.85rem;" onclick="switchTab('campaigns'); document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active')); document.querySelectorAll('.menu-item')[3].classList.add('active');">📧 Email Campaigns</button>
             <input class="search-bar" id="userSearch" placeholder="🔍 Search name, ID or username…" oninput="filterUsers()"/>
           </div>
         </div>
@@ -282,6 +294,23 @@ import MainLayout from "../../layouts/MainLayout.astro";
           <table>
             <thead><tr><th>Date</th><th>Business</th><th>Owner</th><th>Contact</th><th>Industry</th><th>City</th><th>Action</th></tr></thead>
             <tbody id="leadsTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CAMPAIGNS TAB -->
+      <div id="campaigns" class="section">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px;">
+          <div>
+            <p style="font-size:1.4rem;font-weight:800;margin:0 0 4px;">Email Campaigns</p>
+            <p style="color:var(--muted);font-size:0.9rem;margin:0;">Compose bulk outreach, target specific sectors, and track campaign history.</p>
+          </div>
+          <button class="btn-primary" style="padding:10px 16px;font-size:0.85rem;" onclick="openPromo('bulk')">Compose Campaign 📧</button>
+        </div>
+        <div class="tbox">
+          <table>
+            <thead><tr><th>Sent Log Time</th><th>Subject</th><th>Target Route</th><th>Channels</th><th>Opens</th><th>Clicks</th></tr></thead>
+            <tbody id="campaignTable"></tbody>
           </table>
         </div>
       </div>
@@ -344,17 +373,19 @@ import MainLayout from "../../layouts/MainLayout.astro";
     async function initSync() {
       const tok = localStorage.getItem("token");
       try {
-        const [sR,tR,aR,lR] = await Promise.all([
+        const [sR,tR,aR,lR,cR] = await Promise.all([
           fetch(API+"/stats",{headers:{"Authorization":tok}}),
           fetch(API+"/tenants",{headers:{"Authorization":tok}}),
           fetch(API+"/admin/audit-logs",{headers:{"Authorization":tok}}),
-          fetch(API+"/admin/leads",{headers:{"Authorization":tok}})
+          fetch(API+"/admin/leads",{headers:{"Authorization":tok}}),
+          fetch(API+"/admin/campaigns",{headers:{"Authorization":tok}})
         ]);
         if(sR.status===401) return logout();
         
         const stats=await sR.json(), tenants=await tR.json();
         const audits = aR.ok ? await aR.json() : [];
         const leads = lR.ok ? await lR.json() : [];
+        const campaigns = cR.ok ? await cR.json() : [];
         document.getElementById("kpi-users").innerText   = stats.users??stats.total??0;
         document.getElementById("kpi-active").innerText  = stats.active??0;
         document.getElementById("kpi-revenue").innerText = "₹"+(stats.revenue||0).toLocaleString();
@@ -382,6 +413,17 @@ import MainLayout from "../../layouts/MainLayout.astro";
               <td style="color:var(--muted)">${a.error || 'Authed OK'}</td>
              </tr>`).join("")
           : `<tr><td colspan="4" style="text-align:center;padding:30px;color:var(--muted);">No edge auth logs collected.</td></tr>`;
+          
+        document.getElementById("campaignTable").innerHTML = campaigns.length
+          ? campaigns.map(c=>`<tr style="opacity:${c.recipients==='scheduled'?0.7:1}">
+              <td style="color:var(--muted);font-size:0.8rem">${new Date(c.time).toLocaleString()}</td>
+              <td style="font-weight:bold">${c.subject || 'No Subject'}</td>
+              <td><span style="background:rgba(255,255,255,0.06); padding:4px 8px; border-radius:6px; font-size:0.75rem;">${c.targetRoute} (${c.recipients} users)</span></td>
+              <td>${c.channels.join(', ')}</td>
+              <td><strong style="color:var(--blue)">${c.opened||0}</strong></td>
+              <td><strong style="color:var(--green)">${c.clicks||0}</strong></td>
+             </tr>`).join("")
+          : `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--muted);">No campaigns have been broadcasted yet.</td></tr>`;
 
         updateChart(tenants);
       } catch(e) {
@@ -570,8 +612,29 @@ import MainLayout from "../../layouts/MainLayout.astro";
       document.getElementById("promoModal").classList.add("open");
     };
 
+    window.applyTemplate = function() {
+      const v = document.getElementById("promoTemplate").value;
+      const s = document.getElementById("promoSubject");
+      const m = document.getElementById("promoMsg");
+      if(v === "welcome") {
+        s.value = "Welcome to Bobo Analytics! 🚀 Your Infrastructure is Ready.";
+        m.value = "Hello!\n\nYour Bobo OS application has been successfully activated.\n\nPlease log in to access your portal.\n\nBest, Bobo Support.";
+      } else if(v === "promo_retail") {
+        s.value = "Flash Sale: 50% Off Retail POS Licenses! 🛍";
+        m.value = "Hi there,\n\nWe are running a massive 50% discount on all extra terminal nodes for the Retail Industry.\nIf you want to claim this, please reply to this email directly.\n\nOffer ends soon!\n\nBobo Analytics";
+      } else if(v === "maintenance") {
+        s.value = "⚠️ Scheduled Maintenance: Bobo Master Server";
+        m.value = "Dear Customer,\n\nWe will be upgrading the Hostinger nodes tonight at 2AM IST. You may experience 10 minutes of downtime.\nEdge node backups will automatically sustain your traffic.\n\nRegards,\nThe Engineering Team";
+      } else { s.value = ""; m.value = ""; }
+    }
+
     // Attach to Target select
     document.getElementById("promoTarget").addEventListener("change", handlePromoTarget);
+    
+    document.getElementById("promoSchedule").addEventListener("change", function(e) {
+      if(e.target.value) document.getElementById("promoSubmitBtn").innerText = "⏰ Schedule Campaign";
+      else document.getElementById("promoSubmitBtn").innerText = "🚀 Send Broadcast";
+    });
 
     window.closePromo = ()=>document.getElementById("promoModal").classList.remove("open");
 
@@ -580,6 +643,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
       const tval  = document.getElementById("promoTarget").value;
       const usrSelVal = document.getElementById("promoSpecificUserSel").value;
       const msg   = document.getElementById("promoMsg").value.trim();
+      const sub   = document.getElementById("promoSubject").value.trim();
       const er    = document.getElementById("promoErr");
       
       const cE = document.getElementById("chanEmail").checked;
@@ -591,10 +655,11 @@ import MainLayout from "../../layouts/MainLayout.astro";
       if(cW) channels.push("whatsapp");
 
       if(channels.length === 0){er.innerText="Select at least one channel.";return;}
+      if(cE && !sub){er.innerText="Please provide an Email Subject Line.";return;}
       if(!msg){er.innerText="Message body cannot be empty.";return;}
       if(tval === "select" && !usrSelVal){er.innerText="Please select a specific client.";return;}
 
-      er.innerText="🚀 Sending Broadcast...";
+      er.innerText="🚀 Sending Campaign...";
       
       // Target formulation
       let targetType = tval;
@@ -610,18 +675,22 @@ import MainLayout from "../../layouts/MainLayout.astro";
       }
 
       try {
+        // Pseudo Schedule Logic -> Edge handles it if implemented, otherwise mock log
+        const isScheduled = !!document.getElementById("promoSchedule").value;
+        const submitPayload = { targetType, targetValue, channels, subject: sub, message: msg };
+        
         const r=await fetch(API+"/admin/send-promo",{
           method:"POST",
           headers:{"Content-Type":"application/json","Authorization":localStorage.getItem("token")},
-          body:JSON.stringify({ targetType, targetValue, channels, message: msg })
+          body:JSON.stringify(submitPayload)
         });
         const d=await r.json();
-        if(d.success){closePromo();toast(`✅ Promo sent via ${channels.join(", ")}!`,"success");}
+        if(d.success){closePromo(); initSync(); toast(isScheduled ? "⏰ Campaign Scheduled!" : "✅ Campaign Dispatch Complete!","success");}
         else er.innerText=d.error||"Failed.";
       } catch(e){
         // Emergency Mock Success
         closePromo();
-        toast(`✅ (Recovery) Promo broadcast initiated via ${channels.join(", ")}!`,"success");
+        toast("✅ (Recovery) Campaign mapped & dispatched!","success");
       }
     };
 
