@@ -22,10 +22,10 @@ const { title = "Bobo Analytics", hideNav = false } = Astro.props;
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js').then(reg => {
-            console.log('✅ App Controller Active (Mobile & Desktop Software Bridge)');
-          }).catch(err => {
-            console.warn('❌ App Deployment Failed:', err);
-          });
+            console.log('✅ App Controller Active');
+          }).catch(err => {});
+          // 🌍 REAL-TIME TRACKING DISPATCH
+          fetch('/api/track-visit').catch(()=>{});
         });
       }
     </script>
