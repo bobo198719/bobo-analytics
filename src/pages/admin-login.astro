@@ -9,12 +9,13 @@ import MainLayout from "../layouts/MainLayout.astro";
         <div class="icon-circle">🛡️</div>
         <h1>System Admin Portal</h1>
         <p>Restricted access. Authorized personnel only.</p>
+        <div style="font-size:0.75rem; color:#ef4444; margin-bottom:10px; font-weight:bold;">PRODUCTION ENGINE v15.2</div>
       </div>
 
       <form id="adminLoginForm" class="login-form">
         <div class="form-group">
-          <label for="adminId">Admin ID</label>
-          <input type="text" id="adminId" placeholder="Enter Admin ID" required autocomplete="off" />
+          <label for="adminId">Admin ID (Email)</label>
+          <input type="text" id="adminId" placeholder="admin@bobo.com" required autocomplete="off" />
         </div>
 
         <div class="form-group">
@@ -34,7 +35,7 @@ import MainLayout from "../layouts/MainLayout.astro";
 
   <style>
     .admin-login-wrapper { min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 60px 24px; background: radial-gradient(circle at center, rgba(239, 68, 68, 0.05) 0%, transparent 70%); }
-    .login-container { width: 100%; max-width: 440px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 24px; padding: 40px; backdrop-filter: blur(10px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); text-align: center; }
+    .login-container { width: 100%; max-width: 440px; background: rgba(5, 8, 16, 0.03); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 24px; padding: 40px; backdrop-filter: blur(10px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); text-align: center; }
     .icon-circle { width: 64px; height: 64px; background: rgba(239, 68, 68, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 20px; border: 1px solid rgba(239, 68, 68, 0.3); }
     .login-header h1 { font-size: 2rem; margin-bottom: 8px; }
     .login-form { display: flex; flex-direction: column; gap: 20px; text-align: left; }
@@ -51,33 +52,37 @@ import MainLayout from "../layouts/MainLayout.astro";
   <script is:inline>
     const form = document.getElementById("adminLoginForm");
     const errorEl = document.getElementById("error");
+    const API = "/api";
 
     form.onsubmit = async (e) => {
       e.preventDefault();
-      const username = document.getElementById("adminId").value.trim();
+      const email = document.getElementById("adminId").value.trim();
       const password = document.getElementById("password").value.trim();
       
-      if (!username || !password) {
-          errorEl.innerText = "Admin ID and Security Key are required.";
-          return;
+      errorEl.style.color = "#3b82f6";
+      errorEl.innerText = "Connecting to Production Master Node...";
+
+      try {
+        const res = await fetch(API + "/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password, industry: "admin" })
+        });
+        const data = await res.json();
+        
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+          errorEl.style.color = "#10b981";
+          errorEl.innerText = "✅ VAULT UNLOCKED. Redirecting...";
+          setTimeout(() => window.location.replace("/admin/saas"), 800);
+        } else {
+          errorEl.style.color = "#ef4444";
+          errorEl.innerText = "⚠️ REJECTED: " + (data.error || "Invalid Credentials");
+        }
+      } catch (err) {
+        errorEl.style.color = "#f59e0b";
+        errorEl.innerText = "❌ Master API Offline. Ensure 'npm run backend' is active.";
       }
-
-      errorEl.style.color = "#10b981";
-      errorEl.innerText = "Authenticating with Master Core...";
-
-      // Simulate secure master node verification
-      setTimeout(() => {
-          if (username === "admin" && password === "password123") {
-              console.log('✅ SYSTEM VAULT UNLOCKED');
-              localStorage.setItem("user", JSON.stringify({ role: 'admin', username }));
-              window.location.replace("/admin/saas");
-          } else {
-              console.error('❌ UNAUTHORIZED ATTEMPT');
-              errorEl.style.color = "#ef4444";
-              errorEl.innerText = "⚠️ INCORRECT KEY: Security Access Rejected.";
-              document.getElementById("password").value = "";
-          }
-      }, 500);
     };
   </script>
 </MainLayout>

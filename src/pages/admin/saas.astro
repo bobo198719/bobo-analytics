@@ -125,7 +125,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script is:inline>
-    const API = "http://localhost:5000/api";
+    const API = "/api";
     let myChart = null;
 
     // --- AUTH CHANNEL ---
@@ -135,10 +135,10 @@ import MainLayout from "../../layouts/MainLayout.astro";
       const errorEl = document.getElementById("authError");
 
       try {
-        const res = await fetch(API + "/login", {
+        const res = await fetch(API + "/auth/login", {
           method: "POST",
           headers: {"Content-Type": "application/json"},
-          body: JSON.stringify({ email, password })
+          body: JSON.stringify({ email, password, industry: "admin" })
         });
         const data = await res.json();
         if(data.token) {

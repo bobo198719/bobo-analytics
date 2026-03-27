@@ -217,4 +217,31 @@ router.post("/signup", async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+/**
+ * 7️⃣ FRONTEND COMPATIBILITY ALIASES
+ */
+router.get("/stats", async (req, res) => {
+    try {
+        const [[totalResult]] = await db.query("SELECT COUNT(*) as total FROM saas_users");
+        const [[activeResult]] = await db.query("SELECT COUNT(*) as active FROM saas_users WHERE status='active'");
+        const [[revResult]] = await db.query("SELECT SUM(amount) as revenue FROM payments");
+        res.json({
+            users: totalResult.total,
+            active: activeResult.active,
+            revenue: revResult.revenue || 0
+        });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.get("/tenants", async (req, res) => {
+    try {
+        const [users] = await db.query(
+            `SELECT business_name as name, industry, status, amount_paid as revenue 
+            FROM saas_users 
+            ORDER BY created_at DESC`
+        );
+        res.json(users);
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 module.exports = router;

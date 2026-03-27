@@ -10,7 +10,7 @@ export async function ALL({ request, params }) {
         return undefined; // Let Vercel Astro handle its own high-performance V2 bridges
     }
 
-    const hostingerUrl = "http://srv1449576.hstgr.cloud:5000";
+    const hostingerUrl = "http://187.124.97.144:5000";
     
     // 🔥 ROUTE PARSE LOGIC
     let targetPath = pathname + url.search;
