@@ -295,7 +295,9 @@ import MainLayout from "../../layouts/MainLayout.astro";
         <button class="menu-item" onclick="switchTab('onboarding',this)"><span>📩</span> <span>Incoming Leads</span></button>
         
         <div style="font-size:0.65rem; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:1px; margin:24px 0 8px 16px;">Settings</div>
-        <button class="menu-item" onclick="toast('System configuration locked.')"><span>⚙️</span> <span>System Setup</span></button>
+        <button id="sysSetupBtn" class="menu-item" onclick="handleSettingsClick(this)">
+          <span id="sysLockIcon">🔒</span> <span id="sysSetupText">System Setup (Locked)</span>
+        </button>
       </nav>
 
       <div style="margin-top:auto; padding-top:20px; border-top:1px solid var(--border);">
@@ -524,6 +526,48 @@ import MainLayout from "../../layouts/MainLayout.astro";
         </div>
       </div>
 
+      <!-- SETTINGS TAB -->
+      <div id="settings" class="section">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+          <div>
+            <p class="sec-title">Global System Configuration</p>
+            <p style="color:var(--muted);font-size:0.9rem;">Configure environment variables, edge endpoints, and production SMTP masters.</p>
+          </div>
+          <button class="ab ab-del" style="padding:10px 20px;" onclick="lockSystemNow()">🔒 Lock Configuration</button>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+          <div class="card">
+            <h4 style="margin:0 0 16px;">📡 Edge Network Discovery</h4>
+            <label class="card-label">Primary API Endpoint</label>
+            <input type="text" value="https://boboanalytics.com/api" disabled />
+            <label class="card-label">Vercel Proxy Timeout (ms)</label>
+            <input type="number" value="10000" />
+          </div>
+          <div class="card">
+            <h4 style="margin:0 0 16px;">📧 SMTP Master Gateway</h4>
+            <label class="card-label">Sending Identity</label>
+            <input type="text" value="support@boboanalytics.com" />
+            <label class="card-label">SMTP Host</label>
+            <input type="text" value="smtp.hostinger.com" />
+          </div>
+        </div>
+        
+        <div class="card" style="margin-top:24px;">
+          <h4 style="margin:0 0 16px;">🛡️ Security Boundaries</h4>
+          <div style="display:flex; gap:32px;">
+            <label class="checkbox-label"><input type="checkbox" checked> Require MFA for Domain Swapping</label>
+            <label class="checkbox-label"><input type="checkbox" checked> Log all Edge Clicks</label>
+            <label class="checkbox-label"><input type="checkbox"> Maintenance Mode (Global)</label>
+          </div>
+        </div>
+
+        <div style="margin-top:24px; display:flex; gap:12px;">
+          <button class="btn-primary" onclick="toast('System parameters synced to Edge nodes.')">Save Cloud Configuration</button>
+          <button class="btn-cancel" onclick="switchTab('dashboard', document.querySelectorAll('.menu-item')[0])">Revert Changes</button>
+        </div>
+      </div>
+
       <!-- AUDIT TAB -->
       <div id="audit" class="section">
         <p style="font-size:1.4rem;font-weight:800;margin:0 0 4px;">Security & Auth Logs</p>
@@ -571,6 +615,10 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
     // ── TABS ──────────────────────────────────────────────────────
     window.switchTab = function(id,el) {
+      if(id === 'settings' && localStorage.getItem("sysLocked") !== "0") {
+        toast("🛡️ ACCESS DENIED: System Setup is Locked.","error");
+        return;
+      }
       document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
       document.getElementById(id).classList.add("active");
       document.querySelectorAll(".menu-item").forEach(m=>m.classList.remove("active"));
@@ -963,7 +1011,42 @@ import MainLayout from "../../layouts/MainLayout.astro";
       checkAuth();
       if(localStorage.getItem("theme")==="light") document.body.classList.add("light-theme");
       if(localStorage.getItem("sidebarCollapsed")==="1") document.querySelector('.sidebar').classList.add('collapsed');
+      refreshLockUI();
     });
+    
+    window.handleSettingsClick = function(btn) {
+      const isLocked = localStorage.getItem("sysLocked") !== "0";
+      if(isLocked) {
+        if(confirm("🔑 UNLOCK SYSTEM SETUP?\n\nThis requires Super-Admin authorization. Ensure you are in a secure environment.")) {
+          localStorage.setItem("sysLocked", "0");
+          refreshLockUI();
+          toast("🔓 System Unlocked. Entering Setup...","success");
+          switchTab('settings', btn);
+        }
+      } else {
+        switchTab('settings', btn);
+      }
+    }
+
+    window.lockSystemNow = function() {
+      localStorage.setItem("sysLocked", "1");
+      refreshLockUI();
+      switchTab('dashboard', document.querySelectorAll('.menu-item')[0]);
+      toast("🛡️ System Settings Locked.","success");
+    }
+
+    function refreshLockUI() {
+      const isLocked = localStorage.getItem("sysLocked") !== "0";
+      const icon = document.getElementById("sysLockIcon");
+      const text = document.getElementById("sysSetupText");
+      if(isLocked) {
+        icon.innerText = "🔒";
+        text.innerText = "System Setup (Locked)";
+      } else {
+        icon.innerText = "⚙️";
+        text.innerText = "System Configuration";
+      }
+    }
     
     window.toggleTheme = function() {
       document.body.classList.toggle('light-theme');
