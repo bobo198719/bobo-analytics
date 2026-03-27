@@ -170,6 +170,33 @@ router.post("/admin/delete-user", async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+/**
+ * 🔑 ADMIN: RESET USER PASSWORD
+ */
+router.post("/admin/reset-password", async (req, res) => {
+  try {
+    const { userId, newPassword } = req.body;
+    if (!userId || !newPassword || newPassword.length < 6) {
+      return res.status(400).json({ error: "userId and newPassword (min 6 chars) are required." });
+    }
+    const hash = await bcrypt.hash(newPassword, 10);
+
+    // Update saas_users
+    await db.query("UPDATE saas_users SET password_hash = ? WHERE id = ?", [hash, userId]);
+
+    // Also update admin_users mirror if username matches
+    const [[user]] = await db.query("SELECT username FROM saas_users WHERE id = ?", [userId]);
+    if (user) {
+      await db.query("UPDATE admin_users SET password_hash = ? WHERE username = ?", [hash, user.username]);
+    }
+
+    res.json({ success: true, message: `Password reset for user #${userId}` });
+  } catch (err) {
+    console.error("Reset Password Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.get("/admin/logins", async (req, res) => {
   try {
     const [users] = await db.query(
