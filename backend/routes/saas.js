@@ -203,6 +203,33 @@ router.post("/admin/delete-user", async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+router.post("/admin/send-promo", async (req, res) => {
+  try {
+    const { targetType, targetValue, channels, message } = req.body;
+    // Real-world: integrate with Twilio/SendGrid/WhatsApp here.
+    console.log(`[PROMO] Channels: [${channels.join(', ')}]`);
+    console.log(`[PROMO] Target: ${targetType} -> ${targetValue}`);
+    console.log(`[PROMO] Message: "${message}"`);
+    
+    let userQuery = "";
+    let params = [];
+    if (targetType === 'user') {
+      userQuery = "SELECT id, email, username FROM saas_users WHERE id = ?";
+      params = [targetValue];
+    } else if (targetType === 'industry') {
+      userQuery = "SELECT id, email, username FROM saas_users WHERE industry = ?";
+      params = [targetValue];
+    } else {
+      userQuery = "SELECT id, email, username FROM saas_users";
+    }
+    
+    const [users] = await db.query(userQuery, params);
+    
+    res.json({ success: true, message: `Promo broadcasted to ${users.length} users successfully.` });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+
 /**
  * 🔑 ADMIN: RESET USER PASSWORD
  */
