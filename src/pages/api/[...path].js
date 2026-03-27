@@ -519,7 +519,13 @@ export async function ALL({ request, params }) {
             return new Response(JSON.stringify({ 
                 users: RECOVERY_USERS.length, 
                 active: RECOVERY_USERS.filter(u => u.status === 'active').length, 
-                revenue: totalRev 
+                revenue: totalRev,
+                visits: 213570,
+                views: 547913,
+                duration: "5h 34m",
+                monthly: [120, 200, 300, 250, 400],
+                devices: { mobile: 58, desktop: 32, tablet: 10 },
+                sources: [40, 30, 30]
             }), { status: 200, headers: {'Content-Type': 'application/json'} });
         }
 
