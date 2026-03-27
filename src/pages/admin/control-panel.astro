@@ -65,6 +65,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
       <nav class="nav-menu">
         <button class="menu-item active" onclick="switchTab('dashboard', this)"><span>📊</span> Dashboard</button>
         <button class="menu-item" onclick="switchTab('tenants', this)"><span>🏢</span> Tenants</button>
+        <button class="menu-item" onclick="switchTab('audit', this)"><span>📜</span> Audit Logs</button>
         <button class="menu-item" onclick="switchTab('billing', this)"><span>💸</span> Billing</button>
       </nav>
       <button class="menu-item" onclick="logout()" style="margin-top:auto; color:var(--neon-red)"><span>🚪</span> Sign Out</button>
@@ -89,6 +90,16 @@ import MainLayout from "../../layouts/MainLayout.astro";
             <table>
               <thead><tr><th>Name</th><th>Industry</th><th>Status</th><th>Yield</th></tr></thead>
               <tbody id="tenantTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="audit" class="section">
+          <h1>Security & Auth Logs</h1>
+          <div class="table-box">
+            <table>
+              <thead><tr><th>Time</th><th>User / Email</th><th>Status</th><th>Diagnostics</th></tr></thead>
+              <tbody id="auditTable"></tbody>
             </table>
           </div>
         </div>
@@ -145,19 +156,37 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
     async function initSync() {
       const token = localStorage.getItem("token");
-      const [statsR, tenantR] = await Promise.all([
+      const [statsR, tenantR, auditR] = await Promise.all([
         fetch(API + "/stats", { headers: { "Authorization": token } }),
-        fetch(API + "/tenants", { headers: { "Authorization": token } })
+        fetch(API + "/tenants", { headers: { "Authorization": token } }),
+        fetch(API + "/admin/audit-logs", { headers: { "Authorization": token } })
       ]);
       if(statsR.status === 401) return logout();
       const stats = await statsR.json();
       const tenants = await tenantR.json();
+      const audits = auditR.ok ? await auditR.json() : [];
+
       document.getElementById("users").innerText = stats.users;
       document.getElementById("active").innerText = stats.active;
       document.getElementById("revenue").innerText = "₹" + stats.revenue.toLocaleString();
+      
       let html = "";
       tenants.forEach(t => { html += `<tr><td><strong>${t.name}</strong></td><td>${t.industry}</td><td class="status-active">${t.status}</td><td>₹${t.revenue.toLocaleString()}</td></tr>`; });
       document.getElementById("tenantTable").innerHTML = html || '<tr><td colspan="4">No Records.</td></tr>';
+      
+      let auditHtml = "";
+      audits.forEach(a => { 
+        const isFail = a.status === 'Failed';
+        const color = isFail ? 'var(--neon-red)' : 'var(--neon-green)';
+        auditHtml += `<tr>
+            <td style="color:var(--text-muted);font-size:0.8rem;">${new Date(a.time).toLocaleString()}</td>
+            <td><strong>${a.user}</strong></td>
+            <td style="color:${color};font-weight:bold;">${a.status}</td>
+            <td style="color:var(--text-muted);">${a.error || 'Authed OK'}</td>
+        </tr>`; 
+      });
+      document.getElementById("auditTable").innerHTML = auditHtml || '<tr><td colspan="4">No Logs Captured Yet.</td></tr>';
+
       updateChart(tenants);
     }
 

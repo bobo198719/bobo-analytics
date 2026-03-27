@@ -16,8 +16,10 @@ const RECOVERY_USERS = [
     { id: 76,  username: 'health_admin',   email: null,               plain_password: 'password123',  business_name: 'Apollo Hospital',     industry: 'healthcare', plan_type: 'pro',        status: 'active', created_at: '2026-03-16T00:00:00Z' },
     { id: 77,  username: 'retail_admin',   email: null,               plain_password: 'password123',  business_name: 'Big Bazaar',          industry: 'retail',     plan_type: 'enterprise', status: 'active', created_at: '2026-03-16T00:00:00Z' },
     { id: 78,  username: 'baker_admin',    email: null,               plain_password: 'password123',  business_name: 'Trivia Bakes Admin',  industry: 'bakery',     plan_type: 'pro',        status: 'active', created_at: '2026-03-16T00:00:00Z' },
-    { id: 80,  username: 'cloth_admin',    email: null,               plain_password: 'BOBO_9FPOZI',  business_name: 'Fashion Hub',         industry: 'fashion',    plan_type: 'enterprise', status: 'active', created_at: '2026-03-16T00:00:00Z' },
 ];
+
+// 🕵️ AUDIT LOG REGISTRY
+const AUTH_LOGS = [];
 
 export async function ALL({ request, params }) {
     const url = new URL(request.url);
@@ -297,6 +299,23 @@ export async function ALL({ request, params }) {
         if (pathname.includes('/api/settings') && typeof data === 'string') {
             try { data = JSON.parse(data); } catch(e) {}
         }
+        
+        // 📝 LOG AUTHENTICATION ATTEMPTS FOR AUDIT
+        if (pathname.includes('/auth/login') && method === 'POST') {
+            const cloneReq = request.clone();
+            const body = await cloneReq.text();
+            let parsed = {}; try { parsed = JSON.parse(body); } catch(e){}
+            const email = parsed.email || parsed.username || "Unknown";
+            
+            if (resProxy.status === 200 || resProxy.status === 201) {
+                AUTH_LOGS.unshift({ time: new Date().toISOString(), user: email, status: 'Success', error: null });
+            } else if (resProxy.status >= 400) {
+                let errStr = "Invalid Credentials";
+                try { const r = JSON.parse(responseText); errStr = r.error || r.message || statusCode; } catch(e){}
+                AUTH_LOGS.unshift({ time: new Date().toISOString(), user: email, status: 'Failed', error: errStr });
+            }
+            if (AUTH_LOGS.length > 100) AUTH_LOGS.pop(); // keep last 100
+        }
 
         return new Response(JSON.stringify(data), { 
             status: resProxy.status, 
@@ -306,24 +325,36 @@ export async function ALL({ request, params }) {
     } catch (err) {
         // 🆘 EMERGENCY CLOUD RECOVERY SHIELD (V62)
         
+        // INTERCEPT AUDIT LOGS
+        if (pathname.includes('/admin/audit-logs')) {
+            return new Response(JSON.stringify(AUTH_LOGS), { status: 200, headers: {'Content-Type': 'application/json'} });
+        }
+
+        
         if (pathname.includes('/tables')) {
             return new Response(JSON.stringify([
                 {id: 1, table_number: '1', status: 'available'},
                 {id: 2, table_number: '2', status: 'available'}
             ]), { status: 200, headers: {'Content-Type': 'application/json'} });
         }
-        
+        const getPlanRev = (plan) => {
+            if(plan === 'enterprise') return 4999;
+            if(plan === 'pro') return 2499;
+            return 0; // Trial or undefined
+        };
+
         if (pathname.includes('/stats')) {
+            const totalRev = RECOVERY_USERS.reduce((acc, u) => acc + getPlanRev(u.plan_type), 0);
             return new Response(JSON.stringify({ 
                 users: RECOVERY_USERS.length, 
                 active: RECOVERY_USERS.filter(u => u.status === 'active').length, 
-                revenue: 125000 
+                revenue: totalRev 
             }), { status: 200, headers: {'Content-Type': 'application/json'} });
         }
 
         if (pathname.includes('/tenants')) {
             return new Response(JSON.stringify(
-                RECOVERY_USERS.map(u => ({ name: u.business_name, industry: u.industry, status: u.status, revenue: 0 }))
+                RECOVERY_USERS.map(u => ({ name: u.business_name || u.username, industry: u.industry, status: u.status, revenue: getPlanRev(u.plan_type) }))
             ), { status: 200, headers: {'Content-Type': 'application/json'} });
         }
 
