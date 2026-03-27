@@ -492,6 +492,29 @@ export async function ALL({ request, params }) {
             ), { status: 200, headers: {'Content-Type': 'application/json'} });
         }
 
+        if (pathname.endsWith('/users') && method === 'GET') {
+            return new Response(JSON.stringify(RECOVERY_USERS), { status: 200, headers: {'Content-Type': 'application/json'} });
+        }
+
+        if (pathname.endsWith('/users') && method === 'POST') {
+            const body = await request.json();
+            const newUser = { 
+                id: RECOVERY_USERS.length + 100, 
+                ...body, 
+                status: "active", 
+                created_at: new Date().toISOString() 
+            };
+            RECOVERY_USERS.push(newUser);
+            return new Response(JSON.stringify({ success: true, data: newUser }), { status: 201, headers: {'Content-Type': 'application/json'} });
+        }
+
+        if (pathname.includes('/users/') && method === 'PUT') {
+            const id = pathname.split('/').pop();
+            const u = RECOVERY_USERS.find(x => String(x.id) === String(id));
+            if (u) u.status = u.status === "active" ? "inactive" : "active";
+            return new Response(JSON.stringify({ success: true, data: u }), { status: 200, headers: {'Content-Type': 'application/json'} });
+        }
+
         if (pathname.includes('/admin/apis')) {
             return new Response(JSON.stringify({ success: true, count: 2, data: [
                 { name: "Production Core", key: "live_...8a9", usage: 82000, quota: 100000, status: "Healthy" },
