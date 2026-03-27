@@ -362,7 +362,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
         <div class="card"><canvas id="industryChart" style="height:300px;"></canvas></div>
       </div>
       
-      <!-- ROLES & PERMISSIONS TAB MATCHING RAPIDAPI -->
+      <!-- ROLES & PERMISSIONS TAB -->
       <div id="roles" class="section">
         <div class="topbar" style="margin-bottom:12px;">
           <div>
@@ -371,7 +371,6 @@ import MainLayout from "../../layouts/MainLayout.astro";
           </div>
         </div>
 
-        <!-- TABS -->
         <div class="role-tabs">
           <div id="rtab-org" class="role-tab" onclick="switchRoleTab('org')">Organization Roles</div>
           <div id="rtab-usr" class="role-tab active" onclick="switchRoleTab('usr')">User Roles</div>
@@ -384,134 +383,104 @@ import MainLayout from "../../layouts/MainLayout.astro";
             <span style="font-size:1.8rem; line-height:0; display:inline-block; margin-top:-2px;">⊕</span> Add a User Role
           </div>
 
-          <!-- USER ROLE CARD -->
           <div class="card" style="padding:0; overflow:hidden;">
-            <!-- Card Header Tabs -->
             <div class="sub-tabs">
               <div class="sub-tab active" onclick="switchSubRoleTab('env', this)">Environment</div>
               <div class="sub-tab" onclick="switchSubRoleTab('org', this)">Organization</div>
               <div class="sub-tab" onclick="switchSubRoleTab('team', this)">Team</div>
             </div>
 
-            <!-- TAB: ENVIRONMENT -->
             <div id="subtab-env" class="subtab-content active">
               <div style="padding:24px;">
-              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                <div>
-                  <h3 style="margin:0 0 8px; display:flex; align-items:center;">
-                    <span style="font-size:1.1rem; margin-right:8px; font-weight:700;">User</span>
-                    <span style="font-size:0.75rem; background:rgba(148,163,184,0.15); color:var(--muted); padding:3px 8px; border-radius:12px;">Default</span>
-                  </h3>
-                  <p style="color:var(--muted);font-size:0.85rem;margin:0 0 24px;">Users can create their own APIs and organizations within the environment.</p>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                  <h3 style="margin:0 0 8px; font-size:1.1rem; font-weight:700;">Super Admin</h3>
+                  <button class="btn-cancel" style="border:none; color:var(--blue); background:transparent; font-size:0.9rem; padding:0; cursor:pointer;" onclick="toast('Role updated successfully.')">Save</button>
                 </div>
-                <button class="btn-cancel" style="border:none; color:var(--blue); background:transparent; font-size:0.9rem; padding:0; cursor:pointer;" onclick="toast('Role updated successfully.')">Save</button>
-              </div>
-
-              <!-- PERMISSIONS GRID -->
-              <div style="display:flex; align-items:flex-start; padding:20px; border-radius:12px; border:1px solid var(--border); background:rgba(255,255,255,0.015);">
-                <span style="font-size:0.9rem; color:var(--muted); width:130px; flex-shrink:0; font-weight:600;">Permissions:</span>
-                <div style="display:flex; flex:1; justify-content:space-between; flex-wrap:wrap; gap:32px;">
-                  
-                  <div style="display:flex; flex-direction:column; gap:12px;">
-                    <label class="checkbox-label"><input type="checkbox" checked> <span>Personal Context</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
-                    <div class="perm-branch">
-                      <label class="checkbox-label" style="color:var(--muted)"><input type="checkbox" checked> <span>Access Provider Dashboard</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
-                    </div>
-                  </div>
-
-                  <div style="display:flex; flex-direction:column; gap:12px;">
-                    <label class="checkbox-label"><input type="checkbox" checked> <span>Create Organization</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
-                  </div>
-
-                  <div style="display:flex; flex-direction:column; gap:12px;">
-                    <label class="checkbox-label"><input type="checkbox" checked> <span>Admin Panel Access</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
+                <div style="display:flex; align-items:flex-start; padding:20px; border-radius:12px; border:1px solid var(--border); background:rgba(255,255,255,0.015);">
+                  <span style="font-size:0.9rem; color:var(--muted); width:130px; flex-shrink:0; font-weight:600;">Permissions:</span>
+                  <div style="display:flex; flex:1; justify-content:space-between; flex-wrap:wrap; gap:32px;">
+                    <label class="checkbox-label"><input type="checkbox" checked> <span>Full System Access</span></label>
+                    <label class="checkbox-label"><input type="checkbox" checked> <span>User Management</span></label>
+                    <label class="checkbox-label"><input type="checkbox" checked> <span>Billing Control</span></label>
                   </div>
                 </div>
               </div>
             </div>
             
-            <!-- ENVIRONMENT ADMIN CARD SEPARATOR -->
-            <div style="border-top:1px solid var(--border); padding:24px;">
-              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                <div>
-                  <h3 style="margin:0 0 8px; font-size:1.1rem; font-weight:700;">Environment Admin</h3>
-                  <p style="color:var(--muted);font-size:0.85rem;margin:0 0 24px;">Access to the Admin Panel and the ability to create their own APIs and organizations within the environment.</p>
-                </div>
-                <button class="btn-cancel" style="border:none; color:var(--blue); background:transparent; font-size:0.9rem; padding:0; cursor:pointer;" onclick="toast('Role updated successfully.')">Save</button>
-              </div>
-
-              <div style="display:flex; align-items:flex-start; padding:20px; border-radius:12px; border:1px solid var(--border); background:rgba(255,255,255,0.015);">
-                <span style="font-size:0.9rem; color:var(--muted); width:130px; flex-shrink:0; font-weight:600;">Permissions:</span>
-                <div style="display:flex; flex:1; justify-content:space-between; flex-wrap:wrap; gap:32px;">
-                  <div style="display:flex; flex-direction:column; gap:12px;">
-                    <label class="checkbox-label"><input type="checkbox" checked> <span>Personal Context</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
-                    <div class="perm-branch">
-                      <label class="checkbox-label" style="color:var(--muted)"><input type="checkbox" checked> <span>Access Provider Dashboard</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
-                    </div>
-                  </div>
-                  <div style="display:flex; flex-direction:column; gap:12px;">
-                    <label class="checkbox-label"><input type="checkbox" checked> <span>Create Organization</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
-                  </div>
-                  <div style="display:flex; flex-direction:column; gap:12px;">
-                    <label class="checkbox-label"><input type="checkbox" checked> <span>Admin Panel Access</span> <span style="color:var(--blue);font-size:0.8rem;cursor:pointer;">ⓘ</span></label>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- TAB: ORGANIZATION -->
             <div id="subtab-org" class="subtab-content">
               <div style="padding:24px;">
-                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                  <div>
-                    <h3 style="margin:0 0 8px; font-size:1.1rem; font-weight:700;">Organization Scope</h3>
-                    <p style="color:var(--muted);font-size:0.85rem;margin:0 0 24px;">Permissions related to cross-organizational and tenant-wide visibility.</p>
-                  </div>
-                  <button class="btn-cancel" style="border:none; color:var(--blue); background:transparent; font-size:0.9rem; padding:0; cursor:pointer;" onclick="toast('Role updated successfully.')">Save</button>
-                </div>
-                <div style="display:flex; align-items:flex-start; padding:20px; border-radius:12px; border:1px solid var(--border); background:rgba(255,255,255,0.015);">
-                  <span style="font-size:0.9rem; color:var(--muted); width:130px; flex-shrink:0; font-weight:600;">Permissions:</span>
-                  <div style="display:flex; flex:1; justify-content:space-between; flex-wrap:wrap; gap:32px;">
-                    <div style="display:flex; flex-direction:column; gap:12px;">
-                      <label class="checkbox-label"><input type="checkbox" checked> <span>View Organization Usage</span></label>
-                      <label class="checkbox-label"><input type="checkbox"> <span>Manage Shared Keys</span></label>
-                    </div>
-                    <div style="display:flex; flex-direction:column; gap:12px;">
-                      <label class="checkbox-label"><input type="checkbox" checked> <span>Invite Members</span></label>
-                      <label class="checkbox-label"><input type="checkbox"> <span>Audit Organization</span></label>
-                    </div>
-                  </div>
+                <h3 style="margin:0 0 8px; font-size:1.1rem; font-weight:700;">Organization Level</h3>
+                <div class="card" style="background:rgba(255,255,255,0.01);">
+                   <label class="checkbox-label"><input type="checkbox" checked> <span>Manage Tenants</span></label>
+                   <label class="checkbox-label"><input type="checkbox" checked> <span>View Global Logs</span></label>
                 </div>
               </div>
             </div>
 
-            <!-- TAB: TEAM -->
             <div id="subtab-team" class="subtab-content">
               <div style="padding:24px;">
-                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                  <div>
-                    <h3 style="margin:0 0 8px; font-size:1.1rem; font-weight:700;">Team Collaboration</h3>
-                    <p style="color:var(--muted);font-size:0.85rem;margin:0 0 24px;">Manage team-specific access, workflows, and secret sharing.</p>
-                  </div>
-                  <button class="btn-cancel" style="border:none; color:var(--blue); background:transparent; font-size:0.9rem; padding:0; cursor:pointer;" onclick="toast('Role updated successfully.')">Save</button>
-                </div>
-                <div style="display:flex; align-items:flex-start; padding:20px; border-radius:12px; border:1px solid var(--border); background:rgba(255,255,255,0.015);">
-                  <span style="font-size:0.9rem; color:var(--muted); width:130px; flex-shrink:0; font-weight:600;">Permissions:</span>
-                  <div style="display:flex; flex:1; justify-content:space-between; flex-wrap:wrap; gap:32px;">
-                    <div style="display:flex; flex-direction:column; gap:12px;">
-                      <label class="checkbox-label"><input type="checkbox" checked> <span>Create Shared Keys</span></label>
-                      <label class="checkbox-label"><input type="checkbox" checked> <span>Manage Team Secrets</span></label>
-                    </div>
-                    <div style="display:flex; flex-direction:column; gap:12px;">
-                      <label class="checkbox-label"><input type="checkbox" checked> <span>Promote Members</span></label>
-                      <label class="checkbox-label"><input type="checkbox"> <span>Dissolve Team</span></label>
-                    </div>
-                  </div>
+                <h3 style="margin:0 0 8px; font-size:1.1rem; font-weight:700;">Team Level</h3>
+                <div class="card" style="background:rgba(255,255,255,0.01);">
+                   <label class="checkbox-label"><input type="checkbox" checked> <span>Invite Members</span></label>
+                   <label class="checkbox-label"><input type="checkbox"> <span>Approve Requests</span></label>
                 </div>
               </div>
             </div>
-
           </div>
+        </div>
+      </div>
+
+      <!-- APIs MODULE -->
+      <div id="apis" class="section">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px;">
+          <div><p class="sec-title">Global API Registry</p><p style="color:var(--muted);font-size:0.9rem;">Catalog of all exposed edge functions and VPS endpoints.</p></div>
+          <button class="btn-primary" onclick="toast('API provisioning started...')">⊕ Create API Endpoint</button>
+        </div>
+        <div class="tbox">
+          <table>
+            <thead><tr><th>Name</th><th>Route</th><th>Status</th><th>Avg Latency</th></tr></thead>
+            <tbody>
+              <tr><td>Auth Engine</td><td><code>/api/v1/auth/*</code></td><td><span class="badge gg">Active</span></td><td>24ms</td></tr>
+              <tr><td>CRM Core</td><td><code>/api/v1/crm/*</code></td><td><span class="badge gg">Active</span></td><td>42ms</td></tr>
+              <tr><td>Email Worker</td><td><code>/api/v1/mail/*</code></td><td><span class="badge aa">Throttled</span></td><td>110ms</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- APPROVALS MODULE -->
+      <div id="approvals" class="section">
+        <p class="sec-title">Decision Inbox</p>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:20px;">Review and approve new tenant requests or system-wide changes.</p>
+        <div class="card" style="text-align:center; padding:60px; color:var(--muted);">
+           <span style="font-size:2rem; display:block; margin-bottom:12px;">✅</span>
+           No pending approvals for this region.
+        </div>
+      </div>
+
+      <!-- AUDIT TRAILS MODULE -->
+      <div id="audit" class="section">
+        <p class="sec-title">System Audit Trails</p>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:20px;">Immutabile log of all administrative actions across the platform.</p>
+        <div class="tbox">
+          <table>
+            <thead><tr><th>Timestamp</th><th>Subject</th><th>Action</th><th>Result</th></tr></thead>
+            <tbody>
+              <tr><td>10:42:01</td><td>admin@bobo.com</td><td>Created Role "Staff"</td><td><span class="badge gg">Success</span></td></tr>
+              <tr><td>09:15:30</td><td>system-cron</td><td>Cleaned Cache Layers</td><td><span class="badge gg">Success</span></td></tr>
+              <tr><td>Yesterday</td><td>support@bobo.com</td><td>Deleted User #1042</td><td><span class="badge gg">Success</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- EVENTS MODULE -->
+      <div id="events" class="section">
+        <p class="sec-title">Platform Events</p>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:20px;">Real-time stream of system events and webhooks.</p>
+        <div class="card" style="background:rgba(255,255,255,0.02); height:300px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:16px;">
+           <div class="spinner" style="width:24px; height:24px; border:3px solid var(--blue); border-top-color:transparent; border-radius:50%; animation: spin 1s linear infinite;"></div>
+           <span style="color:var(--muted);">Listening for events at edge...</span>
         </div>
       </div>
 
@@ -569,41 +538,6 @@ import MainLayout from "../../layouts/MainLayout.astro";
         </div>
       </div>
 
-      <!-- ROLES MODULE -->
-      <div id="roles" class="section">
-        <p class="sec-title">RBAC: Roles & Permissions</p>
-        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Provision granular access levels for system administrators and client staff.</p>
-        
-        <div style="display:grid; grid-template-columns:1fr 2fr; gap:24px;">
-          <!-- CREATE ROLE FORM -->
-          <div class="card">
-            <h4 style="margin:0 0 16px;">⊕ Provision New Role</h4>
-            <label class="card-label">Identifer (Role Name)</label>
-            <input id="roleNameInput" class="search-bar" style="width:100%; margin-bottom:16px;" placeholder="e.g., Regional Manager" />
-            
-            <p class="card-label" style="margin-bottom:12px;">Permission Scope</p>
-            <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
-              <label class="checkbox-label"><input type="checkbox" id="perm-dashboard"> 📊 Dashboard</label>
-              <label class="checkbox-label"><input type="checkbox" id="perm-users"> 👥 Users Management</label>
-              <label class="checkbox-label"><input type="checkbox" id="perm-billing"> 💳 Billing & Subscriptions</label>
-              <label class="checkbox-label"><input type="checkbox" id="perm-campaigns"> 📢 Campaign Dispatcher</label>
-              <label class="checkbox-label"><input type="checkbox" id="perm-analytics"> 📉 Analytics Deep-Dive</label>
-              <label class="checkbox-label"><input type="checkbox" id="perm-logs"> 📜 System Audit Logs</label>
-            </div>
-            <button class="btn-primary" style="width:100%" onclick="createSuperRole()">Deploy Secure Role</button>
-          </div>
-
-          <!-- ROLES LIST -->
-          <div class="tbox">
-            <table>
-              <thead><tr><th>Role</th><th>Permissions</th><th>Action</th></tr></thead>
-              <tbody id="rolesTable">
-                <tr><td colspan="3" style="text-align:center;padding:30px;color:var(--muted);">Initializing registry…</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
 
       <!-- TENANTS TAB -->
       <div id="tenants" class="section">
@@ -628,7 +562,58 @@ import MainLayout from "../../layouts/MainLayout.astro";
         </div>
       </div>
 
-      <!-- CAMPAIGNS TAB -->
+      <!-- SUBSCRIPTIONS MODULE -->
+      <div id="subscriptions" class="section">
+        <p class="sec-title">Billing Plans & Subscriptions</p>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Manage global pricing models and recurring revenue cycles.</p>
+        <div class="kpi-grid" style="margin-bottom:24px;">
+           <div class="card"><div class="card-label">MRR (Proj)</div><div class="kpi-val">₹42.5L</div></div>
+           <div class="card"><div class="card-label">Churn Rate</div><div class="kpi-val" style="color:var(--red);">2.1%</div></div>
+           <div class="card"><div class="card-label">Paid Subs</div><div class="kpi-val">1,248</div></div>
+        </div>
+        <div class="tbox">
+          <table>
+            <thead><tr><th>Plan Name</th><th>Base Price</th><th>Features</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>SaaS Enterprise</td><td>₹14,999/mo</td><td>Unlimited Users, Custom Domain</td><td><span class="badge gg">Public</span></td></tr>
+              <tr><td>Growth Pro</td><td>₹4,999/mo</td><td>10 Users, Analytics Pro</td><td><span class="badge gg">Public</span></td></tr>
+              <tr><td>Startup Trial</td><td>₹0</td><td>1 User, Core CRM</td><td><span class="badge aa">Trial</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- COLLECTIONS MODULE -->
+      <div id="collections" class="section">
+        <p class="sec-title">Data Collections</p>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Centralized repository for all industry-specific data groups.</p>
+        <div class="card" style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
+           <div style="padding:16px; border:1px solid var(--border); border-radius:12px;">
+              <h5 style="margin:0 0 4px;">Bakery Essentials</h5>
+              <button class="btn-cancel" style="width:100%; margin-top:12px;">Explore</button>
+           </div>
+           <div style="padding:16px; border:1px solid var(--border); border-radius:12px;">
+              <h5 style="margin:0 0 4px;">Restaurant Menus</h5>
+              <button class="btn-cancel" style="width:100%; margin-top:12px;">Explore</button>
+           </div>
+           <div style="padding:16px; border:1px solid var(--border); border-radius:12px;">
+              <h5 style="margin:0 0 4px;">Medical Inventory</h5>
+              <button class="btn-cancel" style="width:100%; margin-top:12px;">Explore</button>
+           </div>
+        </div>
+      </div>
+
+      <!-- CATEGORIES & TAGS -->
+      <div id="categories" class="section">
+        <p class="sec-title">Taxonomy & Tags</p>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Manage global categorization for leads and tenants.</p>
+        <div class="card">
+           <textarea class="search-bar" style="width:100%; height:120px;" placeholder="Add tags separated by commas... (e.g., Premium, High-Value, Tech)"></textarea>
+           <button class="btn-primary" style="margin-top:12px;">Save Taxonomy</button>
+        </div>
+      </div>
+
+      <!-- CAMPAIGNS MODULE -->
       <div id="campaigns" class="section">
         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px;">
           <div>
@@ -640,7 +625,9 @@ import MainLayout from "../../layouts/MainLayout.astro";
         <div class="tbox">
           <table>
             <thead><tr><th>Sent Log Time</th><th>Subject</th><th>Target Route</th><th>Channels</th><th>Opens</th><th>Clicks</th></tr></thead>
-            <tbody id="campaignTable"></tbody>
+            <tbody id="campaignTable">
+               <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted);">No campaigns dispatched yet.</td></tr>
+            </tbody>
           </table>
         </div>
       </div>
