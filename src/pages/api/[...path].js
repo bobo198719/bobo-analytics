@@ -90,6 +90,63 @@ export async function ALL({ request, params }) {
         }
     }
 
+    // 🛡️ UPDATE STATUS (Suspend / Activate) — recovery handler
+    if (pathname.includes('/admin/update-status') && method === 'POST') {
+        try {
+            const bodyText = await request.text();
+            const bodyObj  = JSON.parse(bodyText);
+            try {
+                const liveRes = await fetch(`http://187.124.97.144:5000${pathname}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': request.headers.get('Authorization') || '' },
+                    body: bodyText, signal: AbortSignal.timeout(5000)
+                });
+                if (liveRes.ok) { const d = await liveRes.json(); return new Response(JSON.stringify(d), { status: 200, headers: {'Content-Type': 'application/json'} }); }
+            } catch(e) { /* offline */ }
+            const u = RECOVERY_USERS.find(u => String(u.id) === String(bodyObj.userId));
+            if (u) u.status = bodyObj.status;
+            return new Response(JSON.stringify({ success: true }), { status: 200, headers: {'Content-Type': 'application/json'} });
+        } catch(e) { return new Response(JSON.stringify({ success: false, error: e.message }), { status: 500, headers: {'Content-Type': 'application/json'} }); }
+    }
+
+    // 🛡️ UPDATE PLAN (Upgrade / Downgrade) — recovery handler
+    if (pathname.includes('/admin/update-plan') && method === 'POST') {
+        try {
+            const bodyText = await request.text();
+            const bodyObj  = JSON.parse(bodyText);
+            try {
+                const liveRes = await fetch(`http://187.124.97.144:5000${pathname}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': request.headers.get('Authorization') || '' },
+                    body: bodyText, signal: AbortSignal.timeout(5000)
+                });
+                if (liveRes.ok) { const d = await liveRes.json(); return new Response(JSON.stringify(d), { status: 200, headers: {'Content-Type': 'application/json'} }); }
+            } catch(e) { /* offline */ }
+            const u = RECOVERY_USERS.find(u => String(u.id) === String(bodyObj.userId));
+            if (u) u.plan_type = bodyObj.planType;
+            return new Response(JSON.stringify({ success: true }), { status: 200, headers: {'Content-Type': 'application/json'} });
+        } catch(e) { return new Response(JSON.stringify({ success: false, error: e.message }), { status: 500, headers: {'Content-Type': 'application/json'} }); }
+    }
+
+    // 🛡️ DELETE USER — recovery handler
+    if (pathname.includes('/admin/delete-user') && method === 'POST') {
+        try {
+            const bodyText = await request.text();
+            const bodyObj  = JSON.parse(bodyText);
+            try {
+                const liveRes = await fetch(`http://187.124.97.144:5000${pathname}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': request.headers.get('Authorization') || '' },
+                    body: bodyText, signal: AbortSignal.timeout(5000)
+                });
+                if (liveRes.ok) { const d = await liveRes.json(); return new Response(JSON.stringify(d), { status: 200, headers: {'Content-Type': 'application/json'} }); }
+            } catch(e) { /* offline */ }
+            const idx = RECOVERY_USERS.findIndex(u => String(u.id) === String(bodyObj.userId));
+            if (idx > -1) RECOVERY_USERS.splice(idx, 1);
+            return new Response(JSON.stringify({ success: true }), { status: 200, headers: {'Content-Type': 'application/json'} });
+        } catch(e) { return new Response(JSON.stringify({ success: false, error: e.message }), { status: 500, headers: {'Content-Type': 'application/json'} }); }
+    }
+
     const hostingerUrl = "http://187.124.97.144:5000";
     let targetPath = pathname + url.search;
     

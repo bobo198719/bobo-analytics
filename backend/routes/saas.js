@@ -185,6 +185,16 @@ router.post("/admin/update-status", async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+router.post("/admin/update-plan", async (req, res) => {
+  try {
+    const { userId, planType } = req.body;
+    const validPlans = ['trial', 'pro', 'enterprise'];
+    if (!validPlans.includes(planType)) return res.status(400).json({ error: 'Invalid plan type' });
+    await db.query("UPDATE saas_users SET plan_type=? WHERE id=?", [planType, userId]);
+    res.json({ success: true, message: `Plan updated to ${planType}` });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 router.post("/admin/delete-user", async (req, res) => {
   try {
     const { userId } = req.body;
