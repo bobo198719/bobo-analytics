@@ -145,7 +145,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
           localStorage.setItem("token", data.token);
           location.reload();
         } else {
-          errorEl.innerText = data.error || "Access Denied.";
+          errorEl.innerText = (data.error || "") + (data.message ? ": " + data.message : "Denied.");
         }
       } catch (err) { errorEl.innerText = "Secure Node Offline."; }
     }
