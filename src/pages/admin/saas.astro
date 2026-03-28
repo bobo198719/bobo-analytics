@@ -34,7 +34,25 @@ import MainLayout from "../../layouts/MainLayout.astro";
     body.light-theme .auth-card { box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
     
     * { box-sizing: border-box; }
-    body { margin:0; font-family:'Inter',sans-serif; background:var(--bg-dark); color:var(--text-main); display:flex; min-height:100vh; transition: background 0.3s, color 0.3s; }
+    body { 
+      margin:0; 
+      font-family:'Inter',sans-serif; 
+      background: var(--bg-dark) url('/images/dashboard-bg.png') no-repeat center center fixed; 
+      background-size: cover;
+      color:var(--text-main); 
+      display:flex; 
+      min-height:100vh; 
+      transition: background 0.3s, color 0.3s; 
+    }
+    
+    /* ADD OVERLAY FOR READABILITY */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.75); /* Subtle dark overlay */
+      z-index: -1;
+    }
 
     /* ── AUTH ── */
     #authOverlay { position:fixed; inset:0; background:rgba(5,8,16,0.98); z-index:2000; display:flex; align-items:center; justify-content:center; }
@@ -282,10 +300,10 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
   <!-- DASHBOARD -->
   <div id="dashboardContent" style="width:100%">
-    <aside class="sidebar">
-      <div style="margin-bottom:28px; padding:0 8px;">
-        <h2 style="margin:0 0 2px; font-size:1.1rem; color:var(--text-main); font-weight:800; letter-spacing:-0.5px;">BOBO OS</h2>
-        <div id="connStatus" style="color:var(--green); font-size:0.6rem; font-weight:700;">● SYSTEM OPERATIONAL</div>
+    <aside class="sidebar" style="background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px);">
+      <div style="margin-bottom:28px; padding:0 8px; text-align:center;">
+        <img src="/images/bobo-logo.png" style="width:100%; max-width:160px; margin-bottom:12px; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));" alt="Bobo Logo" />
+        <div id="connStatus" style="color:var(--green); font-size:0.6rem; font-weight:700; letter-spacing:1px;">● SYSTEM OPERATIONAL</div>
       </div>
       
       <nav class="nav-menu">
