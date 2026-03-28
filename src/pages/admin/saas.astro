@@ -37,21 +37,23 @@ import MainLayout from "../../layouts/MainLayout.astro";
     body { 
       margin:0; 
       font-family:'Inter',sans-serif; 
-      background: var(--bg-dark) url('/images/dashboard-bg.png') no-repeat center center fixed; 
-      background-size: cover;
+      background: var(--bg-dark); /* Color fallback */
       color:var(--text-main); 
       display:flex; 
       min-height:100vh; 
       transition: background 0.3s, color 0.3s; 
     }
     
-    /* ADD OVERLAY FOR READABILITY */
+    /* 🌌 MASTER WALLPAPER ENGINE */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.75); /* Subtle dark overlay */
+      background: url('/images/dashboard-bg.png') no-repeat center center fixed;
+      background-size: cover;
+      opacity: 0.15; /* Subtle but clear visible honeycomb */
       z-index: -1;
+      pointer-events: none;
     }
 
     /* ── AUTH ── */
@@ -300,10 +302,10 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
   <!-- DASHBOARD -->
   <div id="dashboardContent" style="width:100%">
-    <aside class="sidebar" style="background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px);">
-      <div style="margin-bottom:28px; padding:0 8px; text-align:center;">
-        <img src="/images/bobo-logo.png" style="width:100%; max-width:160px; margin-bottom:12px; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));" alt="Bobo Logo" />
-        <div id="connStatus" style="color:var(--green); font-size:0.6rem; font-weight:700; letter-spacing:1px;">● SYSTEM OPERATIONAL</div>
+    <aside class="sidebar" style="background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(15px); border-right: 1px solid rgba(255,255,255,0.05);">
+      <div style="margin-bottom:28px; padding:0 12px; text-align:center;">
+        <img src="/images/bobo-logo.png" style="width:100%; max-width:180px; filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.3));" alt="Bobo Analytics Logo" />
+        <div id="connStatus" style="color:var(--green); font-size:0.6rem; font-weight:800; letter-spacing:1px; margin-top:-6px;">● SYSTEM OPERATIONAL</div>
       </div>
       
       <nav class="nav-menu">
