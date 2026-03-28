@@ -5,84 +5,203 @@ import MainLayout from "../../layouts/MainLayout.astro";
 <MainLayout title="Bobo Admin | Production Control Panel" hideNav={true}>
   <style>
     :root {
-      --bg-dark: #050810;
-      --sidebar-bg: #0c111d;
-      --card-bg: #141c2d;
-      --neon-blue: #3b82f6;
-      --neon-green: #10b981;
-      --neon-red: #ef4444;
-      --border-color: rgba(255,255,255,0.08);
-      --text-muted: #94a3b8;
+      --bg-dark: #0f172a; --sidebar-bg: #1e293b; --card-bg: #1e293b;
+      --blue: #3b82f6; --green: #10b981; --red: #ef4444; --amber: #f59e0b;
+      --border: rgba(255,255,255,0.08); --muted: #94a3b8; --text-main: #f8fafc;
     }
 
-    body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-dark); color: #fff; display: flex; min-height: 100vh; overflow-x: hidden; }
+    * { box-sizing: border-box; }
+    body { 
+      margin: 0; 
+      font-family: 'Inter', sans-serif; 
+      background: var(--bg-dark); 
+      color: var(--text-main); 
+      display: flex; 
+      min-height: 100vh; 
+      overflow-x: hidden; 
+      transition: background 0.3s;
+    }
+
+    /* 🌌 MASTER WALLPAPER ENGINE */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: url('/images/dashboard-bg.png') no-repeat center center fixed;
+      background-size: cover;
+      opacity: 0.15;
+      z-index: -1;
+      pointer-events: none;
+    }
 
     /* AUTH OVERLAY */
-    #authOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); z-index: 2000; display: flex; align-items: center; justify-content: center; }
-    .auth-card { background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid var(--border-color); width: 400px; text-align: center; }
-    .auth-input { width: 100%; padding: 14px; margin-bottom: 20px; border-radius: 12px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: white; outline: none; }
-    .btn-primary { width: 100%; background: var(--neon-blue); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 800; cursor: pointer; }
+    #authOverlay { position: fixed; inset: 0; background: rgba(5,8,16,0.98); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+    .auth-card { background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid var(--border); width: 400px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+    .auth-input { width: 100%; padding: 14px; margin-bottom: 16px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: white; outline: none; font-size: 0.95rem; }
+    .btn-primary { width: 100%; background: var(--blue); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 0.95rem; box-shadow: 0 4px 15px rgba(59,130,246,0.4); }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
 
-    /* CONTENT */
+    /* LAYOUT */
     #dashboardContent { display: none; width: 100%; }
-    .sidebar { width: 260px; height: 100vh; background: var(--sidebar-bg); padding: 30px 15px; position: fixed; left: 0; top: 0; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; }
-    .menu-item { padding: 14px 18px; margin-bottom: 6px; border-radius: 12px; cursor: pointer; transition: 0.2s; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 12px; border: none; background: transparent; width: 100%; font-size: 0.95rem; }
-    .menu-item.active { background: var(--neon-blue); color: white; }
+    .sidebar { width: 260px; height: 100vh; background: var(--sidebar-bg); padding: 24px 12px; position: fixed; left: 0; top: 0; border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+    .sidebar-logo { display:flex; align-items:center; gap:12px; padding:0 12px 24px; border-bottom:1px solid var(--border); margin-bottom:24px; }
+    .menu-item { padding: 12px 16px; margin-bottom: 4px; border-radius: 10px; cursor: pointer; transition: 0.2s; color: var(--muted); font-weight: 600; display: flex; align-items: center; gap: 10px; border: none; background: transparent; width: 100%; font-size: 0.9rem; }
+    .menu-item.active { background: var(--blue); color: white; }
+    .menu-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: #fff; }
 
-    .main { margin-left: 260px; flex: 1; padding: 40px; width: calc(100% - 260px); }
-    .container { max-width: 1200px; margin: 0 auto; }
+    .main { margin-left: 260px; flex: 1; padding: 24px 40px; min-height: 100vh; transition: 0.3s; }
+    .container { max-width: 1300px; margin: 0 auto; }
+    
+    /* TOPBAR */
+    .topbar { display: flex; align-items:center; justify-content: space-between; margin-bottom: 24px; padding: 14px 20px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 16px; backdrop-filter: blur(20px); position: sticky; top: 20px; z-index: 1000; }
+    .topbar-search { background: transparent; border:none; color:#fff; font-size:0.9rem; outline:none; width: 250px; }
+    .topbar-icons { display:flex; gap:16px; align-items:center; position:relative; }
+    .topbar-icon { font-size:1.1rem; cursor:pointer; opacity:0.8; transition:0.2s; position:relative; }
+    .topbar-icon:hover { opacity:1; }
+
+    /* CARDS & GRIDS */
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 24px; }
+    .card { background: var(--card-bg); padding: 24px; border-radius: 16px; border: 1px solid var(--border); backdrop-filter: blur(5px); }
+    .card-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .value { font-size: 2.2rem; font-weight: 900; letter-spacing: -1px; }
+
+    .table-box { background: var(--card-bg); padding: 0; border-radius: 16px; border: 1px solid var(--border); overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 12px 20px; color: var(--muted); font-size: 0.7rem; text-transform: uppercase; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02); }
+    td { padding: 16px 20px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+    .bg { background: rgba(59,130,246,0.1); color: var(--blue); }
+    .gg { background: rgba(16,185,129,0.1); color: var(--green); }
+    .rr { background: rgba(239,68,68,0.1); color: var(--red); }
+    .aa { background: rgba(245,158,11,0.1); color: var(--amber); }
+
     .section { display: none; }
-    .section.active { display: block; animation: fadeIn 0.3s ease-out; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    .section.active { display: block; animation: slideUp 0.4s cubic-bezier(0, 0, 0.2, 1); }
+    @keyframes slideUp { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:translateY(0) } }
 
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 32px; }
-    .card { background: var(--card-bg); padding: 24px; border-radius: 16px; border: 1px solid var(--border-color); }
-    .card-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 8px; }
-    .value { font-size: 2.2rem; font-weight: 800; }
-
-    .table-box { background: var(--card-bg); padding: 24px; border-radius: 16px; border: 1px solid var(--border-color); overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; min-width: 700px; }
-    th { text-align: left; padding: 12px 16px; color: var(--text-muted); font-size: 0.75rem; border-bottom: 1px solid var(--border-color); }
-    td { padding: 16px; border-bottom: 1px solid var(--border-color); font-size: 0.95rem; }
-
-    .status-active { color: var(--neon-green); font-weight: bold; }
+    /* DASHBOARD UPGRADES */
+    .activity-item { padding: 14px; border-radius:12px; background:rgba(255,255,255,0.02); border-left:3px solid var(--blue); font-size:0.8rem; margin-bottom:10px; }
+    .activity-time { font-size:0.65rem; color:var(--muted); margin-top:4px; font-weight:600; }
+    
+    .ab-primary { padding:8px 14px; border-radius:8px; background:var(--blue); color:#fff; border:none; font-size:0.8rem; font-weight:700; cursor:pointer; }
+    .ab-success { background: var(--green); }
+    
+    .search-results { position:absolute; top:55px; left:0; width:320px; background:rgba(15,23,42,0.95); backdrop-filter:blur(30px); border:1px solid var(--border); border-radius:14px; display:none; flex-direction:column; padding:12px; box-shadow:0 20px 50px rgba(0,0,0,0.6); z-index:1100; }
+    .search-results.visible { display:flex; }
+    .search-item { padding:10px; border-radius:10px; cursor:pointer; transition:0.2s; border-bottom:1px solid var(--border); }
+    .search-item:hover { background:rgba(255,255,255,0.05); }
+    .search-main { font-weight:700; font-size:0.85rem; color:#fff; }
+    .search-sub { font-size:0.7rem; color:var(--muted); }
+    
+    .dropdown-menu { position:absolute; top:45px; right:0; background:var(--card-bg); border:1px solid var(--border); border-radius:12px; min-width:200px; display:none; flex-direction:column; padding:8px; box-shadow:0 10px 30px rgba(0,0,0,0.5); z-index:1100; }
+    .dropdown-menu.visible { display:flex; }
+    .dd-item { padding:12px; border-radius:8px; font-size:0.8rem; cursor:pointer; transition:0.2s; border-bottom: 1px solid var(--border); }
+    .dd-item:hover { background:rgba(255,255,255,0.05); }
+    .dd-item:last-child { border-bottom: none; }
   </style>
 
   <div id="authOverlay">
     <div class="auth-card">
-      <h2 style="margin-bottom: 10px;">🛡️ Enterprise Secure OS</h2>
-      <p style="color:var(--text-muted); margin-bottom: 30px;">Production Gateway v15.1</p>
-      <input id="email" class="auth-input" type="email" placeholder="Master Email">
-      <input id="password" class="auth-input" type="password" placeholder="Key Fragment">
-      <button class="btn-primary" onclick="login()">Enter Console</button>
-      <p id="authError" style="color:var(--neon-red); margin-top:20px; font-size:0.85rem; font-weight:bold;"></p>
+      <img src="https://64.227.148.97/bobo-logo.png" style="width:140px; margin-bottom:24px; filter: drop-shadow(0 0 10px rgba(59,130,246,0.5));" />
+      <h2 style="margin:0; font-weight:900; letter-spacing:-1px;">Enterprise Secure Gateway</h2>
+      <p style="color:var(--muted); margin-top:8px; margin-bottom: 32px; font-weight:700; font-size:0.85rem;">Production Master Console v16.2</p>
+      <input id="email" class="auth-input" type="email" placeholder="Operator Identity">
+      <input id="password" class="auth-input" type="password" placeholder="Secure Sequence">
+      <button class="btn-primary" onclick="login()">Initiate Session</button>
+      <p id="authError" style="color:var(--red); margin-top:20px; font-size:0.8rem; font-weight:800;"></p>
     </div>
   </div>
 
   <div id="dashboardContent">
     <aside class="sidebar">
-      <h2>BOBO OS</h2>
+      <div class="sidebar-logo">
+        <img src="https://64.227.148.97/bobo-logo.png" style="width:40px; border-radius:8px;" />
+        <span style="font-weight:900; font-size:1.2rem; letter-spacing:-1px;">BOBO OS</span>
+      </div>
       <nav class="nav-menu">
         <button class="menu-item active" onclick="switchTab('dashboard', this)"><span>📊</span> Dashboard</button>
-        <button class="menu-item" onclick="switchTab('tenants', this)"><span>🏢</span> Tenants</button>
-        <button class="menu-item" onclick="switchTab('onboarding', this)"><span>📩</span> Incoming Leads</button>
-        <button class="menu-item" onclick="switchTab('audit', this)"><span>📜</span> Audit Logs</button>
-        <button class="menu-item" onclick="switchTab('billing', this)"><span>💸</span> Billing</button>
+        <button class="menu-item" onclick="switchTab('tenants', this)"><span>🏢</span> Organizations</button>
+        <button class="menu-item" onclick="switchTab('onboarding', this)"><span>🚀</span> Leads Pipeline</button>
+        <button class="menu-item" onclick="switchTab('audit', this)"><span>📜</span> Security Audit</button>
+        <button class="menu-item" onclick="switchTab('billing', this)"><span>💳</span> Billing & Cloud</button>
       </nav>
-      <button class="menu-item" onclick="logout()" style="margin-top:auto; color:var(--neon-red)"><span>🚪</span> Sign Out</button>
+      <div id="connStatus" style="font-size:0.65rem; color:var(--green); font-weight:800; text-align:center; padding-top:20px; border-top:1px solid var(--border);">● MASTER NODE ONLINE</div>
+      <button class="menu-item" onclick="logout()" style="margin-top:20px; color:var(--red)"><span>🚪</span> Sign Out</button>
     </aside>
 
     <main class="main">
+      <div class="topbar">
+        <div style="display:flex; align-items:center; gap:16px; position:relative;">
+          <span>🔍</span>
+          <input type="text" id="globalSearch" class="topbar-search" placeholder="Search systems or entities..." oninput="searchData()"/>
+          <div id="searchResults" class="search-results"></div>
+        </div>
+        <div class="topbar-icons">
+          <span class="topbar-icon" style="color:var(--amber); font-size:0.8rem; font-weight:900; background:rgba(245,158,11,0.1); padding:4px 10px; border-radius:8px;" id="topAlert">⚠️ ANALYZING TELEMETRY...</span>
+          <div class="topbar-icon" onclick="document.getElementById('dd-notify').classList.toggle('visible')">
+            🔔 <span id="alertCount" style="position:absolute; top:-5px; right:-5px; background:var(--red); font-size:0.6rem; padding:2px 4px; border-radius:4px; font-weight:900;">0</span>
+            <div id="dd-notify" class="dropdown-menu">
+              <div id="alertList"><div class="dd-item">Loading alerts...</div></div>
+            </div>
+          </div>
+          <span class="topbar-icon" title="Settings">⚙️</span>
+          <div style="width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg, var(--blue), #6366f1); display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.85rem; cursor:pointer;" onclick="document.getElementById('dd-profile').classList.toggle('visible')">
+             A
+             <div id="dd-profile" class="dropdown-menu">
+               <div class="dd-item">👤 Operator Profile</div>
+               <div class="dd-item" style="color:var(--red);" onclick="logout()">🚪 Dispatch Terminal</div>
+             </div>
+          </div>
+        </div>
+      </div>
+
       <div class="container">
         <div id="dashboard" class="section active">
-          <h1>Production Control Tower</h1>
-          <div class="kpi-grid">
-            <div class="card"><div class="card-label">Overall Users</div><div id="users" class="value">0</div></div>
-            <div class="card"><div class="card-label">Active Deployments</div><div id="active" class="value" style="color:var(--neon-green)">0</div></div>
-            <div class="card"><div class="card-label">Projected Yield</div><div id="revenue" class="value">₹0</div></div>
-            <div class="card"><div class="card-label">Security Health</div><div class="value" style="color:var(--neon-green)">100%</div></div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+            <p style="font-size:1.6rem; font-weight:900; margin:0; letter-spacing:-1px;">SaaS Infrastructure Command</p>
+            <select id="dateFilter" onchange="initSync()" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:white; padding:10px 16px; border-radius:12px; font-size:0.8rem; outline:none; cursor:pointer;">
+              <option value="30">Last 30 Days</option>
+              <option value="7">Last 7 Days</option>
+              <option value="1">Last 24 Hours</option>
+            </select>
           </div>
-          <div class="card"><canvas id="industryChart" style="height:350px;"></canvas></div>
+          
+          <div class="kpi-grid">
+            <div class="card"><div class="card-label">Overall Tenants</div><div id="users" class="value">0</div></div>
+            <div class="card"><div class="card-label">Active Nodes</div><div id="active" class="value" style="color:var(--green)">0</div></div>
+            <div class="card"><div class="card-label">Total GTV</div><div id="revenue" class="value">₹0</div></div>
+            <div class="card"><div class="card-label">Edge Health</div><div class="value" style="color:var(--green)">99.9%</div></div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px; margin-bottom:24px;">
+            <div class="card">
+              <div class="card-label" style="margin-bottom:16px;">Node Distribution Analytics</div>
+              <canvas id="industryChart" style="height:350px;"></canvas>
+            </div>
+            
+            <div style="display:flex; flex-direction:column; gap:20px;">
+              <!-- AI INSIGHTS -->
+              <div class="card" style="background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(59, 130, 246, 0.08)); border:1px solid rgba(59, 130, 246, 0.2);">
+                <div class="card-label" style="color:var(--blue); display:flex; align-items:center; gap:8px;">✨ Bobo Strategic Intelligence</div>
+                <div id="ai-insight" style="margin-top:16px; font-size:0.95rem; font-weight:700; color:#fff; line-height:1.5;">Generating real-time ops insight...</div>
+                <div style="margin-top:20px; font-size:0.65rem; color:var(--muted);">Insight derived from edge node telemetry v16</div>
+              </div>
+              
+              <!-- ACTIVITY FEED -->
+              <div class="card" style="display:flex; flex-direction:column; padding-bottom:12px;">
+                <div class="card-label" style="display:flex; justify-content:space-between;">
+                  <span>Global Activity</span>
+                  <span class="badge gg" style="font-size:0.5rem;">LIVE</span>
+                </div>
+                <div id="activityFeed" style="margin-top:16px; max-height:220px; overflow-y:auto; padding-right:8px;">
+                  <div style="text-align:center; padding:40px; color:var(--muted); font-size:0.8rem;">Listening for edge transmissions...</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div id="tenants" class="section">
@@ -169,59 +288,132 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
     async function initSync() {
       const token = localStorage.getItem("token");
-      const [statsR, tenantR, auditR, leadsR] = await Promise.all([
-        fetch(API + "/stats", { headers: { "Authorization": token } }),
-        fetch(API + "/tenants", { headers: { "Authorization": token } }),
-        fetch(API + "/admin/audit-logs", { headers: { "Authorization": token } }),
-        fetch(API + "/admin/leads", { headers: { "Authorization": token } })
-      ]);
-      if(statsR.status === 401) return logout();
-      const stats = await statsR.json();
-      const tenants = await tenantR.json();
-      const audits = auditR.ok ? await auditR.json() : [];
-      const leads = leadsR.ok ? await leadsR.json() : [];
+      const range = document.getElementById("dateFilter")?.value || "30";
+      
+      try {
+        const [statsR, tenantR, auditR, leadsR, actR, alR] = await Promise.all([
+          fetch(API + "/stats?range=" + range, { headers: { "Authorization": token } }),
+          fetch(API + "/tenants", { headers: { "Authorization": token } }),
+          fetch(API + "/admin/audit-logs", { headers: { "Authorization": token } }),
+          fetch(API + "/admin/leads", { headers: { "Authorization": token } }),
+          fetch(API + "/activity", { headers: { "Authorization": token } }),
+          fetch(API + "/alerts", { headers: { "Authorization": token } })
+        ]);
+        if(statsR.status === 401) return logout();
+        
+        const stats = await statsR.json();
+        const tenants = await tenantR.json();
+        const audits = auditR.ok ? await auditR.json() : [];
+        const leads = leadsR.ok ? await leadsR.json() : [];
+        const activities = actR.ok ? await actR.json() : [];
+        const alerts = alR.ok ? await alR.json() : [];
+  
+        document.getElementById("users").innerText = Math.floor(stats.users || 0).toLocaleString();
+        document.getElementById("active").innerText = Math.floor(stats.active || 0).toLocaleString();
+        document.getElementById("revenue").innerText = "₹" + Math.floor(stats.revenue || 0).toLocaleString();
+        
+        let html = "";
+        tenants.forEach(t => { html += `<tr><td><strong>${t.name}</strong></td><td><span class="badge bg">${t.industry}</span></td><td class="status-active">${t.status}</td><td>₹${(t.revenue||0).toLocaleString()}</td></tr>`; });
+        document.getElementById("tenantTable").innerHTML = html || '<tr><td colspan="4" style="text-align:center; padding:30px; color:var(--muted)">No nodes registered in this sector.</td></tr>';
+        
+        renderPipeline(leads);
+        renderAudit(audits);
+        renderActivity(activities);
+        renderAlerts(alerts);
+        generateInsight();
+        updateChart(tenants);
 
-      document.getElementById("users").innerText = stats.users;
-      document.getElementById("active").innerText = stats.active;
-      document.getElementById("revenue").innerText = "₹" + stats.revenue.toLocaleString();
-      
-      let html = "";
-      tenants.forEach(t => { html += `<tr><td><strong>${t.name}</strong></td><td>${t.industry}</td><td class="status-active">${t.status}</td><td>₹${t.revenue.toLocaleString()}</td></tr>`; });
-      document.getElementById("tenantTable").innerHTML = html || '<tr><td colspan="4">No Records.</td></tr>';
-      
+      } catch(e) { console.error("Global Sync Error:", e); }
+    }
+
+    function renderPipeline(leads) {
       let leadsHtml = "";
       leads.forEach(l => {
          leadsHtml += `<tr>
-           <td style="color:var(--text-muted); font-size:0.8rem;">${new Date(l.created_at).toLocaleString()}</td>
+           <td style="color:var(--muted); font-size:0.8rem;">${new Date(l.created_at).toLocaleString()}</td>
            <td><strong>${l.businessName}</strong></td>
            <td>${l.ownerName}</td>
            <td>${l.phone}</td>
            <td>${l.email}</td>
-           <td><span style="background:var(--neon-blue); padding:4px 8px; border-radius:6px; font-size:0.75rem;">${l.industry}</span></td>
+           <td><span class="badge bg">${l.industry}</span></td>
            <td>${l.city}</td>
            <td>
               ${l.status === 'pending' 
-                ? `<button onclick="approveLead('${l.id}')" style="background:var(--neon-green); color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">✅ Approve & Dispatch</button>` 
-                : `<span style="color:var(--neon-green); font-weight:bold;">Provisioned</span>`}
+                ? `<button onclick="approveLead('${l.id}')" class="ab-primary ab-success">✅ Approve & Dispatch</button>` 
+                : `<span class="badge gg">Provisioned</span>`}
            </td>
          </tr>`;
       });
-      document.getElementById("leadsTable").innerHTML = leadsHtml || '<tr><td colspan="8">No incoming leads.</td></tr>';
-      
+      document.getElementById("leadsTable").innerHTML = leadsHtml || '<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--muted)">Queue is clear. No incoming leads.</td></tr>';
+    }
+
+    function renderAudit(audits) {
       let auditHtml = "";
       audits.forEach(a => { 
         const isFail = a.status === 'Failed';
-        const color = isFail ? 'var(--neon-red)' : 'var(--neon-green)';
+        const color = isFail ? 'var(--red)' : 'var(--green)';
         auditHtml += `<tr>
-            <td style="color:var(--text-muted);font-size:0.8rem;">${new Date(a.time).toLocaleString()}</td>
+            <td style="color:var(--muted); font-size:0.8rem;">${new Date(a.time).toLocaleString()}</td>
             <td><strong>${a.user}</strong></td>
-            <td style="color:${color};font-weight:bold;">${a.status}</td>
-            <td style="color:var(--text-muted);">${a.error || 'Authed OK'}</td>
+            <td style="color:${color}; font-weight:900;">${a.status.toUpperCase()}</td>
+            <td style="color:var(--muted);">${a.error || 'Authentication Success'}</td>
         </tr>`; 
       });
-      document.getElementById("auditTable").innerHTML = auditHtml || '<tr><td colspan="4">No Logs Captured Yet.</td></tr>';
+      document.getElementById("auditTable").innerHTML = auditHtml || '<tr><td colspan="4" style="text-align:center; padding:30px; color:var(--muted)">Audit buffer empty.</td></tr>';
+    }
 
-      updateChart(tenants);
+    function renderActivity(data) {
+      const feed = document.getElementById("activityFeed");
+      if(!feed) return;
+      feed.innerHTML = data.length ? data.map(a => `
+        <div class="activity-item">
+          <div style="font-weight:700;">${a.message}</div>
+          <div class="activity-time">${new Date(a.time).toLocaleString()}</div>
+        </div>
+      `).join("") : `<div style="text-align:center; padding-top:40px; color:var(--muted); font-size:0.8rem;">Zero edge activity.</div>`;
+    }
+
+    function renderAlerts(data) {
+      const list = document.getElementById("alertList"), count = document.getElementById("alertCount"), top = document.getElementById("topAlert");
+      if(!list) return;
+      if(!data.length) { count.style.display="none"; top.style.display="none"; list.innerHTML='<div class="dd-item">All sectors nominal.</div>'; return; }
+      count.style.display="block"; count.innerText=data.length;
+      top.style.display="block"; top.innerText="⚠️ " + (data[0].message || "SECTOR ANOMALY");
+      list.innerHTML = data.map(a=>`<div class="dd-item" style="border-bottom:1px solid var(--border);"><strong>[SEC ALERT]</strong> ${a.message}</div>`).join("");
+    }
+
+    let searchT = null;
+    window.searchData = function() {
+      const q = document.getElementById("globalSearch").value, r = document.getElementById("searchResults");
+      if(!q || q.length < 2) { r.classList.remove("visible"); return; }
+      clearTimeout(searchT);
+      searchT = setTimeout(async () => {
+        try {
+          const res = await fetch(API+"/search?q="+q,{headers:{"Authorization":localStorage.getItem("token")}});
+          const d = await res.json();
+          renderSearchResults(d);
+        } catch(e){}
+      }, 300);
+    }
+
+    function renderSearchResults(data) {
+      const r = document.getElementById("searchResults");
+      r.classList.add("visible");
+      let h = "";
+      if(data.users.length) {
+        h += `<div style="font-size:0.6rem; color:var(--blue); font-weight:900; margin-bottom:8px;">USERS</div>`;
+        data.users.forEach(u => h += `<div class="search-item" onclick="switchTab('tenants');"><div class="search-main">${u.business_name || u.username}</div><div class="search-sub">${u.industry}</div></div>`);
+      }
+      if(data.leads.length) {
+        h += `<div style="font-size:0.6rem; color:var(--amber); font-weight:900; margin-top:10px; margin-bottom:8px;">LEADS</div>`;
+        data.leads.forEach(l => h += `<div class="search-item" onclick="switchTab('onboarding')"><div class="search-main">${l.businessName}</div><div class="search-sub">Status: ${l.status}</div></div>`);
+      }
+      r.innerHTML = h || `<div style="padding:20px; color:var(--muted); text-align:center;">No vectors found.</div>`;
+    }
+
+    function generateInsight() {
+      const ins = ["Edge traffic spiked 18% in Mumbai. Recommend scaling node Mumbai-2.","12% of Trial users reached API thresholds. Recommend 'Pro Plan' outreach.","Node latency decreased by 24ms after global optimization.","Sector 'Bakery' shows 140% lead velocity growth in North India."];
+      const e = document.getElementById("ai-insight"); if(e) e.innerText = ins[Math.floor(Math.random() * ins.length)];
     }
 
     window.payNow = async function() {

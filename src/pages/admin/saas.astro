@@ -97,6 +97,26 @@ import MainLayout from "../../layouts/MainLayout.astro";
     
     .mobile-toggle { display:none; background:transparent; border:none; color:#fff; font-size:1.4rem; cursor:pointer; margin-right:12px; }
 
+    /* ── DASHBOARD UPGRADES ── */
+    .activity-item { padding: 12px; border-radius:10px; background:rgba(255,255,255,0.02); border-left:3px solid var(--blue); font-size:0.8rem; }
+    .activity-item.system { border-left-color: var(--amber); }
+    .activity-item.campaign { border-left-color: var(--green); }
+    .activity-item.user { border-left-color: var(--blue); }
+    .activity-time { font-size:0.65rem; color:var(--muted); margin-top:4px; }
+    
+    .ab { padding:6px 12px; border-radius:8px; border:none; color:#fff; font-size:0.75rem; font-weight:700; cursor:pointer; }
+    .ab-up { background: var(--blue); box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
+    .ab-key { background: var(--amber); box-shadow: 0 4px 12px rgba(245,158,11,0.3); }
+    
+    .search-result-item { padding:10px; border-radius:8px; cursor:pointer; font-size:0.85rem; border-bottom:1px solid var(--border); transition: 0.2s; }
+    .search-result-item:hover { background:rgba(255,255,255,0.05); }
+    .search-type { font-size:0.6rem; text-transform:uppercase; color:var(--muted); margin-bottom:2px; font-weight:800; }
+    .search-main { font-weight:700; color:var(--text-main); }
+    .search-sub { font-size:0.75rem; color:var(--muted); }
+    
+    #searchResults::-webkit-scrollbar { width:6px; }
+    #searchResults::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius:3px; }
+
     /* ── ROLES BRANCH LINES ── */
     .perm-branch { position:relative; padding-left:24px; margin-left:8px; border-left:1px solid var(--border); margin-top:12px; }
     .perm-branch::before { content:''; position:absolute; left:0; top:12px; width:12px; height:1px; background:var(--border); }
@@ -320,6 +340,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
         <button class="menu-item" onclick="switchTab('users',this)"><span>👥</span> <span>Users</span></button>
         <button class="menu-item" onclick="switchTab('roles',this)"><span>🔐</span> <span>Roles & Permissions</span></button>
         <button class="menu-item" onclick="switchTab('tenants',this)"><span>🏢</span> <span>Organizations</span></button>
+        <button class="menu-item" onclick="switchTab('pipeline',this)"><span>🚀</span> <span>Leads Pipeline</span></button>
         <button class="menu-item" onclick="switchTab('subscriptions',this)"><span>💳</span> <span>Subscriptions</span></button>
         <button class="menu-item" onclick="switchTab('collections',this)"><span>📦</span> <span>Collections</span></button>
         <button class="menu-item" onclick="switchTab('categories',this)"><span>🏷️</span> <span>Categories & Tags</span></button>
@@ -342,20 +363,24 @@ import MainLayout from "../../layouts/MainLayout.astro";
     <main class="main">
     
       <!-- GLOBAL TOPBAR -->
-      <div class="main-topbar">
         <div style="display:flex; align-items:center;">
           <button class="mobile-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
           <span>🔍</span>
-          <input type="text" class="topbar-search" placeholder="Quick Search..."/>
+          <input type="text" id="globalSearch" class="topbar-search" placeholder="Search users or leads..." oninput="searchData()"/>
+          <div id="searchResults" class="dropdown-menu" style="top:55px; left:40px; width:300px; padding:12px; background:rgba(15,23,42,0.95); backdrop-filter:blur(20px);">
+             <!-- Results injected -->
+          </div>
         </div>
         <div class="topbar-icons">
+          <span class="topbar-icon" style="color:var(--amber); font-size:0.9rem; font-weight:800; cursor:default; background:rgba(245,158,11,0.1); padding:4px 10px; border-radius:8px; border:1px solid rgba(245,158,11,0.2);" id="topAlert">⚠️ Load Latency: 150ms</span>
           <span class="topbar-icon" title="Toggle Light/Dark Theme" onclick="toggleTheme()">🌗</span>
           <div class="topbar-icon" onclick="document.getElementById('dd-notify').classList.toggle('visible')">
-            🔔 
+            🔔 <span id="alertCount" style="position:absolute; top:-5px; right:-5px; background:var(--red); font-size:0.6rem; padding:2px 4px; border-radius:4px; font-weight:800;">2</span>
             <div id="dd-notify" class="dropdown-menu">
-              <div class="dd-item"><strong>New Lead:</strong> TechFlow Solutions</div>
-              <div class="dd-item"><strong>Alert:</strong> SMTP Server Connected</div>
-              <div class="dd-item" style="color:var(--blue); font-weight:bold; border-top:1px solid var(--border);">View all (5)</div>
+              <div id="alertList">
+                <div class="dd-item">Loading alerts...</div>
+              </div>
+              <div class="dd-item" style="color:var(--blue); font-weight:bold; border-top:1px solid var(--border);" onclick="switchTab('events')">View all events</div>
             </div>
           </div>
           <span class="topbar-icon" title="Settings" onclick="handleSettingsClick(this)">⚙️</span>
@@ -368,16 +393,28 @@ import MainLayout from "../../layouts/MainLayout.astro";
             </div>
           </div>
         </div>
-      </div>
 
       <!-- DASHBOARD TAB -->
       <div id="dashboard" class="section active">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-          <p style="font-size:1.4rem;font-weight:800;margin:0;">Analytics Dashboard</p>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <p style="font-size:1.4rem;font-weight:800;margin:0;">Master Control Center</p>
           <div style="display:flex; gap:12px;">
-            <button class="btn-cancel" style="font-size:0.8rem; padding:8px 14px;">Last 30 Days 📅</button>
-            <button class="btn-primary" style="font-size:0.8rem; padding:8px 14px;">Export PDF</button>
+            <select id="dateFilter" onchange="initSync()" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:white; padding:8px 14px; border-radius:10px; font-size:0.8rem; outline:none; cursor:pointer;">
+              <option value="30">Last 30 Days</option>
+              <option value="7">Last 7 Days</option>
+              <option value="1">Last 24 Hours</option>
+            </select>
+            <button class="btn-primary" style="font-size:0.8rem; padding:8px 14px;">Master Export</button>
           </div>
+        </div>
+
+        <!-- QUICK ACTIONS BAR -->
+        <div style="display:flex; gap:12px; margin-bottom:24px; overflow-x:auto; padding-bottom:8px;">
+          <button class="btn-cancel" onclick="switchTab('users')" style="display:flex; align-items:center; gap:8px; border-radius:12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); color:white; white-space:nowrap;"><span>➕</span> User</button>
+          <button class="btn-cancel" onclick="switchTab('tenants')" style="display:flex; align-items:center; gap:8px; border-radius:12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); color:white; white-space:nowrap;"><span>🏢</span> Tenant</button>
+          <button class="btn-cancel" onclick="openPromo()" style="display:flex; align-items:center; gap:8px; border-radius:12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); color:white; white-space:nowrap;"><span>📣</span> Campaign</button>
+          <button class="btn-cancel" onclick="switchTab('pipeline')" style="display:flex; align-items:center; gap:8px; border-radius:12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); color:white; white-space:nowrap;"><span>🚀</span> Pipeline</button>
+          <button class="btn-cancel" onclick="toast('Generating manual snapshot...')" style="display:flex; align-items:center; gap:8px; border-radius:12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); color:white; white-space:nowrap;"><span>🔒</span> Snapshot</button>
         </div>
 
         <!-- KPI GRID -->
@@ -428,28 +465,32 @@ import MainLayout from "../../layouts/MainLayout.astro";
         <!-- DEVICE & COUNTRY SECTION -->
         <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
           <!-- DEVICE USAGE -->
-          <div class="card">
-            <div class="card-label" style="margin-bottom:20px;">Device Distribution</div>
-            <div style="display:flex; flex-direction:column; gap:24px;">
-              <div>
-                <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:10px;"><span>Mobile</span><span id="dev-mobile">58.2%</span></div>
-                <div style="height:8px; background:rgba(255,255,255,0.05); border-radius:4px; overflow:hidden;">
-                  <div id="bar-mobile" style="width:58%; height:100%; background:var(--blue);"></div>
-                </div>
-              </div>
-              <div>
-                <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:10px;"><span>Desktop</span><span id="dev-desktop">31.5%</span></div>
-                <div style="height:8px; background:rgba(255,255,255,0.05); border-radius:4px; overflow:hidden;">
-                  <div id="bar-desktop" style="width:32%; height:100%; background:var(--green);"></div>
-                </div>
-              </div>
-              <div>
-                <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:10px;"><span>Tablet / Other</span><span id="dev-tablet">10.3%</span></div>
-                <div style="height:8px; background:rgba(255,255,255,0.05); border-radius:4px; overflow:hidden;">
-                  <div id="bar-tablet" style="width:10%; height:100%; background:var(--amber);"></div>
-                </div>
-              </div>
+        <!-- GRID: FEED, INSIGHTS & GEOGRAPHY -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
+          <!-- ACTIVITY FEED -->
+          <div class="card" style="display:flex; flex-direction:column; max-height:400px;">
+            <div class="card-label" style="display:flex; justify-content:space-between; align-items:center;">
+              <span>System Activity Feed</span>
+              <span class="badge gg" style="font-size:0.6rem;">LIVE</span>
             </div>
+            <div id="activityFeed" style="margin-top:16px; flex:1; overflow-y:auto; padding-right:8px; display:flex; flex-direction:column; gap:12px;">
+              <div style="text-align:center; color:var(--muted); padding-top:40px;">Synchronizing events...</div>
+            </div>
+          </div>
+
+          <!-- AI COMMAND CENTER -->
+          <div class="card" style="background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(59, 130, 246, 0.08)); border: 1px solid rgba(59, 130, 246, 0.2); backdrop-filter: blur(20px);">
+            <div class="card-label" style="display:flex; align-items:center; gap:8px; color:var(--blue);">
+               <span style="font-size:1.2rem;">✨</span> Bobo AI Command Center
+            </div>
+            <div id="ai-insight" style="margin-top:20px; font-size:1rem; font-weight:600; line-height:1.6; color:var(--text-main);">
+               Generating real-time intelligence...
+            </div>
+            <div style="margin-top:24px; display:flex; gap:12px;">
+               <button class="ab ab-up" onclick="toast('Optimizing edge routes...')">Auto-Optimize</button>
+               <button class="ab ab-key" onclick="toast('Security shield reinforced.')">Reinforce Shield</button>
+            </div>
+            <div style="margin-top:20px; font-size:0.65rem; color:var(--muted);">Insight generated based on Vercel Edge telemetry.</div>
           </div>
 
           <!-- COUNTRY VIEW -->
@@ -465,6 +506,57 @@ import MainLayout from "../../layouts/MainLayout.astro";
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- LEADS PIPELINE TAB -->
+      <div id="pipeline" class="section">
+         <div class="topbar" style="margin-bottom:24px;">
+            <div>
+              <p class="sec-title">Leads Infrastructure Pipeline</p>
+              <p style="color:var(--muted); font-size:0.85rem;">Managing <strong>SaaS Client Onboarding</strong> stages through Global Edge.</p>
+            </div>
+            <button class="btn-primary" onclick="openOnboarding()">⊕ External Lead Intake</button>
+         </div>
+
+         <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px; height: calc(100vh - 280px);">
+            <!-- NEW LEADS -->
+            <div class="card" style="background: rgba(0,0,0,0.1); display:flex; flex-direction:column;">
+               <div class="card-label" style="margin-bottom:16px; display:flex; justify-content:space-between;">
+                  <span>New Leads</span>
+                  <span id="pNewCount" class="badge bg">0</span>
+               </div>
+               <div id="pNewColumn" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:12px;"></div>
+            </div>
+
+            <!-- QUALIFIED -->
+            <div class="card" style="background: rgba(0,0,0,0.1); display:flex; flex-direction:column;">
+               <div class="card-label" style="margin-bottom:16px; display:flex; justify-content:space-between;">
+                  <span>Qualified / Demo</span>
+                  <span id="pQualCount" class="badge aa">3</span>
+               </div>
+               <div id="pQualColumn" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:12px;">
+                  <div class="card" style="padding:16px; background:var(--sidebar-bg); border-radius:12px;">
+                    <strong style="display:block; margin-bottom:4px;">Stellar Logistics</strong>
+                    <span style="font-size:0.7rem; color:var(--muted);">Healthcare • Enterprise</span>
+                  </div>
+                  <div class="card" style="padding:16px; background:var(--sidebar-bg); border-radius:12px;">
+                    <strong style="display:block; margin-bottom:4px;">Global Market ERP</strong>
+                    <span style="font-size:0.7rem; color:var(--muted);">Retail • Pro</span>
+                  </div>
+               </div>
+            </div>
+
+            <!-- WON / ACTIVE -->
+            <div class="card" style="background: rgba(0,0,0,0.1); display:flex; flex-direction:column;">
+               <div class="card-label" style="margin-bottom:16px; display:flex; justify-content:space-between;">
+                  <span>Won / Deployed</span>
+                  <span id="pWonCount" class="badge gg">12</span>
+               </div>
+               <div id="pWonColumn" style="flex:1; overflow-y:auto;">
+                  <div style="text-align:center; padding:40px; color:var(--muted); font-size:0.8rem;">Clients moved to Organizations automatically.</div>
+               </div>
+            </div>
+         </div>
       </div>
       
       <!-- ROLES & PERMISSIONS TAB -->
@@ -541,12 +633,19 @@ import MainLayout from "../../layouts/MainLayout.astro";
           <div><p class="sec-title">Global API Registry</p><p style="color:var(--muted);font-size:0.9rem;">Catalog of all exposed edge functions and VPS endpoints.</p></div>
           <button class="btn-primary" onclick="toast('API provisioning started...')">⊕ Create API Endpoint</button>
         </div>
+        <div class="kpi-grid" style="margin-bottom:24px;">
+          <div class="card"><div class="card-label">Active Keys</div><div class="kpi-val">12</div></div>
+          <div class="card"><div class="card-label">Req/Minute</div><div class="kpi-val">452</div></div>
+          <div class="card"><div class="card-label">Avg Latency</div><div class="kpi-val" style="color:var(--green);">32ms</div></div>
+        </div>
         <div class="tbox">
           <table>
-            <thead><tr><th>Name</th><th>Route</th><th>Status</th><th>Avg Latency</th></tr></thead>
+            <thead><tr><th>Name</th><th>Profile/Route</th><th>Status</th><th>Latency/Usage</th></tr></thead>
             <tbody>
               <tr><td>Auth Engine</td><td><code>/api/v1/auth/*</code></td><td><span class="badge gg">Active</span></td><td>24ms</td></tr>
               <tr><td>CRM Core</td><td><code>/api/v1/crm/*</code></td><td><span class="badge gg">Active</span></td><td>42ms</td></tr>
+              <tr><td>Production Core</td><td><code>live_...8a9</code></td><td><span class="badge gg">Healthy</span></td><td>82k req</td></tr>
+              <tr><td>Staging Sandbox</td><td><code>test_...f21</code></td><td><span class="badge bg">Testing</span></td><td>4k req</td></tr>
               <tr><td>Email Worker</td><td><code>/api/v1/mail/*</code></td><td><span class="badge aa">Throttled</span></td><td>110ms</td></tr>
             </tbody>
           </table>
@@ -557,9 +656,22 @@ import MainLayout from "../../layouts/MainLayout.astro";
       <div id="approvals" class="section">
         <p class="sec-title">Decision Inbox</p>
         <p style="color:var(--muted);font-size:0.9rem;margin-bottom:20px;">Review and approve new tenant requests or system-wide changes.</p>
-        <div class="card" style="text-align:center; padding:60px; color:var(--muted);">
-           <span style="font-size:2rem; display:block; margin-bottom:12px;">✅</span>
-           No pending approvals for this region.
+        <div class="tbox">
+          <table>
+            <thead><tr><th>Type</th><th>Requester</th><th>Object</th><th>Reason</th><th>Action</th></tr></thead>
+            <tbody id="approvalsTable">
+              <tr>
+                <td><span class="badge aa">Tenant</span></td>
+                <td>Global Retail Inc</td>
+                <td>Retail POS Instance</td>
+                <td>New Branch Setup</td>
+                <td>
+                  <button class="btn-primary" style="padding:4px 8px; font-size:0.75rem;" onclick="toast('Request Approved')">Approve</button>
+                  <button class="btn-cancel" style="padding:4px 8px; font-size:0.75rem;" onclick="toast('Request Rejected')">Reject</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -579,11 +691,17 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
       <!-- EVENTS MODULE -->
       <div id="events" class="section">
-        <p class="sec-title">Platform Events</p>
-        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:20px;">Real-time stream of system events and webhooks.</p>
-        <div class="card" style="background:rgba(255,255,255,0.02); height:300px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:16px;">
-           <div class="spinner" style="width:24px; height:24px; border:3px solid var(--blue); border-top-color:transparent; border-radius:50%; animation: spin 1s linear infinite;"></div>
-           <span style="color:var(--muted);">Listening for events at edge...</span>
+        <p class="sec-title">Platform Events & Live Webhooks</p>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:20px;">Real-time stream of system events and webhooks from edge nodes.</p>
+        <div class="card" style="font-family:monospace; background:rgba(0,0,0,0.4); height:300px; overflow-y:auto; font-size:0.85rem; line-height:1.6; border:1px solid var(--border); padding:20px;">
+          <div style="color:var(--green)">[22:04:12] INFO: Edge node 'India-West' synchronized successfully.</div>
+          <div style="color:var(--blue)">[22:04:30] WEBHOOK: Campaign.Sent -> Triggered for 1,240 recipients.</div>
+          <div style="color:var(--amber)">[22:04:45] WARN: Database latency peaked at 150ms.</div>
+          <div style="color:var(--green)">[22:05:01] INFO: User #829 logged in from Mumbai.</div>
+          <div style="display:flex; align-items:center; gap:10px; margin-top:12px; opacity:0.6;">
+            <div class="spinner" style="width:14px; height:14px; border:2px solid var(--blue); border-top-color:transparent; border-radius:50%; animation: spin 1s linear infinite;"></div>
+            <span>Listening for next transmission...</span>
+          </div>
         </div>
       </div>
 
@@ -673,46 +791,80 @@ import MainLayout from "../../layouts/MainLayout.astro";
            <div class="card"><div class="card-label">MRR (Proj)</div><div class="kpi-val">₹42.5L</div></div>
            <div class="card"><div class="card-label">Churn Rate</div><div class="kpi-val" style="color:var(--red);">2.1%</div></div>
            <div class="card"><div class="card-label">Paid Subs</div><div class="kpi-val">1,248</div></div>
+           <div class="card"><div class="card-label">Expiring Soon</div><div class="kpi-val" style="color:var(--amber);">18</div></div>
         </div>
         <div class="tbox">
           <table>
-            <thead><tr><th>Plan Name</th><th>Base Price</th><th>Features</th><th>Status</th></tr></thead>
+            <thead><tr><th>Plan Name</th><th>Base Price</th><th>Features</th><th>Status</th><th>Operation</th></tr></thead>
             <tbody>
-              <tr><td>SaaS Enterprise</td><td>₹14,999/mo</td><td>Unlimited Users, Custom Domain</td><td><span class="badge gg">Public</span></td></tr>
-              <tr><td>Growth Pro</td><td>₹4,999/mo</td><td>10 Users, Analytics Pro</td><td><span class="badge gg">Public</span></td></tr>
-              <tr><td>Startup Trial</td><td>₹0</td><td>1 User, Core CRM</td><td><span class="badge aa">Trial</span></td></tr>
+              <tr><td>SaaS Enterprise</td><td>₹14,999/mo</td><td>Unlimited Users, Custom Domain</td><td><span class="badge gg">Public</span></td><td><button class="btn-cancel" style="padding:4px 8px; font-size:0.7rem;" onclick="toast('Editing Enterprise plan...')">Edit</button></td></tr>
+              <tr><td>Growth Pro</td><td>₹4,999/mo</td><td>10 Users, Analytics Pro</td><td><span class="badge gg">Public</span></td><td><button class="btn-cancel" style="padding:4px 8px; font-size:0.7rem;" onclick="toast('Editing Growth Pro plan...')">Edit</button></td></tr>
+              <tr><td>Startup Trial</td><td>₹0</td><td>1 User, Core CRM</td><td><span class="badge aa">Trial</span></td><td><button class="btn-cancel" style="padding:4px 8px; font-size:0.7rem;" onclick="toast('Editing Startup Trial plan...')">Edit</button></td></tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- COLLECTIONS MODULE -->
+      <!-- COLLECTIONS MODULE - NUCLEAR VERIFICATION VERSION -->
       <div id="collections" class="section">
-        <p class="sec-title">Data Collections</p>
-        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Centralized repository for all industry-specific data groups.</p>
-        <div class="card" style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
-           <div style="padding:16px; border:1px solid var(--border); border-radius:12px;">
-              <h5 style="margin:0 0 4px;">Bakery Essentials</h5>
-              <button class="btn-cancel" style="width:100%; margin-top:12px;">Explore</button>
+        <p class="sec-title" style="color:#ffcc00; text-shadow: 0 0 10px rgba(255,204,0,0.5);">☢️ DATA REGISTRY (VERIFIED)</p>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Global industry collections. If you see this text, the synchronization is LIVE.</p>
+        
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-bottom:30px;">
+           <div class="card" style="padding:24px; border:2px solid #ffcc00; background:rgba(255,204,0,0.05);">
+              <h5 style="margin:0 0 10px; font-size:1.1rem; color:white;">BAKERY CORE</h5>
+              <p style="font-size:0.8rem; color:#aaa; margin-bottom:18px;">Sync Node: Live Production. Active for Indian West Region.</p>
+              <button class="btn-primary" style="width:100%; padding:14px; background:#ffcc00; color:black; font-weight:900;" 
+                      onclick="window.alert('CLICK DETECTED: Bakery Essentials'); toast('Exploring Bakery...');">EXPLORE BAKERY</button>
            </div>
-           <div style="padding:16px; border:1px solid var(--border); border-radius:12px;">
-              <h5 style="margin:0 0 4px;">Restaurant Menus</h5>
-              <button class="btn-cancel" style="width:100%; margin-top:12px;">Explore</button>
+           <div class="card" style="padding:24px; border:2px solid #3b82f6;">
+              <h5 style="margin:0 0 10px; font-size:1.1rem; color:white;">RESTAURANT CORE</h5>
+              <p style="font-size:0.8rem; color:#aaa; margin-bottom:18px;">Sync Node: Live Production. Active for Regional Hubs.</p>
+              <button class="btn-primary" style="width:100%; padding:14px;" 
+                      onclick="window.alert('CLICK DETECTED: Restaurant Menus'); toast('Exploring Restaurant...');">EXPLORE RESTAURANT</button>
            </div>
-           <div style="padding:16px; border:1px solid var(--border); border-radius:12px;">
-              <h5 style="margin:0 0 4px;">Medical Inventory</h5>
-              <button class="btn-cancel" style="width:100%; margin-top:12px;">Explore</button>
+           <div class="card" style="padding:24px; border:2px solid #a855f7;">
+              <h5 style="margin:0 0 10px; font-size:1.1rem; color:white;">MEDICAL CORE</h5>
+              <p style="font-size:0.8rem; color:#aaa; margin-bottom:18px;">Sync Node: Live Production. Active for Global Healthcare.</p>
+              <button class="btn-primary" style="width:100%; padding:14px; background:#a855f7; border:none;" 
+                      onclick="window.alert('CLICK DETECTED: Medical Inventory'); toast('Exploring Medical...');">EXPLORE MEDICAL</button>
            </div>
+        </div>
+
+        <div class="tbox">
+          <p class="card-label" style="padding:16px 20px; border-bottom:1px solid var(--border); margin:0;">Operational Database (MongoDB Atlas)</p>
+          <table>
+            <thead><tr><th>Registry</th><th>Node Count</th><th>Status</th><th>Access</th></tr></thead>
+            <tbody>
+              <tr onclick="window.alert('Registry Trigger: Users')"><td><code>System.Users</code></td><td>1,240</td><td><span class="badge gg">Connected</span></td><td><button class="btn-cancel" style="padding:6px 12px; font-size:0.7rem;">Query</button></td></tr>
+              <tr onclick="window.alert('Registry Trigger: Tenants')"><td><code>System.Tenants</code></td><td>45</td><td><span class="badge gg">Connected</span></td><td><button class="btn-cancel" style="padding:6px 12px; font-size:0.7rem;">Query</button></td></tr>
+              <tr onclick="window.alert('Registry Trigger: Logs')"><td><code>System.Logs</code></td><td>8,200</td><td><span class="badge aa">Syncing</span></td><td><button class="btn-cancel" style="padding:6px 12px; font-size:0.7rem;">Query</button></td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
       <!-- CATEGORIES & TAGS -->
       <div id="categories" class="section">
-        <p class="sec-title">Taxonomy & Tags</p>
-        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Manage global categorization for leads and tenants.</p>
-        <div class="card">
-           <textarea class="search-bar" style="width:100%; height:120px;" placeholder="Add tags separated by commas... (e.g., Premium, High-Value, Tech)"></textarea>
-           <button class="btn-primary" style="margin-top:12px;">Save Taxonomy</button>
+        <p class="sec-title">Taxonomy & Taxonomy Management</p>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Manage global categorization and labeling for leads and system tenants.</p>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px;">
+          <div class="card">
+             <h4 style="margin:0 0 12px;">📦 Bulk Tagging</h4>
+             <textarea class="search-bar" style="width:100%; height:120px; margin-bottom:12px; font-size:0.85rem;" placeholder="Add tags separated by commas... (e.g., Premium, High-Value, Tech)"></textarea>
+             <button class="btn-primary" style="width:100%;" onclick="toast('Taxonomy updated successfully.')">Save Taxonomy Changes</button>
+          </div>
+          <div class="card">
+            <h4 style="margin:0 0 12px;">🏷️ Active Global Tags</h4>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+              <span class="badge bg" style="padding:8px 14px; cursor:pointer;" onclick="toast('Filter by Priority')">Priority</span>
+              <span class="badge gg" style="padding:8px 14px; cursor:pointer;" onclick="toast('Filter by Verified')">Verified</span>
+              <span class="badge rr" style="padding:8px 14px; cursor:pointer;" onclick="toast('Filter by High-Risk')">High-Risk</span>
+              <span class="badge aa" style="padding:8px 14px; cursor:pointer;" onclick="toast('Filter by Beta-User')">Beta-User</span>
+              <button class="btn-cancel" style="font-size:0.75rem; border:1px dashed var(--border); background:transparent; padding:6px 14px; border-radius:8px; cursor:pointer;" onclick="toast('Adding new tag...')">+ Add New Tag</button>
+            </div>
+            <p style="margin-top:20px; font-size:0.75rem; color:var(--muted);">Click a tag to view associated entities across all industry nodes.</p>
+          </div>
         </div>
       </div>
 
@@ -777,110 +929,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
         </div>
       </div>
 
-      <!-- APIs MODULE -->
-      <div id="apis" class="section">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-          <div>
-            <p class="sec-title">API Management</p>
-            <p style="color:var(--muted);font-size:0.9rem;">Create endpoints, manage keys, and set global rate limits.</p>
-          </div>
-          <button class="btn-primary" onclick="toast('Generating new API key...')">⊕ Create API Key</button>
-        </div>
-        <div class="kpi-grid">
-          <div class="card"><div class="card-label">Active Keys</div><div class="kpi-val">12</div></div>
-          <div class="card"><div class="card-label">Req/Minute</div><div class="kpi-val">452</div></div>
-          <div class="card"><div class="card-label">Errors</div><div class="kpi-val" style="color:var(--red);">0.1%</div></div>
-        </div>
-        <div class="tbox" style="margin-top:24px;">
-          <table>
-            <thead><tr><th>API Name</th><th>Key Profile</th><th>Usage</th><th>Quota</th><th>Status</th></tr></thead>
-            <tbody>
-              <tr><td>Production Core</td><td><code>live_...8a9</code></td><td>82k</td><td>100k</td><td><span class="badge gg">Healthy</span></td></tr>
-              <tr><td>Staging Sandbox</td><td><code>test_...f21</code></td><td>4k</td><td>Unlimited</td><td><span class="badge bg">Testing</span></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
 
-      <!-- APPROVALS MODULE -->
-      <div id="approvals" class="section">
-        <p class="sec-title">Pending Approvals</p>
-        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Review access requests for organizations and high-tier APIs.</p>
-        <div class="tbox">
-          <table>
-            <thead><tr><th>Type</th><th>Requester</th><th>Object</th><th>Reason</th><th>Action</th></tr></thead>
-            <tbody id="approvalsTable">
-              <tr>
-                <td><span class="badge aa">Tenant</span></td>
-                <td>Global Retail Inc</td>
-                <td>Retail POS Instance</td>
-                <td>New Branch Setup</td>
-                <td><button class="ab ab-act" onclick="toast('Approved')">✅</button> <button class="ab ab-del" onclick="toast('Rejected')">❌</button></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- EVENTS MODULE -->
-      <div id="events" class="section">
-        <p class="sec-title">System Events & Webhooks</p>
-        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Real-time stream of low-level system events and automated hook triggers.</p>
-        <div class="card" style="font-family:monospace; background:#000; height:300px; overflow-y:auto; font-size:0.8rem; line-height:1.6;">
-          <div style="color:var(--green)">[22:04:12] INFO: Edge node 'India-West' synchronized successfully.</div>
-          <div style="color:var(--blue)">[22:04:30] WEBHOOK: Campaign.Sent -> Triggered for 1,240 recipients.</div>
-          <div style="color:var(--amber)">[22:04:45] WARN: Database latency peaked at 150ms.</div>
-          <div style="color:var(--green)">[22:05:01] INFO: User #829 logged in from Mumbai.</div>
-        </div>
-      </div>
-
-      <!-- SUBSCRIPTIONS MODULE -->
-      <div id="subscriptions" class="section">
-        <p class="sec-title">Billing & Subscriptions</p>
-        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Manage pricing tiers, view recurring revenue logs, and handle refunds.</p>
-        <div class="kpi-grid">
-          <div class="card"><div class="card-label">Monthly MRR</div><div class="kpi-val">₹4,25,000</div></div>
-          <div class="card"><div class="card-label">Churn Rate</div><div class="kpi-val">1.2%</div></div>
-          <div class="card"><div class="card-label">Expiring Soon</div><div class="kpi-val" style="color:var(--amber);">18</div></div>
-        </div>
-        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:24px;">
-          <div class="card" style="text-align:center;"><h3>Basic</h3><p>₹999 / mo</p><button class="btn-cancel" style="width:100%">Edit Plan</button></div>
-          <div class="card" style="text-align:center; border:2px solid var(--blue)"><h3>Pro</h3><p>₹2,999 / mo</p><button class="btn-primary" style="width:100%">Edit Plan</button></div>
-          <div class="card" style="text-align:center;"><h3>Enterprise</h3><p>Custom</p><button class="btn-cancel" style="width:100%">Edit Plan</button></div>
-        </div>
-      </div>
-
-      <!-- COLLECTIONS MODULE -->
-      <div id="collections" class="section">
-        <p class="sec-title">Data Collections</p>
-        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Underlying MongoDB collections and data groups for global storage.</p>
-        <div class="tbox">
-          <table>
-            <thead><tr><th>Collection</th><th>Documents</th><th>Storage</th><th>Indexes</th><th>Action</th></tr></thead>
-            <tbody>
-              <tr><td><code>Users</code></td><td>1,240</td><td>2.4 MB</td><td>5</td><td><button class="btn-cancel">Explore</button></td></tr>
-              <tr><td><code>Tenants</code></td><td>45</td><td>0.8 MB</td><td>3</td><td><button class="btn-cancel">Explore</button></td></tr>
-              <tr><td><code>CampaignLogs</code></td><td>8,200</td><td>15.2 MB</td><td>2</td><td><button class="btn-cancel">Explore</button></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- CATEGORIES MODULE -->
-      <div id="categories" class="section">
-        <p class="sec-title">Categories & Taxonomy</p>
-        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Organize system entities using global categories and tags.</p>
-        <div class="card">
-          <h4>🏷️ Global Tags</h4>
-          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
-            <span class="badge bg" style="padding:6px 12px;">Priority</span>
-            <span class="badge gg" style="padding:6px 12px;">Verified</span>
-            <span class="badge rr" style="padding:6px 12px;">High-Risk</span>
-            <span class="badge aa" style="padding:6px 12px;">Beta-User</span>
-            <span class="btn-cancel" style="font-size:0.7rem;">+ Add Tag</span>
-          </div>
-        </div>
-      </div>
 
       <!-- THEMING & LANGUAGE MODULE -->
       <div id="theming" class="section">
@@ -991,34 +1040,39 @@ import MainLayout from "../../layouts/MainLayout.astro";
       if(id==="users") loadUsers();
     };
 
-    // ── DASHBOARD SYNC ────────────────────────────────────────────
+    // ── MASTER CONTROL SYNC ───────────────────────────────────────
     async function initSync() {
       const tok = localStorage.getItem("token");
+      const range = document.getElementById("dateFilter")?.value || "30";
+      
       try {
-        const [sR,tR,aR,lR,cR] = await Promise.all([
-          fetch(API+"/stats",{headers:{"Authorization":tok}}),
+        const [sR,tR,aR,lR,cR,actR,alR] = await Promise.all([
+          fetch(API+"/stats?range="+range,{headers:{"Authorization":tok}}),
           fetch(API+"/tenants",{headers:{"Authorization":tok}}),
           fetch(API+"/admin/audit-logs",{headers:{"Authorization":tok}}),
           fetch(API+"/admin/leads",{headers:{"Authorization":tok}}),
-          fetch(API+"/admin/campaigns",{headers:{"Authorization":tok}})
+          fetch(API+"/admin/campaigns",{headers:{"Authorization":tok}}),
+          fetch(API+"/activity",{headers:{"Authorization":tok}}),
+          fetch(API+"/alerts",{headers:{"Authorization":tok}})
         ]);
         if(sR.status===401) return logout();
         
-        loadUsers(); // Refresh users list independently
-
+        loadUsers(); 
         
         const stats=await sR.json(), tenants=await tR.json();
         const audits = aR.ok ? await aR.json() : [];
         const leads = lR.ok ? await lR.json() : [];
         const campaigns = cR.ok ? await cR.json() : [];
+        const activities = actR.ok ? await actR.json() : [];
+        const alerts = alR.ok ? await alR.json() : [];
 
-        // POPULATE KPIS
-        document.getElementById("kpi-visits").innerText   = (stats.visits||0).toLocaleString();
-        document.getElementById("kpi-users").innerText    = (stats.users||0).toLocaleString();
-        document.getElementById("kpi-views").innerText    = (stats.views||0).toLocaleString();
+        // KPI REFRESH
+        document.getElementById("kpi-visits").innerText   = Math.floor(stats.visits||0).toLocaleString();
+        document.getElementById("kpi-users").innerText    = Math.floor(stats.users||0).toLocaleString();
+        document.getElementById("kpi-views").innerText    = Math.floor(stats.views||0).toLocaleString();
         document.getElementById("kpi-duration").innerText = stats.duration || "0s";
         
-        // DEVICE BARS
+        // BARS
         if(stats.devices) {
           document.getElementById("dev-mobile").innerText = stats.devices.mobile + "%";
           document.getElementById("bar-mobile").style.width = stats.devices.mobile + "%";
@@ -1028,34 +1082,94 @@ import MainLayout from "../../layouts/MainLayout.astro";
           document.getElementById("bar-tablet").style.width = stats.devices.tablet + "%";
         }
 
-        // POPULATE GEO (Country View)
-        if(stats.geo) {
-          document.getElementById("geoTable").innerHTML = stats.geo.length 
-            ? stats.geo.map(g => `<tr><td style="padding:10px 0; font-weight:600;"><span style="margin-right:8px;">${g.country.split(' ').pop()}</span> ${g.country.split(' ').slice(0,-1).join(' ')}</td><td style="text-align:right; font-weight:bold;">${g.count.toLocaleString()}</td></tr>`).join("")
-            : `<tr><td colspan="2" style="text-align:center; padding:20px;">Waiting for globally dispatched nodes...</td></tr>`;
-        }
+        renderGeoTable(stats.geo);
+        updateCharts(stats);
+        renderAudit(audits);
+        renderPipeline(leads);
+        renderActivity(activities);
+        renderAlerts(alerts);
+        generateInsight();
 
-        document.getElementById("tenantTable").innerHTML = tenants.length
-          ? tenants.map(t=>`<tr><td><strong>${t.name}</strong></td><td><span class="badg">${t.industry}</span></td><td class="status-active" style="color:var(--green);font-weight:bold;">${t.status}</td><td>₹${(t.revenue||0).toLocaleString()}</td></tr>`).join("")
-          : `<tr><td colspan="4" style="text-align:center;padding:30px;color:var(--muted);">No nodes.</td></tr>`;
+        // Organizations
+        const tTable = document.getElementById("tenantTable");
+        if(tTable) tTable.innerHTML = tenants.length
+          ? tenants.map(t=>`<tr><td><strong>${t.name}</strong></td><td><span class="badg">${t.industry}</span></td><td style="color:var(--green);font-weight:bold;">${t.status}</td><td>₹${(t.revenue||0).toLocaleString()}</td></tr>`).join("")
+          : `<tr><td colspan="4" style="text-align:center;padding:30px;color:var(--muted);">No infrastructure nodes found.</td></tr>`;
           
-        document.getElementById("leadsTable").innerHTML = leads.length
-          ? leads.map(l=>`<tr>
-              <td style="color:var(--muted);font-size:0.8rem">${new Date(l.created_at).toLocaleString()}</td>
-              <td><strong>${l.businessName}</strong></td>
-              <td>${l.ownerName}</td>
-              <td style="font-size:0.85rem">${l.email}<br><span style="color:var(--muted)">${l.phone}</span></td>
-              <td><span class="badg">${l.industry}</span></td>
-              <td>${l.city}</td>
-              <td>${l.status==='pending' ? `<button onclick="approveLead('${l.id}', this)" class="btn-green" style="padding:6px 10px;font-size:0.8rem;">✅ Approve</button>` : `<span style="color:var(--green);font-weight:bold;">Provisioned</span>`}</td>
-             </tr>`).join("")
-          : `<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted);">No pending leads pipeline.</td></tr>`;
+      } catch(e) { console.error("Global Sync Error:", e); }
+    }
 
-        document.getElementById("auditTable").innerHTML = audits.length
-          ? audits.map(a=>`<tr>
-              <td style="color:var(--muted);font-size:0.8rem">${new Date(a.time).toLocaleString()}</td>
-              <td style="font-weight:bold">${a.user}</td>
-              <td style="color:${a.status==='Failed'?'var(--red)':'var(--green)'};font-weight:bold">${a.status}</td>
+    function renderGeoTable(geo) {
+       const tab = document.getElementById("geoTable");
+       if(!tab || !geo) return;
+       tab.innerHTML = geo.length 
+         ? geo.map(g => `<tr><td style="padding:10px 0; font-weight:600;"><span style="margin-right:8px;">${g.code}</span> ${g.country}</td><td style="text-align:right; font-weight:bold;">${g.count.toLocaleString()}</td></tr>`).join("")
+         : `<tr><td colspan="2" style="text-align:center; padding:20px;">Waiting for telemetry...</td></tr>`;
+    }
+
+    function renderAudit(audits) {
+       const tab = document.getElementById("auditTable");
+       if(!tab) return;
+       tab.innerHTML = audits.length
+         ? audits.map(a=>`<tr><td style="color:var(--muted);font-size:0.8rem">${new Date(a.time).toLocaleString()}</td><td style="font-weight:bold">${a.user}</td><td style="color:${a.status==='Failed'?'var(--red)':'var(--green)'};font-weight:bold">${a.status}</td><td>${a.error || 'N/A'}</td></tr>`).join("")
+         : `<tr><td colspan="4" style="text-align:center;padding:30px;color:var(--muted);">Initializing audits...</td></tr>`;
+    }
+
+    function renderActivity(data) {
+      const f = document.getElementById("activityFeed");
+      if(!f) return;
+      f.innerHTML = data.length ? data.map(a => `<div class="activity-item ${a.type}"><div>${a.message}</div><div class="activity-time">${new Date(a.time).toLocaleString()}</div></div>`).join("") : `<div style="text-align:center; color:var(--muted); padding-top:40px;">No events.</div>`;
+    }
+
+    function renderAlerts(data) {
+      const l = document.getElementById("alertList"), c = document.getElementById("alertCount"), t = document.getElementById("topAlert");
+      if(!l) return;
+      if(!data.length) { if(c)c.style.display="none"; if(t)t.style.display="none"; l.innerHTML='<div class="dd-item">All nominal.</div>'; return; }
+      if(c){c.style.display="block"; c.innerText=data.length;}
+      if(t){t.style.display="block"; t.innerText="⚠️ " + data[0].message;}
+      l.innerHTML = data.map(a=>`<div class="dd-item" style="border-bottom:1px solid var(--border);"><strong>[ALERT]</strong> ${a.message}</div>`).join("");
+    }
+
+    let searchT = null;
+    window.searchData = function() {
+      const q = document.getElementById("globalSearch").value, r = document.getElementById("searchResults");
+      if(!q || q.length < 2) { r.classList.remove("visible"); return; }
+      clearTimeout(searchT);
+      searchT = setTimeout(async () => {
+        try {
+          const res = await fetch(API+"/search?q="+q,{headers:{"Authorization":localStorage.getItem("token")}});
+          const d = await res.json();
+          renderSearchResults(d);
+        } catch(e){}
+      }, 300);
+    }
+
+    function renderSearchResults(data) {
+      const r = document.getElementById("searchResults");
+      r.classList.add("visible");
+      let h = "";
+      if(data.users.length) {
+        h += `<div style="font-size:0.6rem; color:var(--blue); font-weight:800; margin-bottom:8px;">USERS</div>`;
+        data.users.forEach(u => h += `<div class="search-result-item" onclick="switchTab('users'); document.getElementById('userSearch').value='${u.username}'; filterUsers();"><div class="search-main">${u.business_name || u.username}</div><div class="search-sub">${u.industry}</div></div>`);
+      }
+      if(data.leads.length) {
+        h += `<div style="font-size:0.6rem; color:var(--amber); font-weight:800; margin-top:12px;">LEADS</div>`;
+        data.leads.forEach(l => h += `<div class="search-result-item" onclick="switchTab('pipeline')"><div class="search-main">${l.businessName}</div><div class="search-sub">Status: ${l.status}</div></div>`);
+      }
+      r.innerHTML = h || `<div style="padding:20px; color:var(--muted); text-align:center;">No results.</div>`;
+    }
+
+    function renderPipeline(leads) {
+      const c = document.getElementById("pNewColumn"); if(!c) return;
+      const p = leads.filter(l => l.status === 'pending');
+      document.getElementById("pNewCount").innerText = p.length;
+      c.innerHTML = p.length ? p.map(l => `<div class="card" style="background:var(--sidebar-bg); margin-bottom:12px; border:1px solid var(--border);"><strong>${l.businessName}</strong><div style="font-size:0.7rem; color:var(--muted); margin:4px 0 10px;">${l.industry}</div><button class="btn-primary" style="font-size:0.65rem; padding:4px 10px;" onclick="approveLead('${l.id}')">Approve</button></div>`).join("") : `<div style="text-align:center; padding-top:40px; color:var(--muted);">Wait for intake...</div>`;
+    }
+
+    function generateInsight() {
+      const ins = ["Edge traffic spiked 18% in Mumbai.","12% of Trial users reached API thresholds.","Latency decreased by 24ms.","Industry 'Bakery' shows 140% lead velocity growth."];
+      const e = document.getElementById("ai-insight"); if(e) e.innerText = ins[Math.floor(Math.random() * ins.length)];
+    }
               <td style="color:var(--muted)">${a.error || 'Authed OK'}</td>
              </tr>`).join("")
           : `<tr><td colspan="4" style="text-align:center;padding:30px;color:var(--muted);">No edge auth logs collected.</td></tr>`;
@@ -1593,11 +1707,32 @@ import MainLayout from "../../layouts/MainLayout.astro";
     window.switchRoleTab = function(type) {
       const tabs = document.querySelectorAll('.role-tab');
       tabs.forEach(t => t.classList.remove('active'));
+      const content = document.getElementById('role-content');
+
+      // Save original user-role content for switching back
+      if(!window._userRolesHTML) {
+        window._userRolesHTML = content.innerHTML;
+      }
+
       if(type==='org') {
         document.getElementById('rtab-org').classList.add('active');
-        document.getElementById('role-content').innerHTML = `<p style="color:var(--muted); font-size:0.9rem; padding:40px; text-align:center;">Organization roles are inherited from Enterprise level. <br> <button class="btn-cancel" style="margin-top:12px">View Enterprise Settings</button></p>`;
+        content.innerHTML = `<div style="padding:60px 40px; text-align:center; min-height:350px; display:flex; flex-direction:column; align-items:center; justify-content:center; animation: fadeIn 0.4s ease-out; background:rgba(255,255,255,0.01); border-radius:24px; border:1px solid var(--border);">
+          <div style="font-size:3.5rem; margin-bottom:24px; filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.3));">🏢</div>
+          <h3 style="margin:0 0 12px; font-size:1.4rem; font-weight:800;">Enterprise Governance</h3>
+          <p style="color:var(--muted); font-size:1rem; line-height:1.6; max-width:500px; margin-bottom:32px;">
+            Organization roles are inherited from Enterprise level. Full governance and node configuration are managed within the <strong>Organizational Registry</strong>.
+          </p>
+          <button class="btn-primary" 
+                  style="min-width:240px; padding:16px 32px; font-size:1rem; border-radius:14px; cursor:pointer;" 
+                  onclick="const mi = Array.from(document.querySelectorAll('.menu-item')).find(x=>x.innerText.includes('Organizations')); switchTab('tenants', mi);">
+            View Enterprise Settings
+          </button>
+        </div>`;
       } else {
-        location.reload(); // Just for demo to reset to User Roles
+        document.getElementById('rtab-usr').classList.add('active');
+        if(window._userRolesHTML) {
+          content.innerHTML = window._userRolesHTML;
+        }
       }
     }
 

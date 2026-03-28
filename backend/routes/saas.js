@@ -4,6 +4,13 @@ const db = require("../db");
 const bcrypt = require("bcrypt");
 const { sendWhatsAppAlert } = require("../services/alerts");
 const nodemailer = require("nodemailer");
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
+
+const rzp = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY || "rzp_test_placeholder",
+  key_secret: process.env.RAZORPAY_SECRET || "placeholder_secret"
+});
 
 // Initialize Mailer using Official Bobo Support ID
 const mailTransporter = nodemailer.createTransport({
@@ -167,7 +174,19 @@ router.post("/public/signup", async (req, res) => {
 router.get("/admin/leads", async (req, res) => {
   try {
     const [leads] = await db.query("SELECT * FROM leads ORDER BY created_at DESC");
-    res.json(leads);
+    // Map database columns to frontend expectations
+    const mapped = leads.map(l => ({
+      id: l.id,
+      businessName: l.business_name,
+      ownerName: l.owner_name,
+      phone: l.phone,
+      email: l.email,
+      industry: l.industry,
+      city: l.city,
+      status: l.status,
+      created_at: l.created_at
+    }));
+    res.json(mapped);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -386,6 +405,115 @@ router.get("/tenants", async (req, res) => {
         );
         res.json(users);
     } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+/**
+ * 8️⃣ ACTIVITY & ALERTS (REAL-TIME TELEMETRY)
+ */
+router.get("/activity", async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT * FROM activity_logs ORDER BY time DESC LIMIT 20");
+    res.json(rows);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.get("/alerts", async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT * FROM alerts WHERE status = 'active' ORDER BY created_at DESC");
+    res.json(rows);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.get("/admin/audit-logs", async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT created_at as time, username as user, status, device as error FROM login_logs ORDER BY created_at DESC LIMIT 50");
+    res.json(rows);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+/**
+ * 9️⃣ GLOBAL SEARCH
+ */
+router.get("/search", async (req, res) => {
+  try {
+    const { q } = req.query;
+    const term = `%${q}%`;
+    const [users] = await db.query(
+      "SELECT id, business_name, username, industry FROM saas_users WHERE business_name LIKE ? OR username LIKE ? OR industry LIKE ?",
+      [term, term, term]
+    );
+    const [leads] = await db.query(
+      "SELECT id, business_name, owner_name, status FROM leads WHERE business_name LIKE ? OR owner_name LIKE ?",
+      [term, term]
+    );
+    res.json({ users, leads });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+/**
+ * 🔟 LEAD PROVISIONING
+ */
+router.post("/admin/approve-lead", async (req, res) => {
+  try {
+    const { leadId } = req.body;
+    const [[lead]] = await db.query("SELECT * FROM leads WHERE id = ?", [leadId]);
+    if (!lead) return res.status(404).json({ error: "Lead not found" });
+
+    // 1. Create User
+    const password = Math.random().toString(36).slice(-8); // Generate random password
+    const hash = await bcrypt.hash(password, 10);
+    
+    const [result] = await db.query(
+      `INSERT INTO saas_users (business_name, owner_name, username, email, phone, industry, password_hash, plain_password, status, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'active', NOW())`,
+      [lead.business_name, lead.owner_name, lead.email, lead.email, lead.phone, lead.industry, hash, password]
+    );
+
+    // 2. Update Lead Status
+    await db.query("UPDATE leads SET status = 'provisioned' WHERE id = ?", [leadId]);
+
+    // 3. Log Activity
+    await db.query("INSERT INTO activity_logs (message, type) VALUES (?, 'provisioning')", [`Infrastructure provisioned for ${lead.business_name}`]);
+
+    // 4. Mirror in Admin (Master Auth)
+    await db.query(
+       `INSERT INTO admin_users (username, password_hash, industry, role, status)
+        VALUES (?, ?, ?, 'owner', 'active')`,
+       [lead.email, hash, lead.industry]
+    );
+
+    res.json({ success: true, userId: result.insertId });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+/**
+ * 💳 RAZORPAY INTEGRATION
+ */
+router.post("/create-order", async (req, res) => {
+  try {
+    const { amount } = req.body;
+    const order = await rzp.orders.create({
+      amount: amount * 100, // in paise
+      currency: "INR",
+      receipt: `receipt_${Date.now()}`
+    });
+    res.json(order);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.post("/verify-payment", async (req, res) => {
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+  const secret = process.env.RAZORPAY_SECRET || "placeholder_secret";
+  const hmac = crypto.createHmac("sha256", secret);
+  hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
+  const generated_signature = hmac.digest("hex");
+
+  if (generated_signature === razorpay_signature) {
+    // Payment Successful
+    res.json({ status: "success" });
+  } else {
+    res.status(400).json({ status: "failed" });
+  }
 });
 
 module.exports = router;

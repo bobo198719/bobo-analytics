@@ -1,12 +1,21 @@
-// mysql_db.js — Drop-in MySQL2 replacement for pg_db.js
-// Connects via Unix socket (root, no password) — works on VPS without env vars
+require('dotenv').config();
 const mysql = require('mysql2/promise');
 
-const pool = mysql.createPool({
+const poolConfig = process.env.DB_HOST ? {
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'bobo_analytics',
+    port: process.env.DB_PORT || 3306,
+} : {
     socketPath: '/run/mysqld/mysqld.sock',
     user: 'root',
     password: '',
     database: 'bobo_analytics',
+};
+
+const pool = mysql.createPool({
+    ...poolConfig,
     connectionLimit: 10,
     waitForConnections: true,
     queueLimit: 0

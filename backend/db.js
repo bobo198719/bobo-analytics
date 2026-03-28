@@ -204,6 +204,12 @@ const initDb = () => {
   db.query(`ALTER TABLE saas_users ADD COLUMN IF NOT EXISTS renewal_date DATE`, (err) => {
     if (err && err.errno !== 1060) console.warn("renewal_date check.");
   });
+  db.query(`ALTER TABLE saas_users ADD COLUMN IF NOT EXISTS plain_password VARCHAR(255) DEFAULT NULL`, (err) => {
+    if (err && err.errno !== 1060) console.warn("plain_password check.");
+  });
+  db.query(`ALTER TABLE saas_users ADD COLUMN IF NOT EXISTS owner_name VARCHAR(255) DEFAULT NULL`, (err) => {
+    if (err && err.errno !== 1060) console.warn("owner_name check.");
+  });
 
   db.query(`CREATE TABLE IF NOT EXISTS staff_users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -264,13 +270,35 @@ const initDb = () => {
 
   db.query(`CREATE TABLE IF NOT EXISTS leads (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255),
+    business_name VARCHAR(255),
+    owner_name VARCHAR(255),
     phone VARCHAR(20),
+    email VARCHAR(255),
     industry VARCHAR(50),
-    status VARCHAR(50),
+    city VARCHAR(100),
+    status VARCHAR(50) DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )`, (err) => {
     if (err) console.error("Error creating leads table:", err);
+  });
+
+  db.query(`CREATE TABLE IF NOT EXISTS activity_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    message TEXT,
+    type VARCHAR(50),
+    time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`, (err) => {
+    if (err) console.error("Error creating activity_logs table:", err);
+  });
+
+  db.query(`CREATE TABLE IF NOT EXISTS alerts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    message TEXT,
+    severity VARCHAR(20),
+    status VARCHAR(20) DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`, (err) => {
+    if (err) console.error("Error creating alerts table:", err);
   });
 
   db.query(`CREATE TABLE IF NOT EXISTS login_logs (
@@ -283,6 +311,18 @@ const initDb = () => {
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )`, (err) => {
     if (err) console.error("Error creating login_logs table:", err);
+  });
+
+  db.query(`CREATE TABLE IF NOT EXISTS admin_users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(100) UNIQUE,
+    password_hash TEXT,
+    industry VARCHAR(100),
+    role VARCHAR(50),
+    status VARCHAR(20) DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`, (err) => {
+    if (err) console.error("Error creating admin_users table:", err);
   });
 };
 

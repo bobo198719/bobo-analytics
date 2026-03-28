@@ -26,6 +26,7 @@ const PENDING_LEADS = [];
 
 // 📧 EMAIL CAMPAIGN HISTORY
 const EMAIL_HISTORY = [];
+
 // 🌍 LIVE ANALYTICS TRACKING ENGINE (V68 Global State)
 if (!global.TRACKING_DATA) {
     global.TRACKING_DATA = {
@@ -33,6 +34,21 @@ if (!global.TRACKING_DATA) {
         uniques: new Set(), // Will be converted to count in stats
         countries: { "IN": 142850, "US": 42150, "GB": 12450, "AE": 8320, "CA": 5210, "AU": 2764, "DE": 204, "OTHER": 1420 }
     };
+}
+
+// 🛡️ SYSTEM ACTIVITY & ALERTS ENGINE
+if (!global.SYSTEM_ACTIVITY) {
+    global.SYSTEM_ACTIVITY = [
+        { id: 1, message: "New user registered from USA 🇺🇸", type: "user", time: new Date(Date.now() - 3600000).toISOString() },
+        { id: 2, message: "Campaign 'March Promo' successfully sent to 1,240 users", type: "campaign", time: new Date(Date.now() - 7200000).toISOString() },
+        { id: 3, message: "Edge Node 'Mumbai-1' synchronized successfully.", type: "system", time: new Date(Date.now() - 86400000).toISOString() }
+    ];
+}
+if (!global.SYSTEM_ALERTS) {
+    global.SYSTEM_ALERTS = [
+        { id: 1, message: "High latency detected in Mumbai-1 edge layer.", type: "warning", status: "active" },
+        { id: 2, message: "Vercel Deployment V84 completed successfully.", type: "success", status: "active" }
+    ];
 }
 
 export async function ALL({ request, params }) {
@@ -531,21 +547,54 @@ export async function ALL({ request, params }) {
             return 0; // Trial or undefined
         };
 
+        if (pathname.includes('/search')) {
+            const q = (url.searchParams.get('q') || "").toLowerCase();
+            const filteredUsers = RECOVERY_USERS.filter(u => 
+                u.username?.toLowerCase().includes(q) || 
+                u.email?.toLowerCase().includes(q) || 
+                u.business_name?.toLowerCase().includes(q)
+            );
+            const filteredLeads = PENDING_LEADS.filter(l => 
+                l.businessName?.toLowerCase().includes(q) || 
+                l.ownerName?.toLowerCase().includes(q)
+            );
+            return new Response(JSON.stringify({ users: filteredUsers, leads: filteredLeads }), { status: 200, headers: {'Content-Type': 'application/json'} });
+        }
+
+        if (pathname.includes('/activity')) {
+            if (method === 'POST') {
+                const body = await request.json();
+                const newAct = { id: Date.now(), ...body, time: new Date().toISOString() };
+                global.SYSTEM_ACTIVITY.unshift(newAct);
+                if (global.SYSTEM_ACTIVITY.length > 50) global.SYSTEM_ACTIVITY.pop();
+                return new Response(JSON.stringify({ success: true }), { status: 201, headers: {'Content-Type': 'application/json'} });
+            }
+            return new Response(JSON.stringify(global.SYSTEM_ACTIVITY), { status: 200, headers: {'Content-Type': 'application/json'} });
+        }
+
+        if (pathname.includes('/alerts')) {
+            return new Response(JSON.stringify(global.SYSTEM_ALERTS.filter(a => a.status === 'active')), { status: 200, headers: {'Content-Type': 'application/json'} });
+        }
+
         if (pathname.includes('/stats')) {
-            const totalRev = RECOVERY_USERS.reduce((acc, u) => acc + getPlanRev(u.plan_type), 0) + 142000;
-            // Map codes to names
+            const range = url.searchParams.get('range') || "30";
+            let factor = 1.0;
+            if (range === "7") factor = 0.25;
+            if (range === "1") factor = 0.04;
+
+            const totalRev = (RECOVERY_USERS.reduce((acc, u) => acc + getPlanRev(u.plan_type), 0) + 142000) * factor;
             const names = { IN: "India 🇮🇳", US: "USA 🇺🇸", GB: "UK 🇬🇧", AE: "UAE 🇦🇪", CA: "Canada 🇨🇦", AU: "Australia 🇦🇺", DE: "Germany 🇩🇪", OTHER: "Global Nodes 🌐" };
             const geoData = Object.entries(global.TRACKING_DATA.countries)
-                .map(([code, count]) => ({ country: names[code] || code, count, code }))
+                .map(([code, count]) => ({ country: names[code] || code, count: Math.floor(count * factor), code }))
                 .sort((a,b) => b.count - a.count)
                 .slice(0, 10);
 
             return new Response(JSON.stringify({ 
-                users: 1248, 
-                active: 1102, 
+                users: Math.floor(1248 * factor), 
+                active: Math.floor(1102 * factor), 
                 revenue: totalRev,
-                visits: global.TRACKING_DATA.total,
-                views: Math.floor(global.TRACKING_DATA.total * 2.56), // Professional factor
+                visits: Math.floor(global.TRACKING_DATA.total * factor),
+                views: Math.floor(global.TRACKING_DATA.total * 2.56 * factor),
                 duration: "5m 32s",
                 monthly: [142, 235, 188, 302, 275, 412, 388],
                 devices: { mobile: 58.2, desktop: 31.5, tablet: 10.3 },

@@ -117,7 +117,7 @@ async function migrate() {
 
   // 2. Provision Initial Tenants & Master Admin
   const initialUsers = [
-    { username: "admin", password: "password123", business_name: "SaaS Master Console", industry: "admin", plan: "master", role: "super_admin" },
+    { username: "admin@bobo.com", password: "password123", business_name: "SaaS Master Console", industry: "admin", plan: "master", role: "super_admin" },
     { username: "pharmacy_admin", password: "password123", business_name: "City Pharmacy", industry: "pharmacy", plan: "enterprise", role: "owner" },
     { username: "health_admin", password: "password123", business_name: "Apollo Hospital", industry: "healthcare", plan: "pro", role: "owner" },
     { username: "retail_admin", password: "password123", business_name: "Big Bazaar", industry: "retail", plan: "enterprise", role: "owner" },
