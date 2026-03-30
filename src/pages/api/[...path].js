@@ -477,44 +477,45 @@ export async function ALL({ request, params }) {
                 if (PENDING_LEADS.length > 200) PENDING_LEADS.pop();
             }
 
-            // Notify Administrator (SMTP + Fallback to FormSubmit for Reliability)
+            // Notify Administrator (Reliable FormSubmit.co Sync - V74)
             try {
-                const nodemailer = await import("nodemailer");
-                const m = nodemailer.createTransport({ 
-                    host: process.env.SMTP_HOST || "smtp.hostinger.com", 
-                    port: 465, 
-                    secure: true, 
-                    auth: { user: process.env.SMTP_USER || "support@boboanalytics.com", pass: process.env.SMTP_PASS } 
-                });
-                
-                await m.sendMail({ 
-                    from: '"Bobo System" <support@boboanalytics.com>', 
-                    to: "support@boboanalytics.com", 
-                    subject: `🚀 New Lead: ${lead.businessName} (${lead.industry.toUpperCase()})`, 
-                    html: `
-                        <div style="font-family:sans-serif; padding:20px; border:1px solid #eee; border-radius:10px; background:#fff;">
-                            <h2 style="color:#6366f1;">New Bobo Analytics Lead</h2>
-                            <p><strong>Business:</strong> ${lead.businessName}</p>
-                            <p><strong>Contact:</strong> ${lead.ownerName}</p>
-                            <p><strong>Email:</strong> ${lead.email}</p>
-                            <p><strong>Phone:</strong> ${lead.phone}</p>
-                            <p><strong>Industry:</strong> ${lead.industry}</p>
-                            <br>
-                            <a href="https://boboanalytics.com/admin/saas" style="background:#6366f1; color:white; padding:12px 24px; text-decoration:none; border-radius:8px; font-weight:bold; display:inline-block;">Open Admin CRM</a>
-                        </div>
-                    ` 
-                });
-            } catch(e) { 
-                console.error("SMTP Primary Failure, falling back to Webhook notify...");
-                // Fallback: Notify via simple fetch to a webhook or backup notifier if SMTP is missing
+                // We use FormSubmit as Primary because SMTP Edge credentials (SMTP_PASS) are often restricted.
+                // This payload ensures Bobo Admins receive instant lead cards in their inbox.
                 await fetch("https://formsubmit.co/ajax/support@boboanalytics.com", {
-                    method: "POST", headers: {"Content-Type": "application/json"},
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Accept": "application/json" },
                     body: JSON.stringify({
-                        _subject: `🚀 FALLBACK Lead Alert: ${lead.businessName}`,
-                        business: lead.businessName, contact: lead.ownerName, email: lead.email, phone: lead.phone, source: lead.source, panel: "https://boboanalytics.com/admin/saas"
+                        _subject: `🚀 [BOBO LEAD] New Demo Request: ${lead.businessName}`,
+                        _template: "table",
+                        _captcha: "false",
+                        business: lead.businessName,
+                        owner: lead.ownerName,
+                        email: lead.email,
+                        phone: lead.phone,
+                        industry: lead.industry,
+                        source: lead.source,
+                        crm_link: "https://boboanalytics.com/admin/saas"
                     })
-                }).catch(()=>{});
-            }
+                });
+
+                // Secondary SMTP Dispatch (If credentials exist)
+                if (process.env.SMTP_PASS) {
+                    const nodemailer = await import("nodemailer");
+                    const m = nodemailer.createTransport({ 
+                        host: process.env.SMTP_HOST || "smtp.hostinger.com", 
+                        port: 465, 
+                        secure: true, 
+                        auth: { user: process.env.SMTP_USER || "support@boboanalytics.com", pass: process.env.SMTP_PASS } 
+                    });
+                    
+                    await m.sendMail({ 
+                        from: '"Bobo Lead Engine" <support@boboanalytics.com>', 
+                        to: "support@boboanalytics.com", 
+                        subject: `🚨 Bobo Sync: ${lead.businessName}`, 
+                        html: `<p>New lead ${lead.ownerName} from ${lead.businessName} just requested a demo.</p>`
+                    }).catch(()=>{});
+                }
+            } catch(e) { console.error("Lead Notify Failure:", e); }
 
             // If it's a lead form or demo request return success.
             if (pathname.includes('/lead') || pathname.includes('/signup')) {
