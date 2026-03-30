@@ -1549,14 +1549,15 @@ import MainLayout from "../../layouts/MainLayout.astro";
     let sourceChartObj = null;
 
     function updateCharts(data) {
-      if(!data) return;
+      if(!data || typeof Chart === 'undefined') return;
 
       // 1. Bar Chart (Monthly Traffic)
       const ctx1 = document.getElementById('trafficChart');
       if(ctx1) {
         if(trafficChartObj) trafficChartObj.destroy();
-        const monthlyData = data.monthly || [100, 200, 300, 250, 400];
-        const labels = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug"].slice(0, monthlyData.length);
+        const rawMonthly = data.monthly || [];
+        const monthlyData = (rawMonthly.length > 0) ? rawMonthly : [120, 250, 380, 210, 450, 310, 520, 390];
+        const labels = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].slice(0, monthlyData.length);
         
         trafficChartObj = new Chart(ctx1, {
           type: 'bar',
@@ -1566,21 +1567,22 @@ import MainLayout from "../../layouts/MainLayout.astro";
               label: "Traffic (K)",
               data: monthlyData,
               backgroundColor: '#3b82f6',
-              borderRadius: 4,
-              maxBarThickness: 32
+              borderRadius: 6,
+              maxBarThickness: 40
             }]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
+            animation: { duration: 1000, easing: 'easeOutQuart' },
             scales: {
               y: { 
                 beginAtZero: true,
-                grid: { color: 'rgba(255,255,255,0.05)' }, 
+                grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false }, 
                 ticks: { color: '#94a3b8', font: { size: 10 } }
               },
-              x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } }
+              x: { grid: { display: false, drawBorder: false }, ticks: { color: '#94a3b8', font: { size: 10 } } }
             }
           }
         });
@@ -1590,23 +1592,32 @@ import MainLayout from "../../layouts/MainLayout.astro";
       const ctx2 = document.getElementById('sourceChart');
       if(ctx2) {
         if(sourceChartObj) sourceChartObj.destroy();
+        const rawSources = data.sources || [];
+        const sourceData = (rawSources.length > 0) ? rawSources : [45.2, 25.5, 29.3];
+        
         sourceChartObj = new Chart(ctx2, {
           type: 'doughnut',
           data: {
             labels: ["Direct","Organic","Social"],
             datasets: [{
-              data: data.sources || [40.2, 29.5, 30.3],
+              data: sourceData,
               backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'],
-              borderWidth: 0
+              borderWidth: 0,
+              hoverOffset: 10
             }]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            cutout: '72%',
+            cutout: '75%',
             plugins: {
-              legend: { 
-                display: false
+              legend: { display: false },
+              tooltip: { 
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                padding: 12,
+                titleFont: { size: 12 },
+                bodyFont: { size: 12 },
+                cornerRadius: 8
               }
             }
           }
