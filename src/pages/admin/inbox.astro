@@ -13,6 +13,7 @@ const token = ""; // Will be handled by client-side auth
       <nav class="sidebar-nav">
         <a href="/admin/saas" class="nav-item">📈 Pipeline View</a>
         <a href="/admin/inbox" class="nav-item active">📥 Leads Inbox</a>
+        <a href="#" onclick="localStorage.removeItem('token'); window.location.href='/crm-login';" class="nav-item" style="color:#ef4444; border-top:1px solid rgba(255,100,100,0.2); margin-top:10px;">🚪 Exit CRM</a>
       </nav>
     </aside>
 
