@@ -438,23 +438,61 @@ export async function ALL({ request, params }) {
         return new Response(JSON.stringify(EMAIL_HISTORY), { status: 200, headers: {'Content-Type': 'application/json'} });
     }
 
-    // 🚀 CLIENT ONBOARDING & PIPELINE ENGINE
-    if (pathname.includes('/lead') && method === 'POST') {
-        const body = await request.text();
-        const lead = JSON.parse(body);
-        lead.id = "L_" + Math.random().toString(36).substr(2, 9);
-        lead.status = "pending";
-        lead.created_at = new Date().toISOString();
-        PENDING_LEADS.unshift(lead);
-        
-        // Background Admin Notification
-        if (process.env.SMTP_PASS) {
-            import("nodemailer").then(mail => {
-                const m = mail.createTransport({ host: process.env.SMTP_HOST || "smtp.hostinger.com", port: 465, secure: true, auth: { user: process.env.SMTP_USER || "support@boboanalytics.com", pass: process.env.SMTP_PASS } });
-                m.sendMail({ from: '"Bobo System" <support@boboanalytics.com>', to: "support@boboanalytics.com", subject: "New SaaS Tenant Lead: " + lead.businessName, text: JSON.stringify(lead, null, 2) }).catch(()=>{});
-            });
-        }
-        return new Response(JSON.stringify({ success: true, leadId: lead.id }), { status: 200, headers: {'Content-Type': 'application/json'} });
+    // 🚀 CRM PIPELINE & NOTIFICATION SYNC (V72)
+    if ((pathname.includes('/lead') || pathname.includes('/signup')) && method === 'POST') {
+        try {
+            const body = JSON.parse(bodyText);
+            const lead = {
+                id: "L_" + Math.random().toString(36).substr(2, 9),
+                businessName: body.businessName || body.business_name || "Unknown",
+                ownerName: body.ownerName || body.name || body.username || "Guest",
+                email: body.email,
+                phone: body.phone || body.phone_number || "N/A",
+                industry: body.industry || "General",
+                status: "pending",
+                source: pathname.includes('/signup') ? 'Direct Signup' : 'Onboarding Form',
+                created_at: new Date().toISOString()
+            };
+            
+            // Add to CRM Registry
+            PENDING_LEADS.unshift(lead);
+            if (PENDING_LEADS.length > 200) PENDING_LEADS.pop();
+
+            // Notify Administrator via SMTP
+            try {
+                const nodemailer = await import("nodemailer");
+                const m = nodemailer.createTransport({ 
+                    host: process.env.SMTP_HOST || "smtp.hostinger.com", 
+                    port: 465, 
+                    secure: true, 
+                    auth: { user: process.env.SMTP_USER || "support@boboanalytics.com", pass: process.env.SMTP_PASS } 
+                });
+                
+                await m.sendMail({ 
+                    from: '"Bobo Lead Engine" <support@boboanalytics.com>', 
+                    to: "support@boboanalytics.com", 
+                    subject: `🚀 New Lead: ${lead.businessName} (${lead.industry.toUpperCase()})`, 
+                    html: `
+                        <div style="font-family:sans-serif; padding:20px; border:1px solid #eee; border-radius:10px; background:#fff;">
+                            <h2 style="color:#6366f1;">New Bobo Analytics Lead</h2>
+                            <p><strong>Business:</strong> ${lead.businessName}</p>
+                            <p><strong>Contact:</strong> ${lead.ownerName}</p>
+                            <p><strong>Email:</strong> ${lead.email}</p>
+                            <p><strong>Phone:</strong> ${lead.phone}</p>
+                            <p><strong>Industry:</strong> ${lead.industry}</p>
+                            <p><strong>Source:</strong> ${lead.source}</p>
+                            <br>
+                            <a href="https://boboanalytics.com/admin/saas" style="background:#6366f1; color:white; padding:12px 24px; text-decoration:none; border-radius:8px; font-weight:bold; display:inline-block;">Open Admin CRM</a>
+                        </div>
+                    ` 
+                });
+            } catch(e) { console.error("SMTP Alert Failure:", e); }
+
+            // If it's a lead form return success. If it's signup, we let it continue to proxy to the real backend.
+            if (pathname.includes('/lead')) {
+                return new Response(JSON.stringify({ success: true, leadId: lead.id }), { status: 200, headers: {'Content-Type': 'application/json'} });
+            }
+        } catch(e) { console.error("CRM Sync Error:", e); }
     }
     
     if (pathname.includes('/admin/leads') && method === 'GET') {
