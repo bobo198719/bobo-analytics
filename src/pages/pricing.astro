@@ -131,37 +131,54 @@ import MainLayout from "../layouts/MainLayout.astro";
         }
 
         if (plans) {
-          plans.forEach(p => {
-             const tierEl = document.getElementById(`tier-${p.id}`);
-             const descEl = document.getElementById(`desc-${p.id}`);
-             const featuresEl = document.getElementById(`features-${p.id}`);
-             
-             if (tierEl) tierEl.innerText = p.title;
-             // We don't change desc as it's not in our CRM matrix yet, but we could
-             
-             if (featuresEl) {
-               featuresEl.innerHTML = p.features.split(',').map(f => `<li>${f.trim()}</li>`).join('');
-             }
-
-             if (p.id === 'starter') {
-               const priceEl = document.getElementById('price-starter');
-               if (priceEl) priceEl.innerHTML = p.price ? `₹${p.price} <span>/mo</span>` : 'Free';
-             } else if (p.id === 'growth') {
-               const monthlyEl = document.getElementById('proPriceMonthly');
-               const yearlyEl = document.getElementById('proPriceAnnually');
-               if (monthlyEl) monthlyEl.innerHTML = `₹${p.price} <span>/mo</span>`;
-               if (yearlyEl) {
-                 const yearlyValue = Math.floor(parseInt(p.price) * 0.8 * 12);
-                 yearlyEl.innerHTML = `₹${Math.floor(parseInt(p.price)*0.8)} <span>/mo</span><div class="billed-yearly">Billed ₹${yearlyValue.toLocaleString()} yearly</div>`;
-               }
-             } else if (p.id === 'best_value') {
-               const priceEl = document.getElementById('price-best_value');
-               if (priceEl) priceEl.innerHTML = p.price ? `₹${p.price} <span>/mo</span>` : 'Custom';
-             }
-          });
+          window.currentPlans = plans; // Store for toggle
+          updatePricingTable();
         }
       } catch(e) { console.error("Sync Error:", e); }
     }
+
+    function updatePricingTable() {
+      const toggle = document.getElementById("billingToggle");
+      const isYearly = toggle.checked;
+      const plans = window.currentPlans;
+      if (!plans) return;
+
+      plans.forEach(p => {
+         const tierEl = document.getElementById(`tier-${p.id}`);
+         const featuresEl = document.getElementById(`features-${p.id}`);
+         
+         if (tierEl) tierEl.innerText = p.title;
+         if (featuresEl) {
+           featuresEl.innerHTML = p.features.split(',').map(f => `<li>${f.trim()}</li>`).join('');
+         }
+
+         const priceVal = isYearly ? p.price : p.emi;
+         const label = isYearly ? '/year' : '/mo';
+
+         if (p.id === 'starter') {
+           const priceEl = document.getElementById('price-starter');
+           if (priceEl) priceEl.innerHTML = priceVal ? `₹${priceVal} <span>${label}</span>` : 'Free';
+         } else if (p.id === 'growth') {
+           const monthlyEl = document.getElementById('proPriceMonthly');
+           const yearlyEl = document.getElementById('proPriceAnnually');
+           
+           if (isYearly) {
+             monthlyEl.classList.add('hidden');
+             yearlyEl.classList.remove('hidden');
+             yearlyEl.innerHTML = `₹${p.price} <span>/year</span><div class="billed-yearly">Save with annual billing</div>`;
+           } else {
+             monthlyEl.classList.remove('hidden');
+             yearlyEl.classList.add('hidden');
+             monthlyEl.innerHTML = `₹${p.emi} <span>/mo</span>`;
+           }
+         } else if (p.id === 'best_value') {
+           const priceEl = document.getElementById('price-best_value');
+           if (priceEl) priceEl.innerHTML = priceVal ? `₹${priceVal} <span>${label}</span>` : 'Custom';
+         }
+      });
+    }
+
+    document.getElementById("billingToggle").addEventListener("change", updatePricingTable);
     syncPricing();
   </script>
 
