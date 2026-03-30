@@ -3,6 +3,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
 ---
 
 <MainLayout title="Bobo Admin | Secure Master Console" hideNav={true}>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
     :root {
@@ -980,7 +981,6 @@ import MainLayout from "../../layouts/MainLayout.astro";
     </main>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script is:inline>
     const API = "/api";
     let myChart = null;
@@ -992,6 +992,8 @@ import MainLayout from "../../layouts/MainLayout.astro";
       if (localStorage.getItem("token")) {
         document.getElementById("dashboardContent").style.display="flex";
         initSync();
+        // Secondary pulse for any lazy-loaded components
+        setTimeout(initSync, 1500); 
       } else {
         window.location.replace("/admin-login");
       }
@@ -1549,7 +1551,12 @@ import MainLayout from "../../layouts/MainLayout.astro";
     let sourceChartObj = null;
 
     function updateCharts(data) {
-      if(!data || typeof Chart === 'undefined') return;
+      if(!data) return;
+      if(typeof Chart === 'undefined') {
+        console.warn("Chart.js not ready, retrying...");
+        setTimeout(() => updateCharts(data), 500);
+        return;
+      }
 
       // 1. Bar Chart (Monthly Traffic)
       const ctx1 = document.getElementById('trafficChart');
