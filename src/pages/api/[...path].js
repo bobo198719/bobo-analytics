@@ -473,7 +473,7 @@ export async function ALL({ request, params }) {
                 industry: body.industry || "General",
                 status: "pending",
                 source: "Web Form",
-                created_at: new Date().toISOString(),
+                created_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
                 city: body.city || body.location || "Online"
             };
 
