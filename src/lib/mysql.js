@@ -64,5 +64,17 @@ export const initTables = async () => {
     customer_type VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )`);
+
+  await db.query(`CREATE TABLE IF NOT EXISTS lead_pipeline (
+    id VARCHAR(50) PRIMARY KEY,
+    business_name VARCHAR(255),
+    owner_name VARCHAR(255),
+    email VARCHAR(255),
+    phone VARCHAR(50),
+    industry VARCHAR(100),
+    status VARCHAR(50) DEFAULT 'pending',
+    source VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`);
 };
 

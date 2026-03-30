@@ -1,4 +1,8 @@
 import menuItems from '../../data/restaurant_menu.json';
+import { getMySQL, initTables } from '../../lib/mysql.js';
+
+// Init DB Tables once
+initTables().catch(e => console.error("DB Init Error:", e));
 
 // 🔐 MASTER USER REGISTRY (Emergency Recovery V62)
 const RECOVERY_USERS = [
@@ -458,11 +462,22 @@ export async function ALL({ request, params }) {
                 created_at: new Date().toISOString()
             };
             
-            // Add to CRM Registry
-            PENDING_LEADS.unshift(lead);
-            if (PENDING_LEADS.length > 200) PENDING_LEADS.pop();
+            // Add to CRM Database (Persistence)
+            try {
+                const db = getMySQL();
+                await db.query(
+                    `INSERT INTO lead_pipeline (id, business_name, owner_name, email, phone, industry, status, source, created_at) 
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    [lead.id, lead.businessName, lead.ownerName, lead.email, lead.phone, lead.industry, lead.status, lead.source, lead.created_at]
+                );
+            } catch(e) { 
+                console.error("DB Lead Save Failure:", e);
+                // Fallback to in-memory for session continuity
+                PENDING_LEADS.unshift(lead);
+                if (PENDING_LEADS.length > 200) PENDING_LEADS.pop();
+            }
 
-            // Notify Administrator via SMTP
+            // Notify Administrator (SMTP + Fallback to FormSubmit for Reliability)
             try {
                 const nodemailer = await import("nodemailer");
                 const m = nodemailer.createTransport({ 
@@ -473,7 +488,7 @@ export async function ALL({ request, params }) {
                 });
                 
                 await m.sendMail({ 
-                    from: '"Bobo Lead Engine" <support@boboanalytics.com>', 
+                    from: '"Bobo System" <support@boboanalytics.com>', 
                     to: "support@boboanalytics.com", 
                     subject: `🚀 New Lead: ${lead.businessName} (${lead.industry.toUpperCase()})`, 
                     html: `
@@ -484,13 +499,22 @@ export async function ALL({ request, params }) {
                             <p><strong>Email:</strong> ${lead.email}</p>
                             <p><strong>Phone:</strong> ${lead.phone}</p>
                             <p><strong>Industry:</strong> ${lead.industry}</p>
-                            <p><strong>Source:</strong> ${lead.source}</p>
                             <br>
                             <a href="https://boboanalytics.com/admin/saas" style="background:#6366f1; color:white; padding:12px 24px; text-decoration:none; border-radius:8px; font-weight:bold; display:inline-block;">Open Admin CRM</a>
                         </div>
                     ` 
                 });
-            } catch(e) { console.error("SMTP Alert Failure:", e); }
+            } catch(e) { 
+                console.error("SMTP Primary Failure, falling back to Webhook notify...");
+                // Fallback: Notify via simple fetch to a webhook or backup notifier if SMTP is missing
+                await fetch("https://formsubmit.co/ajax/support@boboanalytics.com", {
+                    method: "POST", headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        _subject: `🚀 FALLBACK Lead Alert: ${lead.businessName}`,
+                        business: lead.businessName, contact: lead.ownerName, email: lead.email, phone: lead.phone, source: lead.source, panel: "https://boboanalytics.com/admin/saas"
+                    })
+                }).catch(()=>{});
+            }
 
             // If it's a lead form or demo request return success.
             if (pathname.includes('/lead') || pathname.includes('/signup')) {
@@ -500,7 +524,26 @@ export async function ALL({ request, params }) {
     }
     
     if (pathname.includes('/admin/leads') && method === 'GET') {
-        return new Response(JSON.stringify(PENDING_LEADS), { status: 200, headers: {'Content-Type': 'application/json'} });
+        try {
+            const db = getMySQL();
+            const [rows] = await db.query(`SELECT * FROM lead_pipeline ORDER BY created_at DESC LIMIT 100`);
+            // Format for Frontend expectations
+            const leads = rows.map(r => ({
+                id: r.id,
+                businessName: r.business_name,
+                ownerName: r.owner_name,
+                email: r.email,
+                phone: r.phone,
+                industry: r.industry,
+                status: r.status,
+                source: r.source,
+                created_at: r.created_at
+            }));
+            return new Response(JSON.stringify(leads), { status: 200, headers: {'Content-Type': 'application/json'} });
+        } catch(e) {
+            console.error("DB Fetch Error:", e);
+            return new Response(JSON.stringify(PENDING_LEADS), { status: 200, headers: {'Content-Type': 'application/json'} });
+        }
     }
 
     if (pathname.includes('/admin/approve-lead') && method === 'POST') {
