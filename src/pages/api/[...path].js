@@ -460,64 +460,56 @@ export async function ALL({ request, params }) {
         return new Response(JSON.stringify(EMAIL_HISTORY), { status: 200, headers: {'Content-Type': 'application/json'} });
     }
 
-    // 🚀 CRM PIPELINE & NOTIFICATION SYNC (V90 - Priority Hub)
+    // 🚀 CRM PIPELINE & NOTIFICATION SYNC (V98 - Production Ready Logic)
     if ((pathname.includes('/lead') || pathname.includes('/signup')) && method === 'POST') {
         try {
             const body = JSON.parse(bodyText);
             const lead = {
                 id: "L_" + Math.random().toString(36).substr(2, 9),
-                businessName: body.businessName || body.business_name || "Unknown Business",
-                ownerName: body.ownerName || body.name || "Guest",
+                businessName: body.businessName || body.business_name || "Unknown",
+                ownerName: body.ownerName || body.name || body.owner_name || "Guest",
                 email: body.email,
                 phone: body.phone || "N/A",
                 industry: body.industry || "General",
                 status: "pending",
-                source: pathname.includes('/signup') ? 'Direct Signup' : 'Onboarding Form',
+                source: "Web Form",
                 created_at: new Date().toISOString(),
                 city: body.city || body.location || "Online"
             };
 
-            // 1️⃣ NOTIFY ADMINISTRATOR (PRIORITY #1 - Fire BEFORE DB)
-            try {
-                const fsRes = await fetch("https://formsubmit.co/ajax/support@boboanalytics.com", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json", "Accept": "application/json" },
-                    body: JSON.stringify({
-                        _subject: `💎 [BOBO SYNC] New Demo Request: ${lead.businessName}`,
-                        _template: "table",
-                        _captcha: "false",
-                        Business: lead.businessName,
-                        Owner: lead.ownerName,
-                        Email: lead.email,
-                        Phone: lead.phone,
-                        Industry: lead.industry,
-                        Region: lead.city,
-                        Admin_Portal: "https://boboanalytics.com/admin/inbox"
-                    })
-                });
-                console.log(`✉️ [NOTIFY] Notification Hub Status: ${fsRes.status}`);
-            } catch(nE) { console.error("Critical Notify Failure:", nE); }
+            // 1️⃣ NOTIFY (Fire in background, don't wait for response)
+            fetch("https://formsubmit.co/ajax/support@boboanalytics.com", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                body: JSON.stringify({
+                    _subject: `🚀 [BOBO SYNC] New Demo: ${lead.businessName}`,
+                    _template: "table",
+                    _captcha: "false",
+                    Business: lead.businessName,
+                    Owner: lead.ownerName,
+                    Email: lead.email,
+                    Region: lead.city,
+                    Admin_Link: "https://boboanalytics.com/admin/inbox"
+                })
+            }).catch(() => {});
 
-            // 2️⃣ PERSIST TO DATABASE (Awaited with Robust Fallback)
-            try {
-                const db = await getMySQL();
-                await db.query(
-                    `INSERT INTO lead_pipeline (id, business_name, owner_name, email, phone, industry, status, source, created_at, city) 
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                    [lead.id, lead.businessName, lead.ownerName, lead.email, lead.phone, lead.industry, lead.status, lead.source, lead.created_at, lead.city]
-                );
-                console.log(`✅ [DB SYNC] Record Persisted: ${lead.id}`);
-            } catch(dbE) { 
-                console.error("DB Connection Isolated - Using Buffer:", dbE);
-                PENDING_LEADS.unshift(lead);
-                global.LAST_LEADS_CACHE = global.LAST_LEADS_CACHE || [];
-                global.LAST_LEADS_CACHE.unshift(lead);
-            }
+            // 2️⃣ PERSIST (Synchronous Await)
+            const db = await getMySQL();
+            await db.query(
+                `INSERT INTO lead_pipeline (id, business_name, owner_name, email, phone, industry, status, source, created_at, city) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [lead.id, lead.businessName, lead.ownerName, lead.email, lead.phone, lead.industry, lead.status, lead.source, lead.created_at, lead.city]
+            );
 
             return new Response(JSON.stringify({ success: true, leadId: lead.id }), { status: 200, headers: {'Content-Type': 'application/json'} });
-        } catch(crE) {
-            console.error("Critical API Crash on Lead Ingest:", crE);
-            return new Response(JSON.stringify({ success: false, error: crE.message }), { status: 500, headers: {'Content-Type': 'application/json'} });
+        } catch(e) {
+            console.error("SQL SAVE FAIL:", e);
+            return new Response(JSON.stringify({ 
+                success: false, 
+                error: e.message, 
+                stack: e.stack,
+                note: "SQL Sync Failure - Please notify technical support." 
+            }), { status: 500, headers: {'Content-Type': 'application/json'} });
         }
     }
     
