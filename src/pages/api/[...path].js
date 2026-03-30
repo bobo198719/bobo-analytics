@@ -25,6 +25,15 @@ const RECOVERY_USERS = [
 // 🕵️ AUDIT LOG REGISTRY
 const AUTH_LOGS = [];
 
+// 🛡️ EMERGENCY RESCUE LOGS (V92)
+global.RESCUE_LOGS = global.RESCUE_LOGS || [];
+const logRescue = (msg) => {
+    const entry = `[${new Date().toLocaleString()}] ${msg}`;
+    global.RESCUE_LOGS.unshift(entry);
+    if (global.RESCUE_LOGS.length > 100) global.RESCUE_LOGS.pop();
+    console.log(entry);
+};
+
 // 📝 ONBOARDING LEADS ENGINE (Memory Store for VPS bypass)
 const PENDING_LEADS = [];
 
@@ -126,6 +135,11 @@ export async function ALL({ request, params }) {
         if (!global.TRACKING_DATA.countries[country]) global.TRACKING_DATA.countries[country] = 0;
         global.TRACKING_DATA.countries[country]++;
         return new Response(JSON.stringify({ success: true, country }), { status: 200, headers: {'Content-Type': 'application/json'} });
+    }
+
+    // 🛠️ DIAGNOSTIC RESCUE ENDPOINT
+    if (pathname.includes('/diag/logs')) {
+        return new Response(JSON.stringify(global.RESCUE_LOGS || []), { status: 200, headers: {'Content-Type': 'application/json'} });
     }
 
     // Only intercept paths that should go to the Hostinger API
@@ -446,48 +460,30 @@ export async function ALL({ request, params }) {
         return new Response(JSON.stringify(EMAIL_HISTORY), { status: 200, headers: {'Content-Type': 'application/json'} });
     }
 
-    // 🚀 CRM PIPELINE & NOTIFICATION SYNC (V72)
+    // 🚀 CRM PIPELINE & NOTIFICATION SYNC (V90 - Priority Hub)
     if ((pathname.includes('/lead') || pathname.includes('/signup')) && method === 'POST') {
         try {
             const body = JSON.parse(bodyText);
             const lead = {
                 id: "L_" + Math.random().toString(36).substr(2, 9),
-                businessName: body.businessName || body.business_name || "Unknown",
-                ownerName: body.ownerName || body.name || body.username || "Guest",
+                businessName: body.businessName || body.business_name || "Unknown Business",
+                ownerName: body.ownerName || body.name || "Guest",
                 email: body.email,
-                phone: body.phone || body.phone_number || "N/A",
+                phone: body.phone || "N/A",
                 industry: body.industry || "General",
                 status: "pending",
                 source: pathname.includes('/signup') ? 'Direct Signup' : 'Onboarding Form',
-                created_at: new Date().toISOString()
+                created_at: new Date().toISOString(),
+                city: body.city || body.location || "Online"
             };
-            
-            // Add to CRM Database (Persistence V78 - Robust Mapping)
-            try {
-                const db = await getMySQL();
-                const cityStr = body.city || body.location || "Online";
-                await db.query(
-                    `INSERT INTO lead_pipeline (id, business_name, owner_name, email, phone, industry, status, source, created_at, city) 
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                    [lead.id, lead.businessName, lead.ownerName, lead.email, lead.phone, lead.industry, lead.status, lead.source, lead.created_at, cityStr]
-                );
-                console.log(`✅ [DB SYNC] Lead Saved: ${lead.businessName} (#${lead.id})`);
-            } catch(e) { 
-                console.error("Critical DB Lead Save Failure:", e);
-                // Fallback for edge cases
-                PENDING_LEADS.unshift(lead);
-            }
 
-            // Notify Administrator (Reliable FormSubmit.co Sync - V74)
+            // 1️⃣ NOTIFY ADMINISTRATOR (PRIORITY #1 - Fire BEFORE DB)
             try {
-                // We use FormSubmit as Primary because SMTP Edge credentials (SMTP_PASS) are often restricted.
-                // This payload ensures Bobo Admins receive instant lead cards in their inbox.
-                // High-Reliability Dispatch (Mandatory Await)
-                const notifyRes = await fetch("https://formsubmit.co/ajax/support@boboanalytics.com", {
+                const fsRes = await fetch("https://formsubmit.co/ajax/support@boboanalytics.com", {
                     method: "POST",
                     headers: { "Content-Type": "application/json", "Accept": "application/json" },
                     body: JSON.stringify({
-                        _subject: `🚀 [BOBO SYNC] New Demo: ${lead.businessName}`,
+                        _subject: `💎 [BOBO SYNC] New Demo Request: ${lead.businessName}`,
                         _template: "table",
                         _captcha: "false",
                         Business: lead.businessName,
@@ -495,37 +491,34 @@ export async function ALL({ request, params }) {
                         Email: lead.email,
                         Phone: lead.phone,
                         Industry: lead.industry,
-                        City: body.city || "N/A",
-                        Source: lead.source,
-                        Panel_Link: "https://boboanalytics.com/admin/inbox"
+                        Region: lead.city,
+                        Admin_Portal: "https://boboanalytics.com/admin/inbox"
                     })
                 });
-                console.log("✅ [NOTIFY] Administrator Alert Success Level:", notifyRes.status);
+                console.log(`✉️ [NOTIFY] Notification Hub Status: ${fsRes.status}`);
+            } catch(nE) { console.error("Critical Notify Failure:", nE); }
 
-                // Secondary SMTP Dispatch (If credentials exist)
-                if (process.env.SMTP_PASS) {
-                    const nodemailer = await import("nodemailer");
-                    const m = nodemailer.createTransport({ 
-                        host: process.env.SMTP_HOST || "smtp.hostinger.com", 
-                        port: 465, 
-                        secure: true, 
-                        auth: { user: process.env.SMTP_USER || "support@boboanalytics.com", pass: process.env.SMTP_PASS } 
-                    });
-                    
-                    await m.sendMail({ 
-                        from: '"Bobo Lead Engine" <support@boboanalytics.com>', 
-                        to: "support@boboanalytics.com", 
-                        subject: `🚨 Bobo Sync: ${lead.businessName}`, 
-                        html: `<p>New lead ${lead.ownerName} from ${lead.businessName} just requested a demo.</p>`
-                    }).catch(()=>{});
-                }
-            } catch(e) { console.error("Lead Notify Failure:", e); }
-
-            // If it's a lead form or demo request return success.
-            if (pathname.includes('/lead') || pathname.includes('/signup')) {
-                return new Response(JSON.stringify({ success: true, leadId: lead.id }), { status: 200, headers: {'Content-Type': 'application/json'} });
+            // 2️⃣ PERSIST TO DATABASE (Awaited with Robust Fallback)
+            try {
+                const db = await getMySQL();
+                await db.query(
+                    `INSERT INTO lead_pipeline (id, business_name, owner_name, email, phone, industry, status, source, created_at, city) 
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    [lead.id, lead.businessName, lead.ownerName, lead.email, lead.phone, lead.industry, lead.status, lead.source, lead.created_at, lead.city]
+                );
+                console.log(`✅ [DB SYNC] Record Persisted: ${lead.id}`);
+            } catch(dbE) { 
+                console.error("DB Connection Isolated - Using Buffer:", dbE);
+                PENDING_LEADS.unshift(lead);
+                global.LAST_LEADS_CACHE = global.LAST_LEADS_CACHE || [];
+                global.LAST_LEADS_CACHE.unshift(lead);
             }
-        } catch(e) { console.error("CRM Sync Error:", e); }
+
+            return new Response(JSON.stringify({ success: true, leadId: lead.id }), { status: 200, headers: {'Content-Type': 'application/json'} });
+        } catch(crE) {
+            console.error("Critical API Crash on Lead Ingest:", crE);
+            return new Response(JSON.stringify({ success: false, error: crE.message }), { status: 500, headers: {'Content-Type': 'application/json'} });
+        }
     }
     
     if (pathname.includes('/admin/leads') && method === 'GET') {
