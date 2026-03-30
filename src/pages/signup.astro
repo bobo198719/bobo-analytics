@@ -5,65 +5,46 @@ import MainLayout from "../layouts/MainLayout.astro";
 <MainLayout title="SaaS Signup | Bobo Analytics">
   <div class="signup-container">
     <div class="signup-card">
-      <h1>🚀 Join Bobo Analytics</h1>
-      <p class="subtitle">Start your 30-day free trial today.</p>
+      <h1>Experience the <span class="gradient-text">Power</span> of Bobo</h1>
+      <p class="subtitle">Enter your details for a personalized product walkthrough.</p>
       
       <form id="signupForm">
         <div class="form-grid">
           <div class="form-group">
             <label>Industry</label>
             <select name="industry" required>
-              <option value="Retail">Retail</option>
-              <option value="Bakery">Bakery</option>
-              <option value="Pharmacy">Pharmacy</option>
-              <option value="Finance">Finance</option>
-              <option value="Healthcare">Healthcare</option>
-              <option value="Other">Other</option>
+              <option value="Restaurant">Restaurant OS</option>
+              <option value="Bakery">Baker OS</option>
+              <option value="Retail">Retail Management</option>
+              <option value="Pharmacy">Pharma ERP</option>
+              <option value="Healthcare">Health Analytics</option>
+              <option value="Other">Custom Solution</option>
             </select>
           </div>
           
           <div class="form-group">
-            <label>Business Name</label>
-            <input type="text" name="businessName" placeholder="e.g. Bobo Bakes" required />
+            <label>Business Name </label>
+            <input type="text" name="businessName" placeholder="e.g. Bobo Analytics HQ" required />
           </div>
 
           <div class="form-group">
-            <label>Owner Name</label>
-            <input type="text" name="ownerName" placeholder="Your Full Name" required />
+            <label>Full Name</label>
+            <input type="text" name="ownerName" placeholder="John Doe" required />
           </div>
 
           <div class="form-group">
-            <label>Email Address</label>
-            <input type="email" name="email" placeholder="owner@business.com" required />
+            <label>Work Email</label>
+            <input type="email" name="email" placeholder="john@company.com" required />
           </div>
 
-          <div class="form-group">
-            <label>Phone Number</label>
-            <input type="tel" name="phone" placeholder="9876543210" required />
-          </div>
-
-          <div class="form-group">
-            <label>Username</label>
-            <input type="text" name="username" placeholder="Choose a username" required />
-          </div>
-
-          <div class="form-group">
-            <label>Password</label>
-            <input type="password" name="password" placeholder="••••••••" required />
-          </div>
-
-          <div class="form-group">
-            <label>Subscription Plan</label>
-            <select name="plan" required>
-              <option value="Starter">Starter (Free Trial)</option>
-              <option value="Pro">Pro ($499/mo)</option>
-              <option value="Enterprise">Enterprise (Custom)</option>
-            </select>
+          <div class="form-group" style="grid-column: span 2;">
+            <label>Phone Number / WhatsApp</label>
+            <input type="tel" name="phone" placeholder="+91 98765 43210" required />
           </div>
         </div>
 
         <button type="submit" class="submit-btn" id="submitBtn">
-          <span>Create My Account</span>
+          <span>Request My Demo</span>
           <div class="loader" id="loader"></div>
         </button>
       </form>
@@ -250,13 +231,13 @@ import MainLayout from "../layouts/MainLayout.astro";
         const result = await response.json();
 
         if (response.ok) {
-          statusMessage.textContent = "✅ Success! Welcome to Bobo Analytics. Redirecting...";
+          statusMessage.textContent = "✅ Success! Your request has been logged. Our specialists will contact you shortly.";
           statusMessage.className = "status-message success";
           statusMessage.style.display = 'block';
           form.reset();
           setTimeout(() => {
-            window.location.href = "/login";
-          }, 2000);
+            window.location.href = "/";
+          }, 4000);
         } else {
           throw new Error(result.message || "Signup failed");
         }

@@ -441,6 +441,7 @@ export async function ALL({ request, params }) {
     // 🚀 CRM PIPELINE & NOTIFICATION SYNC (V72)
     if ((pathname.includes('/lead') || pathname.includes('/signup')) && method === 'POST') {
         try {
+            const bodyText = await request.clone().text();
             const body = JSON.parse(bodyText);
             const lead = {
                 id: "L_" + Math.random().toString(36).substr(2, 9),
