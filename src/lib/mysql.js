@@ -74,7 +74,14 @@ export const initTables = async () => {
     industry VARCHAR(100),
     status VARCHAR(50) DEFAULT 'pending',
     source VARCHAR(100),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    city VARCHAR(255) DEFAULT 'Online'
   )`);
+
+  // Migration: Add city if not exists (V88 Rescue Engine)
+  try {
+    await db.query(`ALTER TABLE lead_pipeline ADD COLUMN city VARCHAR(255) DEFAULT 'Online'`);
+    console.log("DB Rescue: Added 'city' column to lead_pipeline");
+  } catch(e) { /* Column probably already exists */ }
 };
 
