@@ -547,29 +547,48 @@ export async function ALL({ request, params }) {
     }
 
     if (pathname.includes('/admin/approve-lead') && method === 'POST') {
-        const { leadId } = JSON.parse(bodyText);
-        const leadIdx = PENDING_LEADS.findIndex(l => l.id === leadId);
-        if (leadIdx === -1) return new Response(JSON.stringify({ success: false, error: "Lead not found" }), { status: 404, headers: {'Content-Type': 'application/json'} });
-        
-        const lead = PENDING_LEADS[leadIdx];
-        const password = Math.random().toString(36).slice(-8) + "X!";
-        
-        // Create user in registry
-        const newUser = {
-            id: Math.floor(Math.random() * 1000) + 100,
-            username: lead.phone || lead.email.split('@')[0],
-            email: lead.email,
-            plain_password: password,
-            business_name: lead.businessName,
-            industry: lead.industry,
-            plan_type: 'trial',
-            status: 'active',
-            created_at: new Date().toISOString()
-        };
-        RECOVERY_USERS.push(newUser);
-        
-        lead.status = "approved";
-        PENDING_LEADS[leadIdx] = lead; // Update status in leads db
+        try {
+            const { leadId } = JSON.parse(bodyText);
+            const db = getMySQL();
+            const [rows] = await db.query(`SELECT * FROM lead_pipeline WHERE id = ?`, [leadId]);
+            
+            if (!rows.length) return new Response(JSON.stringify({ success: false, error: "Lead not found in database" }), { status: 404, headers: {'Content-Type': 'application/json'} });
+            
+            const leadRaw = rows[0];
+            const lead = {
+                id: leadRaw.id,
+                businessName: leadRaw.business_name,
+                ownerName: leadRaw.owner_name,
+                email: leadRaw.email,
+                phone: leadRaw.phone,
+                industry: leadRaw.industry,
+                status: leadRaw.status
+            };
+
+            const password = Math.random().toString(36).slice(-8) + "X!";
+            
+            // Create user in registry (Permanent DB Table users)
+            const newUser = {
+                id: Math.floor(Math.random() * 1000) + 100,
+                username: lead.phone || lead.email?.split('@')[0],
+                email: lead.email,
+                plain_password: password,
+                business_name: lead.businessName,
+                industry: lead.industry,
+                plan_type: 'trial',
+                status: 'active',
+                created_at: new Date().toISOString()
+            };
+            
+            // Save to RECOVERY_USERS in memory for instant reflection
+            RECOVERY_USERS.push(newUser);
+            
+            // Update Status in DB
+            await db.query(`UPDATE lead_pipeline SET status = 'approved' WHERE id = ?`, [leadId]);
+            
+            // Update in-memory fallback if it exists
+            const lIdx = PENDING_LEADS.findIndex(l => l.id === leadId);
+            if (lIdx > -1) PENDING_LEADS[lIdx].status = 'approved';
 
         // Send Official Login Credentials
         if (process.env.SMTP_PASS) {
@@ -598,6 +617,10 @@ export async function ALL({ request, params }) {
         }
 
         return new Response(JSON.stringify({ success: true, message: "Lead Approved & User Provisioned" }), { status: 200, headers: {'Content-Type': 'application/json'} });
+        } catch(e) {
+            console.error("Approve Lead Error:", e);
+            return new Response(JSON.stringify({ success: false, error: e.message }), { status: 500, headers: {'Content-Type': 'application/json'} });
+        }
     }
     // ==========================================
 
