@@ -325,6 +325,8 @@ import MainLayout from "../../layouts/MainLayout.astro";
         <button class="menu-item" onclick="switchTab('roles',this)"><span>🔐</span> <span>Roles & Permissions</span></button>
         <button class="menu-item" onclick="switchTab('tenants',this)"><span>🏢</span> <span>Organizations</span></button>
         <button class="menu-item" onclick="switchTab('pipeline',this)"><span>🚀</span> <span>Leads Pipeline</span></button>
+        <a href="/admin/inbox" class="menu-item" style="text-decoration:none;"><span>📥</span> <span>Leads Inbox (Direct)</span></a>
+        <button class="menu-item" onclick="switchTab('onboarding',this)"><span>📩</span> <span>Leads Inventory</span></button>
         <button class="menu-item" onclick="switchTab('subscriptions',this)"><span>💳</span> <span>Billing & Pricing</span></button>
         <button class="menu-item" onclick="switchTab('collections',this)"><span>📦</span> <span>Collections</span></button>
         <button class="menu-item" onclick="switchTab('categories',this)"><span>🏷️</span> <span>Categories & Tags</span></button>
@@ -1120,6 +1122,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
         updateCharts(stats);
         renderAudit(audits);
         renderPipeline(leads);
+        renderLeads(leads);
         renderActivity(activities);
         renderAlerts(alerts);
         generateInsight();
@@ -1243,6 +1246,23 @@ import MainLayout from "../../layouts/MainLayout.astro";
           </div>
         </div>
       `).join("") : `<div style="text-align:center; padding-top:40px; color:var(--muted);">No pending pulses...</div>`;
+    }
+
+    function renderLeads(leads) {
+      const t = document.getElementById("leadsTable"); if(!t) return;
+      t.innerHTML = leads.length ? leads.map(l => `
+        <tr id="lead-${l.id}">
+          <td style="font-size:0.7rem; color:var(--muted);">${new Date(l.created_at).toLocaleDateString()}</td>
+          <td style="font-weight:700;">${l.businessName}</td>
+          <td>${l.ownerName}</td>
+          <td><div style="font-size:0.75rem;">${l.email}</div><div style="font-size:0.7rem; color:var(--muted);">${l.phone}</div></td>
+          <td><span class="badge aa">${l.industry}</span></td>
+          <td>${l.city || '—'}</td>
+          <td>
+            ${l.status === 'pending' ? `<button class="btn-primary" style="padding:4px 8px; font-size:0.7rem;" onclick="approveLead('${l.id}')">Approve</button>` : '<span class="badge gg">Deployed</span>'}
+          </td>
+        </tr>
+      `).join("") : `<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--muted);">No demo requests captured yet.</td></tr>`;
     }
 
     function generateInsight() {

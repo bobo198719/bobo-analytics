@@ -1,0 +1,207 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+const token = ""; // Will be handled by client-side auth
+---
+
+<MainLayout title="Bobo System | Leads Inbox" hideNav={true}>
+  <div class="inbox-container">
+    <aside class="inbox-sidebar">
+      <div class="sidebar-header">
+        <h2 style="font-size:1.2rem; font-weight:800; background: linear-gradient(90deg, #fff, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Lead Pulse Engine</h2>
+        <p style="font-size:0.8rem; color:#94a3b8;">Unified Enterprise Intake</p>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="/admin/saas" class="nav-item">📈 Pipeline View</a>
+        <a href="/admin/inbox" class="nav-item active">📥 Leads Inbox</a>
+        <a href="/admin/control-panel" class="nav-item">🛡 Master Console</a>
+      </nav>
+    </aside>
+
+    <main class="inbox-main">
+      <div class="header">
+        <div class="header-left">
+          <h1>Lead Inbox</h1>
+          <p id="leadCountDisplay">Syncing with Edge Infrastructure...</p>
+        </div>
+        <div class="header-actions">
+          <button class="refresh-btn" onclick="fetchLeads()">🔄 Refresh Hub</button>
+        </div>
+      </div>
+
+      <div class="inbox-table-wrapper">
+        <table class="inbox-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Business</th>
+              <th>Owner</th>
+              <th>Contact Details</th>
+              <th>Industry Segment</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="leadsBody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+      <div id="noLeads" class="no-leads" style="display:none;">
+        <div class="no-leads-icon">📭</div>
+        <h2>No Demo Requests Received Yet</h2>
+        <p>Ensure your frontend forms are live and pointing to the API Hub.</p>
+      </div>
+    </main>
+  </div>
+
+  <style>
+    :root {
+      --bg-dark: #050810;
+      --card-bg: #111827;
+      --border: rgba(255,255,255,0.08);
+      --accent: #3b82f6;
+    }
+    body { margin:0; background: var(--bg-dark); color: #fff; font-family: 'Inter', sans-serif; }
+    .inbox-container { display: flex; height: 100vh; overflow: hidden; }
+    .inbox-sidebar { width: 260px; background: #0b111e; border-right: 1px solid var(--border); padding: 24px; display: flex; flex-direction: column; }
+    .sidebar-header { margin-bottom: 40px; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 8px; }
+    .nav-item { padding: 12px 16px; border-radius: 12px; color: #94a3b8; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: 0.2s; }
+    .nav-item:hover { background: rgba(59,130,246,0.1); color: #fff; }
+    .nav-item.active { background: rgba(59,130,246,0.2); color: var(--accent); font-weight: 600; border: 1px solid rgba(59,130,246,0.3); }
+
+    .inbox-main { flex: 1; padding: 40px; overflow-y: auto; background: linear-gradient(135deg, rgba(17,24,39,0.8), var(--bg-dark)); }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; }
+    .header h1 { font-size: 2rem; font-weight: 800; margin: 0 0 8px; }
+    .header p { color: #94a3b8; margin: 0; }
+    .refresh-btn { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; }
+    .refresh-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(59,130,246,0.4); }
+
+    .inbox-table-wrapper { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .inbox-table { width: 100%; border-collapse: collapse; text-align: left; }
+    .inbox-table th { padding: 16px 24px; border-bottom: 1px solid var(--border); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; font-weight: 700; background: rgba(255,255,255,0.02); }
+    .inbox-table td { padding: 18px 24px; border-bottom: 1px solid var(--border); font-size: 0.9rem; vertical-align: middle; }
+    .inbox-table tr:hover { background: rgba(59,130,246,0.03); }
+    
+    .timestamp { font-size: 0.75rem; color: #64748b; font-family: monospace; white-space: nowrap; }
+    .business-name { font-weight: 700; color: #fff; font-size: 1rem; }
+    .owner-name { font-size: 0.85rem; color: #94a3b8; }
+    
+    .contact-info { display: flex; flex-direction: column; gap: 2px; }
+    .contact-info a { color: #3b82f6; text-decoration: none; font-size: 0.85rem; }
+    .contact-info a:hover { text-decoration: underline; }
+    
+    .industry-badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+    .status-badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; text-transform: capitalize; }
+    .status-pending { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+    .status-approved { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+    
+    .approve-btn { background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: 0.2s; }
+    .approve-btn:hover { background: #059669; }
+    .approve-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .no-leads { padding: 80px; text-align: center; border: 1px dashed var(--border); border-radius: 24px; margin-top: 40px; }
+    .no-leads-icon { font-size: 4rem; margin-bottom: 20px; filter: grayscale(1); opacity: 0.5; }
+    
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-dark); }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+  </style>
+
+  <script is:inline>
+    // Security Pass Gate
+    const authPass = localStorage.getItem("bobo_admin_token");
+    if (!authPass) {
+        // Redir if no session
+        window.location.href = "/";
+    }
+
+    async function fetchLeads() {
+        const body = document.getElementById('leadsBody');
+        const countDisplay = document.getElementById('leadCountDisplay');
+        const noLeads = document.getElementById('noLeads');
+        const table = document.querySelector('.inbox-table-wrapper');
+        
+        try {
+            countDisplay.innerText = "Syncing with Edge hub...";
+            const res = await fetch("/api/admin/leads", {
+                headers: { "Authorization": `Bearer ${authPass}` }
+            });
+            const leads = await res.json();
+            
+            if (!leads || leads.length === 0) {
+                noLeads.style.display = 'block';
+                table.style.display = 'none';
+                countDisplay.innerText = "0 Leads Captured Today.";
+                return;
+            }
+
+            noLeads.style.display = 'none';
+            table.style.display = 'block';
+            countDisplay.innerText = `${leads.length} Active Leads in Queue.`;
+            
+            body.innerHTML = leads.map(l => `
+                <tr id="row-${l.id}">
+                    <td><div class="timestamp">${new Date(l.created_at).toLocaleString()}</div></td>
+                    <td>
+                        <div class="business-name">${l.businessName}</div>
+                        <div class="industry-badge">${l.industry}</div>
+                    </td>
+                    <td><div class="owner-name">${l.ownerName}</div></td>
+                    <td>
+                        <div class="contact-info">
+                            <a href="mailto:${l.email}">${l.email}</a>
+                            <a href="tel:${l.phone}">${l.phone}</a>
+                        </div>
+                    </td>
+                    <td><div class="owner-name">${l.source || 'Direct Hub'}</div></td>
+                    <td>
+                        <span class="status-badge status-${l.status.toLowerCase()}">${l.status}</span>
+                    </td>
+                    <td>
+                        ${l.status === 'pending' ? `
+                            <button id="btn-${l.id}" class="approve-btn" onclick="approveLead('${l.id}')">Approve Lead</button>
+                        ` : '<span style="color:#10b981; font-weight:700;">✅ Deployed</span>'}
+                    </td>
+                </tr>
+            `).join('');
+        } catch(e) {
+            console.error("Inbox Sync Error:", e);
+            countDisplay.innerText = "Sync Error: Local Relay Offline.";
+        }
+    }
+
+    async function approveLead(id) {
+        const btn = document.getElementById(`btn-${id}`);
+        btn.disabled = true;
+        btn.innerText = "Provisioning...";
+        try {
+            const res = await fetch("/api/admin/approve-lead", {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${authPass}`
+                },
+                body: JSON.stringify({ leadId: id })
+            });
+            const d = await res.json();
+            if (d.success) {
+                alert("🚀 Success! Enterprise infrastructure provisioned and credentials sent.");
+                fetchLeads();
+            } else {
+                alert("❌ Approval Failed: " + (d.error || "Unknown Cluster Error"));
+                btn.disabled = false;
+                btn.innerText = "Approve Lead";
+            }
+        } catch(e) {
+            alert("❌ Network Conflict during Provisioning.");
+            btn.disabled = false;
+            btn.innerText = "Approve Lead";
+        }
+    }
+
+    // Initial Load
+    fetchLeads();
+  </script>
+</MainLayout>

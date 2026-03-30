@@ -462,9 +462,9 @@ export async function ALL({ request, params }) {
                 created_at: new Date().toISOString()
             };
             
-            // Add to CRM Database (Persistence)
+            // Add to CRM Database (Persistence V76)
             try {
-                const db = getMySQL();
+                const db = await getMySQL();
                 await db.query(
                     `INSERT INTO lead_pipeline (id, business_name, owner_name, email, phone, industry, status, source, created_at) 
                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -472,7 +472,7 @@ export async function ALL({ request, params }) {
                 );
             } catch(e) { 
                 console.error("DB Lead Save Failure:", e);
-                // Fallback to in-memory for session continuity
+                // Fallback to in-memory for session continuity (Emergency Buffer)
                 PENDING_LEADS.unshift(lead);
                 if (PENDING_LEADS.length > 200) PENDING_LEADS.pop();
             }
@@ -526,13 +526,13 @@ export async function ALL({ request, params }) {
     
     if (pathname.includes('/admin/leads') && method === 'GET') {
         try {
-            const db = getMySQL();
-            const [rows] = await db.query(`SELECT * FROM lead_pipeline ORDER BY created_at DESC LIMIT 100`);
-            // Format for Frontend expectations
+            const db = await getMySQL();
+            const [rows] = await db.query(`SELECT * FROM lead_pipeline ORDER BY created_at DESC LIMIT 500`);
+            // Normalize for UI
             const leads = rows.map(r => ({
                 id: r.id,
-                businessName: r.business_name,
-                ownerName: r.owner_name,
+                businessName: r.business_name || r.businessName,
+                ownerName: r.owner_name || r.ownerName,
                 email: r.email,
                 phone: r.phone,
                 industry: r.industry,
@@ -550,7 +550,7 @@ export async function ALL({ request, params }) {
     if (pathname.includes('/admin/approve-lead') && method === 'POST') {
         try {
             const { leadId } = JSON.parse(bodyText);
-            const db = getMySQL();
+            const db = await getMySQL();
             const [rows] = await db.query(`SELECT * FROM lead_pipeline WHERE id = ?`, [leadId]);
             
             if (!rows.length) return new Response(JSON.stringify({ success: false, error: "Lead not found in database" }), { status: 404, headers: {'Content-Type': 'application/json'} });
