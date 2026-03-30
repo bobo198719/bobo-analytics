@@ -806,10 +806,10 @@ import MainLayout from "../../layouts/MainLayout.astro";
           <div>
             <div style="display:flex; align-items:center; gap:12px;">
                <p class="sec-title" id="sectorTitleDisplay">SaaS Monetization Control</p>
-               <input type="text" id="sectorTagline" style="background:rgba(16,185,129,0.1); color:var(--green); border:1px solid rgba(16,185,129,0.2); border-radius:8px; padding:4px 12px; font-size:0.65rem; font-weight:900; outline:none;" placeholder="Industry Badge/Tag" onchange="updateTagline(this.value)">
+               <input type="text" id="sectorTagline" style="background:rgba(16,185,129,0.1); color:var(--green); border:1px solid rgba(16,185,129,0.2); border-radius:8px; padding:4px 12px; font-size:0.65rem; font-weight:900; outline:none; transition:0.2s;" placeholder="Industry Badge/Tag" onchange="updateTagline(this.value)" onmouseover="this.style.background='rgba(16,185,129,0.2)'" onmouseout="this.style.background='rgba(16,185,129,0.1)'">
             </div>
             <p id="sectorDescDisplay" style="color:var(--muted); font-size:0.85rem; margin-top:4px;">Define pricing nodes and industry-specific feature matrices.</p>
-            <input type="text" id="sectorDescInput" style="background:transparent; border:none; border-bottom:1px solid var(--border); color:var(--muted); font-size:0.75rem; width:100%; outline:none;" placeholder="Global Industry Description for Pricing Page" onchange="updateDescription(this.value)">
+            <input type="text" id="sectorDescInput" style="background:transparent; border:none; border-bottom:1px solid transparent; color:var(--muted); font-size:0.75rem; width:100%; outline:none; transition:0.2s;" placeholder="Global Industry Description for Pricing Page" onchange="updateDescription(this.value)" onfocus="this.style.borderBottom='1px solid var(--blue)'" onblur="this.style.borderBottom='1px solid transparent'" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
           </div>
           <div style="display:flex; gap:12px;">
             <select id="pricingSector" onchange="loadSectorPlans(this.value)" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:white; padding:10px 16px; border-radius:12px; font-size:0.85rem; outline:none; cursor:pointer;">
