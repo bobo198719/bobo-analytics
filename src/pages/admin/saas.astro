@@ -438,17 +438,49 @@ import MainLayout from "../../layouts/MainLayout.astro";
             <div style="flex:1; position:relative; min-height:220px; display:flex; align-items:center;">
               <canvas id="sourceChart"></canvas>
             </div>
-            <div style="margin-top:20px; font-size:0.8rem; display:flex; flex-direction:column; gap:8px;">
-               <div style="display:flex; justify-content:space-between;"><span>Direct</span><strong style="color:var(--blue);">40.2%</strong></div>
-               <div style="display:flex; justify-content:space-between;"><span>Organic</span><strong style="color:var(--green);">29.5%</strong></div>
-               <div style="display:flex; justify-content:space-between;"><span>Social</span><strong style="color:var(--amber);">30.3%</strong></div>
-            </div>
+             <div id="sourcesContainer" style="margin-top:20px; font-size:0.8rem; display:flex; flex-direction:column; gap:8px;">
+               <div style="display:flex; justify-content:space-between;"><span>Direct</span><strong id="lab-direct" style="color:var(--blue);">0%</strong></div>
+               <div style="display:flex; justify-content:space-between;"><span>Organic</span><strong id="lab-organic" style="color:var(--green);">0%</strong></div>
+               <div style="display:flex; justify-content:space-between;"><span>Social</span><strong id="lab-social" style="color:var(--amber);">0%</strong></div>
+             </div>
           </div>
         </div>
 
         <!-- DEVICE & COUNTRY SECTION -->
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px; margin-bottom: 24px;">
           <!-- DEVICE USAGE -->
+          <div class="card" style="display:flex; flex-direction:column;">
+            <div class="card-label" style="margin-bottom:16px;">Device Analysis</div>
+            <div style="flex:1; display:flex; flex-direction:column; gap:20px; justify-content:center;">
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:6px;">
+                  <span style="display:flex; align-items:center; gap:6px;">📱 Mobile</span>
+                  <strong id="dev-mobile">0%</strong>
+                </div>
+                <div style="width:100%; height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden;">
+                  <div id="bar-mobile" style="width:0%; height:100%; background:var(--blue); transition:width 1s ease;"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:6px;">
+                  <span style="display:flex; align-items:center; gap:6px;">💻 Desktop</span>
+                  <strong id="dev-desktop">0%</strong>
+                </div>
+                <div style="width:100%; height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden;">
+                  <div id="bar-desktop" style="width:0%; height:100%; background:var(--green); transition:width 1s ease;"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:6px;">
+                  <span style="display:flex; align-items:center; gap:6px;">📟 Tablet</span>
+                  <strong id="dev-tablet">0%</strong>
+                </div>
+                <div style="width:100%; height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden;">
+                  <div id="bar-tablet" style="width:0%; height:100%; background:var(--amber); transition:width 1s ease;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
         <!-- GRID: FEED, INSIGHTS & GEOGRAPHY -->
         <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
           <!-- ACTIVITY FEED -->
@@ -1040,20 +1072,36 @@ import MainLayout from "../../layouts/MainLayout.astro";
         const alerts = alR.ok ? await alR.json() : [];
 
         // KPI REFRESH
-        document.getElementById("kpi-visits").innerText   = Math.floor(stats.visits||0).toLocaleString();
-        document.getElementById("kpi-users").innerText    = Math.floor(stats.users||0).toLocaleString();
-        document.getElementById("kpi-views").innerText    = Math.floor(stats.views||0).toLocaleString();
-        document.getElementById("kpi-duration").innerText = stats.duration || "0s";
+        const setVal = (id, val, suffix="") => {
+          const el = document.getElementById(id);
+          if(el) el.innerText = val + suffix;
+        };
+
+        setVal("kpi-visits", Math.floor(stats.visits||0).toLocaleString());
+        setVal("kpi-users", Math.floor(stats.users||0).toLocaleString());
+        setVal("kpi-views", Math.floor(stats.views||0).toLocaleString());
+        setVal("kpi-duration", stats.duration || "0s");
         
         // BARS
-        // Update Bars (if stats.devices exists)
         if(stats.devices) {
-          document.getElementById("dev-mobile").innerText = stats.devices.mobile + "%";
-          document.getElementById("bar-mobile").style.width = stats.devices.mobile + "%";
-          document.getElementById("dev-desktop").innerText = stats.devices.desktop + "%";
-          document.getElementById("bar-desktop").style.width = stats.devices.desktop + "%";
-          document.getElementById("dev-tablet").innerText = stats.devices.tablet + "%";
-          document.getElementById("bar-tablet").style.width = stats.devices.tablet + "%";
+          const mobile = stats.devices.mobile || 0;
+          const desktop = stats.devices.desktop || 0;
+          const tablet = stats.devices.tablet || 0;
+
+          const mEl = document.getElementById("dev-mobile");
+          if(mEl) mEl.innerText = mobile + "%";
+          const mBar = document.getElementById("bar-mobile");
+          if(mBar) mBar.style.width = mobile + "%";
+
+          const dEl = document.getElementById("dev-desktop");
+          if(dEl) dEl.innerText = desktop + "%";
+          const dBar = document.getElementById("bar-desktop");
+          if(dBar) dBar.style.width = desktop + "%";
+
+          const tEl = document.getElementById("dev-tablet");
+          if(tEl) tEl.innerText = tablet + "%";
+          const tBar = document.getElementById("bar-tablet");
+          if(tBar) tBar.style.width = tablet + "%";
         }
 
         renderGeoTable(stats.geo);
@@ -1629,6 +1677,14 @@ import MainLayout from "../../layouts/MainLayout.astro";
             }
           }
         });
+
+        // Sync Labels with Chart Data
+        const labD = document.getElementById("lab-direct");
+        const labO = document.getElementById("lab-organic");
+        const labS = document.getElementById("lab-social");
+        if(labD) labD.innerText = (sourceData[0] || 0) + "%";
+        if(labO) labO.innerText = (sourceData[1] || 0) + "%";
+        if(labS) labS.innerText = (sourceData[2] || 0) + "%";
       }
     }
 
