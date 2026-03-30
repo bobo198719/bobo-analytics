@@ -111,7 +111,7 @@ const token = ""; // Will be handled by client-side auth
 
   <script is:inline>
     // Security Pass Gate
-    const authPass = localStorage.getItem("bobo_admin_token");
+    const authPass = localStorage.getItem("token");
     if (!authPass) {
         // Redir if no session
         window.location.href = "/";
