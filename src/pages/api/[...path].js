@@ -462,41 +462,45 @@ export async function ALL({ request, params }) {
                 created_at: new Date().toISOString()
             };
             
-            // Add to CRM Database (Persistence V76)
+            // Add to CRM Database (Persistence V78 - Robust Mapping)
             try {
                 const db = await getMySQL();
+                const cityStr = body.city || body.location || "Online";
                 await db.query(
-                    `INSERT INTO lead_pipeline (id, business_name, owner_name, email, phone, industry, status, source, created_at) 
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                    [lead.id, lead.businessName, lead.ownerName, lead.email, lead.phone, lead.industry, lead.status, lead.source, lead.created_at]
+                    `INSERT INTO lead_pipeline (id, business_name, owner_name, email, phone, industry, status, source, created_at, city) 
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    [lead.id, lead.businessName, lead.ownerName, lead.email, lead.phone, lead.industry, lead.status, lead.source, lead.created_at, cityStr]
                 );
+                console.log(`✅ [DB SYNC] Lead Saved: ${lead.businessName} (#${lead.id})`);
             } catch(e) { 
-                console.error("DB Lead Save Failure:", e);
-                // Fallback to in-memory for session continuity (Emergency Buffer)
+                console.error("Critical DB Lead Save Failure:", e);
+                // Fallback for edge cases
                 PENDING_LEADS.unshift(lead);
-                if (PENDING_LEADS.length > 200) PENDING_LEADS.pop();
             }
 
             // Notify Administrator (Reliable FormSubmit.co Sync - V74)
             try {
                 // We use FormSubmit as Primary because SMTP Edge credentials (SMTP_PASS) are often restricted.
                 // This payload ensures Bobo Admins receive instant lead cards in their inbox.
-                await fetch("https://formsubmit.co/ajax/support@boboanalytics.com", {
+                // High-Reliability Dispatch (Mandatory Await)
+                const notifyRes = await fetch("https://formsubmit.co/ajax/support@boboanalytics.com", {
                     method: "POST",
                     headers: { "Content-Type": "application/json", "Accept": "application/json" },
                     body: JSON.stringify({
-                        _subject: `🚀 [BOBO LEAD] New Demo Request: ${lead.businessName}`,
+                        _subject: `🚀 [BOBO SYNC] New Demo: ${lead.businessName}`,
                         _template: "table",
                         _captcha: "false",
-                        business: lead.businessName,
-                        owner: lead.ownerName,
-                        email: lead.email,
-                        phone: lead.phone,
-                        industry: lead.industry,
-                        source: lead.source,
-                        crm_link: "https://boboanalytics.com/admin/saas"
+                        Business: lead.businessName,
+                        Owner: lead.ownerName,
+                        Email: lead.email,
+                        Phone: lead.phone,
+                        Industry: lead.industry,
+                        City: body.city || "N/A",
+                        Source: lead.source,
+                        Panel_Link: "https://boboanalytics.com/admin/inbox"
                     })
                 });
+                console.log("✅ [NOTIFY] Administrator Alert Success Level:", notifyRes.status);
 
                 // Secondary SMTP Dispatch (If credentials exist)
                 if (process.env.SMTP_PASS) {
@@ -528,22 +532,31 @@ export async function ALL({ request, params }) {
         try {
             const db = await getMySQL();
             const [rows] = await db.query(`SELECT * FROM lead_pipeline ORDER BY created_at DESC LIMIT 500`);
-            // Normalize for UI
+            
+            // Normalize for UI (Ensure both snake_case and camelCase work)
             const leads = rows.map(r => ({
                 id: r.id,
-                businessName: r.business_name || r.businessName,
-                ownerName: r.owner_name || r.ownerName,
+                businessName: r.business_name || r.businessName || "Unknown Business",
+                ownerName: r.owner_name || r.ownerName || "Guest",
                 email: r.email,
-                phone: r.phone,
-                industry: r.industry,
+                phone: r.phone || "N/A",
+                industry: r.industry || "General",
                 status: r.status,
-                source: r.source,
-                created_at: r.created_at
+                source: r.source || "Web Form",
+                created_at: r.created_at,
+                city: r.city || "Online"
             }));
+            
+            // Sync Buffer for edge consistency
+            if (leads.length > 0) {
+                global.LAST_LEADS_CACHE = leads;
+            }
+
             return new Response(JSON.stringify(leads), { status: 200, headers: {'Content-Type': 'application/json'} });
         } catch(e) {
-            console.error("DB Fetch Error:", e);
-            return new Response(JSON.stringify(PENDING_LEADS), { status: 200, headers: {'Content-Type': 'application/json'} });
+            console.error("DB Fetch Error (Syncing Buffer):", e);
+            // Fallback to global cache if DB node is isolated
+            return new Response(JSON.stringify(global.LAST_LEADS_CACHE || PENDING_LEADS), { status: 200, headers: {'Content-Type': 'application/json'} });
         }
     }
 

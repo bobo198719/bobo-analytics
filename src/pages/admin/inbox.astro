@@ -13,7 +13,6 @@ const token = ""; // Will be handled by client-side auth
       <nav class="sidebar-nav">
         <a href="/admin/saas" class="nav-item">📈 Pipeline View</a>
         <a href="/admin/inbox" class="nav-item active">📥 Leads Inbox</a>
-        <a href="/admin/control-panel" class="nav-item">🛡 Master Console</a>
       </nav>
     </aside>
 
@@ -126,7 +125,7 @@ const token = ""; // Will be handled by client-side auth
         try {
             countDisplay.innerText = "Syncing with Edge hub...";
             const res = await fetch("/api/admin/leads", {
-                headers: { "Authorization": `Bearer ${authPass}` }
+                headers: { "Authorization": authPass }
             });
             const leads = await res.json();
             
@@ -181,7 +180,7 @@ const token = ""; // Will be handled by client-side auth
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${authPass}`
+                    "Authorization": authPass
                 },
                 body: JSON.stringify({ leadId: id })
             });
