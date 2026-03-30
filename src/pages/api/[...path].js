@@ -492,8 +492,8 @@ export async function ALL({ request, params }) {
                 });
             } catch(e) { console.error("SMTP Alert Failure:", e); }
 
-            // If it's a lead form return success. If it's signup, we let it continue to proxy to the real backend.
-            if (pathname.includes('/lead')) {
+            // If it's a lead form or demo request return success.
+            if (pathname.includes('/lead') || pathname.includes('/signup')) {
                 return new Response(JSON.stringify({ success: true, leadId: lead.id }), { status: 200, headers: {'Content-Type': 'application/json'} });
             }
         } catch(e) { console.error("CRM Sync Error:", e); }
@@ -558,8 +558,8 @@ export async function ALL({ request, params }) {
     }
     // ==========================================
 
-    // 🛠️ BACKEND ROUTING (Local Dev Priority)
-    const hostingerUrl = "http://localhost:5000";
+    // 🛠️ BACKEND ROUTING (Production Proxy)
+    const hostingerUrl = "http://187.124.97.144:5000";
     let targetPath = pathname + url.search;
     
     const assetFolders = ['/storage/', '/menu-images/'];
