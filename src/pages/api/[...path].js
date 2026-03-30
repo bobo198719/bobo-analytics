@@ -131,9 +131,17 @@ export async function ALL({ request, params }) {
 
     // 📦 PRE-READ BODY (CRITICAL: FIXES 503 STREAM CONFLICT)
     let bodyText = "";
-    if (method !== 'GET' && method !== 'HEAD') {
+    let formData = null;
+    let isMultipart = request.headers.get('content-type')?.includes('multipart/form-data');
+    const isGet = (method === 'GET' || method === 'HEAD');
+
+    if (!isGet) {
         try {
-            bodyText = await request.text();
+            if (isMultipart) {
+                formData = await request.formData();
+            } else {
+                bodyText = await request.text();
+            }
         } catch (e) {
             console.error("Proxy: Failed to read body:", e);
         }
@@ -176,7 +184,6 @@ export async function ALL({ request, params }) {
     // 🛡️ RESET PASSWORD BYPASS — forward to VPS or acknowledge (V62)
     if (pathname.includes('/admin/reset-password') && method === 'POST') {
         try {
-            const bodyText = await request.text();
             const bodyObj  = JSON.parse(bodyText);
             // Try live VPS first
             try {
@@ -203,7 +210,6 @@ export async function ALL({ request, params }) {
     // 🛡️ UPDATE STATUS (Suspend / Activate) — recovery handler
     if (pathname.includes('/admin/update-status') && method === 'POST') {
         try {
-            const bodyText = await request.text();
             const bodyObj  = JSON.parse(bodyText);
             try {
                 const liveRes = await fetch(`http://187.124.97.144:5000${pathname}`, {
@@ -222,7 +228,6 @@ export async function ALL({ request, params }) {
     // 🛡️ UPDATE PLAN (Upgrade / Downgrade) — recovery handler
     if (pathname.includes('/admin/update-plan') && method === 'POST') {
         try {
-            const bodyText = await request.text();
             const bodyObj  = JSON.parse(bodyText);
             try {
                 const liveRes = await fetch(`http://187.124.97.144:5000${pathname}`, {
@@ -238,6 +243,8 @@ export async function ALL({ request, params }) {
         } catch(e) { return new Response(JSON.stringify({ success: false, error: e.message }), { status: 500, headers: {'Content-Type': 'application/json'} }); }
     }
 
+    // Removed duplicate bodyText reading block
+    
     // 💳 PRICING ENGINE - GET CONFIG
     if (pathname.includes('/admin/pricing-config') && method === 'GET') {
         return new Response(JSON.stringify(global.PRICING_CONFIG), { status: 200, headers: {'Content-Type': 'application/json'} });
@@ -246,7 +253,6 @@ export async function ALL({ request, params }) {
     // 💳 PRICING ENGINE - SAVE CONFIG
     if (pathname.includes('/admin/save-plans') && method === 'POST') {
         try {
-            const bodyText = await request.text();
             const { sector, plans, tagline, description } = JSON.parse(bodyText);
             
             if (sector) {
@@ -274,7 +280,6 @@ export async function ALL({ request, params }) {
     // 🛡️ DELETE USER — recovery handler
     if (pathname.includes('/admin/delete-user') && method === 'POST') {
         try {
-            const bodyText = await request.text();
             const bodyObj  = JSON.parse(bodyText);
             try {
                 const liveRes = await fetch(`http://187.124.97.144:5000${pathname}`, {
@@ -293,7 +298,6 @@ export async function ALL({ request, params }) {
     // 🛡️ SEND PROMO — Edge Dispatch (Native NodeMailer capability)
     if (pathname.includes('/admin/send-promo') && method === 'POST') {
         try {
-            const bodyText = await request.text();
             
             // Try Live VPS First
             try {
@@ -441,7 +445,6 @@ export async function ALL({ request, params }) {
     // 🚀 CRM PIPELINE & NOTIFICATION SYNC (V72)
     if ((pathname.includes('/lead') || pathname.includes('/signup')) && method === 'POST') {
         try {
-            const bodyText = await request.clone().text();
             const body = JSON.parse(bodyText);
             const lead = {
                 id: "L_" + Math.random().toString(36).substr(2, 9),
@@ -501,8 +504,7 @@ export async function ALL({ request, params }) {
     }
 
     if (pathname.includes('/admin/approve-lead') && method === 'POST') {
-        const body = await request.text();
-        const { leadId } = JSON.parse(body);
+        const { leadId } = JSON.parse(bodyText);
         const leadIdx = PENDING_LEADS.findIndex(l => l.id === leadId);
         if (leadIdx === -1) return new Response(JSON.stringify({ success: false, error: "Lead not found" }), { status: 404, headers: {'Content-Type': 'application/json'} });
         
