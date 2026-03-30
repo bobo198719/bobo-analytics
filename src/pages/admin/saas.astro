@@ -56,17 +56,12 @@ import MainLayout from "../../layouts/MainLayout.astro";
       pointer-events: none;
     }
 
-    /* ── AUTH ── */
-    #authOverlay { position:fixed; inset:0; background:rgba(5,8,16,0.98); z-index:2000; display:flex; align-items:center; justify-content:center; }
-    .auth-card { background:var(--card-bg); padding:40px; border-radius:24px; border:1px solid var(--border); width:400px; text-align:center; }
-    .auth-input { width:100%; padding:14px; margin-bottom:16px; border-radius:12px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:#fff; outline:none; font-size:0.95rem; }
-    .btn-primary { background:var(--blue); color:#fff; border:none; padding:14px 20px; border-radius:12px; font-weight:800; cursor:pointer; font-size:0.95rem; }
-    .btn-primary:hover { opacity:0.85; }
-
     /* ── LAYOUT ── */
     #dashboardContent { display:none; width:100%; }
     .sidebar { width:240px; height:100vh; background:var(--sidebar-bg); padding:24px 12px; position:fixed; left:0; top:0; border-right:1px solid var(--border); display:flex; flex-direction:column; }
-    .nav-menu { flex:1; }
+    .nav-menu { flex:1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
+    .nav-menu::-webkit-scrollbar { width: 4px; }
+    .nav-menu::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
     .menu-item { padding:12px 16px; margin-bottom:4px; border-radius:10px; cursor:pointer; transition:0.15s; color:var(--muted); font-weight:600; display:flex; align-items:center; gap:10px; border:none; background:transparent; width:100%; font-size:0.9rem; }
     .menu-item.active { background:var(--blue); color:#fff; }
     .menu-item:hover:not(.active) { background:rgba(255,255,255,0.05); color:#fff; }
@@ -89,10 +84,10 @@ import MainLayout from "../../layouts/MainLayout.astro";
     .profile-bubble { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg, var(--blue), #6366f1); display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.85rem; cursor:pointer; box-shadow:0 4px 12px rgba(59,130,246,0.3); }
     
     /* ── DROPDOWNS ── */
-    .dropdown-menu { position:absolute; top:45px; right:0; background:var(--card-bg); border:1px solid var(--border); border-radius:12px; min-width:180px; display:none; flex-direction:column; padding:8px; box-shadow:0 10px 30px rgba(0,0,0,0.5); z-index:1100; }
+    .dropdown-menu { position:absolute; top:45px; right:0; background:var(--card-bg); border:1px solid var(--border); border-radius:12px; min-width:180px; max-width: 320px; display:none; flex-direction:column; padding:8px; box-shadow:0 10px 30px rgba(0,0,0,0.5); z-index:1100; }
     .dropdown-menu.visible { display:flex; animation:slideDown 0.2s ease; }
     @keyframes slideDown { from{opacity:0; transform:translateY(-10px)} to{opacity:1; transform:translateY(0)} }
-    .dd-item { padding:10px 14px; border-radius:8px; font-size:0.85rem; cursor:pointer; color:var(--muted); transition:0.2s; }
+    .dd-item { padding:10px 14px; border-radius:8px; font-size:0.85rem; cursor:pointer; color:var(--muted); transition:0.2s; white-space: normal; word-break: break-word; line-height: 1.4; }
     .dd-item:hover { background:rgba(255,255,255,0.05); color:#fff; }
     
     .mobile-toggle { display:none; background:transparent; border:none; color:#fff; font-size:1.4rem; cursor:pointer; margin-right:12px; }
@@ -134,9 +129,9 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
     /* ── KPI ── */
     .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:28px; }
-    .card { background:var(--card-bg); padding:20px 24px; border-radius:14px; border:1px solid var(--border); transition:0.3s; }
+    .card { background:var(--card-bg); padding:16px 20px; border-radius:14px; border:1px solid var(--border); transition:0.3s; }
     .card-label { font-size:0.68rem; color:var(--muted); text-transform:uppercase; font-weight:700; letter-spacing:.06em; margin-bottom:6px; }
-    .kpi-val { font-size:2rem; font-weight:800; }
+    .kpi-val { font-size:1.6rem; font-weight:800; }
 
     /* ── BADGES ── */
     .badge { display:inline-block; padding:2px 9px; border-radius:99px; font-size:0.68rem; font-weight:700; white-space:nowrap; }
@@ -220,24 +215,12 @@ import MainLayout from "../../layouts/MainLayout.astro";
     @keyframes fadeIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
 
     .topbar { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; flex-wrap:wrap; gap:12px; }
-    .sec-title { font-size:1.4rem; font-weight:800; margin:0 0 2px; }
+    .sec-title { font-size:1.25rem; font-weight:800; margin:0 0 2px; }
     .search-bar { padding:10px 14px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.04); color:#fff; font-size:0.88rem; outline:none; width:240px; }
     .search-bar::placeholder { color:var(--muted); }
     .status-active { color:var(--green); font-weight:bold; }
     #toast { position:fixed; bottom:24px; right:24px; z-index:9999; padding:12px 20px; border-radius:10px; font-size:0.85rem; font-weight:700; display:none; max-width:320px; }
   </style>
-
-  <!-- AUTH -->
-  <div id="authOverlay">
-    <div class="auth-card">
-      <h2 style="margin-bottom:8px;">🛡️ Master Vault OS</h2>
-      <p style="color:var(--muted);margin-bottom:24px;font-size:0.88rem;">Production Security Enabled</p>
-      <input id="email" class="auth-input" type="email" placeholder="Master Email" value="admin@bobo.com">
-      <input id="password" class="auth-input" type="password" placeholder="Password">
-      <button class="btn-primary" style="width:100%" onclick="login()">Authenticate</button>
-      <p id="authError" style="color:var(--red);margin-top:16px;font-size:0.82rem;font-weight:bold;min-height:18px;"></p>
-    </div>
-  </div>
 
   <!-- PROMO MODAL -->
   <div class="modal-overlay" id="promoModal">
@@ -323,9 +306,9 @@ import MainLayout from "../../layouts/MainLayout.astro";
   <!-- DASHBOARD -->
   <div id="dashboardContent" style="width:100%">
     <aside class="sidebar" style="background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(15px); border-right: 1px solid rgba(255,255,255,0.05);">
-      <div style="margin-bottom:28px; padding:0 12px; text-align:center;">
-        <img src="/images/bobo-logo.png" style="width:100%; max-width:180px; filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.3));" alt="Bobo Analytics Logo" />
-        <div id="connStatus" style="color:var(--green); font-size:0.6rem; font-weight:800; letter-spacing:1px; margin-top:-6px;">● SYSTEM OPERATIONAL</div>
+      <div style="margin-bottom:20px; padding:0 12px; text-align:center;">
+        <img src="/images/bobo-logo.png" style="width:100%; max-width:130px; filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.3));" alt="Bobo Analytics Logo" />
+        <div id="connStatus" style="color:var(--green); font-size:0.55rem; font-weight:800; letter-spacing:1px; margin-top:-2px;">● SYSTEM OPERATIONAL</div>
       </div>
       
       <nav class="nav-menu">
@@ -507,9 +490,10 @@ import MainLayout from "../../layouts/MainLayout.astro";
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- LEADS PIPELINE TAB -->
-      <div id="pipeline" class="section">
+    <!-- LEADS PIPELINE TAB -->
+    <div id="pipeline" class="section">
          <div class="topbar" style="margin-bottom:24px;">
             <div>
               <p class="sec-title">Leads Infrastructure Pipeline</p>
@@ -1002,27 +986,14 @@ import MainLayout from "../../layouts/MainLayout.astro";
     let myChart = null;
     let allUsers = [];
     const PLANS = ["trial","pro","enterprise"];
-
-    // ── AUTH ──────────────────────────────────────────────────────
-    window.login = async function() {
-      const em = document.getElementById("email").value;
-      const pw = document.getElementById("password").value;
-      const er = document.getElementById("authError");
-      er.innerText = "Authenticating…";
-      try {
-        const r = await fetch(API+"/auth/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:em,password:pw,industry:"admin"})});
-        const d = await r.json();
-        if (d.token) { localStorage.setItem("token",d.token); location.reload(); }
-        else er.innerText = d.message||"Access denied.";
-      } catch(e) { er.innerText="Secure Node Offline."; }
-    };
-    window.logout = ()=>{ localStorage.removeItem("token"); location.reload(); };
+    window.logout = ()=>{ localStorage.removeItem("token"); location.replace("/admin-login"); };
 
     function checkAuth() {
       if (localStorage.getItem("token")) {
-        document.getElementById("authOverlay").style.display="none";
         document.getElementById("dashboardContent").style.display="flex";
         initSync();
+      } else {
+        window.location.replace("/admin-login");
       }
     }
 
@@ -1073,6 +1044,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
         document.getElementById("kpi-duration").innerText = stats.duration || "0s";
         
         // BARS
+        // Update Bars (if stats.devices exists)
         if(stats.devices) {
           document.getElementById("dev-mobile").innerText = stats.devices.mobile + "%";
           document.getElementById("bar-mobile").style.width = stats.devices.mobile + "%";
@@ -1093,10 +1065,35 @@ import MainLayout from "../../layouts/MainLayout.astro";
         // Organizations
         const tTable = document.getElementById("tenantTable");
         if(tTable) tTable.innerHTML = tenants.length
-          ? tenants.map(t=>`<tr><td><strong>${t.name}</strong></td><td><span class="badg">${t.industry}</span></td><td style="color:var(--green);font-weight:bold;">${t.status}</td><td>₹${(t.revenue||0).toLocaleString()}</td></tr>`).join("")
+          ? tenants.map(t=>`<tr><td><strong>${t.name}</strong></td><td><span class="badge bg">${t.industry}</span></td><td style="color:var(--green);font-weight:bold;">${t.status.toUpperCase()}</td><td>₹${(t.revenue||0).toLocaleString()}</td></tr>`).join("")
           : `<tr><td colspan="4" style="text-align:center;padding:30px;color:var(--muted);">No infrastructure nodes found.</td></tr>`;
-          
-      } catch(e) { console.error("Global Sync Error:", e); }
+
+        // Campaigns
+        const cTable = document.getElementById("campaignTable");
+        if(cTable) cTable.innerHTML = campaigns.length
+          ? campaigns.map(c=>`<tr style="opacity:${c.recipients==='scheduled'?0.7:1}">
+              <td style="color:var(--muted);font-size:0.8rem">${new Date(c.time).toLocaleString()}</td>
+              <td style="font-weight:bold">${c.subject || 'No Subject'}</td>
+              <td><span style="background:rgba(255,255,255,0.06); padding:4px 8px; border-radius:6px; font-size:0.75rem;">${c.targetRoute} (${c.recipients} users)</span></td>
+              <td>${c.channels.join(', ')}</td>
+              <td><strong style="color:var(--blue)">${c.opened||0}</strong></td>
+              <td><strong style="color:var(--green)">${c.clicks||0}</strong></td>
+             </tr>`).join("")
+          : `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--muted);">No campaigns have been broadcasted yet.</td></tr>`;
+
+        const stat = document.getElementById("connStatus");
+        if(stat) {
+          stat.innerText="● SYSTEM OPERATIONAL";
+          stat.style.color="var(--green)";
+        }
+      } catch(e) { 
+        console.error("Global Sync Error:", e); 
+        const stat = document.getElementById("connStatus");
+        if(stat) {
+          stat.innerText="● SYNC ERROR / VPS OFFLINE";
+          stat.style.color="var(--red)";
+        }
+      }
     }
 
     function renderGeoTable(geo) {
@@ -1169,33 +1166,6 @@ import MainLayout from "../../layouts/MainLayout.astro";
     function generateInsight() {
       const ins = ["Edge traffic spiked 18% in Mumbai.","12% of Trial users reached API thresholds.","Latency decreased by 24ms.","Industry 'Bakery' shows 140% lead velocity growth."];
       const e = document.getElementById("ai-insight"); if(e) e.innerText = ins[Math.floor(Math.random() * ins.length)];
-    }
-              <td style="color:var(--muted)">${a.error || 'Authed OK'}</td>
-             </tr>`).join("")
-          : `<tr><td colspan="4" style="text-align:center;padding:30px;color:var(--muted);">No edge auth logs collected.</td></tr>`;
-          
-        document.getElementById("campaignTable").innerHTML = campaigns.length
-          ? campaigns.map(c=>`<tr style="opacity:${c.recipients==='scheduled'?0.7:1}">
-              <td style="color:var(--muted);font-size:0.8rem">${new Date(c.time).toLocaleString()}</td>
-              <td style="font-weight:bold">${c.subject || 'No Subject'}</td>
-              <td><span style="background:rgba(255,255,255,0.06); padding:4px 8px; border-radius:6px; font-size:0.75rem;">${c.targetRoute} (${c.recipients} users)</span></td>
-              <td>${c.channels.join(', ')}</td>
-              <td><strong style="color:var(--blue)">${c.opened||0}</strong></td>
-              <td><strong style="color:var(--green)">${c.clicks||0}</strong></td>
-             </tr>`).join("")
-          : `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--muted);">No campaigns have been broadcasted yet.</td></tr>`;
-
-        updateCharts(stats);
-
-        // ✅ MARK AS SUCCESSFUL
-        const stat = document.getElementById("connStatus");
-        stat.innerText="● SYSTEM OPERATIONAL";
-        stat.style.color="var(--green)";
-      } catch(e) {
-        console.error("SYNC_ERROR:", e);
-        document.getElementById("connStatus").innerText="● VPS OFFLINE — RECOVERY MODE";
-        document.getElementById("connStatus").style.color="var(--red)";
-      }
     }
 
     // ── RBAC & ROLES ──────────────────────────────────────────────

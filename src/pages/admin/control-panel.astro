@@ -129,7 +129,8 @@ import MainLayout from "../../layouts/MainLayout.astro";
         <button class="menu-item" onclick="switchTab('billing', this)"><span>💳</span> Billing & Cloud</button>
       </nav>
       <div id="connStatus" style="font-size:0.65rem; color:var(--green); font-weight:800; text-align:center; padding-top:20px; border-top:1px solid var(--border);">● MASTER NODE ONLINE</div>
-      <button class="menu-item" onclick="logout()" style="margin-top:20px; color:var(--red)"><span>🚪</span> Sign Out</button>
+      <button class="menu-item" onclick="initSync()" style="margin-top:20px; color:var(--blue)"><span>🔄</span> Refresh Telemetry</button>
+      <button class="menu-item" onclick="logout()" style="margin-top:auto; color:var(--red)"><span>🚪</span> Sign Out</button>
     </aside>
 
     <main class="main">
@@ -208,7 +209,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
           <h1>Tenant Registry</h1>
           <div class="table-box">
             <table>
-              <thead><tr><th>Name</th><th>Industry</th><th>Status</th><th>Yield</th></tr></thead>
+              <thead><tr><th>Name</th><th>Industry</th><th>Status</th><th>Plan</th><th>Yield</th><th>Actions</th></tr></thead>
               <tbody id="tenantTable"></tbody>
             </table>
           </div>
@@ -290,31 +291,44 @@ import MainLayout from "../../layouts/MainLayout.astro";
       const token = localStorage.getItem("token");
       const range = document.getElementById("dateFilter")?.value || "30";
       
+      const statusEl = document.getElementById("connStatus");
+      statusEl.innerText = "● SYNCING FEED...";
+      statusEl.style.color = "var(--amber)";
+
       try {
-        const [statsR, tenantR, auditR, leadsR, actR, alR] = await Promise.all([
-          fetch(API + "/stats?range=" + range, { headers: { "Authorization": token } }),
-          fetch(API + "/tenants", { headers: { "Authorization": token } }),
-          fetch(API + "/admin/audit-logs", { headers: { "Authorization": token } }),
-          fetch(API + "/admin/leads", { headers: { "Authorization": token } }),
-          fetch(API + "/activity", { headers: { "Authorization": token } }),
-          fetch(API + "/alerts", { headers: { "Authorization": token } })
-        ]);
-        if(statsR.status === 401) return logout();
+        const fetchWithAuth = (url) => fetch(API + url, { headers: { "Authorization": token } }).then(r => r.ok ? r.json() : []);
         
-        const stats = await statsR.json();
-        const tenants = await tenantR.json();
-        const audits = auditR.ok ? await auditR.json() : [];
-        const leads = leadsR.ok ? await leadsR.json() : [];
-        const activities = actR.ok ? await actR.json() : [];
-        const alerts = alR.ok ? await alR.json() : [];
+        const [stats, tenants, audits, leads, activities, alerts] = await Promise.all([
+          fetch(API + "/stats?range=" + range, { headers: { "Authorization": token } }).then(r => r.status === 401 ? logout() : r.json()),
+          fetchWithAuth("/tenants"),
+          fetchWithAuth("/admin/audit-logs"),
+          fetchWithAuth("/admin/leads"),
+          fetchWithAuth("/activity"),
+          fetchWithAuth("/alerts")
+        ]);
   
         document.getElementById("users").innerText = Math.floor(stats.users || 0).toLocaleString();
-        document.getElementById("active").innerText = Math.floor(stats.active || 0).toLocaleString();
+        document.getElementById("active").innerText = Math.floor(stats.rangeActive || stats.active || 0).toLocaleString();
         document.getElementById("revenue").innerText = "₹" + Math.floor(stats.revenue || 0).toLocaleString();
         
         let html = "";
-        tenants.forEach(t => { html += `<tr><td><strong>${t.name}</strong></td><td><span class="badge bg">${t.industry}</span></td><td class="status-active">${t.status}</td><td>₹${(t.revenue||0).toLocaleString()}</td></tr>`; });
-        document.getElementById("tenantTable").innerHTML = html || '<tr><td colspan="4" style="text-align:center; padding:30px; color:var(--muted)">No nodes registered in this sector.</td></tr>';
+        tenants.forEach(t => { 
+          const isSuspended = t.status === 'suspended';
+          html += `<tr>
+            <td><strong>${t.name}</strong></td>
+            <td><span class="badge bg">${t.industry}</span></td>
+            <td><span class="status-active" style="color:${isSuspended?'var(--red)':'var(--green)'}">${t.status.toUpperCase()}</span></td>
+            <td><span class="badge aa">${t.plan_type || 'trial'}</span></td>
+            <td>₹${(t.revenue||0).toLocaleString()}</td>
+            <td>
+              <div style="display:flex; gap:8px;">
+                <button onclick="updateTenantStatus('${t.id}', '${isSuspended?'active':'suspended'}')" class="ab-primary" style="padding:4px 8px; font-size:0.6rem; background:${isSuspended?'var(--green)':'var(--amber)'}">${isSuspended?'Unsuspend':'Suspend'}</button>
+                <button onclick="deleteTenant('${t.id}')" class="ab-primary" style="padding:4px 8px; font-size:0.6rem; background:var(--red)">Delete</button>
+              </div>
+            </td>
+          </tr>`; 
+        });
+        document.getElementById("tenantTable").innerHTML = html || '<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--muted)">No nodes registered in this sector.</td></tr>';
         
         renderPipeline(leads);
         renderAudit(audits);
@@ -323,7 +337,14 @@ import MainLayout from "../../layouts/MainLayout.astro";
         generateInsight();
         updateChart(tenants);
 
-      } catch(e) { console.error("Global Sync Error:", e); }
+        statusEl.innerText = "● MASTER NODE ONLINE";
+        statusEl.style.color = "var(--green)";
+
+      } catch(e) { 
+        console.error("Global Sync Error:", e); 
+        statusEl.innerText = "● SYNC ERROR";
+        statusEl.style.color = "var(--red)";
+      }
     }
 
     function renderPipeline(leads) {
@@ -430,9 +451,11 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
     window.approveLead = async function(id) {
       if(!confirm("Create infrastructure and dispatch welcome credentials?")) return;
-      const btn = event.currentTarget;
-      btn.innerText = "Dispatching...";
-      btn.disabled = true;
+      const btn = event?.currentTarget;
+      if(btn) {
+        btn.innerText = "Dispatching...";
+        btn.disabled = true;
+      }
       try {
         const res = await fetch(API + "/admin/approve-lead", {
           method: "POST",
@@ -445,9 +468,38 @@ import MainLayout from "../../layouts/MainLayout.astro";
           initSync();
         } else {
           alert("Error: " + data.error);
-          btn.innerText = "Error";
+          if(btn) { btn.innerText = "Error"; btn.disabled = false; }
         }
-      } catch(e) { alert("Network error"); btn.innerText = "✅ Approve & Dispatch"; btn.disabled = false;}
+      } catch(e) { 
+        alert("Network error"); 
+        if(btn) { btn.innerText = "✅ Approve & Dispatch"; btn.disabled = false; }
+      }
+    }
+
+    window.updateTenantStatus = async function(userId, status) {
+      if(!confirm(`Change status to ${status}?`)) return;
+      try {
+        const res = await fetch(API + "/admin/update-status", {
+          method: "POST",
+          headers: {"Content-Type": "application/json", "Authorization": localStorage.getItem("token")},
+          body: JSON.stringify({ userId, status })
+        });
+        const d = await res.json();
+        if(d.success) initSync();
+      } catch(e) { alert("Action failed"); }
+    }
+
+    window.deleteTenant = async function(userId) {
+      if(!confirm("⚠️ PERMANENTLY DELETE TENANT AND DATA? This cannot be undone.")) return;
+      try {
+        const res = await fetch(API + "/admin/delete-user", {
+          method: "POST",
+          headers: {"Content-Type": "application/json", "Authorization": localStorage.getItem("token")},
+          body: JSON.stringify({ userId })
+        });
+        const d = await res.json();
+        if(d.success) initSync();
+      } catch(e) { alert("Deletion failed"); }
     }
 
     function updateChart(data) {
@@ -457,6 +509,19 @@ import MainLayout from "../../layouts/MainLayout.astro";
       if(myChart) myChart.destroy();
       myChart = new Chart(ctx, { type:'doughnut', data:{ labels:Object.keys(sectors), datasets:[{ data:Object.values(sectors).some(v=>v>0)?Object.values(sectors):[1,1,1,1], backgroundColor:['#ef4444', '#f59e0b', '#3b82f6', '#10b981'], borderWidth:0 }] }, options:{ responsive:true, maintainAspectRatio:false, cutout:'75%', plugins: { legend: { position:'bottom', labels:{color:'#fff', padding:20} } } } });
     }
+
+    // CLICK OUTSIDE HANDLERS
+    document.addEventListener('click', (e) => {
+      const search = document.getElementById('searchResults');
+      const searchInput = document.getElementById('globalSearch');
+      if (search && !search.contains(e.target) && e.target !== searchInput) search.classList.remove('visible');
+
+      const notify = document.getElementById('dd-notify');
+      if (notify && !notify.parentElement.contains(e.target)) notify.classList.remove('visible');
+
+      const profile = document.getElementById('dd-profile');
+      if (profile && !profile.parentElement.contains(e.target)) profile.classList.remove('visible');
+    });
 
     document.addEventListener('DOMContentLoaded', checkAuth);
   </script>

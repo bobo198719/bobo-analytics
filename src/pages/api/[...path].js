@@ -101,10 +101,20 @@ export async function ALL({ request, params }) {
         return undefined;
     }
 
-    // 🔥 EMERGENCY AUTH BYPASS (V60 - Early Exit Signal)
-    if (pathname.includes('/auth/login') && method === 'POST') {
+    // 📦 PRE-READ BODY (CRITICAL: FIXES 503 STREAM CONFLICT)
+    let bodyText = "";
+    if (method !== 'GET' && method !== 'HEAD') {
         try {
-            const body = JSON.parse(await request.clone().text());
+            bodyText = await request.text();
+        } catch (e) {
+            console.error("Proxy: Failed to read body:", e);
+        }
+    }
+
+    // 🔥 EMERGENCY AUTH BYPASS (V60 - Early Exit Signal)
+    if (pathname.includes('/auth/login') && method === 'POST' && bodyText) {
+        try {
+            const body = JSON.parse(bodyText);
             if ((body.email === 'admin@bobo.com' || body.username === 'admin') && body.password === 'password123') {
                 return new Response(JSON.stringify({ 
                     success: true,
@@ -446,7 +456,8 @@ export async function ALL({ request, params }) {
     }
     // ==========================================
 
-    const hostingerUrl = "http://187.124.97.144:5000";
+    // 🛠️ BACKEND ROUTING (Local Dev Priority)
+    const hostingerUrl = "http://localhost:5000";
     let targetPath = pathname + url.search;
     
     const assetFolders = ['/storage/', '/menu-images/'];
@@ -462,9 +473,9 @@ export async function ALL({ request, params }) {
             method,
             headers: { 
                 'Content-Type': 'application/json',
-                'Authorization': request.headers.get('Authorization') || ''
+                'Authorization': authHeader
             },
-            ...(method !== 'GET' && method !== 'HEAD' ? { body: await request.text() } : {})
+            ...(bodyText ? { body: bodyText } : {})
         };
 
         const isSeed = pathname.includes('/seed');

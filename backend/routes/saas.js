@@ -159,13 +159,13 @@ router.get("/admin/revenue", async (req, res) => {
  */
 router.post("/public/signup", async (req, res) => {
   try {
-    const { name, phone, industry } = req.body;
+    const { businessName, ownerName, phone, email, industry, city } = req.body;
     await db.query(
-      `INSERT INTO leads (name, phone, industry, status)
-      VALUES (?, ?, ?, 'pending')`,
-      [name, phone, industry]
+      `INSERT INTO leads (business_name, owner_name, phone, email, industry, city, status, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, 'pending', NOW())`,
+      [businessName, ownerName, phone, email, industry, city]
     );
-    res.json({ success: true, message: "Lead added" });
+    res.json({ success: true, message: "Lead added successfully to the provisioning queue." });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -385,12 +385,20 @@ router.post("/signup", async (req, res) => {
  */
 router.get("/stats", async (req, res) => {
     try {
+        const { range } = req.query;
+        let dateFilter = "INTERVAL 30 DAY";
+        if (range === "7") dateFilter = "INTERVAL 7 DAY";
+        if (range === "1") dateFilter = "INTERVAL 1 DAY";
+
         const [[totalResult]] = await db.query("SELECT COUNT(*) as total FROM saas_users");
         const [[activeResult]] = await db.query("SELECT COUNT(*) as active FROM saas_users WHERE status='active'");
-        const [[revResult]] = await db.query("SELECT SUM(amount) as revenue FROM payments");
+        const [[rangeActiveResult]] = await db.query(`SELECT COUNT(*) as active FROM saas_users WHERE status='active' AND created_at >= NOW() - ${dateFilter}`);
+        const [[revResult]] = await db.query(`SELECT SUM(amount) as revenue FROM payments WHERE created_at >= NOW() - ${dateFilter}`);
+        
         res.json({
             users: totalResult.total,
             active: activeResult.active,
+            rangeActive: rangeActiveResult.active,
             revenue: revResult.revenue || 0
         });
     } catch (err) { res.status(500).json({ error: err.message }); }
@@ -399,7 +407,7 @@ router.get("/stats", async (req, res) => {
 router.get("/tenants", async (req, res) => {
     try {
         const [users] = await db.query(
-            `SELECT business_name as name, industry, status, amount_paid as revenue 
+            `SELECT id, business_name as name, industry, status, plan_type, amount_paid as revenue 
             FROM saas_users 
             ORDER BY created_at DESC`
         );

@@ -6,6 +6,11 @@ import vercel from '@astrojs/vercel/serverless';
 export default defineConfig({
   output: 'server',
   adapter: vercel(),
+  server: {
+    proxy: {
+      '/api': 'http://localhost:5000'
+    }
+  },
   integrations: [
     react(),
     tailwind({
