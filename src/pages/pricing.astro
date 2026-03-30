@@ -6,8 +6,10 @@ import MainLayout from "../layouts/MainLayout.astro";
   <section class="pricing-hero">
     <div class="glow-bg"></div>
     <h1>Simple, <span class="gradient-text">Transparent</span> Pricing</h1>
-    <p>Flexible plans tailored for pharmacies, healthcare providers, retail stores, and <strong>Home Bakers</strong>. Scale as you grow.</p>
+    <p id="globalDesc">Flexible plans tailored for pharmacies, healthcare providers, retail stores, and <strong>Home Bakers</strong>. Scale as you grow.</p>
     
+    <div id="industryBadge" style="display:none; background:rgba(99, 102, 241, 0.1); color:#6366f1; padding:4px 12px; border-radius:20px; font-size:0.75rem; font-weight:700; width:fit-content; margin: 0 auto 20px;">RESTAURANT OS</div>
+
     <div class="billing-toggle">
       <span class="left-label active">Monthly</span>
       <label class="switch">
@@ -20,10 +22,10 @@ import MainLayout from "../layouts/MainLayout.astro";
 
   <section class="pricing-grid">
     <div class="pricing-card">
-      <div class="tier">Starter</div>
-      <div class="price">Free</div>
-      <p class="desc">Perfect for small pharmacies and home bakers exploring AI features.</p>
-      <ul>
+      <div class="tier" id="tier-starter">Starter</div>
+      <div class="price" id="price-starter">Free</div>
+      <p class="desc" id="desc-starter">Perfect for small pharmacies and home bakers exploring AI features.</p>
+      <ul id="features-starter">
         <li>Basic Billing POS</li>
         <li>100 Medicines Inventory</li>
         <li>Standard Analytics</li>
@@ -35,13 +37,13 @@ import MainLayout from "../layouts/MainLayout.astro";
     <div class="pricing-card featured">
       <div class="glow-border"></div>
       <div class="badge">Most Popular</div>
-      <div class="tier">Professional</div>
+      <div class="tier" id="tier-growth">Professional</div>
       <div class="price-container">
         <div class="price" id="proPriceMonthly">₹999 <span>/mo</span></div>
         <div class="price hidden" id="proPriceAnnually">₹799 <span>/mo</span><div class="billed-yearly">Billed ₹9,588 yearly</div></div>
       </div>
-      <p class="desc">Complete ERP solution for established pharmacies, retail chains, and pro bakers.</p>
-      <ul>
+      <p class="desc" id="desc-growth">Complete ERP solution for established pharmacies, retail chains, and pro bakers.</p>
+      <ul id="features-growth">
         <li>Advanced Billing POS</li>
         <li>Unlimited Inventory</li>
         <li>AI Expiry Alerts</li>
@@ -53,10 +55,10 @@ import MainLayout from "../layouts/MainLayout.astro";
     </div>
 
     <div class="pricing-card">
-      <div class="tier">Enterprise</div>
-      <div class="price">Custom</div>
-      <p class="desc">Multi-tenant systems for large chains and hospitals.</p>
-      <ul>
+      <div class="tier" id="tier-best_value">Enterprise</div>
+      <div class="price" id="price-best_value">Custom</div>
+      <p class="desc" id="desc-best_value">Multi-tenant systems for large chains and hospitals.</p>
+      <ul id="features-best_value">
         <li>Multi-location Support</li>
         <li>Custom AI Models</li>
         <li>API Integration</li>
@@ -111,6 +113,56 @@ import MainLayout from "../layouts/MainLayout.astro";
         }
       });
     });
+
+    async function syncPricing() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const sector = urlParams.get('industry') || 'restaurant';
+      
+      try {
+        const res = await fetch(`/api/public/pricing?sector=${sector}`);
+        const data = await res.json();
+        const { plans, tags } = data;
+
+        if (tags) {
+          document.getElementById('globalDesc').innerText = tags.desc;
+          const badge = document.getElementById('industryBadge');
+          badge.innerText = tags.tag;
+          badge.style.display = 'block';
+        }
+
+        if (plans) {
+          plans.forEach(p => {
+             const tierEl = document.getElementById(`tier-${p.id}`);
+             const descEl = document.getElementById(`desc-${p.id}`);
+             const featuresEl = document.getElementById(`features-${p.id}`);
+             
+             if (tierEl) tierEl.innerText = p.title;
+             // We don't change desc as it's not in our CRM matrix yet, but we could
+             
+             if (featuresEl) {
+               featuresEl.innerHTML = p.features.split(',').map(f => `<li>${f.trim()}</li>`).join('');
+             }
+
+             if (p.id === 'starter') {
+               const priceEl = document.getElementById('price-starter');
+               if (priceEl) priceEl.innerHTML = p.price ? `₹${p.price} <span>/mo</span>` : 'Free';
+             } else if (p.id === 'growth') {
+               const monthlyEl = document.getElementById('proPriceMonthly');
+               const yearlyEl = document.getElementById('proPriceAnnually');
+               if (monthlyEl) monthlyEl.innerHTML = `₹${p.price} <span>/mo</span>`;
+               if (yearlyEl) {
+                 const yearlyValue = Math.floor(parseInt(p.price) * 0.8 * 12);
+                 yearlyEl.innerHTML = `₹${Math.floor(parseInt(p.price)*0.8)} <span>/mo</span><div class="billed-yearly">Billed ₹${yearlyValue.toLocaleString()} yearly</div>`;
+               }
+             } else if (p.id === 'best_value') {
+               const priceEl = document.getElementById('price-best_value');
+               if (priceEl) priceEl.innerHTML = p.price ? `₹${p.price} <span>/mo</span>` : 'Custom';
+             }
+          });
+        }
+      } catch(e) { console.error("Sync Error:", e); }
+    }
+    syncPricing();
   </script>
 
   <style>

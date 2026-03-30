@@ -51,6 +51,34 @@ if (!global.SYSTEM_ALERTS) {
     ];
 }
 
+// 💳 GLOBAL PRICING & MARKETING REGISTRY (V70 Sync Engine)
+if (!global.PRICING_CONFIG) {
+    global.PRICING_CONFIG = {
+        tags: {
+            restaurant: { tag: "RESTAURANT OS", desc: "This is not software - this is your complete restaurant operating system" },
+            bakery: { tag: "BAKERY OS", desc: "Manage your bakery production and retail seamlessly." },
+            retail: { tag: "RETAIL OS", desc: "Omnichannel inventory and sales tracking." },
+            pharmacy: { tag: "PHARMACY OS", desc: "Drug inventory and compliance made simple." },
+            grocery: { tag: "GROCERY OS", desc: "Scale your supermarket with edge-powered POS." },
+            fashion: { tag: "FASHION OS", desc: "Trend analytics and size matrix management." },
+            general: { tag: "BOBO OS", desc: "Universal SaaS infrastructure for modern businesses." }
+        },
+        plans: {
+            restaurant: [
+                { id: "starter", title: "Starter Node", features: "1 Restaurant, 1 Location, Table Management, Manual Menu Sync, GST Billing", price: "7999", emi: "666" },
+                { id: "growth", title: "Growth Protocol", features: "5 Restaurant Locations, KDS, QR Table Ordering, Smart AI Menu Uploads, Advanced Revenue Dashboards, GST Taxation Intel, 30 Table Support", price: "12999", emi: "1083" },
+                { id: "best_value", title: "Best Value", features: "Unlimited Branches, Global Staff Governance Matrix, Advanced Yield & Profit Projections, Custom Branding, Full API Infrastructure Access", price: "14999", emi: "1250" }
+            ],
+            bakery: [
+                { id: "starter", title: "Fresh Start", features: "Inventory Tracking, Basic POS, Order History, SMS Alerts", price: "5999", emi: "499" },
+                { id: "growth", title: "Pastry Pro", features: "Multiple Branches, Recipe Management, Production Planning, B2B Bulk Orders", price: "9999", emi: "833" },
+                { id: "best_value", title: "Boulangerie Elite", features: "Franchise Management, Export Engine, Predictive Ingredient Ordering", price: "13999", emi: "1166" }
+            ]
+            // ... Other industries default to general if not set
+        }
+    };
+}
+
 export async function ALL({ request, params }) {
     const url = new URL(request.url);
     const pathname = url.pathname;
@@ -208,6 +236,39 @@ export async function ALL({ request, params }) {
             if (u) u.plan_type = bodyObj.planType;
             return new Response(JSON.stringify({ success: true }), { status: 200, headers: {'Content-Type': 'application/json'} });
         } catch(e) { return new Response(JSON.stringify({ success: false, error: e.message }), { status: 500, headers: {'Content-Type': 'application/json'} }); }
+    }
+
+    // 💳 PRICING ENGINE - GET CONFIG
+    if (pathname.includes('/admin/pricing-config') && method === 'GET') {
+        return new Response(JSON.stringify(global.PRICING_CONFIG), { status: 200, headers: {'Content-Type': 'application/json'} });
+    }
+
+    // 💳 PRICING ENGINE - SAVE CONFIG
+    if (pathname.includes('/admin/save-plans') && method === 'POST') {
+        try {
+            const bodyText = await request.text();
+            const { sector, plans, tagline, description } = JSON.parse(bodyText);
+            
+            if (sector) {
+                if (plans) global.PRICING_CONFIG.plans[sector] = plans;
+                if (!global.PRICING_CONFIG.tags[sector]) global.PRICING_CONFIG.tags[sector] = {};
+                if (tagline) global.PRICING_CONFIG.tags[sector].tag = tagline;
+                if (description) global.PRICING_CONFIG.tags[sector].desc = description;
+                
+                return new Response(JSON.stringify({ success: true, message: "Pricing synchronized globally." }), { status: 200, headers: {'Content-Type': 'application/json'} });
+            }
+            return new Response(JSON.stringify({ success: false, error: "Missing sector" }), { status: 400, headers: {'Content-Type': 'application/json'} });
+        } catch(e) { return new Response(JSON.stringify({ success: false, error: e.message }), { status: 500, headers: {'Content-Type': 'application/json'} }); }
+    }
+
+    // 💳 PUBLIC PRICING - GET FOR SECTOR
+    if (pathname.includes('/public/pricing') && method === 'GET') {
+        const sector = url.searchParams.get('sector') || 'restaurant';
+        const data = {
+            plans: global.PRICING_CONFIG.plans[sector] || global.PRICING_CONFIG.plans.restaurant,
+            tags: global.PRICING_CONFIG.tags[sector] || global.PRICING_CONFIG.tags.restaurant
+        };
+        return new Response(JSON.stringify(data), { status: 200, headers: {'Content-Type': 'application/json'} });
     }
 
     // 🛡️ DELETE USER — recovery handler
