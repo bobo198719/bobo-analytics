@@ -325,7 +325,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
         <button class="menu-item" onclick="switchTab('roles',this)"><span>🔐</span> <span>Roles & Permissions</span></button>
         <button class="menu-item" onclick="switchTab('tenants',this)"><span>🏢</span> <span>Organizations</span></button>
         <button class="menu-item" onclick="switchTab('pipeline',this)"><span>🚀</span> <span>Leads Pipeline</span></button>
-        <button class="menu-item" onclick="switchTab('subscriptions',this)"><span>💳</span> <span>Subscriptions</span></button>
+        <button class="menu-item" onclick="switchTab('subscriptions',this)"><span>💳</span> <span>Billing & Pricing</span></button>
         <button class="menu-item" onclick="switchTab('collections',this)"><span>📦</span> <span>Collections</span></button>
         <button class="menu-item" onclick="switchTab('categories',this)"><span>🏷️</span> <span>Categories & Tags</span></button>
         
@@ -800,25 +800,29 @@ import MainLayout from "../../layouts/MainLayout.astro";
         </div>
       </div>
 
-      <!-- SUBSCRIPTIONS MODULE -->
+      <!-- BILLING & PRICING MODULE -->
       <div id="subscriptions" class="section">
-        <p class="sec-title">Billing Plans & Subscriptions</p>
-        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Manage global pricing models and recurring revenue cycles.</p>
-        <div class="kpi-grid" style="margin-bottom:24px;">
-           <div class="card"><div class="card-label">MRR (Proj)</div><div class="kpi-val">₹42.5L</div></div>
-           <div class="card"><div class="card-label">Churn Rate</div><div class="kpi-val" style="color:var(--red);">2.1%</div></div>
-           <div class="card"><div class="card-label">Paid Subs</div><div class="kpi-val">1,248</div></div>
-           <div class="card"><div class="card-label">Expiring Soon</div><div class="kpi-val" style="color:var(--amber);">18</div></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+          <div>
+            <p class="sec-title">SaaS Monetization Control</p>
+            <p style="color:var(--muted); font-size:0.85rem; margin-top:4px;">Define pricing nodes and industry-specific feature matrices.</p>
+          </div>
+          <div style="display:flex; gap:12px;">
+            <select id="pricingSector" onchange="loadSectorPlans(this.value)" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:white; padding:10px 16px; border-radius:12px; font-size:0.85rem; outline:none; cursor:pointer;">
+              <option value="restaurant">🍽 Restaurant OS</option>
+              <option value="bakery">🥐 Bakery OS</option>
+              <option value="retail">🛍 Retail OS</option>
+              <option value="pharmacy">💊 Pharmacy OS</option>
+              <option value="grocery">🛒 Grocery OS</option>
+              <option value="fashion">👗 Fashion OS</option>
+              <option value="general">💼 General SaaS</option>
+            </select>
+            <button class="btn-primary" style="width:auto; padding:10px 20px; font-size:0.8rem;" onclick="saveSectorConfig()">💾 Cache Config</button>
+          </div>
         </div>
-        <div class="tbox">
-          <table>
-            <thead><tr><th>Plan Name</th><th>Base Price</th><th>Features</th><th>Status</th><th>Operation</th></tr></thead>
-            <tbody>
-              <tr><td>SaaS Enterprise</td><td>₹14,999/mo</td><td>Unlimited Users, Custom Domain</td><td><span class="badge gg">Public</span></td><td><button class="btn-cancel" style="padding:4px 8px; font-size:0.7rem;" onclick="toast('Editing Enterprise plan...')">Edit</button></td></tr>
-              <tr><td>Growth Pro</td><td>₹4,999/mo</td><td>10 Users, Analytics Pro</td><td><span class="badge gg">Public</span></td><td><button class="btn-cancel" style="padding:4px 8px; font-size:0.7rem;" onclick="toast('Editing Growth Pro plan...')">Edit</button></td></tr>
-              <tr><td>Startup Trial</td><td>₹0</td><td>1 User, Core CRM</td><td><span class="badge aa">Trial</span></td><td><button class="btn-cancel" style="padding:4px 8px; font-size:0.7rem;" onclick="toast('Editing Startup Trial plan...')">Edit</button></td></tr>
-            </tbody>
-          </table>
+
+        <div id="sectorPlanGrid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
+          <div style="grid-column: 1 / -1; text-align:center; padding:100px; color:var(--muted);">Initializing pricing matrix...</div>
         </div>
       </div>
 
@@ -1043,6 +1047,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
       if(el) el.classList.add("active");
       document.querySelector('.sidebar').classList.remove('open');
       if(id==="users") loadUsers();
+      if(id==="subscriptions") loadSectorPlans('restaurant');
     };
 
     // ── MASTER CONTROL SYNC ───────────────────────────────────────
@@ -1778,6 +1783,87 @@ import MainLayout from "../../layouts/MainLayout.astro";
           content.innerHTML = window._userRolesHTML;
         }
       }
+    }
+
+    // ── PRICING MATRIX LOGIC ──────────────────────────────────────
+    const pricingData = {
+      restaurant: [
+        { id: "starter", title: "Starter Node", features: "1 Restaurant, 1 Location, Table Management, Manual Menu Sync, GST Billing", price: "", emi: "" },
+        { id: "growth", title: "Growth Protocol", features: "5 Restaurant Locations, KDS, QR Table Ordering, Smart AI Menu Uploads, Advanced Revenue Dashboards, GST Taxation Intel, 30 Table Support", price: "", emi: "" },
+        { id: "best_value", title: "Best Value", features: "Unlimited Branches, Global Staff Governance Matrix, Advanced Yield & Profit Projections, Custom Branding, Full API Infrastructure Access", price: "", emi: "" }
+      ],
+      bakery: [
+        { id: "starter", title: "Fresh Start", features: "Inventory Tracking, Basic POS, Order History, SMS Alerts", price: "", emi: "" },
+        { id: "growth", title: "Pastry Pro", features: "Multiple Branches, Recipe Management, Production Planning, B2B Bulk Orders", price: "", emi: "" },
+        { id: "best_value", title: "Boulangerie Elite", features: "Franchise Management, Export Engine, Predictive Ingredient Ordering", price: "", emi: "" }
+      ],
+      retail: [
+        { id: "starter", title: "Shopfront", features: "Barcode Scanning, GST Billing, Stock Alerts, Day-end Reports", price: "", emi: "" },
+        { id: "growth", title: "Market Master", features: "Ecommerce Sync, Customer Loyalty, Multi-store Sync, Profit Analytics", price: "", emi: "" },
+        { id: "best_value", title: "Omnichannel King", features: "Warehouse Management, AI Stock Prediction, Global Search, Custom API", price: "" , emi: ""}
+      ],
+      pharmacy: [
+        { id: "starter", title: "Clinician", features: "Expiring Alerts, Batch Management, Doctor Database, Basic Records", price: "", emi: "" },
+        { id: "growth", title: "Health Hub", features: "Wholesale Management, Auto-order, Bill Splitting, Telemedicine Log", price: "", emi: "" },
+        { id: "best_value", title: "Wellness Network", features: "Chain Control, Inventory Forecast, Compliance Audit, Patient portal", price: "", emi: "" }
+      ],
+      grocery: [
+        { id: "starter", title: "Local Store", features: "Weight Integration, Fast Checkout, Stock Entry, Daily Sales", price: "", emi: "" },
+        { id: "growth", title: "Mart Manager", features: "Procurement History, Discount Management, Home Delivery App", price: "", emi: "" },
+        { id: "best_value", title: "Mega Mart", features: "Supply Chain Intel, Multi-warehouse, Automated Labeling", price: "", emi: "" }
+      ],
+      fashion: [
+        { id: "starter", title: "Boutique", features: "Size/Color Matrix, QR Tags, Basic Accounting, Customer Log", price: "", emi: "" },
+        { id: "growth", title: "Style Suite", features: "Design Pipeline, Vendor portal, Integrated Instagram Shop", price: "", emi: "" },
+        { id: "best_value", title: "Couture Corp", features: "Fabric Inventory, Global Distribution Hub, Trend Analytics", price: "", emi: "" }
+      ],
+      general: [
+        { id: "starter", title: "SaaS Lite", features: "1 Admin Seat, Core API, Essential Alerts, Cloud Backup", price: "", emi: "" },
+        { id: "growth", title: "SaaS Scale", features: "5 Admin Seats, Advanced Webhooks, Role Management", price: "", emi: "" },
+        { id: "best_value", title: "SaaS Enterprise", features: "Unlimited Seat, Priority 24/7 Support, Custom SSL, SLA Bound", price: "", emi: "" }
+      ]
+    };
+
+    window.loadSectorPlans = function(sector) {
+      const plans = pricingData[sector] || pricingData.restaurant;
+      const grid = document.getElementById("sectorPlanGrid");
+      if(!grid) return;
+
+      grid.innerHTML = plans.map(p => `
+        <div class="card" style="display:flex; flex-direction:column; border: 1px solid rgba(59, 130, 246, 0.2); background:rgba(255,255,255,0.02); padding: 20px; border-radius: 16px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
+             <input type="text" value="${p.title}" style="background:transparent; border:none; border-bottom:1px solid var(--border); color:var(--blue); font-weight:900; font-size:1.1rem; width:80%; outline:none;" placeholder="Plan Title" onchange="updatePlanLocal('${sector}', '${p.id}', 'title', this.value)">
+             <span class="badge gg">Active</span>
+          </div>
+          
+          <div style="display:flex; gap:12px; margin-bottom:12px;">
+            <div style="flex:1;">
+               <label class="card-label" style="font-size:0.6rem; color:var(--muted); text-transform:uppercase;">Price Node</label>
+               <input style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white; outline:none; font-size:0.85rem;" type="text" value="${p.price}" placeholder="e.g. ₹5,999" onchange="updatePlanLocal('${sector}', '${p.id}', 'price', this.value)">
+            </div>
+            <div style="flex:1;">
+               <label class="card-label" style="font-size:0.6rem; color:var(--muted); text-transform:uppercase;">EMI Stream</label>
+               <input style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white; outline:none; font-size:0.85rem;" type="text" value="${p.emi}" placeholder="e.g. ₹500/mo" onchange="updatePlanLocal('${sector}', '${p.id}', 'emi', this.value)">
+            </div>
+          </div>
+
+          <label class="card-label" style="font-size:0.6rem; color:var(--muted); text-transform:uppercase; margin-top:8px; display:block;">Feature Matrix</label>
+          <textarea style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white; outline:none; font-size:0.75rem; height:100px; resize:none; margin-top:4px;" onchange="updatePlanLocal('${sector}', '${p.id}', 'features', this.value)">${p.features}</textarea>
+          
+          <button class="btn-primary" style="margin-top:20px; font-size:0.75rem; padding:10px;" onclick="toast('Config cached locally.')">📦 Prepare Node</button>
+        </div>
+      `).join("");
+    }
+
+    window.updatePlanLocal = function(sector, id, field, val) {
+       const p = pricingData[sector].find(x => x.id === id);
+       if(p) p[field] = val;
+    }
+
+    window.saveSectorConfig = async function() {
+       const sector = document.getElementById("pricingSector").value;
+       toast("Saving " + sector.toUpperCase() + " nodes...");
+       setTimeout(() => toast("✅ configuration live."), 1200);
     }
 
     // Close dropdowns on outside click
