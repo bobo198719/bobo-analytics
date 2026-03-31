@@ -590,4 +590,34 @@ const topProducts = [
           }
       }
   </style>
+  <script is:inline>
+    // Range Picker Logic
+    const rangeButtons = document.querySelectorAll('.range-btn');
+    
+    rangeButtons.forEach(btn => {
+      // Skip calendar button for now as it's a separate feature
+      if (btn.classList.contains('calendar-btn')) return;
+
+      btn.addEventListener('click', () => {
+        // Remove active class from all
+        rangeButtons.forEach(b => b.classList.remove('active'));
+        
+        // Add to clicked
+        btn.classList.add('active');
+
+        // Simulate data loading
+        const dashboardBody = document.querySelector('.stats-grid');
+        if (dashboardBody) {
+            dashboardBody.style.opacity = '0.5';
+            dashboardBody.style.pointerEvents = 'none';
+            
+            setTimeout(() => {
+                dashboardBody.style.opacity = '1';
+                dashboardBody.style.pointerEvents = 'auto';
+                console.log(`📊 Dashboard synchronized for: ${btn.innerText}`);
+            }, 400);
+        }
+      });
+    });
+  </script>
 </GroceryOSLayout>
