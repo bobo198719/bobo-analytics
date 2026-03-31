@@ -1,0 +1,82 @@
+---
+import SocietyLedgerLayout from "../../layouts/SocietyLedgerLayout.astro";
+
+// Mock Vendor Data
+const vendors = [
+  { id: "VND-401", name: "City Electricals", node: "Utility", contact: "Sunil (+91 98XXX)", rating: "4.8", frequency: "Monthly", status: "Active" },
+  { id: "VND-402", name: "Shivani Plumbing", node: "Service", contact: "Rahul (+91 91XXX)", rating: "4.5", frequency: "On-Call", status: "Active" },
+  { id: "VND-403", name: "CleanHome Solutions", node: "Supplies", contact: "Meera (+91 90XXX)", rating: "4.9", frequency: "Weekly", status: "Active" },
+  { id: "VND-399", name: "Security Force Inc.", node: "Security", contact: "Capt. Singh", rating: "4.2", frequency: "Monthly", status: "Review" }
+];
+---
+
+<SocietyLedgerLayout title="Vendor Marketplace | Society Ledger OS">
+  <div class="flex justify-between items-end mb-10">
+      <div>
+          <h1 class="text-4xl font-black italic tracking-tighter uppercase leading-none mb-2">Vendor <span class="text-indigo-600">Marketplace</span></h1>
+          <p class="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] italic">Manage service providers, maintenance vendors, and security nodes.</p>
+      </div>
+      <button class="bg-indigo-600 text-white px-8 py-4 rounded-3xl text-[10px] font-black uppercase tracking-widest italic shadow-lg shadow-indigo-600/20 hover:scale-105 transition-all">
+          + Onboard New Provider
+      </button>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+      <div class="p-8 bg-white border border-slate-200 rounded-[32px] shadow-sm flex flex-col gap-2">
+          <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Active Vendors</span>
+          <span class="text-3xl font-black italic text-slate-900 leading-none">12</span>
+      </div>
+      <div class="p-8 bg-white border border-slate-200 rounded-[32px] shadow-sm flex flex-col gap-2 border-l-4 border-indigo-500">
+          <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Ongoing Service</span>
+          <span class="text-3xl font-black italic text-indigo-600 leading-none">02</span>
+      </div>
+      <div class="p-8 bg-white border border-slate-200 rounded-[32px] shadow-sm flex flex-col gap-2">
+          <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Avg Response</span>
+          <span class="text-3xl font-black italic text-amber-600 leading-none">2.4H</span>
+      </div>
+      <div class="p-8 bg-white border border-slate-200 rounded-[32px] shadow-sm flex flex-col gap-2">
+          <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Compliance</span>
+          <span class="text-3xl font-black italic text-emerald-600 leading-none">100%</span>
+      </div>
+  </div>
+
+  <div class="glass-card bg-white border border-slate-200 rounded-[40px] overflow-hidden shadow-sm">
+      <table class="w-full text-left border-collapse">
+          <thead>
+              <tr class="bg-slate-50 border-b border-slate-100">
+                  <th class="p-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Node ID</th>
+                  <th class="p-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Vendor Node Name</th>
+                  <th class="p-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Service Category</th>
+                  <th class="p-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Response Rating</th>
+                  <th class="p-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Cycle Frequency</th>
+                  <th class="p-8 text-right text-[10px] font-black uppercase tracking-widest text-slate-400">Action</th>
+              </tr>
+          </thead>
+          <tbody>
+              {vendors.map(v => (
+                  <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors group">
+                      <td class="p-8 font-mono font-bold text-xs text-slate-300 italic">{v.id}</td>
+                      <td class="p-8">
+                          <div class="flex flex-col">
+                              <span class="text-sm font-black text-slate-900 italic uppercase leading-none mb-1">{v.name}</span>
+                              <span class="text-[9px] text-slate-400 font-black tracking-widest uppercase italic">Contact: {v.contact}</span>
+                          </div>
+                      </td>
+                      <td class="p-8 text-[10px] font-black uppercase text-indigo-600 tracking-widest italic">{v.node}</td>
+                      <td class="p-8">
+                          <div class="flex items-center gap-2 font-black italic text-amber-600 text-xs">
+                              ⭐ {v.rating}
+                          </div>
+                      </td>
+                      <td class="p-8 text-[9px] font-black uppercase text-slate-400 tracking-widest italic">{v.frequency}</td>
+                      <td class="p-8 text-right">
+                         <button class="bg-indigo-600 text-white px-5 py-2 rounded-xl text-[8px] font-black uppercase tracking-widest italic hover:bg-slate-900 transition-all opacity-0 group-hover:opacity-100">Request Node Service</button>
+                      </td>
+                  </tr>
+              ))}
+          </tbody>
+      </table>
+  </div>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+</SocietyLedgerLayout>

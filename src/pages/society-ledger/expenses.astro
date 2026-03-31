@@ -1,0 +1,87 @@
+---
+import SocietyLedgerLayout from "../../layouts/SocietyLedgerLayout.astro";
+
+// Mock Expense Data
+const expenses = [
+  { id: "EXP-881", category: "Utility", vendor: "City Electricals", title: "Monthly Maintenance Bill", amount: "₹18,500", date: "Today", status: "Paid" },
+  { id: "EXP-882", category: "Service", vendor: "Shivani Plumbing", title: "Lift B Repair Work", amount: "₹4,200", date: "Yesterday", status: "In-Review" },
+  { id: "EXP-883", category: "Supplies", vendor: "CleanHome Solutions", title: "Housekeeping Chemicals", amount: "₹2,500", date: "2 days ago", status: "Paid" },
+  { id: "EXP-884", category: "Audit", vendor: "Kunal & Associates", title: "Fiscal Year Pre-Audit", amount: "₹12,000", date: "3 days ago", status: "Pending" }
+];
+---
+
+<SocietyLedgerLayout title="Expense Management | Society Ledger OS">
+  <div class="flex justify-between items-end mb-10">
+      <div>
+          <h1 class="text-4xl font-black italic tracking-tighter uppercase leading-none mb-2">Expense <span class="text-amber-600">Audit Node</span></h1>
+          <p class="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] italic">Manage society expenditures, utility bills, and vendor payments.</p>
+      </div>
+      <div class="flex gap-4">
+          <button class="bg-slate-900 text-white px-8 py-4 rounded-3xl text-[10px] font-black uppercase tracking-widest italic shadow-lg shadow-slate-900/20 hover:scale-105 transition-all">
+              Download Fiscal PDF
+          </button>
+          <button class="bg-amber-600 text-white px-8 py-4 rounded-3xl text-[10px] font-black uppercase tracking-widest italic shadow-lg shadow-amber-600/20 hover:scale-105 transition-all">
+              + Log New Expense
+          </button>
+      </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+      <div class="p-8 bg-white border border-slate-200 rounded-[32px] shadow-sm">
+          <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Total Spent (May)</span>
+          <span class="text-3xl font-black italic tracking-tighter text-slate-900 leading-none">₹54,200</span>
+      </div>
+      <div class="p-8 bg-white border border-slate-200 rounded-[32px] shadow-sm">
+          <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Pending Approvals</span>
+          <span class="text-3xl font-black italic tracking-tighter text-amber-600 leading-none">03</span>
+      </div>
+      <div class="p-8 bg-white border border-slate-200 rounded-[32px] shadow-sm">
+          <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Budget Node Health</span>
+          <span class="text-3xl font-black italic tracking-tighter text-emerald-600 leading-none">Optimal</span>
+      </div>
+      <div class="p-8 bg-white border border-slate-200 rounded-[32px] shadow-sm">
+          <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Tax Liability Sync</span>
+          <span class="text-3xl font-black italic tracking-tighter text-slate-400 leading-none">100%</span>
+      </div>
+  </div>
+
+  <div class="glass-card bg-white border border-slate-200 rounded-[40px] overflow-hidden shadow-sm">
+      <table class="w-full text-left border-collapse">
+          <thead>
+              <tr class="bg-slate-50 border-b border-slate-100">
+                  <th class="p-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Exp Node</th>
+                  <th class="p-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Expense Title / Vendor</th>
+                  <th class="p-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Account Node</th>
+                  <th class="p-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Amount Node</th>
+                  <th class="p-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Sync Status</th>
+                  <th class="p-8 text-right text-[10px] font-black uppercase tracking-widest text-slate-400">Action</th>
+              </tr>
+          </thead>
+          <tbody>
+              {expenses.map(e => (
+                  <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                      <td class="p-8 font-mono font-bold text-xs text-slate-300 italic">{e.id}</td>
+                      <td class="p-8">
+                          <div class="flex flex-col">
+                              <span class="text-sm font-black text-slate-900 italic uppercase leading-none mb-1">{e.title}</span>
+                              <span class="text-[9px] text-slate-400 font-black tracking-widest uppercase">Vendor: {e.vendor}</span>
+                          </div>
+                      </td>
+                      <td class="p-8 text-[10px] font-black uppercase text-amber-600 tracking-widest italic leading-none">{e.category}</td>
+                      <td class="p-8 text-sm font-black italic text-slate-900 leading-none">{e.amount}</td>
+                      <td class="p-8">
+                          <span class={`text-[8px] font-black uppercase tracking-[0.2em] px-2 py-1 rounded-full ${e.status === 'Paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                              {e.status}
+                          </span>
+                      </td>
+                      <td class="p-8 text-right">
+                         <button class="bg-white border border-slate-200 text-slate-400 p-2 rounded-xl hover:bg-slate-900 hover:text-white transition-all"><i class="lucide-file-text"></i></button>
+                      </td>
+                  </tr>
+              ))}
+          </tbody>
+      </table>
+  </div>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+</SocietyLedgerLayout>
