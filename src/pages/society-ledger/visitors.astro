@@ -1,0 +1,119 @@
+---
+import SocietyLedgerLayout from "../../layouts/SocietyLedgerLayout.astro";
+
+// Mock Visitor Logs
+const activeVisitors = [
+  { id: "VIS-901", flat: "A-101", name: "Ramesh Delivery", type: "Delivery", entry: "17:15", status: "Visiting" },
+  { id: "VIS-902", flat: "B-205", name: "Suresh Guest", type: "Guest", entry: "16:45", status: "Visiting" }
+];
+
+const pastVisitors = [
+  { id: "VIS-899", flat: "C-301", name: "Home Cleaning", type: "Service", entry: "14:00", exit: "16:30", status: "Exited" },
+  { id: "VIS-898", flat: "A-502", name: "Zomato Agent", type: "Delivery", entry: "15:10", exit: "15:25", status: "Exited" },
+  { id: "VIS-897", flat: "D-102", name: "Plumbing Service", type: "Service", entry: "10:00", exit: "11:45", status: "Exited" }
+];
+---
+
+<SocietyLedgerLayout title="Visitor Gate Control | Society Ledger OS">
+  <div class="flex justify-between items-end mb-10">
+      <div>
+          <h1 class="text-4xl font-black italic tracking-tighter uppercase leading-none mb-2">Gate <span class="text-amber-600">Access Node</span></h1>
+          <p class="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] italic">Real-time visitor tracking and security log management.</p>
+      </div>
+      <button class="bg-emerald-600 text-white px-8 py-4 rounded-3xl text-[10px] font-black uppercase tracking-widest italic shadow-lg shadow-emerald-600/20 hover:scale-105 transition-all">
+          + Check-in New Visitor
+      </button>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12">
+      <!-- Active Visitors -->
+      <div class="lg:col-span-3 space-y-8">
+          <div class="glass-card bg-white border border-slate-200 rounded-[32px] p-8 shadow-sm">
+              <h3 class="text-xs font-black uppercase tracking-[0.3em] italic text-amber-600 mb-8">Currently On-Premise</h3>
+              <div class="space-y-4">
+                  {activeVisitors.map(v => (
+                      <div class="flex items-center justify-between p-6 rounded-3xl bg-amber-50/50 border border-amber-100 hover:bg-amber-100/50 transition-all cursor-pointer group">
+                          <div class="flex items-center gap-6">
+                              <div class="w-12 h-12 rounded-2xl bg-white border border-amber-200 flex items-center justify-center text-xl shadow-sm">{v.type === 'Delivery' ? '📦' : '👤'}</div>
+                              <div class="flex flex-col">
+                                  <span class="text-sm font-black text-slate-900 italic uppercase leading-none mb-1">{v.name}</span>
+                                  <span class="text-[9px] text-slate-400 font-black tracking-widest uppercase">Visiting <strong class="text-amber-600">Flat {v.flat}</strong></span>
+                              </div>
+                          </div>
+                          <div class="flex items-center gap-12">
+                              <div class="flex flex-col items-end">
+                                  <span class="text-[8px] font-black uppercase text-slate-400 tracking-widest leading-none mb-1">Check-in</span>
+                                  <span class="text-xs font-black italic text-slate-900 leading-none">{v.entry}</span>
+                              </div>
+                              <button class="bg-rose-500 text-white px-5 py-2 rounded-xl text-[8px] font-black uppercase tracking-widest italic hover:bg-rose-600 transition-all">
+                                  Exit Gate
+                              </button>
+                          </div>
+                      </div>
+                  ))}
+              </div>
+          </div>
+
+          <div class="glass-card bg-white border border-slate-200 rounded-[32px] p-8 shadow-sm">
+             <h3 class="text-xs font-black uppercase tracking-[0.3em] italic text-slate-400 mb-8">Past Logs (Today)</h3>
+             <div class="space-y-4">
+                 {pastVisitors.map(v => (
+                    <div class="flex items-center justify-between p-4 rounded-2xl border border-slate-50 hover:bg-slate-50 transition-all group">
+                         <div class="flex items-center gap-4 text-xs font-black uppercase tracking-tighter text-slate-400 italic">
+                             <div class="w-2 h-2 rounded-full bg-slate-200"></div>
+                             {v.id}
+                         </div>
+                         <div class="flex-1 px-8 text-sm font-bold text-slate-600 italic uppercase">{v.name} (Flat {v.flat})</div>
+                         <div class="flex items-center gap-8">
+                             <div class="text-[9px] font-black uppercase text-slate-300 tracking-widest leading-none">
+                                 {v.entry} - {v.exit}
+                             </div>
+                             <span class="text-[8px] font-black uppercase tracking-[0.2em] px-2 py-1 rounded bg-slate-100 text-slate-500">EXITED</span>
+                         </div>
+                    </div>
+                 ))}
+             </div>
+          </div>
+      </div>
+
+      <!-- Quick Actions / Live Stream Mock -->
+      <div class="space-y-8">
+          <div class="glass-card bg-slate-900 aspect-video rounded-[32px] overflow-hidden relative group">
+              <div class="absolute inset-0 bg-emerald-500/10 animate-pulse pointer-events-none"></div>
+              <div class="absolute top-4 left-4 bg-rose-500/20 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-2">
+                  <div class="w-2 h-2 bg-rose-500 rounded-full animate-blink"></div>
+                  <span class="text-[10px] font-black text-rose-500 uppercase italic">Main Gate Cam 1</span>
+              </div>
+              <div class="w-full h-full flex items-center justify-center text-white/5 font-black text-2xl uppercase italic tracking-tighter select-none">Live Access Node</div>
+          </div>
+
+          <div class="glass-card bg-white border border-slate-200 rounded-[32px] p-8 space-y-6">
+              <h4 class="text-[9px] font-black uppercase tracking-widest text-slate-400 italic">Gate Command</h4>
+              <button class="w-full py-5 bg-slate-50 border border-slate-100 rounded-3xl text-[9px] font-black uppercase tracking-[0.3em] text-slate-900 hover:bg-slate-100 transition-all italic text-left px-6 relative">
+                 Pre-Approve Guest
+                 <i class="lucide-chevron-right absolute right-6"></i>
+              </button>
+              <button class="w-full py-5 bg-slate-50 border border-slate-100 rounded-3xl text-[9px] font-black uppercase tracking-[0.3em] text-slate-900 hover:bg-slate-100 transition-all italic text-left px-6 relative">
+                 Emergency Broadcast
+                 <i class="lucide-chevron-right absolute right-6"></i>
+              </button>
+              <button class="w-full py-5 bg-white border border-slate-200 rounded-3xl text-[9px] font-black uppercase tracking-[0.3em] text-emerald-600 hover:bg-emerald-50 transition-all italic text-left px-6 relative">
+                 Security Settings
+                 <i class="lucide-settings absolute right-6"></i>
+              </button>
+          </div>
+      </div>
+  </div>
+
+  <style>
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+    }
+    .animate-blink {
+        animation: blink 1s step-end infinite;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+</SocietyLedgerLayout>
