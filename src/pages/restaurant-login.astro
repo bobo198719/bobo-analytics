@@ -4,11 +4,14 @@ import "../styles/restaurant.css";
 ---
 
 <MainLayout title="Restaurant CRM Login | Bobo OS" hideNav={true}>
-  <div class="auth-page bg-[#05081a] min-h-screen flex items-center justify-center p-6 relative font-['Plus_Jakarta_Sans'] text-white">
+  <div class="auth-page min-h-screen flex items-center justify-center p-6 relative font-['Plus_Jakarta_Sans'] text-white" style="background: url('/images/restaurant-bg.png') no-repeat center center; background-size: cover;">
+    <!-- Dark Theme Overlay -->
+    <div class="absolute inset-0 bg-[#05081a]/70 backdrop-blur-[2px] pointer-events-none z-0"></div>
+
     <!-- Ambient Background Lighting -->
-    <div class="absolute inset-0 pointer-events-none overflow-hidden">
-       <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-orange-600/10 rounded-full blur-[120px] -mr-64 -mt-64"></div>
-       <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-rose-600/10 rounded-full blur-[120px] -ml-64 -mb-64"></div>
+    <div class="absolute inset-0 pointer-events-none overflow-hidden z-[1]">
+       <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-orange-600/20 rounded-full blur-[120px] -mr-64 -mt-64"></div>
+       <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-rose-600/20 rounded-full blur-[120px] -ml-64 -mb-64"></div>
     </div>
 
     <!-- Login Card -->
