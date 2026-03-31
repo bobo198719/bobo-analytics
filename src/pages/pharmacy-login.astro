@@ -1,182 +1,413 @@
 ---
-import MainLayout from "../layouts/MainLayout.astro";
+// Bobo Analytics Pharmacy Login 
 ---
 
-<MainLayout title="Pharmacy Login | Bobo Analytics">
-  <section class="login-wrapper">
-    <div class="login-container">
-      <div class="login-header">
-        <div class="icon-circle">💊</div>
-        <h1>Pharmacy Login</h1>
-        <p>Access your secure dashboard and manage your inventory with AI.</p>
-      </div>
-
-      <form id="loginForm" class="login-form">
-        <div class="form-group">
-          <label for="pharmacyId">Pharmacy ID</label>
-          <input 
-            type="text" 
-            id="pharmacyId" 
-            placeholder="Enter your ID"
-            required
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input 
-            type="password" 
-            id="password" 
-            placeholder="••••••••"
-            required
-          />
-        </div>
-
-        <button type="submit" class="btn-login">
-          Sign In
-        </button>
-        
-        <p id="error" class="error-msg"></p>
-      </form>
-
-      <div class="login-footer">
-        <p>Don't have an account? <a href="/signup">Contact Sales</a></p>
-      </div>
-    </div>
-  </section>
-
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pharmacy Login | Bobo Analytics</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
-    .login-wrapper {
-      min-height: 80vh;
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --text-dark: #1e293b;
+      --text-gray: #64748b;
+      --bg-input: #f8fafc;
+      --border: #e2e8f0;
+      /* Visual side variables */
+      --vis-bg: #e0e7ff;
+      --vis-shape: #c7d2fe;
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      background: #fff;
+    }
+    * { box-sizing: border-box; }
+
+    .split-layout {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 60px 24px;
-      background: radial-gradient(circle at center, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
+      min-height: 100vh;
+      width: 100vw;
     }
 
-    .login-container {
-      width: 100%;
-      max-width: 440px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 24px;
-      padding: 40px;
-      backdrop-filter: blur(10px);
-    }
-
-    .login-header {
-      text-align: center;
-      margin-bottom: 32px;
-    }
-
-    .icon-circle {
-      width: 64px;
-      height: 64px;
-      background: rgba(99, 102, 241, 0.1);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      margin: 0 auto 20px;
-      border: 1px solid rgba(99, 102, 241, 0.2);
-    }
-
-    .login-header h1 {
-      font-size: 2rem;
-      margin-bottom: 8px;
-    }
-
-    .login-header p {
-      color: rgba(255, 255, 255, 0.5);
-      font-size: 0.95rem;
-    }
-
-    .login-form {
+    /* --- FORM SIDE --- */
+    .form-side {
+      flex: 0.45;
+      padding: 80px 10%;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      justify-content: center;
+      position: relative;
+      background: #fff;
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 40px;
+      left: 40px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-gray);
+      text-decoration: none;
+      transition: 0.2s;
+    }
+    .back-btn:hover {
+      background: var(--bg-input);
+      color: var(--text-dark);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--primary);
+      margin-bottom: 60px;
+    }
+    .brand svg { width: 24px; height: 24px; }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--text-dark);
+      margin: 0 0 10px 0;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      color: var(--text-gray);
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: 40px;
     }
 
     .form-group {
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .input-wrapper {
       display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .form-group label {
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: rgba(255, 255, 255, 0.8);
-    }
-
-    .form-group input {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      align-items: center;
+      border: 2px solid var(--border);
+      border-radius: 12px;
       padding: 12px 16px;
-      border-radius: 10px;
-      color: white;
-      font-size: 1rem;
+      background: #fff;
       transition: all 0.2s ease;
     }
-
-    .form-group input:focus {
-      outline: none;
-      border-color: #6366f1;
-      background: rgba(255, 255, 255, 0.08);
-      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    .input-wrapper.focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
     }
+    
+    .input-wrapper svg {
+      color: var(--text-gray);
+      width: 20px;
+      height: 20px;
+      margin-right: 12px;
+    }
+    
+    .input-wrapper input {
+      border: none;
+      outline: none;
+      width: 100%;
+      font-size: 1rem;
+      color: var(--text-dark);
+      font-family: inherit;
+      background: transparent;
+    }
+    .input-wrapper input::placeholder {
+      color: #94a3b8;
+    }
+
+    .forgot-pass {
+      display: block;
+      text-align: right;
+      color: var(--primary);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      margin-top: 10px;
+    }
+    .forgot-pass:hover { text-decoration: underline; }
 
     .btn-login {
-      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-      color: white;
-      padding: 14px;
+      width: 100%;
+      background: var(--primary);
+      color: #fff;
       border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 600;
+      padding: 16px;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 700;
       cursor: pointer;
       margin-top: 10px;
-      transition: all 0.2s ease;
+      transition: 0.3s;
+      box-shadow: 0 10px 25px rgba(79, 70, 229, 0.25);
     }
-
     .btn-login:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px rgba(79, 70, 229, 0.35);
     }
 
     .error-msg {
       color: #ef4444;
       font-size: 0.9rem;
       text-align: center;
+      margin-top: 15px;
       min-height: 20px;
-    }
-
-    .login-footer {
-      margin-top: 32px;
-      text-align: center;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      padding-top: 24px;
-    }
-
-    .login-footer p {
-      color: rgba(255, 255, 255, 0.5);
-      font-size: 0.9rem;
-    }
-
-    .login-footer a {
-      color: #6366f1;
-      text-decoration: none;
       font-weight: 500;
     }
 
-    .login-footer a:hover {
+    .register-prompt {
+      margin-top: 50px;
+      text-align: center;
+      color: var(--text-gray);
+      font-size: 0.95rem;
+    }
+    .register-prompt a {
+      color: var(--primary);
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .register-prompt a:hover {
       text-decoration: underline;
     }
-  </style>
 
-  <script>
+    /* --- VISUAL SIDE --- */
+    .visual-side {
+      flex: 0.55;
+      background: var(--vis-bg);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Creating a custom wavy/curved look on the left edge of visual side */
+    .wave-edge {
+      position: absolute;
+      top: 0;
+      left: -2px;
+      width: 150px;
+      height: 100%;
+      fill: #fff;
+      z-index: 5;
+    }
+
+    /* Abstract background blobs */
+    .blob-1 {
+      position: absolute;
+      top: -10%;
+      right: -10%;
+      width: 600px;
+      height: 600px;
+      background: var(--vis-shape);
+      border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+      opacity: 0.6;
+      animation: morph 15s ease-in-out infinite;
+    }
+    .blob-2 {
+      position: absolute;
+      bottom: -20%;
+      left: 10%;
+      width: 500px;
+      height: 500px;
+      background: #93c5fd;
+      border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+      opacity: 0.7;
+      animation: morph 12s ease-in-out infinite reverse;
+    }
+
+    @keyframes morph {
+      0%, 100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; transform: scale(1); }
+      34% { border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%; transform: scale(1.05); }
+      67% { border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%; transform: scale(0.95); }
+    }
+
+    /* Stylized Illustration Container */
+    .illustration-frame {
+      position: relative;
+      z-index: 10;
+      width: 80%;
+      max-width: 600px;
+      height: 60%;
+      background: rgba(255,255,255,0.4);
+      border: 1px solid rgba(255,255,255,0.6);
+      backdrop-filter: blur(10px);
+      border-radius: 30px;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.05);
+    }
+    
+    .window-header {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot.red { background: #fca5a5; }
+    .dot.yellow { background: #fde047; }
+    .dot.green { background: #86efac; }
+
+    /* Abstract Pharmacy shelves inside */
+    .shelves { flex: 1; display: flex; flex-direction: column; gap: 30px; margin-top: 20px;}
+    .shelf { height: 12px; background: rgba(255,255,255,0.7); border-radius: 6px; position:relative; }
+    .box { position: absolute; bottom: 12px; background: var(--primary); border-radius: 4px; opacity:0.8; }
+    .b1 { left: 10%; width: 40px; height: 50px; }
+    .b2 { left: 25%; width: 30px; height: 40px; background: #60a5fa; }
+    .b3 { left: 45%; width: 60px; height: 45px; background: #a78bfa; }
+    .b4 { right: 20%; width: 35px; height: 60px; }
+    .b5 { right: 5%; width: 50px; height: 35px; background: #818cf8; }
+
+    /* The central pharmacist counter abstract */
+    .counter-block {
+      background: #ffffff;
+      height: 120px;
+      border-radius: 20px;
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 -10px 30px rgba(0,0,0,0.03);
+      position: relative;
+    }
+    .red-cross {
+      color: #3b82f6; /* using blue instead of red to fit the theme */
+      font-size: 4rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .pill-accent {
+      position: absolute;
+      top: -30px;
+      right: 40px;
+      width: 50px;
+      height: 25px;
+      background: #fb923c;
+      border-radius: 20px;
+      transform: rotate(30deg);
+      box-shadow: 0 10px 20px rgba(251, 146, 60, 0.4);
+    }
+
+    @media (max-width: 900px) {
+      .visual-side { display: none; }
+      .form-side { flex: 1; padding: 60px 5%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="split-layout">
+    <!-- LEFT PANEL: FORM -->
+    <div class="form-side">
+      <a href="/" class="back-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </a>
+
+      <div class="brand">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Bobo Analytics
+      </div>
+
+      <h1>Login</h1>
+      <div class="subtitle">Welcome to Pharmacist Platform</div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <div class="input-wrapper" id="wrap-id">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <input 
+              type="text" 
+              id="pharmacyId" 
+              placeholder="Username or email"
+              required
+              onfocus="document.getElementById('wrap-id').classList.add('focus')"
+              onblur="document.getElementById('wrap-id').classList.remove('focus')"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="input-wrapper" id="wrap-pass">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input 
+              type="password" 
+              id="password" 
+              placeholder="password"
+              required
+              onfocus="document.getElementById('wrap-pass').classList.add('focus')"
+              onblur="document.getElementById('wrap-pass').classList.remove('focus')"
+            />
+          </div>
+          <a href="#" class="forgot-pass" onclick="alert('Please contact Bobo Admin to reset your password.')">Forgot?</a>
+        </div>
+
+        <button type="submit" class="btn-login">Login</button>
+        <div id="error" class="error-msg"></div>
+      </form>
+
+      <div class="register-prompt">
+        Don't have an account? <a href="/pharmacy-signup">Register here</a>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: VISUAL -->
+    <div class="visual-side">
+      <!-- Wavy Edge transition -->
+      <svg class="wave-edge" viewBox="0 0 100 1000" preserveAspectRatio="none">
+        <path d="M0,0 C80,250 80,750 0,1000 Z" />
+      </svg>
+
+      <div class="blob-1"></div>
+      <div class="blob-2"></div>
+
+      <div class="illustration-frame">
+        <div class="window-header">
+          <div class="dot red"></div>
+          <div class="dot yellow"></div>
+          <div class="dot green"></div>
+        </div>
+        
+        <div class="shelves">
+          <div class="shelf">
+            <div class="box b1"></div>
+            <div class="box b2"></div>
+            <div class="box b3"></div>
+          </div>
+          <div class="shelf">
+            <div class="box b4"></div>
+            <div class="box b5"></div>
+            <div class="box b1" style="left:50%; width: 20px; background:var(--primary-hover);"></div>
+            <div class="box b2" style="left:70%; height: 50px;"></div>
+          </div>
+        </div>
+
+        <div class="counter-block">
+          <div class="pill-accent"></div>
+          <div class="red-cross">+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
     const form = document.getElementById("loginForm");
     const errorEl = document.getElementById("error");
 
@@ -244,4 +475,5 @@ import MainLayout from "../layouts/MainLayout.astro";
       }
     });
   </script>
-</MainLayout>
+</body>
+</html>
