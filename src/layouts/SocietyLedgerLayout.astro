@@ -10,13 +10,13 @@ const { title } = Astro.props;
     <link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css">
     <style is:global>
         :root {
-            --bg-dark: #dbeafe; /* Soft Premium Blue */
-            --sidebar-bg: #eff6ff;
+            --bg-dark: #ffffff; /* Absolute White */
+            --sidebar-bg: #f8fafc;
             --glass-card: #ffffff;
-            --border: rgba(0, 0, 0, 0.1);
-            --primary: #d97706; /* Richer Amber */
+            --border: #000000;
+            --primary: #d97706; 
             --secondary: #f59e0b;
-            --text-muted: #1e293b; /* Darker Slate for readability */
+            --text-muted: #000000;
             --success: #059669;
             --error: #dc2626;
             --warning: #d97706;
@@ -26,7 +26,7 @@ const { title } = Astro.props;
         body {
             margin: 0;
             background: var(--bg-dark);
-            color: #000000; /* Pure Black Text */
+            color: #000000 !important; /* Force Black */
             font-family: 'Plus Jakarta Sans', sans-serif;
             overflow-x: hidden;
         }
@@ -40,7 +40,7 @@ const { title } = Astro.props;
         /* Sidebar Styling */
         .ledger-sidebar {
             background: var(--sidebar-bg);
-            border-right: 1px solid var(--border);
+            border-right: 2px solid #000000;
             padding: 30px 20px;
             display: flex;
             flex-direction: column;
@@ -115,9 +115,9 @@ const { title } = Astro.props;
         }
 
         .nav-item.active {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--primary);
-            border-right: 3px solid var(--primary);
+            background: #000000;
+            color: #ffffff;
+            border-right: none;
         }
 
         /* Main Content */
@@ -129,10 +129,9 @@ const { title } = Astro.props;
         }
 
         .glass-card {
-            background: var(--glass-card);
-            border: 1px solid var(--border);
+            background: #ffffff;
+            border: 2px solid #000000;
             border-radius: 24px;
-            backdrop-filter: blur(10px);
         }
 
         /* Top Header Area */
