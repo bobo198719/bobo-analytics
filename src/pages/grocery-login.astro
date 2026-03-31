@@ -1,144 +1,75 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
+import "../styles/restaurant.css";
 ---
 
-<MainLayout title="Grocery OS Login | Bobo Analytics">
-  <div class="auth-page">
-    <div class="login-card">
-      <div class="brand">
-        <div class="logo-orb">🍎</div>
-        <h1>Bobo Grocery OS</h1>
-        <p>SaaS Supermarket Management</p>
-      </div>
+<MainLayout title="Grocery OS Login | Bobo Analytics" hideNav={true}>
+  <div class="auth-page min-h-screen flex items-center justify-center p-6 relative font-['Plus_Jakarta_Sans'] text-white" style="background: url('/images/grocery-bg.png') no-repeat center center; background-size: cover;">
+    
+    <!-- Dark Theme Overlay -->
+    <div class="absolute inset-0 bg-[#05081a]/75 backdrop-blur-[2px] pointer-events-none z-[0]"></div>
+    
+    <!-- Ambient Background Lighting -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden z-[1]">
+       <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-600/20 rounded-full blur-[120px] -mr-64 -mt-64"></div>
+       <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-green-400/10 rounded-full blur-[120px] -ml-64 -mb-64"></div>
+    </div>
 
-      <div class="auth-status" id="auth-status"></div>
+    <!-- Login Card -->
+    <div class="login-card max-w-lg w-full bg-white/5 border border-white/10 p-12 md:p-16 rounded-[64px] shadow-2xl backdrop-blur-3xl relative z-10 group transition-all hover:bg-white/[0.08] hover:border-emerald-500/30 overflow-hidden">
+       <!-- Glow Element -->
+       <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 blur-[60px] -z-10 group-hover:bg-emerald-500/20 transition-all"></div>
+       
+       <div class="text-center mb-12">
+          <div class="w-24 h-24 bg-gradient-to-br from-emerald-400 to-green-600 rounded-3xl flex items-center justify-center text-5xl mx-auto mb-8 shadow-2xl shadow-emerald-500/30 group-hover:scale-110 group-hover:rotate-3 transition-transform italic border border-white/10">B</div>
+          <h1 class="text-3xl md:text-4xl font-black italic text-white uppercase tracking-tighter leading-none">Grocery <br /><span class="bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent">Intelligence</span></h1>
+          <p class="text-white/40 text-[10px] font-black uppercase tracking-[0.4em] mt-4 italic">Provisioned Node v8.4.1 | Secure Cloud</p>
+       </div>
 
-      <form class="auth-form" id="loginForm">
-        <div class="input-group">
-          <label>Store ID / Terminal ID</label>
-          <input type="text" id="storeId" placeholder="e.g. MAIN-STREET-01" required />
-        </div>
-        <div class="input-group">
-          <label>Operator Key</label>
-          <input type="password" id="password" placeholder="••••••••" required />
-        </div>
+       <form id="loginForm" class="space-y-8">
+          <div class="space-y-3">
+             <label class="text-[10px] font-black uppercase text-white/30 tracking-[0.2em] ml-4 italic">Store ID / Terminal ID</label>
+             <div class="relative">
+                <i class="lucide-layout absolute left-5 top-1/2 -translate-y-1/2 text-white/20 text-xs"></i>
+                <input type="text" id="storeId" placeholder="MAIN-STORE-01" required class="w-full bg-white/5 border border-white/10 p-5 pl-12 rounded-2xl outline-none focus:border-emerald-400 transition-all font-black text-xs uppercase" />
+             </div>
+          </div>
+          <div class="space-y-3">
+             <label class="text-[10px] font-black uppercase text-white/30 tracking-[0.2em] ml-4 italic">Operator Key</label>
+             <div class="relative">
+                <i class="lucide-lock absolute left-5 top-1/2 -translate-y-1/2 text-white/20 text-xs"></i>
+                <input type="password" id="password" placeholder="••••••••" required class="w-full bg-white/5 border border-white/10 p-5 pl-12 rounded-2xl outline-none focus:border-emerald-400 transition-all font-black text-xs" />
+             </div>
+          </div>
 
-        <button type="submit" class="auth-btn">
-          Launch Grocery OS
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-        </button>
-      </form>
+          <div id="auth-status" class="text-rose-500 text-[10px] font-black uppercase tracking-widest text-center min-h-[1rem] italic"></div>
 
-      <div class="auth-footer">
-          <div class="support-links">
-            <a href="#">Operator Support</a>
-            <span class="sep">•</span>
-            <a href="/signup">Setup New Store</a>
-        </div>
-      </div>
+          <button type="submit" class="w-full py-6 bg-gradient-to-r from-emerald-500 to-green-600 rounded-3xl text-white font-black italic uppercase tracking-[0.3em] text-xs shadow-2xl shadow-emerald-600/30 hover:scale-[1.03] active:scale-95 transition-all">
+             Launch Grocery OS
+          </button>
+       </form>
+
+       <footer class="mt-12 text-center">
+          <a href="/crm-login" class="text-white/10 hover:text-white font-black text-[8px] transition-colors italic uppercase tracking-[0.4em]">Abort Secure Handshake</a>
+       </footer>
     </div>
   </div>
 
-  <style>
-    .auth-page {
-      min-height: 90vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(circle at top left, rgba(16, 185, 129, 0.1), transparent),
-                  radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.1), transparent);
-    }
+  <style is:global>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap');
+    
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #05081a; margin: 0; }
 
-    .login-card {
-      width: 100%;
-      max-width: 420px;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 32px;
-      padding: 48px;
-      backdrop-filter: blur(20px);
-      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
-    }
-
-    .brand {
-      text-align: center;
-      margin-bottom: 40px;
-    }
-
-    .logo-orb {
-      width: 72px;
-      height: 72px;
-      background: linear-gradient(135deg, #10b981, #059669);
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.2rem;
-      margin: 0 auto 24px;
-      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
-    }
-
-    .brand h1 { font-size: 1.75rem; font-weight: 800; }
-    .brand p { color: rgba(255, 255, 255, 0.5); font-size: 0.9rem; margin-top: 4px; }
-
-    .auth-form {
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .input-group label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: rgba(255, 255, 255, 0.8);
-    }
-
-    .input-group input {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 14px 18px;
-      border-radius: 14px;
-      color: white;
-    }
-
-    .auth-btn {
-      background: #10b981;
-      color: white;
-      border: none;
-      padding: 16px;
-      border-radius: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-    }
-
-    .auth-footer {
-      margin-top: 40px;
-      text-align: center;
-      font-size: 0.85rem;
-    }
-
-    .support-links a { color: #10b981; text-decoration: none; }
-    .sep { color: rgba(255, 255, 255, 0.1); margin: 0 8px; }
-
-    .error-msg {
-      background: rgba(239, 68, 68, 0.1);
-      color: #ef4444;
-      padding: 12px;
-      border-radius: 10px;
-      font-size: 0.85rem;
-      margin-bottom: 24px;
+    .shake { animation: shake 0.4s ease; }
+    @keyframes shake {
+       0%, 100% { transform: translateX(0); }
+       25% { transform: translateX(-8px); }
+       75% { transform: translateX(8px); }
     }
   </style>
+
+  <!-- Lucide Icon Support -->
+  <link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css">
 
   <script is:inline>
     const loginForm = document.getElementById('loginForm');
@@ -149,7 +80,8 @@ import MainLayout from "../layouts/MainLayout.astro";
       const storeId = document.getElementById('storeId').value;
       const pass = document.getElementById('password').value;
       
-      authStatus.innerHTML = '<div class="text-xs text-white/50 text-center mb-4 italic animate-pulse tracking-widest uppercase font-black">Validating Terminal...</div>';
+      authStatus.style.color = "#10b981"; // green
+      authStatus.innerHTML = 'Validating Terminal...';
 
       try {
         const res = await fetch("/api/auth/login", {
@@ -158,14 +90,19 @@ import MainLayout from "../layouts/MainLayout.astro";
           body: JSON.stringify({ username: storeId, password: pass, industry: 'Grocery' })
         });
         const data = await res.json();
+        
         if (res.ok) {
           localStorage.setItem('user', JSON.stringify(data.user));
           window.location.href = '/grocery-os';
         } else {
-          authStatus.innerHTML = `<div class="error-msg">${data.message || 'Invalid Terminal ID or Key.'}</div>`;
+          authStatus.style.color = "#f43f5e"; // rose
+          authStatus.innerHTML = data.message || 'Invalid Terminal ID or Key.';
+          loginForm.classList.add('shake');
+          setTimeout(() => loginForm.classList.remove('shake'), 400);
         }
       } catch (err) {
-        authStatus.innerHTML = '<div class="error-msg">Connection failed. Check terminal uplink.</div>';
+        authStatus.style.color = "#f43f5e";
+        authStatus.innerHTML = 'Connection failed. Check terminal uplink.';
       }
     });
   </script>
