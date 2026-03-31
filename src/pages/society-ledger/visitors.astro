@@ -83,27 +83,33 @@ const pastVisitors = [
 
       <!-- Quick Actions / Live Stream Mock -->
       <div class="space-y-8">
-          <div class="glass-card bg-slate-900 aspect-video rounded-[32px] overflow-hidden relative group">
-              <div class="absolute inset-0 bg-emerald-500/10 animate-pulse pointer-events-none"></div>
-              <div class="absolute top-4 left-4 bg-rose-500/20 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-2">
-                  <div class="w-2 h-2 bg-rose-500 rounded-full animate-blink"></div>
-                  <span class="text-[10px] font-black text-rose-500 uppercase italic">Main Gate Cam 1</span>
+          <div class="glass-card bg-black aspect-video rounded-[32px] overflow-hidden relative border-2 border-black group">
+              <div class="absolute inset-0 bg-emerald-500/5 animate-pulse pointer-events-none"></div>
+              <div class="absolute top-4 left-4 bg-rose-600 px-3 py-1.5 rounded-xl flex items-center gap-2 z-20 border border-white/20">
+                  <div class="w-2 h-2 bg-white rounded-full animate-blink"></div>
+                  <span class="text-[10px] font-black text-white uppercase italic tracking-widest">Main Gate Cam 1</span>
               </div>
-              <div class="w-full h-full flex items-center justify-center text-white/5 font-black text-2xl uppercase italic tracking-tighter select-none">Live Access Node</div>
+              <div class="w-full h-full flex flex-col items-center justify-center relative">
+                  <span class="text-[10px] font-black text-emerald-500/40 uppercase tracking-[0.5em] mb-2 z-10">Secure Stream Active</span>
+                  <div class="text-white/20 font-black text-2xl uppercase italic tracking-tighter select-none z-10">Live Access Node</div>
+                  <div class="absolute inset-0 flex items-center justify-center opacity-10">
+                      <i class="lucide-aperture text-white text-6xl animate-spin-slow"></i>
+                  </div>
+              </div>
           </div>
 
-          <div class="glass-card bg-white border border-slate-200 rounded-[32px] p-8 space-y-6">
-              <h4 class="text-[9px] font-black uppercase tracking-widest text-slate-400 italic">Gate Command</h4>
-              <button class="w-full py-5 bg-slate-50 border border-slate-100 rounded-3xl text-[9px] font-black uppercase tracking-[0.3em] text-slate-900 hover:bg-slate-100 transition-all italic text-left px-6 relative">
-                 Pre-Approve Guest
-                 <i class="lucide-chevron-right absolute right-6"></i>
+          <div class="glass-card bg-white border-2 border-black rounded-[32px] p-8 space-y-6 shadow-sm">
+              <h4 class="text-[9px] font-black uppercase tracking-widest text-black italic">Gate Security Command</h4>
+              <button class="w-full py-5 bg-white border-2 border-black rounded-3xl text-[9px] font-black uppercase tracking-[0.3em] text-black hover:bg-emerald-50 transition-all italic text-left px-6 relative overflow-hidden group">
+                 <span class="relative z-10">Pre-Approve Guest Node</span>
+                 <i class="lucide-check-circle absolute right-6 text-emerald-500 group-hover:scale-110 transition-transform"></i>
               </button>
-              <button class="w-full py-5 bg-slate-50 border border-slate-100 rounded-3xl text-[9px] font-black uppercase tracking-[0.3em] text-slate-900 hover:bg-slate-100 transition-all italic text-left px-6 relative">
-                 Emergency Broadcast
-                 <i class="lucide-chevron-right absolute right-6"></i>
+              <button class="w-full py-5 bg-white border-2 border-black rounded-3xl text-[9px] font-black uppercase tracking-[0.3em] text-black hover:bg-rose-50 transition-all italic text-left px-6 relative overflow-hidden group">
+                 <span class="relative z-10">Emergency Broadcast Node</span>
+                 <i class="lucide-alert-triangle absolute right-6 text-rose-500 group-hover:scale-110 transition-transform"></i>
               </button>
-              <button class="w-full py-5 bg-white border border-slate-200 rounded-3xl text-[9px] font-black uppercase tracking-[0.3em] text-emerald-600 hover:bg-emerald-50 transition-all italic text-left px-6 relative">
-                 Security Settings
+              <button class="w-full py-5 bg-black text-white rounded-3xl text-[9px] font-black uppercase tracking-[0.3em] hover:bg-emerald-600 transition-all italic text-left px-6 relative border-2 border-black">
+                 Security Hub Settings
                  <i class="lucide-settings absolute right-6"></i>
               </button>
           </div>
