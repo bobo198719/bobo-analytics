@@ -66,7 +66,7 @@ const topProducts = [
 
   <div class="main-visual-grid">
       <!-- Sales Trend Chart -->
-      <div class="chart-panel glass-card">
+      <div class="chart-panel glass-card relative overflow-hidden">
           <div class="panel-header">
               <h3>Hourly Sales Velocity</h3>
               <div class="chart-controls">
@@ -77,12 +77,37 @@ const topProducts = [
           <div class="bar-chart-container">
               {Array.from({length: 12}).map((_, i) => (
                   <div class="bar-wrapper">
-                      <div class="bar-fill" style={`height: ${Math.floor(Math.random() * 80) + 20}%`}>
-                          <div class="bar-tooltip">₹{Math.floor(Math.random() * 5000) + 1000}</div>
+                      <div class="bar-fill cursor-pointer group" data-hour={`${8 + i}:00`} data-total={`₹${Math.floor(Math.random() * 5000) + 1000}`} style={`height: ${Math.floor(Math.random() * 80) + 20}%`}>
+                          <div class="bar-tooltip italic font-black uppercase text-[8px] tracking-tighter">View Items</div>
                       </div>
-                      <span class="bar-label">{8 + i}am</span>
+                      <span class="bar-label">{8 + i}{8+i >= 12 ? 'pm' : 'am'}</span>
                   </div>
               ))}
+          </div>
+
+          <!-- Slide-in Item Breakdown Modal -->
+          <div id="hourlyModal" class="absolute inset-y-0 right-0 w-full md:w-80 bg-[#05081a]/95 backdrop-blur-2xl border-l border-white/10 p-8 transform translate-x-full transition-transform duration-500 z-50 shadow-[-20px_0_40px_rgba(0,0,0,0.5)]">
+             <div class="flex justify-between items-center mb-8">
+                <h4 class="text-xs font-black uppercase tracking-[0.2em] text-emerald-400 italic">Node Analysis</h4>
+                <button id="closeModal" class="text-white/30 hover:text-white transition-colors"><i class="lucide-x-circle"></i></button>
+             </div>
+             
+             <div class="mb-12">
+                <div class="text-[10px] text-white/30 uppercase font-black tracking-widest mb-1 italic">Time Segment</div>
+                <div id="modalHour" class="text-3xl font-black italic tracking-tighter uppercase leading-none">08:00 AM</div>
+             </div>
+
+             <div class="space-y-6">
+                <div class="text-[10px] text-white/30 uppercase font-black tracking-widest mb-4 italic">Sold Inventory</div>
+                <div id="modalItems" class="space-y-4">
+                   <!-- Items will be injected here -->
+                </div>
+             </div>
+
+             <div class="absolute bottom-8 left-8 right-8 p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
+                 <div class="text-[8px] text-emerald-400 font-black uppercase tracking-widest mb-1">Segment Total</div>
+                 <div id="modalTotal" class="text-xl font-black italic text-white tracking-tighter uppercase leading-none">₹0.00</div>
+             </div>
           </div>
       </div>
 
@@ -643,5 +668,56 @@ const topProducts = [
             }, 400);
         }
     }
+
+    // Hourly Breakdown Logic
+    const bars = document.querySelectorAll('.bar-fill');
+    const modal = document.getElementById('hourlyModal');
+    const closeModal = document.getElementById('closeModal');
+    const modalHour = document.getElementById('modalHour');
+    const modalTotal = document.getElementById('modalTotal');
+    const modalItems = document.getElementById('modalItems');
+
+    const mockHourlyItems = [
+        { name: "Full Cream Milk 1L", count: 12, price: "₹65" },
+        { name: "Sourdough Loaf", count: 4, price: "₹120" },
+        { name: "Brown Eggs (12)", count: 7, price: "₹110" },
+        { name: "Organic Butter", count: 2, price: "₹450" }
+    ];
+
+    bars.forEach(bar => {
+        bar.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const hour = bar.getAttribute('data-hour');
+            const total = bar.getAttribute('data-total');
+            
+            modalHour.innerText = `${hour} Segment`;
+            modalTotal.innerText = total;
+
+            modalItems.innerHTML = mockHourlyItems.map(item => `
+                <div class="flex items-center justify-between p-4 rounded-xl hover:bg-white/5 transition-colors border border-white/5">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] font-black italic uppercase text-white/80">${item.name}</span>
+                        <span class="text-[8px] text-white/30 font-black uppercase tracking-widest">${item.count} units sold</span>
+                    </div>
+                    <span class="text-[10px] font-black italic text-emerald-400">${item.price}</span>
+                </div>
+            `).join('');
+
+            modal.classList.remove('translate-x-full');
+        });
+    });
+
+    if (closeModal) {
+        closeModal.addEventListener('click', () => {
+            modal.classList.add('translate-x-full');
+        });
+    }
+
+    // Close on click outside
+    document.addEventListener('click', (e) => {
+        if (modal && !modal.contains(e.target)) {
+            modal.classList.add('translate-x-full');
+        }
+    });
   </script>
 </GroceryOSLayout>
