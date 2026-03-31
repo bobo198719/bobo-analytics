@@ -10,13 +10,13 @@ const { title } = Astro.props;
     <link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css">
     <style is:global>
         :root {
-            --bg-dark: #020617;
-            --sidebar-bg: #03081a;
-            --glass-card: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.08);
-            --primary: #f59e0b; /* Amber */
-            --secondary: #fbbf24;
-            --text-muted: rgba(255, 255, 255, 0.4);
+            --bg-dark: #f8fafc; /* Light Slate */
+            --sidebar-bg: #ffffff;
+            --glass-card: #ffffff;
+            --border: rgba(0, 0, 0, 0.08);
+            --primary: #d97706; /* Richer Amber for light mode */
+            --secondary: #f59e0b;
+            --text-muted: #64748b;
             --success: #10b981;
             --error: #f43f5e;
             --warning: #f59e0b;
@@ -26,7 +26,7 @@ const { title } = Astro.props;
         body {
             margin: 0;
             background: var(--bg-dark);
-            color: white;
+            color: #0f172a; /* Dark Slate Text */
             font-family: 'Plus Jakarta Sans', sans-serif;
             overflow-x: hidden;
         }
@@ -158,24 +158,33 @@ const { title } = Astro.props;
 
         .search-container input {
             width: 100%;
-            background: rgba(255, 255, 255, 0.05);
+            background: #ffffff;
             border: 1px solid var(--border);
             padding: 12px 16px 12px 48px;
             border-radius: 12px;
-            color: white;
+            color: #0f172a;
             outline: none;
             transition: 0.3s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
         .search-container input:focus {
             border-color: var(--primary);
-            background: rgba(245, 158, 11, 0.03);
+            background: #ffffff;
         }
 
         .user-profile-nav {
             display: flex;
             align-items: center;
             gap: 16px;
+        }
+
+        .user-info-text {
+            color: #0f172a;
+        }
+
+        .user-info-sub {
+            color: var(--text-muted);
         }
 
         .p-avatar {
@@ -227,11 +236,11 @@ const { title } = Astro.props;
                     <input type="text" placeholder="Search flats, residents, or bills (F1)...">
                 </div>
                 <div class="user-profile-nav">
-                    <i class="lucide-bell text-white/30 cursor-pointer"></i>
+                    <i class="lucide-bell text-slate-400 cursor-pointer"></i>
                     <div class="p-avatar">SA</div>
                     <div class="hidden md:block">
-                        <div class="text-[11px] font-black uppercase text-white leading-none">Society Admin</div>
-                        <div class="text-[9px] font-black uppercase text-white/30 tracking-widest mt-1">Prime Tower A</div>
+                        <div class="text-[11px] font-black uppercase text-slate-900 leading-none">Society Admin</div>
+                        <div class="text-[9px] font-black uppercase text-slate-400 tracking-widest mt-1">Prime Tower A</div>
                     </div>
                 </div>
             </header>

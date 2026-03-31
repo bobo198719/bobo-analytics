@@ -22,8 +22,8 @@ const pendingBills = [
 <SocietyLedgerLayout title="Dashboard | Society Ledger OS">
   <div class="dashboard-header-flex">
       <div>
-          <h1 class="text-4xl font-black italic tracking-tighter uppercase leading-none mb-2">Prime <span class="text-amber-500">Ledger Intelligence</span></h1>
-          <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.2em] italic">Real-time asset management for Prime Tower A branch.</p>
+          <h1 class="text-4xl font-black italic tracking-tighter uppercase leading-none mb-2">Prime <span class="text-amber-600">Ledger Intelligence</span></h1>
+          <p class="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] italic">Real-time asset management for Prime Tower A branch.</p>
       </div>
       <div class="time-range-picker flex gap-2">
           <button class="range-btn active">Today</button>
@@ -34,16 +34,16 @@ const pendingBills = [
 
   <div class="stats-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 my-10">
       {stats.map(stat => (
-          <div class="stat-card glass-card p-6 flex flex-col gap-4 border border-white/5 hover:border-amber-500/30 transition-all cursor-pointer group">
+          <div class="stat-card glass-card p-6 flex flex-col gap-4 border border-slate-200 shadow-sm hover:border-amber-500/30 transition-all cursor-pointer group bg-white">
               <div class="flex justify-between items-center">
-                  <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl bg-white/5 border border-white/5 group-hover:scale-110 transition-transform" style={`color: ${stat.color}`}>
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl bg-slate-50 border border-slate-100 group-hover:scale-110 transition-transform" style={`color: ${stat.color}`}>
                       {stat.icon}
                   </div>
-                  <span class="text-[9px] font-black uppercase text-white/30 tracking-widest">{stat.sub}</span>
+                  <span class="text-[9px] font-black uppercase text-slate-400 tracking-widest">{stat.sub}</span>
               </div>
               <div class="flex flex-col">
-                  <span class="text-[10px] font-black text-white/40 uppercase tracking-widest leading-none mb-1">{stat.label}</span>
-                  <span class="text-2xl font-black italic tracking-tighter text-white leading-none">{stat.value}</span>
+                  <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">{stat.label}</span>
+                  <span class="text-2xl font-black italic tracking-tighter text-slate-900 leading-none">{stat.value}</span>
               </div>
           </div>
       ))}
@@ -51,55 +51,55 @@ const pendingBills = [
 
   <div class="main-visual-grid grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
       <!-- Maintenance Tracking Chart (Visual Mock) -->
-      <div class="chart-panel glass-card lg:col-span-2 p-8 relative overflow-hidden">
+      <div class="chart-panel glass-card lg:col-span-2 p-8 relative overflow-hidden bg-white border-slate-200 shadow-sm">
           <div class="flex justify-between items-center mb-10">
-              <h3 class="text-xs font-black uppercase tracking-[0.3em] italic text-amber-500">Collection Velocity</h3>
+              <h3 class="text-xs font-black uppercase tracking-[0.3em] italic text-amber-600">Collection Velocity</h3>
               <div class="flex items-center gap-4">
-                  <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-[8px] font-black uppercase text-white/30 tracking-widest">Paid</span></div>
-                  <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-rose-500"></span><span class="text-[8px] font-black uppercase text-white/30 tracking-widest">Unpaid</span></div>
+                  <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-[8px] font-black uppercase text-slate-400 tracking-widest">Paid</span></div>
+                  <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-rose-500"></span><span class="text-[8px] font-black uppercase text-slate-400 tracking-widest">Unpaid</span></div>
               </div>
           </div>
           <div class="flex items-end justify-between h-48 gap-4 px-4">
               {Array.from({length: 15}).map((_, i) => (
                   <div class="flex flex-col items-center gap-2 flex-1 group">
                       <div class="relative w-full">
-                         <div class="w-full bg-emerald-500/20 rounded-t-lg group-hover:bg-emerald-500/40 transition-all cursor-pointer" style={`height: ${Math.floor(Math.random() * 60) + 20}px`}></div>
-                         <div class="w-full bg-rose-500/20 rounded-b-lg group-hover:bg-rose-500/40 transition-all cursor-pointer" style={`height: ${Math.floor(Math.random() * 30) + 10}px`}></div>
+                         <div class="w-full bg-emerald-100 rounded-t-lg group-hover:bg-emerald-200 transition-all cursor-pointer" style={`height: ${Math.floor(Math.random() * 60) + 20}px`}></div>
+                         <div class="w-full bg-rose-100 rounded-b-lg group-hover:bg-rose-200 transition-all cursor-pointer" style={`height: ${Math.floor(Math.random() * 30) + 10}px`}></div>
                       </div>
-                      <span class="text-[7px] font-black uppercase text-white/20 tracking-widest">May {i+1}</span>
+                      <span class="text-[7px] font-black uppercase text-slate-300 tracking-widest">May {i+1}</span>
                   </div>
               ))}
           </div>
       </div>
 
       <!-- Actionable Defaulter List -->
-      <div class="sidebar-panel glass-card p-8">
-          <h3 class="text-xs font-black uppercase tracking-[0.3em] italic text-amber-500 mb-8 flex justify-between items-center">
+      <div class="sidebar-panel glass-card p-8 bg-white border-slate-200 shadow-sm">
+          <h3 class="text-xs font-black uppercase tracking-[0.3em] italic text-amber-600 mb-8 flex justify-between items-center">
              <span>Critical Dues</span>
-             <a href="/society-ledger/maintenance" class="text-[9px] text-white/20 hover:text-white transition-colors">Manage All</a>
+             <a href="/society-ledger/maintenance" class="text-[9px] text-slate-400 hover:text-slate-900 transition-colors">Manage All</a>
           </h3>
           <div class="space-y-4">
               {pendingBills.map(bill => (
-                  <div class="flex items-center justify-between p-4 rounded-3xl bg-white/5 border border-white/5 hover:bg-white/[0.08] transition-all cursor-pointer group">
+                  <div class="flex items-center justify-between p-4 rounded-3xl bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-all cursor-pointer group">
                       <div class="flex items-center gap-4">
-                          <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/20 flex items-center justify-center font-black text-amber-500 text-xs italic">
+                          <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/10 flex items-center justify-center font-black text-amber-600 text-xs italic">
                               {bill.flat}
                           </div>
                           <div class="flex flex-col">
-                              <span class="text-[10px] font-black text-white italic uppercase">{bill.name}</span>
-                              <span class="text-[8px] text-white/20 font-black tracking-widest uppercase">{bill.due}</span>
+                              <span class="text-[10px] font-black text-slate-900 italic uppercase">{bill.name}</span>
+                              <span class="text-[8px] text-slate-400 font-black tracking-widest uppercase">{bill.due}</span>
                           </div>
                       </div>
                       <div class="flex flex-col items-end">
-                          <span class="text-xs font-black italic text-white leading-none mb-1">{bill.amount}</span>
-                          <span class={`text-[7px] font-black uppercase tracking-[0.2em] px-2 py-1 rounded ${bill.status === 'Overdue' ? 'bg-rose-500/10 text-rose-500' : 'bg-amber-500/10 text-amber-500'}`}>
+                          <span class="text-xs font-black italic text-slate-900 leading-none mb-1">{bill.amount}</span>
+                          <span class={`text-[7px] font-black uppercase tracking-[0.2em] px-2 py-1 rounded ${bill.status === 'Overdue' ? 'bg-rose-500/10 text-rose-500' : 'bg-amber-500/10 text-amber-600'}`}>
                              {bill.status}
                           </span>
                       </div>
                   </div>
               ))}
           </div>
-          <button class="w-full py-5 border border-amber-500/30 rounded-3xl text-[9px] font-black uppercase tracking-[0.3em] text-amber-500 hover:bg-amber-500 hover:text-white transition-all mt-10 italic">
+          <button class="w-full py-5 border border-amber-500/30 rounded-3xl text-[9px] font-black uppercase tracking-[0.3em] text-amber-600 hover:bg-amber-600 hover:text-white transition-all mt-10 italic">
              Bulk WhatsApp Reminders
           </button>
       </div>
@@ -107,9 +107,9 @@ const pendingBills = [
 
   <style>
     .range-btn {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: rgba(255, 255, 255, 0.3);
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        color: #64748b;
         padding: 8px 16px;
         border-radius: 12px;
         font-size: 0.7rem;
@@ -119,6 +119,7 @@ const pendingBills = [
         font-style: italic;
         cursor: pointer;
         transition: 0.3s;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
 
     .range-btn.active, .range-btn:hover {
