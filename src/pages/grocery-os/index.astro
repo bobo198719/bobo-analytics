@@ -3,12 +3,12 @@ import GroceryOSLayout from "../../layouts/GroceryOSLayout.astro";
 
 // Mock stats for Grocery Dashboard
 const stats = [
-  { label: "Today's Sales", value: "₹42,850", trend: "+14.2%", icon: "💰", color: "var(--primary)" },
-  { label: "Orders Today", value: "156", trend: "+8.5%", icon: "📦", color: "var(--secondary)" },
-  { label: "Net Profit", value: "₹8,420", trend: "+12.1%", icon: "📈", color: "#fbaf24" },
-  { label: "Stock Alerts", value: "12 Items", trend: "Critical", icon: "⚠️", color: "#ef4444" },
-  { label: "Expiring Soon", value: "24 Units", trend: "48h", icon: "⏰", color: "#f59e0b" },
-  { label: "New Members", value: "18", trend: "+5.2%", icon: "👥", color: "#ec4899" }
+  { label: "Today's Sales", value: "₹42,850", trend: "+14.2%", icon: "💰", color: "var(--primary)", link: "/grocery-os/reports" },
+  { label: "Orders Today", value: "156", trend: "+8.5%", icon: "📦", color: "var(--secondary)", link: "/grocery-os/orders" },
+  { label: "Net Profit", value: "₹8,420", trend: "+12.1%", icon: "📈", color: "#fbaf24", link: "/grocery-os/reports" },
+  { label: "Stock Alerts", value: "12 Items", trend: "Critical", icon: "⚠️", color: "#ef4444", link: "/grocery-os/inventory" },
+  { label: "Expiring Soon", value: "24 Units", trend: "48h", icon: "⏰", color: "#f59e0b", link: "/grocery-os/inventory" },
+  { label: "New Members", value: "18", trend: "+5.2%", icon: "👥", color: "#ec4899", link: "/grocery-os/customers" }
 ];
 
 const topProducts = [
@@ -40,7 +40,7 @@ const topProducts = [
 
   <div class="stats-grid">
       {stats.map(stat => (
-          <div class="stat-card glass-card">
+          <a href={stat.link} class="stat-card glass-card text-inherit no-underline">
               <div class="stat-top">
                   <div class="stat-icon-box" style={`background: ${stat.color}15; color: ${stat.color}`}>
                       {stat.icon}
@@ -60,7 +60,7 @@ const topProducts = [
                   <div class="spark-bar active" style={`height: 80%; background: ${stat.color}`}></div>
                   <div class="spark-bar" style="height: 45%"></div>
               </div>
-          </div>
+          </a>
       ))}
   </div>
 
@@ -218,11 +218,15 @@ const topProducts = [
           flex-direction: column;
           gap: 16px;
           transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          text-decoration: none !important;
+          color: inherit !important;
+          cursor: pointer;
       }
 
       .stat-card:hover {
           transform: translateY(-5px);
           border-color: var(--primary);
+          background: rgba(255, 255, 255, 0.05);
       }
 
       .stat-top {
