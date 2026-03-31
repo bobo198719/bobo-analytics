@@ -1,0 +1,250 @@
+---
+const { title } = Astro.props;
+---
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title || 'Society Ledger OS'}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css">
+    <style is:global>
+        :root {
+            --bg-dark: #020617;
+            --sidebar-bg: #03081a;
+            --glass-card: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --primary: #f59e0b; /* Amber */
+            --secondary: #fbbf24;
+            --text-muted: rgba(255, 255, 255, 0.4);
+            --success: #10b981;
+            --error: #f43f5e;
+            --warning: #f59e0b;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: var(--bg-dark);
+            color: white;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .ledger-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styling */
+        .ledger-sidebar {
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+        }
+
+        .ledger-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 10px;
+        }
+
+        .logo-box {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), #ef4444);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: white;
+            font-style: italic;
+        }
+
+        .logo-text {
+            font-weight: 900;
+            font-size: 1.1rem;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            font-style: italic;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .nav-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            font-weight: 800;
+            margin: 12px 0 8px 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 12px;
+            transition: 0.2s;
+        }
+
+        .nav-item i { font-size: 1rem; }
+
+        .nav-item:hover, .nav-item.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-item.active {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--primary);
+            border-right: 3px solid var(--primary);
+        }
+
+        /* Main Content */
+        .ledger-main {
+            padding: 40px 60px;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .glass-card {
+            background: var(--glass-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Top Header Area */
+        .ledger-top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .search-container {
+            width: 400px;
+            position: relative;
+        }
+
+        .search-container i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .search-container input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            padding: 12px 16px 12px 48px;
+            border-radius: 12px;
+            color: white;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .search-container input:focus {
+            border-color: var(--primary);
+            background: rgba(245, 158, 11, 0.03);
+        }
+
+        .user-profile-nav {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .p-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="ledger-container">
+        <aside class="ledger-sidebar">
+            <div class="ledger-logo">
+                <div class="logo-box">S</div>
+                <div class="logo-text">Society <span style="color: var(--primary)">Ledger</span></div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-label">Core Business</div>
+                <a href="/society-ledger" class="nav-item active"><i class="lucide-layout-dashboard"></i> Dashboard</a>
+                <a href="/society-ledger/maintenance" class="nav-item"><i class="lucide-wallet"></i> Billing</a>
+                <a href="/society-ledger/flats" class="nav-item"><i class="lucide-home"></i> Residents</a>
+
+                <div class="nav-label">Security & Ops</div>
+                <a href="/society-ledger/visitors" class="nav-item"><i class="lucide-user-check"></i> Visitor Gate</a>
+                <a href="/society-ledger/complaints" class="nav-item"><i class="lucide-message-square"></i> Complaints</a>
+                <a href="/society-ledger/vendors" class="nav-item"><i class="lucide-shopping-bag"></i> Vendors</a>
+
+                <div class="nav-label">Financials</div>
+                <a href="/society-ledger/expenses" class="nav-item"><i class="lucide-pie-chart"></i> Expenses</a>
+                <a href="/society-ledger/reports" class="nav-item"><i class="lucide-file-text"></i> PDF Receipts</a>
+            </nav>
+
+            <div class="sidebar-footer" style="padding-top: 20px; border-top: 1px solid var(--border);">
+                <a href="/crm-login" class="nav-item"><i class="lucide-log-out"></i> Leave Matrix</a>
+            </div>
+        </aside>
+
+        <main class="ledger-main">
+            <header class="ledger-top-nav">
+                <div class="search-container">
+                    <i class="lucide-search"></i>
+                    <input type="text" placeholder="Search flats, residents, or bills (F1)...">
+                </div>
+                <div class="user-profile-nav">
+                    <i class="lucide-bell text-white/30 cursor-pointer"></i>
+                    <div class="p-avatar">SA</div>
+                    <div class="hidden md:block">
+                        <div class="text-[11px] font-black uppercase text-white leading-none">Society Admin</div>
+                        <div class="text-[9px] font-black uppercase text-white/30 tracking-widest mt-1">Prime Tower A</div>
+                    </div>
+                </div>
+            </header>
+
+            <slot />
+        </main>
+    </div>
+
+    <script is:inline>
+        // Global Auth Check
+        if (!localStorage.getItem('ledger_os_auth')) {
+            window.location.href = '/society-ledger-login';
+        }
+    </script>
+</body>
+</html>
