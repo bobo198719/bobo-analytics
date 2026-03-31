@@ -22,8 +22,8 @@ const pendingBills = [
 <SocietyLedgerLayout title="Dashboard | Society Ledger OS">
   <div class="dashboard-header-flex">
       <div>
-          <h1 class="text-4xl font-black italic tracking-tighter uppercase leading-none mb-2">Prime <span class="text-amber-600">Ledger Intelligence</span></h1>
-          <p class="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] italic">Real-time asset management for Prime Tower A branch.</p>
+          <h1 class="text-4xl font-black italic tracking-tighter uppercase leading-none mb-2 text-black">Prime <span class="text-amber-800">Ledger Intelligence</span></h1>
+          <p class="text-black text-[10px] font-black uppercase tracking-[0.2em] italic">Real-time asset management for Prime Tower A branch.</p>
       </div>
       <div class="time-range-picker flex gap-2">
           <button class="range-btn active">Today</button>
@@ -36,14 +36,14 @@ const pendingBills = [
       {stats.map(stat => (
           <div class="stat-card glass-card p-6 flex flex-col gap-4 border border-slate-200 shadow-sm hover:border-amber-500/30 transition-all cursor-pointer group bg-white">
               <div class="flex justify-between items-center">
-                  <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl bg-slate-50 border border-slate-100 group-hover:scale-110 transition-transform" style={`color: ${stat.color}`}>
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl bg-slate-50 border border-black group-hover:scale-110 transition-transform" style={`color: ${stat.color}`}>
                       {stat.icon}
                   </div>
-                  <span class="text-[9px] font-black uppercase text-slate-400 tracking-widest">{stat.sub}</span>
+                  <span class="text-[9px] font-black uppercase text-black tracking-widest">{stat.sub}</span>
               </div>
               <div class="flex flex-col">
-                  <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">{stat.label}</span>
-                  <span class="text-2xl font-black italic tracking-tighter text-slate-900 leading-none">{stat.value}</span>
+                  <span class="text-[10px] font-black text-black uppercase tracking-widest leading-none mb-1">{stat.label}</span>
+                  <span class="text-2xl font-black italic tracking-tighter text-black leading-none">{stat.value}</span>
               </div>
           </div>
       ))}
@@ -80,19 +80,19 @@ const pendingBills = [
           </h3>
           <div class="space-y-4">
               {pendingBills.map(bill => (
-                  <div class="flex items-center justify-between p-4 rounded-3xl bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-all cursor-pointer group">
+                  <div class="flex items-center justify-between p-4 rounded-3xl bg-white border-2 border-black hover:bg-slate-50 transition-all cursor-pointer group">
                       <div class="flex items-center gap-4">
-                          <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/10 flex items-center justify-center font-black text-amber-600 text-xs italic">
+                          <div class="w-10 h-10 rounded-2xl bg-amber-500 flex items-center justify-center font-black text-white text-xs italic">
                               {bill.flat}
                           </div>
                           <div class="flex flex-col">
-                              <span class="text-[10px] font-black text-slate-900 italic uppercase">{bill.name}</span>
-                              <span class="text-[8px] text-slate-400 font-black tracking-widest uppercase">{bill.due}</span>
+                              <span class="text-[10px] font-black text-black italic uppercase">{bill.name}</span>
+                              <span class="text-[8px] text-black font-black tracking-widest uppercase">{bill.due}</span>
                           </div>
                       </div>
                       <div class="flex flex-col items-end">
-                          <span class="text-xs font-black italic text-slate-900 leading-none mb-1">{bill.amount}</span>
-                          <span class={`text-[7px] font-black uppercase tracking-[0.2em] px-2 py-1 rounded ${bill.status === 'Overdue' ? 'bg-rose-500/10 text-rose-500' : 'bg-amber-500/10 text-amber-600'}`}>
+                          <span class="text-xs font-black italic text-black leading-none mb-1">{bill.amount}</span>
+                          <span class={`text-[7px] font-black uppercase tracking-[0.2em] px-2 py-1 rounded bg-black text-white`}>
                              {bill.status}
                           </span>
                       </div>
@@ -108,8 +108,8 @@ const pendingBills = [
   <style>
     .range-btn {
         background: #ffffff;
-        border: 1px solid rgba(0, 0, 0, 0.05);
-        color: #64748b;
+        border: 2px solid #000000;
+        color: #000000;
         padding: 8px 16px;
         border-radius: 12px;
         font-size: 0.7rem;
