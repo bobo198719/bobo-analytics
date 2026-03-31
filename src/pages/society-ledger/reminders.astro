@@ -1,0 +1,120 @@
+---
+import SocietyLedgerLayout from "../../layouts/SocietyLedgerLayout.astro";
+
+// Mock WhatsApp Nodes
+const autoReminders = [
+  { id: "WA-101", name: "Maintenance Due (May)", target: "All Residents", trigger: "Auto (1st of Month)", status: "Active", sent: "120" },
+  { id: "WA-102", name: "Defaulter Warning 1", target: "Overdue Only", trigger: "Manual / Scheduled", status: "Active", sent: "22" },
+  { id: "WA-105", name: "Security Alert: Meeting", target: "All Residents", trigger: "Manual-Only", status: "Offline", sent: "0" }
+];
+
+const liveFeed = [
+  { flat: "A-502", name: "Anish Kumar", action: "Receipt Sent", time: "2 mins ago", status: "Delivered" },
+  { flat: "B-201", name: "Sita Ram", action: "Reminder Sent", time: "15 mins ago", status: "Delivered" },
+  { flat: "C-105", name: "Sunil Verma", action: "Warning Sent", time: "45 mins ago", status: "Delivered" }
+];
+---
+
+<SocietyLedgerLayout title="WhatsApp Reminder Engine | Society Ledger OS">
+  <div class="flex justify-between items-end mb-10">
+      <div>
+          <h1 class="text-4xl font-black italic tracking-tighter uppercase leading-none mb-2">WhatsApp <span class="text-emerald-600">Reminder Node</span></h1>
+          <p class="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] italic">Automated resident communication and debt recovery engine.</p>
+      </div>
+      <div class="flex gap-4">
+          <button class="bg-slate-900 text-white px-8 py-4 rounded-3xl text-[10px] font-black uppercase tracking-widest italic shadow-lg shadow-slate-900/20 hover:scale-105 transition-all">
+              Broadcast Message
+          </button>
+          <button class="bg-emerald-600 text-white px-8 py-4 rounded-3xl text-[10px] font-black uppercase tracking-widest italic shadow-lg shadow-emerald-600/20 hover:scale-105 transition-all">
+              + New Rule Node
+          </button>
+      </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+      <!-- Status Cards -->
+      <div class="md:col-span-2 space-y-8">
+          <div class="glass-card bg-white border border-slate-200 rounded-[40px] p-10 shadow-sm relative overflow-hidden">
+             <div class="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+             <h3 class="text-xs font-black uppercase tracking-[0.3em] italic text-emerald-600 mb-10 flex items-center gap-3">
+                 <span class="w-2 h-2 bg-emerald-500 rounded-full"></span> Active Rule Nodes
+             </h3>
+             <div class="space-y-6">
+                 {autoReminders.map(rule => (
+                    <div class="flex items-center justify-between p-6 rounded-3xl bg-slate-50 border border-slate-100 hover:bg-white hover:border-emerald-500/30 transition-all cursor-pointer group hover:shadow-lg">
+                        <div class="flex items-center gap-6">
+                            <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-emerald-500 text-xl shadow-sm italic font-black">WA</div>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-black text-slate-900 italic uppercase leading-none mb-1">{rule.name}</span>
+                                <span class="text-[9px] text-slate-400 font-black tracking-widest uppercase italic">Target: {rule.target}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-10">
+                            <div class="flex flex-col items-end">
+                                <span class="text-[8px] font-black uppercase text-slate-400 tracking-widest leading-none mb-1">Delivered</span>
+                                <span class="text-xs font-black italic text-emerald-600 leading-none">{rule.sent}</span>
+                            </div>
+                            <div class={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${rule.status === 'Active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'}`}>
+                                {rule.status}
+                            </div>
+                            <button class="text-slate-300 hover:text-emerald-600 transition-colors"><i class="lucide-settings-2 text-sm"></i></button>
+                        </div>
+                    </div>
+                 ))}
+             </div>
+          </div>
+
+          <div class="glass-card bg-white border border-slate-200 rounded-[40px] p-10 shadow-sm">
+             <h3 class="text-xs font-black uppercase tracking-[0.3em] italic text-slate-400 mb-10">Real-time Node Activity</h3>
+             <div class="space-y-4">
+                 {liveFeed.map(feed => (
+                    <div class="flex items-center justify-between p-4 rounded-2xl border border-slate-50 hover:bg-slate-50 transition-all group">
+                        <div class="flex items-center gap-4">
+                           <div class="w-2 h-2 rounded-full bg-emerald-500 group-hover:scale-125 transition-transform"></div>
+                           <span class="text-[10px] font-black italic text-slate-900 uppercase">{feed.flat}: {feed.name}</span>
+                        </div>
+                        <span class="text-[9px] font-black text-emerald-600 tracking-widest uppercase italic">{feed.action}</span>
+                        <div class="flex items-center gap-6">
+                            <span class="text-[8px] text-slate-400 font-black uppercase tracking-widest italic">{feed.time}</span>
+                            <span class="text-[8px] text-emerald-500 font-black uppercase tracking-[0.2em]">{feed.status}</span>
+                        </div>
+                    </div>
+                 ))}
+             </div>
+          </div>
+      </div>
+
+      <!-- Action Panel -->
+      <div class="space-y-8">
+          <div class="glass-card bg-emerald-600 p-10 rounded-[40px] text-white shadow-xl shadow-emerald-600/30">
+              <span class="text-[10px] font-black uppercase tracking-[0.3em] italic text-white/50 block mb-4">Node Health</span>
+              <div class="flex items-end gap-3 mb-8">
+                  <span class="text-4xl font-black italic leading-none">94.2%</span>
+                  <span class="text-[10px] text-white/70 font-black italic uppercase leading-none pb-1 text-emerald-200">+2% Growth</span>
+              </div>
+              <div class="w-full bg-white/20 h-1.5 rounded-full overflow-hidden mb-8">
+                  <div class="bg-white h-full" style="width: 94%;"></div>
+              </div>
+              <p class="text-[10px] font-black uppercase tracking-[0.1em] text-white/40 leading-snug">Average delivery rate across Prime Tower nodes. Connectivity optimization active.</p>
+          </div>
+
+          <div class="glass-card bg-white border border-slate-200 rounded-[40px] p-10 space-y-6">
+              <h4 class="text-[9px] font-black uppercase tracking-widest text-slate-400 italic">Quick Commands</h4>
+              <button class="w-full py-5 bg-slate-50 border border-slate-100 rounded-3xl text-[9px] font-black uppercase tracking-[0.3em] text-slate-900 hover:bg-emerald-50 hover:text-emerald-700 transition-all italic text-left px-8 relative overflow-hidden group">
+                 <span class="relative z-10">Force Bill Sync</span>
+                 <i class="lucide-zap absolute right-8 top-1/2 -translate-y-1/2 group-hover:scale-110 transition-transform"></i>
+              </button>
+              <button class="w-full py-5 bg-slate-50 border border-slate-100 rounded-3xl text-[9px] font-black uppercase tracking-[0.3em] text-slate-900 hover:bg-emerald-50 hover:text-emerald-700 transition-all italic text-left px-8 relative overflow-hidden group">
+                 <span class="relative z-10">Export Log Feed</span>
+                 <i class="lucide-download absolute right-8 top-1/2 -translate-y-1/2 group-hover:scale-110 transition-transform"></i>
+              </button>
+              <button class="w-full py-5 bg-slate-900 text-white rounded-3xl text-[9px] font-black uppercase tracking-[0.3em] hover:bg-emerald-600 transition-all italic text-left px-8 relative overflow-hidden group">
+                 <span class="relative z-10">Message Audit</span>
+                 <i class="lucide-shield-check absolute right-8 top-1/2 -translate-y-1/2 group-hover:scale-110 transition-transform"></i>
+              </button>
+          </div>
+      </div>
+  </div>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+</SocietyLedgerLayout>

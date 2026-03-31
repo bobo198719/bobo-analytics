@@ -216,6 +216,7 @@ const { title } = Astro.props;
 
                 <div class="nav-label">Security & Ops</div>
                 <a href="/society-ledger/visitors" class="nav-item"><i class="lucide-user-check"></i> Visitor Gate</a>
+                <a href="/society-ledger/reminders" class="nav-item"><i class="lucide-message-circle"></i> WhatsApp Reminders</a>
                 <a href="/society-ledger/complaints" class="nav-item"><i class="lucide-message-square"></i> Complaints</a>
                 <a href="/society-ledger/vendors" class="nav-item"><i class="lucide-shopping-bag"></i> Vendors</a>
 
@@ -254,6 +255,16 @@ const { title } = Astro.props;
         if (!localStorage.getItem('ledger_os_auth')) {
             window.location.href = '/society-ledger-login';
         }
+
+        // Active Nav Logic
+        const path = window.location.pathname;
+        document.querySelectorAll('.nav-item').forEach(link => {
+            if (link.getAttribute('href') === path) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
     </script>
 </body>
 </html>
