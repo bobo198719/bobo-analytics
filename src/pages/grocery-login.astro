@@ -31,14 +31,16 @@ import "../styles/restaurant.css";
              <label class="text-[10px] font-black uppercase text-white/30 tracking-[0.2em] ml-4 italic">Store ID / Terminal ID</label>
              <div class="relative">
                 <i class="lucide-layout absolute left-5 top-1/2 -translate-y-1/2 text-white/20 text-xs"></i>
-                <input type="text" id="storeId" placeholder="MAIN-STORE-01" required class="w-full bg-white/5 border border-white/10 p-5 pl-12 rounded-2xl outline-none focus:border-emerald-400 transition-all font-black text-xs uppercase" />
+                <input type="text" id="storeId" placeholder="MAIN-STORE-01" required autocomplete="off" class="w-full bg-white/5 border border-white/10 p-5 pl-12 rounded-2xl outline-none focus:border-emerald-400 transition-all font-black text-xs uppercase" />
+                <button type="button" onclick="document.getElementById('storeId').value=''" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"><i class="lucide-x-circle text-xs"></i></button>
              </div>
           </div>
           <div class="space-y-3">
              <label class="text-[10px] font-black uppercase text-white/30 tracking-[0.2em] ml-4 italic">Operator Key</label>
              <div class="relative">
                 <i class="lucide-lock absolute left-5 top-1/2 -translate-y-1/2 text-white/20 text-xs"></i>
-                <input type="password" id="password" placeholder="••••••••" required class="w-full bg-white/5 border border-white/10 p-5 pl-12 rounded-2xl outline-none focus:border-emerald-400 transition-all font-black text-xs" />
+                <input type="password" id="password" placeholder="••••••••" required autocomplete="off" class="w-full bg-white/5 border border-white/10 p-5 pl-12 rounded-2xl outline-none focus:border-emerald-400 transition-all font-black text-xs" />
+                <button type="button" onclick="document.getElementById('password').value=''" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"><i class="lucide-x-circle text-xs"></i></button>
              </div>
           </div>
 
@@ -87,7 +89,7 @@ import "../styles/restaurant.css";
       if (storeId.toLowerCase() === 'grocery' && pass === 'grocery') {
           console.log('✅ MASTER OVERRIDE: Terminal Provisioned.');
           localStorage.setItem('user', JSON.stringify({ username: 'Grocery Admin', role: 'admin' }));
-          localStorage.setItem('grocery_auth', 'true');
+          localStorage.setItem('grocery_os_auth', 'true');
           window.location.href = '/grocery-os';
           return;
       }
@@ -104,7 +106,7 @@ import "../styles/restaurant.css";
         
         if (res.ok) {
           localStorage.setItem('user', JSON.stringify(data.user));
-          localStorage.setItem('grocery_auth', 'true');
+          localStorage.setItem('grocery_os_auth', 'true');
           window.location.href = '/grocery-os';
         } else {
           authStatus.style.color = "#f43f5e"; // rose
