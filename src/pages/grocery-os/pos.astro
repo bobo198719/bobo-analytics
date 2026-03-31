@@ -478,7 +478,7 @@ const products = [
             const name = tile.dataset.name;
             const price = parseFloat(tile.dataset.price);
 
-            const existing = cart.find(i => i.id === id);
+            const existing = cart.find(i => String(i.id) === String(id));
             if(existing) {
                 existing.qty++;
             } else {
@@ -515,12 +515,13 @@ const products = [
         updateTotals(subtotal);
     }
 
+    // Global function to update quantities in cart
     window.updateQty = (id, delta) => {
-        const item = cart.find(i => i.id === id);
+        const item = cart.find(i => String(i.id) === String(id));
         if(item) {
             item.qty += delta;
             if(item.qty <= 0) {
-                cart = cart.filter(i => i.id !== id);
+                cart = cart.filter(i => String(i.id) !== String(id));
             }
             renderCart();
         }
