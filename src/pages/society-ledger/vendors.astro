@@ -16,9 +16,18 @@ const vendors = [
           <h1 class="text-4xl font-black italic tracking-tighter uppercase leading-none mb-2 text-black">Vendor <span class="text-indigo-800">Marketplace</span></h1>
           <p class="text-black text-[10px] font-black uppercase tracking-[0.2em] italic">Manage service providers, maintenance vendors, and security nodes.</p>
       </div>
-      <button class="bg-black text-white px-8 py-4 rounded-3xl text-[10px] font-black uppercase tracking-widest italic shadow-lg border-2 border-black hover:bg-slate-800 transition-all">
-          + Onboard New Provider
-      </button>
+      <div class="flex gap-4">
+          <select class="bg-white border-2 border-black rounded-3xl px-6 py-3 text-[10px] font-black uppercase tracking-widest italic outline-none cursor-pointer">
+              <option>All Provider Nodes</option>
+              <option>Electricity & Power</option>
+              <option>Plumbing & Water</option>
+              <option>Security Force</option>
+              <option>Cleaning Services</option>
+          </select>
+          <button class="bg-black text-white px-8 py-4 rounded-3xl text-[10px] font-black uppercase tracking-widest italic shadow-lg border-2 border-black hover:bg-indigo-600 transition-all">
+              + Onboard New Provider
+          </button>
+      </div>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
