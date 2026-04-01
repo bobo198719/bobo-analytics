@@ -1,0 +1,176 @@
+---
+import SocietyLedgerLayout from "../../layouts/SocietyLedgerLayout.astro";
+
+// Data parsed from the USER's attached physical bill: JONES CO-OPERATIVE HOUSING SOCIETY LTD
+const billingCategories = [
+  { sr: 1, particular: "Service Charges", amount: 250.00 },
+  { sr: 2, particular: "Water Charges", amount: 150.00 },
+  { sr: 3, particular: "Maintenance Charges", amount: 189.00 },
+  { sr: 4, particular: "Sinking Fund", amount: 40.00 },
+  { sr: 5, particular: "Repairing Fund", amount: 200.00 },
+  { sr: 6, particular: "Sub Letting Charges", amount: 100.00 }
+];
+
+const billMetadata = {
+    society: "JONES CO-OPERATIVE HOUSING SOCIETY LTD.",
+    address: "B-14, B-15, B-18, J.V. PARK, DIAS & PEREIRA NAGAR, NAIGAON (W), TAL. VASAI, DIST. PALGHAR",
+    regNo: "TNA/VSI/HSG/(TC)/10949/1999-2000 DTD.01.07.1999",
+    billNo: "477",
+    billDate: "01/03/2026",
+    month: "March 2026",
+    member: {
+        names: ["MR. RAJAN JHA", "MRS. ARCHANA JHA"],
+        flat: "G-01",
+        wing: "B14-WING",
+        floor: "GRD"
+    },
+    previousDues: -1781.00, // Credit Bal.
+    interest: 0.00,
+    total: 929.00,
+    netAdvance: -852.00
+};
+---
+
+<SocietyLedgerLayout title="Bill Preview | Society Ledger OS">
+    <div class="max-w-4xl mx-auto py-12 px-6">
+        <!-- Dashboard Header -->
+        <div class="flex justify-between items-center mb-12">
+            <div>
+                <h1 class="text-3xl font-black italic tracking-tighter uppercase text-black">Bill <span class="text-amber-800">Node Preview</span></h1>
+                <p class="text-black text-[10px] font-black uppercase tracking-[0.2em] italic">Standardized billing format from physical archival node.</p>
+            </div>
+            <div class="flex gap-4">
+                <button onclick="window.print()" class="px-8 py-4 rounded-3xl text-[10px] font-black uppercase tracking-widest italic border-2 border-black bg-black text-white hover:bg-slate-800 transition-all shadow-lg shadow-black/20">
+                    Print Node
+                </button>
+                <button class="px-8 py-4 rounded-3xl text-[10px] font-black uppercase tracking-widest italic border-2 border-black bg-white text-black hover:bg-slate-50 transition-all">
+                    Export JSON
+                </button>
+            </div>
+        </div>
+
+        <!-- The Physical Bill Layout (Executive Cinema Version) -->
+        <div class="bg-white border-2 border-black rounded-[40px] shadow-2xl p-12 relative overflow-hidden font-mono">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rotate-45 -mr-16 -mt-16 border-b-2 border-black"></div>
+            
+            <!-- Society Header -->
+            <div class="text-center mb-10 border-b-2 border-black pb-8">
+                <h2 class="text-xl font-black uppercase tracking-tighter text-black mb-2">{billMetadata.society}</h2>
+                <p class="text-[10px] font-bold text-black uppercase leading-tight mb-2 px-12">{billMetadata.address}</p>
+                <p class="text-[9px] font-black italic text-black/60">{billMetadata.regNo}</p>
+            </div>
+
+            <!-- Member & Bill Metadata -->
+            <div class="grid grid-cols-2 gap-12 mb-10 text-[11px]">
+                <div class="space-y-3">
+                    <div class="flex gap-4">
+                        <span class="w-16 font-black uppercase text-black/50 italic">Name:</span>
+                        <div class="flex flex-col font-black text-black">
+                            {billMetadata.member.names.map(name => <span>{name}</span>)}
+                        </div>
+                    </div>
+                    <div class="flex gap-4 border-t border-black/10 pt-3">
+                        <span class="w-16 font-black uppercase text-black/50 italic">Flat No:</span>
+                        <span class="font-black text-black">{billMetadata.member.flat}</span>
+                        <span class="font-black uppercase text-black/50 italic ml-4">Wing:</span>
+                        <span class="font-black text-black">{billMetadata.member.wing}</span>
+                        <span class="font-black uppercase text-black/50 italic ml-4">Floor:</span>
+                        <span class="font-black text-black">{billMetadata.member.floor}</span>
+                    </div>
+                </div>
+                <div class="space-y-3 pl-12 border-l border-black/10">
+                    <div class="flex justify-between">
+                        <span class="font-black uppercase text-black/50 italic">Bill No:</span>
+                        <span class="font-black text-black text-xl italic tracking-tighter">{billMetadata.billNo}</span>
+                    </div>
+                    <div class="flex justify-between border-t border-black/10 pt-3">
+                        <span class="font-black uppercase text-black/50 italic">Bill Month:</span>
+                        <span class="font-black text-black underline underline-offset-4 decoration-amber-600">{billMetadata.month}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-black uppercase text-black/50 italic">Bill Date:</span>
+                        <span class="font-black text-black italic">{billMetadata.billDate}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Billing Table -->
+            <div class="border-2 border-black rounded-3xl overflow-hidden mb-10">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-black text-white border-b border-black">
+                            <th class="p-4 text-[10px] font-black uppercase tracking-widest w-16 text-center">Sr.</th>
+                            <th class="p-4 text-[10px] font-black uppercase tracking-widest border-l border-white/20">Particulars</th>
+                            <th class="p-4 text-right text-[10px] font-black uppercase tracking-widest border-l border-white/20 w-32">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {billingCategories.map(item => (
+                            <tr class="border-b border-black/10 font-bold group">
+                                <td class="p-4 text-[10px] text-center border-r border-black/10 bg-slate-50">{item.sr}</td>
+                                <td class="p-4 text-xs italic text-black group-hover:bg-slate-50 transition-colors uppercase">{item.particular}</td>
+                                <td class="p-4 text-right text-xs font-black italic border-l border-black/10">{item.amount.toFixed(2)}</td>
+                            </tr>
+                        ))}
+                        <tr class="bg-black/5 font-black text-black">
+                            <td colspan="2" class="p-4 text-right text-[10px] uppercase tracking-widest italic">Total Billing Node Sum:</td>
+                            <td class="p-4 text-right text-sm italic border-l border-black/10">₹ {billMetadata.total.toFixed(2)}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Financial Summary -->
+            <div class="border-2 border-black rounded-3xl p-8 bg-slate-50 mb-10 text-[11px] grid grid-cols-2 gap-12">
+                <div class="space-y-4">
+                    <div class="flex justify-between">
+                        <span class="font-black uppercase text-black/40 italic">Add : Previous Dues Node</span>
+                        <span class="font-black text-rose-600 italic">0.00</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-black uppercase text-black/40 italic">Add : Credit Balance</span>
+                        <span class="font-black text-emerald-600 italic">({Math.abs(billMetadata.previousDues).toFixed(2)})</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-black uppercase text-black/40 italic">Add : Interest on Arrears</span>
+                        <span class="font-black text-black italic">0.00</span>
+                    </div>
+                </div>
+                <div class="border-l-2 border-black/10 pl-12 flex flex-col justify-center">
+                    <div class="flex justify-between items-end border-b-4 border-black pb-2 mb-2">
+                        <span class="text-xl font-black uppercase text-black italic tracking-tighter">Net Advance:</span>
+                        <span class="text-3xl font-black italic text-black tracking-tighter">₹ {Math.abs(billMetadata.netAdvance).toFixed(2)}</span>
+                    </div>
+                    <p class="text-[9px] font-black italic text-emerald-700 uppercase tracking-widest text-right">Credit Balance Adjustment Active</p>
+                </div>
+            </div>
+
+            <!-- Notes & Signature -->
+            <div class="grid grid-cols-2 gap-12 items-end">
+                <div class="bg-slate-900 text-white p-6 rounded-2xl">
+                    <h5 class="text-[8px] font-black uppercase tracking-[0.3em] mb-4 text-white/50 italic border-b border-white/10 pb-2">Archival Payment Notes</h5>
+                    <ul class="text-[8px] font-black uppercase tracking-widest italic space-y-2 leading-tight">
+                        <li>1) REMIT WITHIN 10 DAYS FROM BILL DATE.</li>
+                        <li>2) ONLINE: THE THANE DISTRICT CENTRAL CO-OP.BANK</li>
+                        <li>3) ACCT NO: 000500310000061 (TDCB0000005)</li>
+                        <li>4) MENTION FLAT & WING IN REMARKS.</li>
+                        <li>5) INTEREST @ 18% P.A CHARGED ON ARREARS.</li>
+                    </ul>
+                </div>
+                <div class="text-right space-y-8 pb-4">
+                    <div class="inline-block px-12 py-8 border-2 border-dashed border-black/20 rounded-2xl relative">
+                         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-12 flex flex-col items-center opacity-40">
+                             <span class="text-[10px] font-black text-black">SECRETARY / TREASURER</span>
+                         </div>
+                    </div>
+                    <p class="text-[10px] font-black uppercase tracking-widest text-black">For {billMetadata.society}</p>
+                </div>
+            </div>
+
+            <!-- Archival E. & O. E. -->
+            <div class="absolute bottom-4 left-10 font-black italic text-[9px] text-black/20 uppercase tracking-[0.4em]">E. & O. E. Society Ledger OS Node Archival</div>
+        </div>
+    </div>
+</SocietyLedgerLayout>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
