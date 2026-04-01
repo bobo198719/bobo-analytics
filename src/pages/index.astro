@@ -1,12 +1,14 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
 
-// Subdomain redirection logic
+// Subdomain redirection logic (TEMPORARILY DISABLED FOR RAZORPAY VERIFICATION)
+/*
 const host = Astro.url.host;
 const isSubdomain = host.split('.').length > 2 && !host.includes('localhost') && !host.includes('vercel.app') && !host.startsWith('www.');
 if (isSubdomain) {
     return Astro.redirect('/bakers-os/website');
 }
+*/
 ---
 
 <MainLayout title="Bobo Analytics | SCALABLE BUSINESS SOLUTIONS">
