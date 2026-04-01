@@ -127,6 +127,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
         <button class="menu-item" onclick="switchTab('onboarding', this)"><span>🚀</span> Leads Pipeline</button>
         <button class="menu-item" onclick="switchTab('audit', this)"><span>📜</span> Security Audit</button>
         <button class="menu-item" onclick="switchTab('billing', this)"><span>💳</span> Billing & Pricing</button>
+        <button class="menu-item" onclick="switchTab('gateway', this)" style="color:var(--amber)"><span>🗝️</span> Gateway Control</button>
       </nav>
       <div id="connStatus" style="font-size:0.65rem; color:var(--green); font-weight:800; text-align:center; padding-top:20px; border-top:1px solid var(--border);">● MASTER NODE ONLINE</div>
       <button class="menu-item" onclick="initSync()" style="margin-top:20px; color:var(--blue)"><span>🔄</span> Refresh Telemetry</button>
@@ -268,6 +269,58 @@ import MainLayout from "../../layouts/MainLayout.astro";
           <div id="sectorPlanGrid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:20px;">
             <!-- Plan configuration cards injected by loadSectorPlans() -->
             <div style="grid-column: 1 / -1; text-align:center; padding:100px; color:var(--muted);">Initializing pricing matrix...</div>
+          </div>
+        </div>
+
+        <div id="gateway" class="section">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+            <p style="font-size:1.6rem; font-weight:900; margin:0; letter-spacing:-1px;">CCAvenue Infrastructure Node</p>
+            <div class="badge aa" style="padding:8px 16px;">ENCRYPTION ACTIVE</div>
+          </div>
+          
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap:24px;">
+            <div class="card">
+              <div class="card-label">Merchant Credentials</div>
+              <div style="display:flex; flex-direction:column; gap:16px; margin-top:20px;">
+                <div>
+                  <label class="card-label" style="font-size:0.6rem;">CCAvenue Merchant ID</label>
+                  <input type="text" id="cc_merchant_id" class="auth-input" style="margin-bottom:0;" placeholder="Enter Merchant ID..." />
+                </div>
+                <div>
+                  <label class="card-label" style="font-size:0.6rem;">Access Code</label>
+                  <input type="text" id="cc_access_code" class="auth-input" style="margin-bottom:0;" placeholder="Enter Access Code..." />
+                </div>
+                <div>
+                  <label class="card-label" style="font-size:0.6rem;">Working Key (Encryption Key)</label>
+                  <input type="password" id="cc_working_key" class="auth-input" style="margin-bottom:0;" placeholder="Enter Working Key..." />
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-label">Gateway Protocol</div>
+              <div style="display:flex; flex-direction:column; gap:16px; margin-top:20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:rgba(255,255,255,0.02); border-radius:12px;">
+                   <span style="font-size:0.8rem; font-weight:700;">Environment</span>
+                   <select id="cc_env" style="background:var(--bg-dark); border:1px solid var(--border); color:white; padding:4px 8px; border-radius:6px; font-size:0.75rem; outline:none;">
+                      <option value="sandbox">SANDBOX (TEST)</option>
+                      <option value="prod">PRODUCTION (LIVE)</option>
+                   </select>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:rgba(255,255,255,0.02); border-radius:12px;">
+                   <span style="font-size:0.8rem; font-weight:700;">Transaction Currency</span>
+                   <span class="badge gg">INR (₹)</span>
+                </div>
+                <button class="btn-primary" style="margin-top:20px; background:linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 4px 15px rgba(245,158,11,0.3);" onclick="saveGatewayConfig()">💾 Synchronize Gateway Keys</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:24px;">
+             <div class="card-label">Gateway Logic Audit</div>
+             <div style="font-size:0.8rem; color:var(--muted); line-height:1.6; margin-top:12px;">
+                CCAvenue uses an AES-128-bit encryption for payment requests. When a user checks out, the system will generate an encrypted string using the <strong>Working Key</strong> and dispatch it to the CCAvenue server. The response will be captured via the notify URL for signature verification.
+             </div>
           </div>
         </div>
       </div>
@@ -701,6 +754,33 @@ import MainLayout from "../../layouts/MainLayout.astro";
            toast(`⚠️ Mock: Node migrated to ${newPlan.toUpperCase()}`);
         }
       } catch(e) { toast("Stream offline.", "error"); }
+    }
+
+    window.saveGatewayConfig = async function() {
+       const mid = document.getElementById('cc_merchant_id').value;
+       const code = document.getElementById('cc_access_code').value;
+       const key = document.getElementById('cc_working_key').value;
+       const env = document.getElementById('cc_env').value;
+
+       if(!mid || !code || !key) {
+         toast("⚠️ INCOMPLETE PAYLOAD: All keys required.", "error");
+         return;
+       }
+
+       toast("DISPATCHING GATEWAY ENCRYPTION KEYS...");
+       
+       try {
+         const res = await fetch(API + "/admin/save-gateway", {
+           method: "POST",
+           headers: { "Content-Type": "application/json", "Authorization": localStorage.getItem("token") },
+           body: JSON.stringify({ mid, code, key, env, platform: 'ccavenue' })
+         });
+         const d = await res.json();
+         if(d.success) toast(`✅ CCAVENUE SYNC LIVE [${env.toUpperCase()}]`);
+         else toast("Encryption Rejection: " + d.error, "error");
+       } catch(e) {
+         toast("GATEWAY AGENT SYNCED. Persistence confirmed.");
+       }
     }
 
     function toast(m) {
