@@ -3,12 +3,12 @@ import SocietyLedgerLayout from "../../layouts/SocietyLedgerLayout.astro";
 
 // Mock stats for Society Ledger Dashboard
 const stats = [
-  { label: "Total Flats", value: "120", sub: "100% Occ.", icon: "🏢", color: "var(--primary)" },
-  { label: "Monthly Rev.", value: "₹2.4L", sub: "Goal ₹2.5L", icon: "💰", color: "var(--success)" },
-  { label: "Paid Bills", value: "98", sub: "22 Pending", icon: "✅", color: "var(--success)" },
-  { label: "Defaulters", value: "₹42,500", sub: "Due Now", icon: "⚠️", color: "var(--error)" },
-  { label: "Active Complain", value: "4", sub: "2 Critical", icon: "🔔", color: "var(--warning)" },
-  { label: "Visitor Count", value: "12", sub: "Past 1H", icon: "👤", color: "#6366f1" }
+  { label: "Total Flats", value: "120", sub: "100% Occ.", icon: "🏢", color: "var(--primary)", link: "/society-ledger/flats" },
+  { label: "Monthly Rev.", value: "₹2.4L", sub: "Goal ₹2.5L", icon: "💰", color: "var(--success)", link: "/society-ledger/maintenance" },
+  { label: "Paid Bills", value: "98", sub: "22 Pending", icon: "✅", color: "var(--success)", link: "/society-ledger/maintenance" },
+  { label: "Defaulters", value: "₹42,500", sub: "Due Now", icon: "⚠️", color: "var(--error)", link: "/society-ledger/maintenance" },
+  { label: "Active Complain", value: "4", sub: "2 Critical", icon: "🔔", color: "var(--warning)", link: "/society-ledger/complaints" },
+  { label: "Visitor Count", value: "12", sub: "Past 1H", icon: "👤", color: "#6366f1", link: "/society-ledger/visitors" }
 ];
 
 const pendingBills = [
@@ -34,7 +34,7 @@ const pendingBills = [
 
   <div class="stats-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 my-10">
       {stats.map(stat => (
-          <div class="stat-card glass-card p-6 flex flex-col gap-4 border border-slate-200 shadow-sm hover:border-amber-500/30 transition-all cursor-pointer group bg-white">
+          <a href={stat.link} class="stat-card glass-card p-6 flex flex-col gap-4 border border-slate-200 shadow-sm hover:border-amber-500/30 transition-all cursor-pointer group bg-white no-underline">
               <div class="flex justify-between items-center">
                   <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl bg-slate-50 border border-black group-hover:scale-110 transition-transform" style={`color: ${stat.color}`}>
                       {stat.icon}
@@ -45,7 +45,7 @@ const pendingBills = [
                   <span class="text-[10px] font-black text-black uppercase tracking-widest leading-none mb-1">{stat.label}</span>
                   <span class="text-2xl font-black italic tracking-tighter text-black leading-none">{stat.value}</span>
               </div>
-          </div>
+          </a>
       ))}
   </div>
 
