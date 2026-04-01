@@ -384,55 +384,67 @@ import MainLayout from "../../layouts/MainLayout.astro";
         const fetchWithAuth = (url) => fetch(API + url, { headers: { "Authorization": token } }).then(r => r.ok ? r.json() : []);
         
         const [stats, tenants, audits, leads, activities, alerts] = await Promise.all([
-          fetch(API + "/stats?range=" + range, { headers: { "Authorization": token } }).then(r => r.status === 401 ? logout() : r.json()),
-          fetchWithAuth("/tenants"),
-          fetchWithAuth("/admin/audit-logs"),
-          fetchWithAuth("/admin/leads"),
-          fetchWithAuth("/activity"),
-          fetchWithAuth("/alerts")
+          fetch(API + "/stats?range=" + range, { headers: { "Authorization": token } }).then(r => r.status === 401 ? logout() : r.json()).catch(() => ({})),
+          fetchWithAuth("/tenants").catch(() => []),
+          fetchWithAuth("/admin/audit-logs").catch(() => []),
+          fetchWithAuth("/admin/leads").catch(() => []),
+          fetchWithAuth("/activity").catch(() => []),
+          fetchWithAuth("/alerts").catch(() => [])
         ]);
   
-        document.getElementById("users").innerText = Math.floor(stats.users || 0).toLocaleString();
-        document.getElementById("active").innerText = Math.floor(stats.rangeActive || stats.active || 0).toLocaleString();
-        document.getElementById("revenue").innerText = "₹" + Math.floor(stats.revenue || 0).toLocaleString();
+        const statsSafe = stats || {};
+        const tenantsSafe = Array.isArray(tenants) ? tenants : [];
+        const leadsSafe = Array.isArray(leads) ? leads : [];
+        const auditsSafe = Array.isArray(audits) ? audits : [];
+        const activitiesSafe = Array.isArray(activities) ? activities : [];
+        const alertsSafe = Array.isArray(alerts) ? alerts : [];
+
+        if (document.getElementById("users")) document.getElementById("users").innerText = Math.floor(statsSafe.users || 0).toLocaleString();
+        if (document.getElementById("active")) document.getElementById("active").innerText = Math.floor(statsSafe.rangeActive || statsSafe.active || 0).toLocaleString();
+        if (document.getElementById("revenue")) document.getElementById("revenue").innerText = "₹" + Math.floor(statsSafe.revenue || 0).toLocaleString();
         
-        let html = "";
-        tenants.forEach(t => { 
-          const isSuspended = t.status === 'suspended';
-          html += `<tr>
-            <td><strong>${t.name}</strong></td>
-            <td><span class="badge bg">${t.industry}</span></td>
-            <td><span class="status-active" style="color:${isSuspended?'var(--red)':'var(--green)'}">${t.status.toUpperCase()}</span></td>
-            <td>
-               <select class="plan-select" onchange="changeTenantPlan('${t.id}', this.value)" style="background:rgba(59,130,246,0.1); color:var(--blue); border:1px solid rgba(59,130,246,0.3); border-radius:6px; font-size:0.65rem; font-weight:700; padding:4px 6px; cursor:pointer; outline:none;">
-                  ${PLANS.map(p => `<option value="${p}" ${t.plan_type===p?'selected':''}>${p.toUpperCase()}</option>`).join('')}
-               </select>
-            </td>
-            <td>₹${(t.revenue||0).toLocaleString()}</td>
-            <td>
-              <div style="display:flex; gap:8px;">
-                <button onclick="updateTenantStatus('${t.id}', '${isSuspended?'active':'suspended'}')" class="ab-primary" style="padding:4px 8px; font-size:0.6rem; background:${isSuspended?'var(--green)':'var(--amber)'}">${isSuspended?'Unsuspend':'Suspend'}</button>
-                <button onclick="deleteTenant('${t.id}')" class="ab-primary" style="padding:4px 8px; font-size:0.6rem; background:var(--red)">Delete</button>
-              </div>
-            </td>
-          </tr>`; 
-        });
-        document.getElementById("tenantTable").innerHTML = html || '<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--muted)">No nodes registered in this sector.</td></tr>';
+        const tenantTable = document.getElementById("tenantTable");
+        if (tenantTable) {
+            let html = "";
+            tenantsSafe.forEach(t => { 
+              const isSuspended = t.status === 'suspended';
+              html += `<tr>
+                <td><strong>${t.name}</strong></td>
+                <td><span class="badge bg">${t.industry}</span></td>
+                <td><span class="status-active" style="color:${isSuspended?'var(--red)':'var(--green)'}">${t.status.toUpperCase()}</span></td>
+                <td>
+                   <select class="plan-select" onchange="changeTenantPlan('${t.id}', this.value)" style="background:rgba(59,130,246,0.1); color:var(--blue); border:1px solid rgba(59,130,246,0.3); border-radius:6px; font-size:0.65rem; font-weight:700; padding:4px 6px; cursor:pointer; outline:none;">
+                      ${PLANS.map(p => `<option value="${p}" ${t.plan_type===p?'selected':''}>${p.toUpperCase()}</option>`).join('')}
+                   </select>
+                </td>
+                <td>₹${(t.revenue||0).toLocaleString()}</td>
+                <td>
+                  <div style="display:flex; gap:8px;">
+                    <button onclick="updateTenantStatus('${t.id}', '${isSuspended?'active':'suspended'}')" class="ab-primary" style="padding:4px 8px; font-size:0.6rem; background:${isSuspended?'var(--green)':'var(--amber)'}">${isSuspended?'Unsuspend':'Suspend'}</button>
+                    <button onclick="deleteTenant('${t.id}')" class="ab-primary" style="padding:4px 8px; font-size:0.6rem; background:var(--red)">Delete</button>
+                  </div>
+                </td>
+              </tr>`; 
+            });
+            tenantTable.innerHTML = html || '<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--muted)">No nodes registered in this sector.</td></tr>';
+        }
         
-        renderPipeline(leads);
-        renderAudit(audits);
-        renderActivity(activities);
-        renderAlerts(alerts);
+        renderPipeline(leadsSafe);
+        renderAudit(auditsSafe);
+        renderActivity(activitiesSafe);
+        renderAlerts(alertsSafe);
         generateInsight();
-        updateChart(tenants);
+        updateChart(tenantsSafe);
 
         statusEl.innerText = "● MASTER NODE ONLINE";
         statusEl.style.color = "var(--green)";
 
       } catch(e) { 
         console.error("Global Sync Error:", e); 
-        statusEl.innerText = "● SYNC ERROR";
-        statusEl.style.color = "var(--red)";
+        if (statusEl) {
+            statusEl.innerText = "● SYNC ERROR";
+            statusEl.style.color = "var(--red)";
+        }
       }
     }
 
@@ -593,10 +605,21 @@ import MainLayout from "../../layouts/MainLayout.astro";
 
     function updateChart(data) {
       const ctx = document.getElementById('industryChart'); if(!ctx) return;
+      if (typeof Chart === 'undefined') return;
+      
+      const tenants = Array.isArray(data) ? data : [];
       const sectors = { Restaurant:0, Bakery:0, Retail:0, Pharmacy:0 };
-      data.forEach(t => { if(sectors[t.industry]!==undefined) sectors[t.industry]++; });
-      if(myChart) myChart.destroy();
-      myChart = new Chart(ctx, { type:'doughnut', data:{ labels:Object.keys(sectors), datasets:[{ data:Object.values(sectors).some(v=>v>0)?Object.values(sectors):[1,1,1,1], backgroundColor:['#ef4444', '#f59e0b', '#3b82f6', '#10b981'], borderWidth:0 }] }, options:{ responsive:true, maintainAspectRatio:false, cutout:'75%', plugins: { legend: { position:'bottom', labels:{color:'#fff', padding:20} } } } });
+      tenants.forEach(t => { if(t && t.industry && sectors[t.industry]!==undefined) sectors[t.industry]++; });
+      
+      try {
+          if(myChart) {
+              myChart.destroy();
+              myChart = null;
+          }
+          myChart = new Chart(ctx, { type:'doughnut', data:{ labels:Object.keys(sectors), datasets:[{ data:Object.values(sectors).some(v=>v>0)?Object.values(sectors):[1,1,1,1], backgroundColor:['#ef4444', '#f59e0b', '#3b82f6', '#10b981'], borderWidth:0 }] }, options:{ responsive:true, maintainAspectRatio:false, cutout:'75%', plugins: { legend: { position:'bottom', labels:{color:'#fff', padding:20} } } } });
+      } catch(err) {
+          console.error("Chart Render Failure:", err);
+      }
     }
 
     // CLICK OUTSIDE HANDLERS
