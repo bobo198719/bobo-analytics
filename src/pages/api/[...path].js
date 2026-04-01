@@ -52,7 +52,7 @@ if (!global.TRACKING_DATA) {
 // 🛡️ SYSTEM ACTIVITY & ALERTS ENGINE
 if (!global.SYSTEM_ACTIVITY) {
     global.SYSTEM_ACTIVITY = [
-        { id: 1, message: "New user registered from USA 🇺🇸", type: "user", time: new Date(Date.now() - 3600000).toISOString() },
+        { id: 1, message: "Production Node Infrastructure v16.2 Online", type: "system", time: new Date(Date.now() - 3600000).toISOString() },
         { id: 2, message: "Campaign 'March Promo' successfully sent to 1,240 users", type: "campaign", time: new Date(Date.now() - 7200000).toISOString() },
         { id: 3, message: "Edge Node 'Mumbai-1' synchronized successfully.", type: "system", time: new Date(Date.now() - 86400000).toISOString() }
     ];
