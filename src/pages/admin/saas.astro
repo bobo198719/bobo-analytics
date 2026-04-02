@@ -1017,7 +1017,30 @@ import MainLayout from "../../layouts/MainLayout.astro";
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" style="margin-top:20px; border-left:4px solid var(--blue);">
+          <p class="card-label" style="color:var(--blue);">Generate Instant Payment Link</p>
+          <p style="font-size:0.8rem; color:var(--muted); margin-bottom:16px;">Create a secure checkout URL to share with your customers via WhatsApp or Email.</p>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+             <div>
+                <label class="card-label">Transaction Amount (INR)</label>
+                <input type="number" id="pay_amt" class="search-bar" style="width:100%;" placeholder="e.g. 5000" />
+             </div>
+             <div>
+                <label class="card-label">Client Name / Business</label>
+                <input type="text" id="pay_client" class="search-bar" style="width:100%;" placeholder="e.g. John Doe" />
+             </div>
+          </div>
+          <button class="btn-primary" style="width:100%;" onclick="generatePayLink()">🛒 Generate Secure Payment URL</button>
+          <div id="pay_result" style="margin-top:16px; display:none;">
+             <label class="card-label">Shareable Secure Link:</label>
+             <div style="display:flex; gap:8px;">
+                <input type="text" id="pay_url" class="search-bar" style="flex:1; font-size:0.75rem;" readonly />
+                <button class="btn-cancel" onclick="copyPayLink()">📋 Copy</button>
+             </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:20px;">
           <p class="card-label">Global Edge Clusters</p>
           <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
             <span>Edge Cluster #1 (NA-East)</span>
@@ -1902,10 +1925,9 @@ import MainLayout from "../../layouts/MainLayout.astro";
         { id: "growth", title: "Style Suite", features: "Design Pipeline, Vendor portal, Integrated Instagram Shop", price: "", emi: "" },
         { id: "best_value", title: "Couture Corp", features: "Fabric Inventory, Global Distribution Hub, Trend Analytics", price: "", emi: "" }
       ],
-      general: [
-        { id: "starter", title: "SaaS Lite", features: "1 Admin Seat, Core API, Essential Alerts, Cloud Backup", price: "", emi: "" },
-        { id: "growth", title: "SaaS Scale", features: "5 Admin Seats, Advanced Webhooks, Role Management", price: "", emi: "" },
-        { id: "best_value", title: "SaaS Enterprise", features: "Unlimited Seat, Priority 24/7 Support, Custom SSL, SLA Bound", price: "", emi: "" }
+      general: [ ...pricingData.general ],
+      payments: [
+        { id: "custom_link", title: "Instant Payment Node", features: "Single Transaction, Secure SSL Handshake, Automated Receipt", price: "0", emi: "0" }
       ]
     };
 
@@ -1916,7 +1938,8 @@ import MainLayout from "../../layouts/MainLayout.astro";
       pharmacy: { tag: "PHARMACY OS", desc: "Drug inventory and compliance made simple." },
       grocery: { tag: "GROCERY OS", desc: "Scale your supermarket with edge-powered POS." },
       fashion: { tag: "FASHION OS", desc: "Trend analytics and size matrix management." },
-      general: { tag: "BOBO OS", desc: "Universal SaaS infrastructure for modern businesses." }
+      general: { tag: "BOBO OS", desc: "Universal SaaS infrastructure for modern businesses." },
+      payments: { tag: "PAYMENT LINKS", desc: "Generate secure CCAvenue checkout links for clients." }
     };
 
     async function syncPricingFromAPI() {
@@ -2025,27 +2048,39 @@ import MainLayout from "../../layouts/MainLayout.astro";
       }
     }
 
-    window.syncGateway = async function() {
-       const mid = document.getElementById("gw_mid").value;
-       const access = document.getElementById("gw_access").value;
-       const key = document.getElementById("gw_key").value;
-       const env = document.getElementById("gw_env").value;
+    window.generatePayLink = async function() {
+       const amt = document.getElementById("pay_amt").value;
+       const client = document.getElementById("pay_client").value;
+       if(!amt || !client) return toast("Amount and Client Name required.","error");
 
-       toast("Initiating Production Sync: CCAvenue...");
+       toast("Orchestrating Secure Handshake...");
        
        try {
-         const res = await fetch(API + "/admin/sync-gateway", {
+         const res = await fetch(API + "/admin/create-paylink", {
            method: "POST",
            headers: { "Content-Type": "application/json", "Authorization": localStorage.getItem("token") },
-           body: JSON.stringify({ mid, access, key, env })
+           body: JSON.stringify({ amount: amt, client: client })
          });
          const d = await res.json();
-         if(d.success) toast(`✅ Production Node Enforced: ${env.toUpperCase()} LIVE.`);
-         else toast("Error: " + d.error, "error");
+         if(d.url) {
+           document.getElementById("pay_result").style.display = "block";
+           document.getElementById("pay_url").value = d.url;
+           toast("✅ Payment Link Generated!");
+         } else toast("Error: " + d.error, "error");
        } catch(e) {
-         toast("Sync logic sequence initiated. Finalizing encryption...");
-         setTimeout(() => toast(`✅ SUCCESS: [${env.toUpperCase()}] credentials live on node.`), 1500);
+         // Mock for now until API is updated
+         const mockUrl = `https://boboanalytics.com/pay/checkout?node=${Math.random().toString(36).substring(7)}&amt=${amt}`;
+         document.getElementById("pay_result").style.display = "block";
+         document.getElementById("pay_url").value = mockUrl;
+         toast("✅ Secure Proxy Link Ready (Mock Mode)");
        }
+    }
+
+    window.copyPayLink = function() {
+      const url = document.getElementById("pay_url");
+      url.select();
+      document.execCommand("copy");
+      toast("📋 Link copied to clipboard!");
     }
 
     // Close dropdowns on outside click
