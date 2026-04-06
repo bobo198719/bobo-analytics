@@ -1,0 +1,20 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import TouchPOSComponent from "../components/restaurant/TouchPOS.jsx";
+import "../styles/restaurant.css";
+---
+
+<MainLayout title="Terminal POS | Bobo OS" hideNav={true}>
+  <div class="h-screen w-screen bg-[#111] overflow-hidden m-0 p-0 absolute inset-0">
+     <TouchPOSComponent client:load />
+  </div>
+  
+  <script is:inline>
+     // Ensure user is authenticated specifically for the Touch POS CRM
+     if (typeof localStorage !== 'undefined') {
+        if (localStorage.getItem('touch_pos_auth') !== 'true') {
+           window.location.href = '/touch-pos-login';
+        }
+     }
+  </script>
+</MainLayout>

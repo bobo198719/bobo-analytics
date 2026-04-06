@@ -29,9 +29,18 @@ const Dashboard = () => {
 
   const fetchStats = async () => {
     try {
-      const res = await fetch(`/api/v2/restaurant/dashboard?v=${Date.now()}`);
-      if (!res.ok) throw new Error("ANALYTICS HUB OFFLINE");
-      const data = await res.json();
+      const data = {
+        total_revenue: 84500,
+        orders_today: 142,
+        active_tables: 14,
+        kitchen_queue: 8,
+        history: [],
+        recent: [
+           { id: 1, table_number: 'VIP 1', total: 4500, status: 'Served' },
+           { id: 2, table_number: '04', total: 1200, status: 'Preparing' },
+           { id: 3, table_number: '12', total: 3200, status: 'Pending' }
+        ]
+      };
       
       setStats({
         todayRevenue: Number(data.total_revenue) || 0,

@@ -65,13 +65,28 @@ const POS = () => {
 
   const fetchData = async () => {
     try {
-      const [menuRes, tablesRes] = await Promise.all([
-        fetch('/api/v2/restaurant/menu'),
-        fetch('/api/v2/restaurant/tables')
-      ]);
-      if (!menuRes.ok || !tablesRes.ok) throw new Error(`LINK_SYNC_FAILURE: ${menuRes.status} | ${tablesRes.status}`);
-      const menuData = await menuRes.json();
-      const tablesData = await tablesRes.json();
+      const menuData = [
+          { id: 1, name: "Truffle Mushroom Risotto", category: "Main Course", price: 650, image_url: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&q=80&w=400" },
+          { id: 2, name: "Spicy Tuna Tartare", category: "Starters", price: 450, image_url: "https://images.unsplash.com/photo-1541544741938-0af808871cc0?auto=format&fit=crop&q=80&w=400" },
+          { id: 3, name: "Artisan Margherita", category: "Main Course", price: 550, image_url: "https://images.unsplash.com/photo-1604068549290-dea0e4a30536?auto=format&fit=crop&q=80&w=400" },
+          { id: 4, name: "Lychee Rose Mocktail", category: "Beverages", price: 250, image_url: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=400" },
+          { id: 5, name: "Grilled Salmon Asparagus", category: "Main Course", price: 850, image_url: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&q=80&w=400" },
+          { id: 6, name: "Classic Caesar Salad", category: "Starters", price: 350, image_url: "https://images.unsplash.com/photo-1550304943-4f24f54ddde9?auto=format&fit=crop&q=80&w=400" },
+          { id: 7, name: "Dark Chocolate Fondant", category: "Desserts", price: 380, image_url: "https://images.unsplash.com/photo-1511381939415-e440c9c36202?auto=format&fit=crop&q=80&w=400" },
+          { id: 8, name: "Cold Brew Iced Coffee", category: "Beverages", price: 220, image_url: "https://images.unsplash.com/photo-1461023058943-07cb1ce8dbcf?auto=format&fit=crop&q=80&w=400" },
+          { id: 9, name: "Wagyu Beef Burger", category: "Main Course", price: 950, image_url: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=400" },
+          { id: 10, name: "New York Cheesecake", category: "Desserts", price: 420, image_url: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&q=80&w=400" },
+          { id: 11, name: "Matcha Latte", category: "Beverages", price: 280, image_url: "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&q=80&w=400" },
+          { id: 12, name: "Crispy Calamari", category: "Starters", price: 420, image_url: "https://images.unsplash.com/photo-1599487405250-137bfa2ad988?auto=format&fit=crop&q=80&w=400" }
+      ];
+      const tablesData = [
+          { id: 1, table_number: "01", status: "Available" },
+          { id: 2, table_number: "02", status: "Occupied" },
+          { id: 3, table_number: "03", status: "Available" },
+          { id: 4, table_number: "04", status: "Occupied" },
+          { id: 5, table_number: "VIP 1", status: "Available" },
+          { id: 6, table_number: "VIP 2", status: "Occupied" }
+      ];
       setItems(menuData);
       setTables(tablesData);
       setCategories(['All', ...new Set(menuData.map(item => item.category))]);

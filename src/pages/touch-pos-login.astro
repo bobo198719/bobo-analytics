@@ -1,0 +1,79 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import "../styles/restaurant.css";
+---
+
+<MainLayout title="POS Touch Login | Bobo OS" hideNav={true}>
+  <div class="auth-page min-h-screen flex items-center justify-center p-6 relative font-['Plus_Jakarta_Sans'] text-white" style="background: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80') no-repeat center center; background-size: cover;">
+    <!-- Dark Theme Overlay -->
+    <div class="absolute inset-0 bg-[#05081a]/90 backdrop-blur-[8px] pointer-events-none z-0"></div>
+
+    <!-- Login Card -->
+    <div class="login-card max-w-lg w-full bg-white/5 border border-white/10 p-12 md:p-16 rounded-[48px] shadow-2xl backdrop-blur-3xl relative z-10 group transition-all hover:bg-white/[0.08] overflow-hidden">
+       
+       <div class="text-center mb-12">
+          <div class="w-24 h-24 bg-gradient-to-br from-green-500 to-emerald-700 rounded-[32px] flex items-center justify-center mx-auto mb-8 shadow-[0_10px_40px_rgba(34,197,94,0.4)]">
+              <svg class="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+          </div>
+          <h1 class="text-3xl font-black italic text-white uppercase tracking-tighter">TOUCH POS <span class="text-green-500">TERMINAL</span></h1>
+          <p class="text-white/40 text-xs font-bold uppercase tracking-widest mt-3">Separate Interface Mode</p>
+       </div>
+
+       <form id="posLoginForm" class="space-y-8">
+          <div class="space-y-3">
+             <label class="text-[10px] font-black uppercase text-white/30 tracking-[0.2em] ml-2">Terminal User</label>
+             <input type="text" id="adminId" placeholder="pos_admin" required class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-green-500 transition-all font-black text-sm uppercase text-center tracking-widest" />
+          </div>
+          <div class="space-y-3">
+             <label class="text-[10px] font-black uppercase text-white/30 tracking-[0.2em] ml-2">Secure PIN</label>
+             <input type="password" id="password" placeholder="1234" required class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-green-500 transition-all font-black text-xl text-center tracking-[1em]" />
+          </div>
+
+          <div id="errorBox" class="text-rose-500 text-[10px] font-black uppercase tracking-widest text-center min-h-[1rem]"></div>
+
+          <button type="submit" class="w-full py-6 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl text-white font-black uppercase tracking-widest text-sm shadow-[0_10px_30px_rgba(34,197,94,0.3)] hover:scale-[1.02] active:scale-95 transition-all">
+             Unlock Terminal
+          </button>
+       </form>
+    </div>
+  </div>
+
+  <script is:inline>
+    const form = document.getElementById("posLoginForm");
+    const errorBox = document.getElementById("errorBox");
+
+    form.onsubmit = async (e) => {
+       e.preventDefault();
+       const id = document.getElementById("adminId").value.trim().toLowerCase();
+       const pass = document.getElementById("password").value.trim();
+
+       // New specific credentials for the completely separate POS CRM CRM
+       if (id === 'pos_admin' && pass === '1234') {
+          errorBox.innerText = "Provisioning Touch POS Terminal...";
+          errorBox.style.color = "#22c55e";
+          
+          localStorage.setItem('touch_pos_auth', 'true');
+          
+          setTimeout(() => {
+             window.location.href = "/touch-pos";
+          }, 600);
+       } else {
+          errorBox.innerText = "Invalid PIN or Terminal ID";
+          errorBox.style.color = "#f43f5e";
+          form.classList.add('shake');
+          setTimeout(() => form.classList.remove('shake'), 400);
+       }
+    };
+  </script>
+
+  <style is:global>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #05081a; }
+    .shake { animation: shake 0.4s ease; }
+    @keyframes shake {
+       0%, 100% { transform: translateX(0); }
+       25% { transform: translateX(-8px); }
+       75% { transform: translateX(8px); }
+    }
+  </style>
+</MainLayout>

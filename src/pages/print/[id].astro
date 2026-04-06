@@ -1,0 +1,101 @@
+---
+export const prerender = false; // Enable dynamic SSR for dynamic print IDs if necessary, or just read from URL using client-side JS
+
+import "../../styles/restaurant.css";
+const { id } = Astro.params;
+---
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Invoice - Bobo POS</title>
+</head>
+<body class="bg-[#e4e4e4] flex justify-center py-10 font-mono text-sm leading-tight text-black">
+   
+   <div id="receiptContainer" class="bg-white p-8 w-[350px] shadow-2xl printable-area border-t-8 border-black">
+      <div class="text-center mb-6">
+          <h1 class="text-2xl font-black uppercase mb-1">BOBO TERMINAL</h1>
+          <p class="font-bold">Order ID: <span id="displayId">WAITING...</span></p>
+          <p>Date: <span id="date"></span></p>
+      </div>
+
+      <div class="border-b-2 border-dashed border-black my-4"></div>
+      
+      <div id="itemsContainer" class="space-y-2 font-bold uppercase">
+         <!-- Injected by JS -->
+      </div>
+      
+      <div class="border-b-2 border-dashed border-black my-4"></div>
+
+      <div class="flex justify-between font-bold">
+         <span>Subtotal</span>
+         <span id="subtotal">₹0.00</span>
+      </div>
+      <div class="flex justify-between font-bold">
+         <span>Tax (5%)</span>
+         <span id="tax">₹0.00</span>
+      </div>
+      
+      <div class="flex justify-between text-2xl font-black mt-4 pt-2 border-t border-black border-dashed">
+         <span>TOTAL</span>
+         <span id="total">₹0.00</span>
+      </div>
+      
+      <div class="text-center mt-10 text-xs font-bold uppercase tracking-widest text-black/50">
+         Powered by Bobo Solutions
+      </div>
+   </div>
+
+   <script>
+      // Automatically Print on load
+      const urlPath = window.location.pathname;
+      const orderId = urlPath.split('/').pop();
+      document.getElementById('displayId').innerText = orderId || 'TEST-123';
+      document.getElementById('date').innerText = new Date().toLocaleString();
+      
+      // We simulate passing the cart data via LocalStorage or just mock it for the demo
+      const itemsContainer = document.getElementById('itemsContainer');
+      const mockItems = [
+         { name: "TRUFFLE RISOTTO", qty: 2, price: 650 },
+         { name: "SPICY TARTARE", qty: 1, price: 450 }
+      ];
+      
+      let subtotal = 0;
+      mockItems.forEach(i => {
+         subtotal += (i.qty * i.price);
+         itemsContainer.innerHTML += `
+            <div class="flex justify-between">
+               <span class="flex-1">${i.name} x${i.qty}</span>
+               <span>₹${(i.price * i.qty).toFixed(2)}</span>
+            </div>
+         `;
+      });
+      
+      const tax = subtotal * 0.05;
+      const total = subtotal + tax;
+      
+      document.getElementById('subtotal').innerText = '₹' + subtotal.toFixed(2);
+      document.getElementById('tax').innerText = '₹' + tax.toFixed(2);
+      document.getElementById('total').innerText = '₹' + total.toFixed(2);
+
+      window.onload = () => {
+         setTimeout(() => {
+            window.print();
+            // Optional: Close tab automatically after printing
+            // setTimeout(() => window.close(), 1000);
+         }, 500);
+      };
+   </script>
+
+   <style>
+      @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+      body { font-family: 'Space Mono', monospace; }
+
+      @media print {
+         body { background: white; margin: 0; padding: 0; display: block; }
+         #receiptContainer { box-shadow: none; width: 100%; border: none; padding: 0; margin: 0; }
+         @page { margin: 0; size: 80mm auto; } /* Standard Thermal Paper width */
+      }
+   </style>
+</body>
+</html>
