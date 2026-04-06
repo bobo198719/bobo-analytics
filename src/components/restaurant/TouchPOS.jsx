@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, LogOut, Printer, AlertTriangle, MonitorPlay } from 'lucide-react';
+import { ShoppingCart, LogOut, Printer, AlertTriangle, MonitorPlay, Usb } from 'lucide-react';
+import { ThermalPrinter } from '../../utils/ThermalPrinter.js';
 
 const TouchPOS = () => {
   const [categories, setCategories] = useState(['All', 'Starters', 'Main Course', 'Beverages', 'Desserts']);
@@ -83,15 +84,71 @@ const TouchPOS = () => {
   const getGST = () => getSubtotal() * 0.05;
   const getTotal = () => getSubtotal() + getGST();
 
-  const handleGenerateBill = () => {
+  const handleGenerateBill = async () => {
     if (!selectedTable) return alert("Please select a table before generating the bill!");
     if (cart.length === 0) return alert("Basket is empty!");
-    const orderId = "ORD-" + Math.floor(Math.random() * 1000000);
-    // Simulate flow
-    alert("Order Saved!");
-    window.open(`/print/${orderId}`, '_blank');
-    setCart([]);
-    setSelectedTable(null);
+    
+    try {
+       // 1. SaaS Verification Gate
+       const saasCheck = await fetch('/api/v2/saas/subscription', {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json' },
+           body: JSON.stringify({ tenantId: "demo", action: "check_hardware" })
+       });
+       if (!saasCheck.ok) {
+           const err = await saasCheck.json();
+           alert(`SaaS Lock: ${err.error}`);
+           return;
+       }
+
+       const orderId = "ORD-" + Math.floor(Math.random() * 1000000);
+       
+       // 2. Persist to Backend Database Matrix
+       await fetch('/api/v2/restaurant/pos-orders', {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json' },
+           body: JSON.stringify({
+               order_id: orderId,
+               items: cart,
+               total_amount: getTotal(),
+               table_id: selectedTable,
+               saas_tenant_id: "demo_rest_01"
+           })
+       });
+
+       alert("Order saved in Database Matrix!");
+
+       // 3. Connect and Execute Hardware Print (Thermal Printer)
+       try {
+           const printer = new ThermalPrinter();
+           const connected = await printer.connect();
+           if (connected) {
+               await printer.printReceipt({
+                   orderId: orderId,
+                   table: tables.find(t=>t.id === selectedTable)?.num || 'Unknown',
+                   items: cart,
+                   subtotal: getSubtotal(),
+                   tax: getGST(),
+                   total: getTotal()
+               });
+               await printer.disconnect();
+               showToast("Thermal Print Successful ✔");
+           } else {
+               // Fallback to browser UI print simulation if hardware not found
+               window.open(`/print/${orderId}`, '_blank');
+           }
+       } catch (hwError) {
+          console.log("Hardware Error, falling back to Web UI:", hwError);
+          window.open(`/print/${orderId}`, '_blank');
+       }
+
+       setCart([]);
+       setSelectedTable(null);
+
+    } catch (err) {
+       console.error(err);
+       alert("CRITICAL FAIL: Matrix disconnected.");
+    }
   };
 
   const handlePrintDone = () => {
