@@ -41,6 +41,24 @@ const industryData = {
       ["Efficiency", "Reduced operational overhead", "High wastage/loss"]
     ]
   },
+  society: {
+    title: "Society Ledger OS",
+    tagline: "Prime Intelligence for Smart Societies",
+    description: "Real-time asset, finance, and security management for modern residential and commercial complexes.",
+    icon: "🏢",
+    benefits: [
+      "Real-time Collection Velocity Tracking",
+      "Automated WhatsApp Bulk Reminders",
+      "Visitor Gate Pass Engine",
+      "Unified Dashboard for Complaints & Defaulters"
+    ],
+    comparison: [
+      ["Billing", "Auto-recurring & WhatsApp PDFs", "Complex manual tracking"],
+      ["Reminders", "1-Click Bulk WhatsApp", "Dialing individually"],
+      ["Security", "Real-time Gate Logs", "Paper logbooks"],
+      ["Compliance", "Zero due slip-ups", "Losing track of defaulters"]
+    ]
+  },
   healthcare: {
     title: "Healthcare CRM",
     tagline: "Patient Care Powered by AI Analytics",
@@ -178,8 +196,110 @@ const data = industryData[id] || industryData.baker;
           <h2>Unified Dashboard</h2>
           <p>Get a bird's-eye view of your {data.title.toLowerCase()} from one terminal. Automated, real-time, and mobile-ready.</p>
         </div>
-        <div class="visual-frame">
-          <img src={`https://images.unsplash.com/photo-1551288049-bbda38a5f452?auto=format&fit=crop&q=80&w=1000`} alt="Dashboard Preview" />
+        <div class="visual-frame relative-frame" style="background:#0b0f19; padding:0;">
+          {id === 'baker' || !id ? (
+            <div class="video-storyboard">
+               <!-- Scene 1: Customer Phone -->
+               <div class="scene-phone">
+                  <div class="phone-screen">
+                     <div class="cake-img">🎂</div>
+                     <div class="phone-title">Truffle Cake</div>
+                     <div class="phone-btn">Buy Now ₹450</div>
+                     <div class="phone-cursor">👆</div>
+                     <div class="phone-success">✅ Ordered!</div>
+                  </div>
+               </div>
+
+               <!-- Scene 2: CRM Dashboard -->
+               <div class="scene-crm">
+                  <div class="crm-topbar">
+                     <span>Trivia OS Baker</span>
+                     <span class="pulse-dot"></span>
+                  </div>
+                  <div class="crm-content-mock">
+                     <div class="crm-graph">
+                        <svg viewBox="0 0 100 40">
+                           <path d="M0,35 L20,35 L40,30 L60,15 L80,5 L100,0" fill="none" class="crm-graph-line" />
+                        </svg>
+                     </div>
+                     <div class="crm-toast-mock">
+                        🔔 New KOT: Truffle Cake!
+                     </div>
+                  </div>
+               </div>
+
+               <!-- Scene 3: Happy Customer -->
+               <div class="scene-review">
+                  <div class="review-box">
+                     <div class="stars">⭐⭐⭐⭐⭐</div>
+                     <div class="review-text">"So delicious! The ordering process was seamless. Super happy with Trivia OS Baker!"</div>
+                     <div class="customer-avatar">👧 Happy Customer</div>
+                  </div>
+               </div>
+
+               <!-- Progress Bar -->
+               <div class="video-progress"></div>
+            </div>
+          ) : id === 'society' ? (
+            <div class="society-dashboard-simulation">
+               <div class="sl-sidebar">
+                  <div class="sl-logo"><span class="o-logo">S</span> SOCIETY LEDGER</div>
+                  <div class="sl-nav">CORE BUSINESS</div>
+                  <div class="sl-item active">Dashboard</div>
+                  <div class="sl-item">Billing</div>
+                  <div class="sl-item">Residents</div>
+                  <div class="sl-nav">SECURITY & OPS</div>
+                  <div class="sl-item">Visitor Gate</div>
+                  <div class="sl-item">WhatsApp Reminders</div>
+                  <div class="sl-item">Complaints</div>
+               </div>
+               <div class="sl-main">
+                  <div class="sl-header">
+                     <div class="sl-title-box">
+                        <h2>PRIME LEDGER INTELLIGENCE</h2>
+                        <p>REAL-TIME ASSET MANAGEMENT FOR PRIME TOWER A BRANCH.</p>
+                     </div>
+                     <div class="sl-admin"><span class="sa-icon">SA</span> <div style="display:inline-block; line-height: 1.1;"><strong>SOCIETY ADMIN</strong><br/><small>PRIME TOWER A</small></div></div>
+                  </div>
+                  <div class="sl-metrics-grid">
+                     <div class="sl-metric-card"><div class="sl-card-top"><span class="sl-icon">🏢</span> <span class="sl-sub">100% OCC.</span></div><span class="sm-label">TOTAL FLATS</span><span class="sm-value">120</span></div>
+                     <div class="sl-metric-card"><div class="sl-card-top"><span class="sl-icon">💰</span> <span class="sl-sub">GOAL ₹2.5L</span></div><span class="sm-label">MONTHLY REV.</span><span class="sm-value">₹2.4L</span></div>
+                     <div class="sl-metric-card"><div class="sl-card-top"><span class="sl-icon">✅</span> <span class="sl-sub">22 PENDING</span></div><span class="sm-label">PAID BILLS</span><span class="sm-value">98</span></div>
+                     <div class="sl-metric-card sl-alert"><div class="sl-card-top"><span class="sl-icon">⚠️</span> <span class="sl-sub warning">DUE NOW</span></div><span class="sm-label">DEFAULTERS</span><span class="sm-value">₹42,500</span></div>
+                     <div class="sl-metric-card"><div class="sl-card-top"><span class="sl-icon">🔔</span> <span class="sl-sub warning">2 CRITICAL</span></div><span class="sm-label">ACTIVE COMPLAIN</span><span class="sm-value">4</span></div>
+                  </div>
+                  
+                  <div class="sl-content-split">
+                     <div class="sl-graph-box">
+                        <div class="sl-box-title">COLLECTION VELOCITY</div>
+                        <div class="sl-bars">
+                           <div class="sl-bar" style="--h: 40%"></div>
+                           <div class="sl-bar" style="--h: 60%"></div>
+                           <div class="sl-bar" style="--h: 70%"></div>
+                           <div class="sl-bar" style="--h: 50%"></div>
+                           <div class="sl-bar" style="--h: 80%"></div>
+                           <div class="sl-bar" style="--h: 30%"></div>
+                           <div class="sl-bar" style="--h: 90%" id="live-bar"></div>
+                        </div>
+                     </div>
+                     <div class="sl-dues-box">
+                        <div class="sl-box-title">CRITICAL DUES <span style="float:right; cursor:pointer;">MANAGE ALL</span></div>
+                        <div class="sl-due-item">
+                           <div class="due-info"><strong>Rahul Sharma</strong><br/><small>Yesterday</small></div>
+                           <div class="due-amt">₹2,500<br/><span class="badge overdue">OVERDUE</span></div>
+                        </div>
+                        <div class="sl-due-item">
+                           <div class="due-info"><strong>Priya Patel</strong><br/><small>Today</small></div>
+                           <div class="due-amt">₹3,200<br/><span class="badge pending">PENDING</span></div>
+                        </div>
+                        <button class="sl-btn-remind">BULK WHATSAPP REMINDERS</button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+          ) : (
+            <img src={`https://images.unsplash.com/photo-1551288049-bbda38a5f452?auto=format&fit=crop&q=80&w=1000`} alt="Dashboard Preview" />
+          )}
         </div>
       </div>
 
@@ -244,9 +364,168 @@ const data = industryData[id] || industryData.baker;
   .bottom-cta { text-align: center; background: rgba(99,102,241,0.05); border: 1px dashed rgba(99,102,241,0.3); padding: 60px; border-radius: 40px; margin-top: 100px; }
   .bottom-cta h3 { font-size: 2rem; margin-bottom: 30px; }
 
+  /* --- BAKER OS VIDEO STORYBOARD (Native CSS Video) --- */
+  .relative-frame { position: relative; overflow: hidden; min-height: 450px; }
+  .video-storyboard {
+     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+     background: #0b0f19; border-radius: 12px; overflow: hidden;
+  }
+
+  /* Shared Scene Defaults */
+  .scene-phone, .scene-crm, .scene-review {
+     position: absolute; width: 100%; height: 100%;
+     display: flex; align-items: center; justify-content: center;
+     opacity: 0; pointer-events: none;
+  }
+
+  /* ------ SCENE 1: CUSTOMER PHONE ------ */
+  .scene-phone { animation: scene1 12s infinite; }
+  .phone-screen {
+     width: 200px; height: 350px; background: white; border-radius: 20px;
+     border: 6px solid #333; display: flex; flex-direction: column; align-items: center; justify-content: center;
+     box-shadow: 0 20px 40px rgba(0,0,0,0.5); position: relative;
+  }
+  .cake-img { font-size: 3rem; margin-bottom: 10px; }
+  .phone-title { color: #111; font-weight: 800; font-size: 1.2rem; margin-bottom: 20px; }
+  .phone-btn { background: #6366f1; color: white; padding: 10px 20px; border-radius: 8px; font-weight: 700; }
+  .phone-cursor {
+     position: absolute; font-size: 1.5rem; bottom: -20px; right: 20px;
+     animation: cursorClick 12s infinite; opacity: 0;
+  }
+  .phone-success {
+     position: absolute; background: #10b981; color: white; padding: 8px 16px; border-radius: 20px; font-weight: bold;
+     opacity: 0; animation: successPop 12s infinite;
+  }
+
+  /* ------ SCENE 2: CRM DASHBOARD ------ */
+  .scene-crm { animation: scene2 12s infinite; }
+  .crm-topbar { width: 100%; height: 40px; background: #1a1e2e; position: absolute; top:0; left:0; display:flex; align-items:center; padding: 0 15px; color: white; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: space-between; }
+  .pulse-dot { width: 10px; height: 10px; background: #10b981; border-radius: 50%; box-shadow: 0 0 10px #10b981; }
+  .crm-content-mock { margin-top: 50px; width: 80%; height: 200px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 20px; position: relative; }
+  .crm-graph { width: 100%; height: 100%; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .crm-graph-line { stroke: #10b981; stroke-width: 4; stroke-linecap: round; stroke-dasharray: 200; stroke-dashoffset: 200; animation: drawGraph 12s infinite; }
+  .crm-toast-mock { 
+     position: absolute; bottom: -20px; right: -20px; background: #05081a;
+     border: 1px solid #6366f1; color: white; padding: 12px 20px; border-radius: 8px;
+     box-shadow: 0 10px 30px rgba(0,0,0,0.5); opacity: 0; animation: toastPop 12s infinite;
+  }
+
+  /* ------ SCENE 3: HAPPY CUSTOMER ------ */
+  .scene-review { animation: scene3 12s infinite; }
+  .review-box {
+     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+     padding: 30px; border-radius: 16px; color: white; text-align: center;
+     width: 80%; box-shadow: 0 20px 50px rgba(16, 185, 129, 0.4);
+  }
+  .stars { font-size: 1.5rem; margin-bottom: 10px; }
+  .review-text { font-size: 1.1rem; font-weight: 500; font-style: italic; margin-bottom: 15px; }
+  .customer-avatar { font-weight: 800; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* ------ PROGRESS BAR ------ */
+  .video-progress { position: absolute; bottom: 0; left: 0; height: 4px; background: #6366f1; animation: progressBar 12s linear infinite; }
+
+  /* ================= KEYFRAMES (12-Second Timeline) ================= */
+  
+  @keyframes progressBar { 0% { width: 0%; } 100% { width: 100%; } }
+
+  /* Scene 1: 0s to 4s */
+  @keyframes scene1 {
+     0%, 5% { opacity: 0; transform: translateY(50px); }
+     10%, 30% { opacity: 1; transform: translateY(0); }
+     35%, 100% { opacity: 0; transform: translateY(-50px); }
+  }
+  @keyframes cursorClick {
+     0%, 15% { opacity: 0; transform: translate(50px, 50px); }
+     20% { opacity: 1; transform: translate(0, 0) scale(0.9); }
+     25%, 100% { opacity: 0; transform: translate(0, 0); }
+  }
+  @keyframes successPop {
+     0%, 20% { opacity: 0; transform: scale(0.5); }
+     25%, 33% { opacity: 1; transform: scale(1.1); }
+     35%, 100% { opacity: 0; transform: scale(1); }
+  }
+
+  /* Scene 2: 3.5s to 8s */
+  @keyframes scene2 {
+     0%, 30% { opacity: 0; transform: scale(0.9); }
+     35%, 75% { opacity: 1; transform: scale(1); }
+     80%, 100% { opacity: 0; transform: scale(1.1); }
+  }
+  @keyframes toastPop {
+     0%, 40% { opacity: 0; transform: translateY(20px); }
+     45%, 75% { opacity: 1; transform: translateY(0); }
+     80%, 100% { opacity: 0; transform: translateY(-20px); }
+  }
+  @keyframes drawGraph {
+     0%, 45% { stroke-dashoffset: 200; }
+     55%, 75% { stroke-dashoffset: 0; }
+     80%, 100% { stroke-dashoffset: 0; }
+  }
+
+  /* Scene 3: 7.5s to 11.5s */
+  @keyframes scene3 {
+     0%, 70% { opacity: 0; transform: translateY(50px); }
+     75%, 95% { opacity: 1; transform: translateY(0); }
+     100% { opacity: 0; transform: translateY(-50px); }
+  }
+
   @media (max-width: 768px) {
     .visual-block { grid-template-columns: 1fr; gap: 30px; }
     .industry-hero h1 { font-size: 2.5rem; }
     .description { font-size: 1.1rem; }
+  }
+
+  /* --- SOCIETY LEDGER CUSTOM DASHBOARD MOCKUP --- */
+  .society-dashboard-simulation {
+     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+     background: #f8fafc; color: #0f172a; display: flex; font-family: 'Inter', sans-serif;
+  }
+  .sl-sidebar {
+     width: 200px; background: white; border-right: 1px solid #e2e8f0; padding: 20px 0;
+     display: flex; flex-direction: column; font-size: 0.85rem; font-weight: 600;
+  }
+  .sl-logo { font-weight: 900; color: #f97316; margin-bottom: 30px; padding: 0 15px; display: flex; align-items: center; gap: 8px; }
+  .o-logo { background: #f97316; color: white; padding: 2px 6px; border-radius: 4px; }
+  .sl-nav { font-size: 0.7rem; color: #94a3b8; margin: 15px 0 5px 15px; font-weight: 800; letter-spacing: 0.5px; }
+  .sl-item { padding: 8px 15px; color: #475569; cursor: pointer; }
+  .sl-item.active { background: #000; color: white; border-radius: 0 20px 20px 0; width: 90%; }
+  
+  .sl-main { flex: 1; padding: 20px 30px; display: flex; flex-direction: column; gap: 20px; }
+  .sl-header { display: flex; justify-content: space-between; align-items: center; }
+  .sl-title-box h2 { font-size: 1.4rem; font-weight: 900; color: #000; letter-spacing: -0.5px; }
+  .sl-title-box p { font-size: 0.75rem; color: #000; font-weight: 800; }
+  .sl-admin { display: flex; align-items: center; gap: 10px; font-size: 0.75rem; }
+  .sa-icon { background: #f59e0b; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+  
+  .sl-metrics-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  .sl-metric-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 5px; }
+  .sl-card-top { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 700; align-items: center; }
+  .sl-icon { font-size: 1.2rem; }
+  .sm-label { font-size: 0.7rem; color: #000; font-weight: 800; margin-top: 5px; }
+  .sm-value { font-size: 1.3rem; font-weight: 900; color: #000; }
+  .sl-sub.warning { color: #f59e0b; }
+  
+  .sl-content-split { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; flex: 1; }
+  .sl-box-title { font-size: 0.75rem; font-weight: 800; color: #000; margin-bottom: 20px; text-transform: uppercase; }
+  .sl-graph-box, .sl-dues-box { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; }
+  
+  .sl-bars { display: flex; align-items: flex-end; gap: 10px; height: 150px; padding-top: 20px; }
+  .sl-bar { flex: 1; background: #e2e8f0; border-radius: 4px 4px 0 0; animation: growBar 2s ease forwards; transform-origin: bottom; }
+  #live-bar { background: #000; }
+  
+  .sl-due-item { border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .due-info strong { font-size: 0.85rem; color: #000; }
+  .due-info small { font-size: 0.7rem; color: #64748b; }
+  .due-amt { text-align: right; font-size: 0.85rem; font-weight: 800; }
+  .badge { font-size: 0.6rem; padding: 3px 6px; border-radius: 4px; font-weight: 800; }
+  .badge.overdue { background: #000; color: white; }
+  .badge.pending { background: #f1f5f9; color: #000; }
+  
+  .sl-btn-remind { width: 100%; padding: 12px; border: 1px solid #e2e8f0; background: white; border-radius: 20px; font-size: 0.75rem; font-weight: 800; cursor: pointer; text-align: center; margin-top: 15px; }
+  .sl-btn-remind:hover { background: #f8fafc; }
+
+  @keyframes growBar {
+     0% { height: 0%; }
+     100% { height: var(--h); }
   }
 </style>
