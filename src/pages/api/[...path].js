@@ -143,7 +143,8 @@ export async function ALL({ request, params }) {
     }
 
     // Only intercept paths that should go to the Hostinger API
-    if (!pathname.includes('/api/') || pathname.includes('/api/v2/')) {
+    if (!pathname.includes('/api/')) return undefined;
+    if (pathname.includes('/api/v2/') && !pathname.includes('/api/v2/restaurant')) {
         return undefined;
     }
 
