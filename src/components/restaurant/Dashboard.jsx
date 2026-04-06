@@ -52,8 +52,10 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchStats();
+    // WebSocket disabled/offline fallback -> Safe 10s Polling
+    const interval = setInterval(fetchStats, 10000); 
     
-    // Rely solely on WebSocket to prevent Vercel Serverless Rate Limiting (429 errors)
+    // Attempt WebSocket, but rely on polling if it fails
     const ws = new WebSocket('wss://srv1449576.hstgr.cloud:8080');
     ws.onmessage = (event) => {
         const msg = JSON.parse(event.data);
@@ -62,6 +64,7 @@ const Dashboard = () => {
         }
     };
     return () => {
+        clearInterval(interval);
         ws.close();
     };
   }, []);
