@@ -1,0 +1,95 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+---
+
+<MainLayout title="Kitchen Display System (KDS)">
+    <div class="min-h-screen bg-gray-900 text-gray-100 flex flex-col font-sans">
+        <header class="bg-gray-800 p-4 border-b border-gray-700 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <h1 class="text-2xl font-black text-white tracking-widest uppercase">KDS Terminal</h1>
+                <span class="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-xs font-bold ring-1 ring-green-500/50">Live Sync Active</span>
+            </div>
+            <div class="flex gap-4">
+                <div class="text-center rounded bg-gray-700 px-4 py-1">
+                    <span class="block text-xs text-gray-400 uppercase font-bold">Pending Orders</span>
+                    <span class="text-xl font-bold">12</span>
+                </div>
+                <div class="text-center rounded bg-gray-700 px-4 py-1">
+                    <span class="block text-xs text-gray-400 uppercase font-bold">Average Prep</span>
+                    <span class="text-xl font-bold">14m</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 p-6 overflow-x-auto flex gap-6" id="ticket-lane">
+            <!-- Ticket Card 1 -->
+            <div class="min-w-[300px] w-80 bg-gray-800 rounded-xl overflow-hidden flex flex-col shadow-xl border-t-4 border-blue-500 ring-1 ring-gray-700">
+                <div class="p-4 bg-gray-800/80 flex justify-between items-center border-b border-gray-700">
+                    <div>
+                        <h2 class="text-lg font-black text-white">#TKT-829</h2>
+                        <span class="text-xs font-bold text-gray-400">TABLE 14</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-sm font-bold block text-blue-400">03:45</span>
+                        <span class="text-xs text-gray-500 block">Waiting</span>
+                    </div>
+                </div>
+                
+                <div class="flex-1 p-0 flex flex-col divide-y divide-gray-700/50 overflow-y-auto">
+                    <!-- Line item -->
+                    <div class="p-4 flex gap-3 hover:bg-gray-750 cursor-pointer group">
+                        <div class="w-8 h-8 rounded bg-gray-700 flex items-center justify-center font-bold text-white shadow-inner">2x</div>
+                        <div>
+                            <div class="font-bold text-white text-lg">Mushroom Burger</div>
+                            <div class="text-sm text-yellow-500 font-medium">MOD: No Onions</div>
+                            <div class="text-sm text-yellow-500 font-medium">MOD: Extra Pickles</div>
+                        </div>
+                    </div>
+                     <!-- Line item -->
+                     <div class="p-4 flex gap-3 hover:bg-gray-750 cursor-pointer group bg-green-900/20">
+                        <div class="w-8 h-8 rounded bg-green-800 flex items-center justify-center font-bold text-white shadow-inner">1x</div>
+                        <div>
+                            <div class="font-bold text-gray-300 text-lg line-through">Caesar Salad</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- BUMP action -->
+                <div class="p-3 bg-gray-900 border-t border-gray-700">
+                    <button class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-lg text-lg uppercase tracking-wider shadow-lg transition">Bump Ticket</button>
+                </div>
+            </div>
+            
+            <!-- Ticket Card 2 (Urgent) -->
+             <div class="min-w-[300px] w-80 bg-gray-800 rounded-xl overflow-hidden flex flex-col shadow-xl border-t-4 border-red-500 ring-1 ring-gray-700 animate-pulse-slow">
+                <div class="p-4 bg-red-900/20 flex justify-between items-center border-b border-gray-700">
+                    <div>
+                        <h2 class="text-lg font-black text-white">#TKT-824</h2>
+                        <span class="text-xs font-bold text-red-400">UBER EATS</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-sm font-bold block text-red-500">22:15</span>
+                        <span class="text-xs text-red-400 block font-bold uppercase">Overdue</span>
+                    </div>
+                </div>
+                <div class="flex-1 p-0 flex flex-col divide-y divide-gray-700/50 overflow-y-auto">
+                    <div class="p-4 flex gap-3 hover:bg-gray-750 cursor-pointer">
+                        <div class="w-8 h-8 rounded bg-gray-700 flex items-center justify-center font-bold text-white shadow-inner">1x</div>
+                        <div>
+                            <div class="font-bold text-white text-lg">Spicy Tuna Roll</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-3 bg-gray-900 border-t border-gray-700">
+                    <button class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-lg text-lg uppercase tracking-wider shadow-lg transition">Complete Order</button>
+                </div>
+            </div>
+            
+        </main>
+        <style>
+            .animate-pulse-slow {
+                animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+        </style>
+    </div>
+</MainLayout>

@@ -52,9 +52,8 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchStats();
-    // Phase 5: Polling every 3s
-    const interval = setInterval(fetchStats, 3000); 
     
+    // Rely solely on WebSocket to prevent Vercel Serverless Rate Limiting (429 errors)
     const ws = new WebSocket('wss://srv1449576.hstgr.cloud:8080');
     ws.onmessage = (event) => {
         const msg = JSON.parse(event.data);
@@ -63,7 +62,6 @@ const Dashboard = () => {
         }
     };
     return () => {
-        clearInterval(interval);
         ws.close();
     };
   }, []);

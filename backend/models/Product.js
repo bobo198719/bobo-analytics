@@ -5,7 +5,9 @@ const ProductSchema = new mongoose.Schema({
     name: String,
     description: String,
     desc: String, // Supporting both templates
-    price: Number,
+    price: Number, // Cash/Base price
+    price_card: Number, // Dual pricing: Card price
+    currency: { type: String, default: "USD" },
     category: String,
     cat: String, // Supporting both templates
     image_path: String,

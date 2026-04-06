@@ -1,0 +1,91 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+---
+
+<MainLayout title="Customer Display System">
+    <div class="h-screen bg-white text-gray-900 flex overflow-hidden font-sans">
+        <!-- Left: Marketing / Upsell Carousel -->
+        <main class="flex-1 relative bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=1965&auto=format&fit=crop');">
+            <!-- Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent flex flex-col justify-center p-12">
+                <h1 class="text-6xl font-black text-white mb-4 leading-tight">Add a <br/><span class="text-yellow-400">Milkshake</span><br/>for just $3.99</h1>
+                <p class="text-2xl text-gray-200">Ask your cashier today!</p>
+            </div>
+            
+            <!-- Store Branding -->
+            <div class="absolute top-8 left-8">
+                <div class="bg-white/90 backdrop-blur px-6 py-3 rounded-2xl shadow-xl border border-white/20 inline-block font-black text-2xl tracking-widest uppercase bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-fuchsia-600">
+                    BOBO BURGER BAR
+                </div>
+            </div>
+        </main>
+
+        <!-- Right: Current Cart -->
+        <aside class="w-1/3 min-w-[400px] bg-gray-50 shadow-2xl flex flex-col z-10 border-l border-gray-200" id="cds-cart">
+            <header class="p-6 bg-white border-b border-gray-200 flex justify-between items-center">
+                <h2 class="text-2xl font-black text-gray-800">Your Order</h2>
+                <div class="animate-pulse bg-green-100 text-green-700 px-4 py-1 rounded-full text-sm font-bold uppercase ring-1 ring-green-600/20">Please review</div>
+            </header>
+            
+            <!-- Items List -->
+            <div class="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
+                <!-- Example Item -->
+                <div class="flex justify-between items-start animate-fade-in">
+                    <div>
+                        <div class="font-bold text-lg text-gray-800">2x Double Cheeseburger</div>
+                        <div class="text-sm text-gray-500 font-medium">No Pickles</div>
+                    </div>
+                    <div class="font-black text-lg text-indigo-600">$18.00</div>
+                </div>
+                 <!-- Example Item -->
+                 <div class="flex justify-between items-start animate-fade-in">
+                    <div>
+                        <div class="font-bold text-lg text-gray-800">1x Large Fries</div>
+                    </div>
+                    <div class="font-black text-lg text-indigo-600">$4.50</div>
+                </div>
+            </div>
+
+            <!-- Totals Area -->
+            <div class="p-6 bg-white border-t border-gray-200 relative overflow-hidden">
+                <!-- Dual Pricing Highlight -->
+                <div class="absolute -right-12 -top-10 w-40 h-40 bg-fuchsia-500/10 rounded-full blur-2xl z-0"></div>
+                
+                <div class="relative z-10 flex justify-between mb-3 text-lg font-medium text-gray-600">
+                    <p>Subtotal</p><p>$22.50</p>
+                </div>
+                <div class="relative z-10 flex justify-between mb-4 text-lg font-medium text-gray-600 pb-4 border-b border-gray-100">
+                    <p>Tax</p><p>$1.80</p>
+                </div>
+                
+                <!-- Dual Pricing Display -->
+                <div class="relative z-10 flex items-center justify-between bg-indigo-50 p-4 rounded-2xl border border-indigo-100 mb-4 shadow-sm">
+                    <div>
+                        <p class="text-indigo-800 font-black text-2xl">Cash Total</p>
+                        <p class="text-indigo-500 text-sm font-bold mt-1 tracking-wide uppercase">Save 3.5%</p>
+                    </div>
+                    <p class="text-4xl font-black text-indigo-900">$24.30</p>
+                </div>
+                
+                <div class="relative z-10 flex items-center justify-between p-2 pl-4 pr-4">
+                    <p class="text-gray-500 font-bold text-lg uppercase tracking-wider">Card Total</p>
+                    <p class="text-2xl font-black text-gray-400">$25.15</p>
+                </div>
+            </div>
+            
+            <div class="p-6 bg-gray-900 text-center">
+                <span class="text-white font-bold text-xl inline-flex items-center gap-2">
+                    <svg class="w-6 h-6 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    Please Pay Cashier
+                </span>
+            </div>
+        </aside>
+        <style>
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        </style>
+    </div>
+</MainLayout>
