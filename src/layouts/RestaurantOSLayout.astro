@@ -62,86 +62,107 @@ const { title = "Restaurant OS" } = Astro.props;
         background: rgba(255,255,255,0.05) !important;
         color: white !important;
       }
+      .nav-link.active {
+        background: rgba(249, 115, 22, 0.15) !important;
+        color: #fff !important;
+        box-shadow: inset 0 0 20px rgba(249, 115, 22, 0.1);
+        border: 1px solid rgba(249, 115, 22, 0.2);
+      }
 
-      /* --- ENTERPRISE FORTRESS LOCKDOWN (CSS LEVEL) --- */
-      body[data-role="chef"] .nav-link:not([data-section="kitchen"]):not([data-section="dashboard"]) { display: none !important; }
-      body[data-role="waiter"] .nav-link:not([data-section="pos"]):not([data-section="tables"]):not([data-section="waiter"]):not([data-section="dashboard"]) { display: none !important; }
-      
-      /* Hide all high-privilege sections for any non-owner */
-      body:not([data-role="owner"]) [data-section="analytics"],
-      body:not([data-role="owner"]) [data-section="billing"],
-      body:not([data-role="owner"]) [data-section="staff"],
-      body:not([data-role="owner"]) [data-section="menu-upload"] { 
+      /* OS Lockdown: Hide administrative terminals from operational staff */
+      body[data-role="waiter"] [data-section="staff"],
+      body[data-role="waiter"] [data-section="analytics"],
+      body[data-role="waiter"] [data-section="finance"],
+      body[data-role="waiter"] [data-section="schedule"],
+      body[data-role="waiter"] [data-section="billing"],
+      body[data-role="waiter"] [data-section="customers"],
+
+      body[data-role="chef"] [data-section="staff"],
+      body[data-role="chef"] [data-section="analytics"],
+      body[data-role="chef"] [data-section="finance"],
+      body[data-role="chef"] [data-section="schedule"],
+      body[data-role="chef"] [data-section="billing"],
+      body[data-role="chef"] [data-section="customers"] {
+        display: none !important;
+      }
+
+      /* Hide Break/Logout for Privilege Roles (Only show for chef/waiter) */
+      body:not([data-role="waiter"]):not([data-role="chef"]) #staffControlPanel { 
         display: none !important; 
       }
     </style>
+
+    <script is:inline>
+      (function syncRole() {
+         const role = localStorage.getItem('ro_role') || 'owner';
+         document.documentElement.setAttribute('data-role', role);
+         
+         const syncBody = () => {
+            if (document.body) {
+               document.body.setAttribute('data-role', role);
+            } else {
+               requestAnimationFrame(syncBody);
+            }
+         };
+         syncBody();
+      })();
+    </script>
 </head>
-<body class="bg-[#0b0f1a] text-white">
+<body class="bg-[#0b0f1a] text-white" data-role="owner">
 
   <!-- SIDEBAR (GLOBAL ROOT LEVEL CHILD OF BODY) -->
-  <aside id="restaurant-root-sidebar" class="fixed left-0 top-0 h-screen">
+  <aside id="restaurant-root-sidebar" class="fixed left-0 top-0 h-screen bg-[#0c0c0d] border-r border-white/5 z-[99999]" style="display: flex; flex-direction: column; width: 256px;">
     
-    <div style="padding: 32px; display: flex; align-items: center; gap: 12px;">
-      <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #f97316, #e11d48); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; color: white; font-size: 20px; font-style: italic; box-shadow: 0 10px 20px rgba(249, 115, 22, 0.2);">B</div>
-      <span style="font-size: 18px; font-weight: 900; letter-spacing: -0.05em; text-transform: uppercase; font-style: italic; color: white;">Bobo <span style="color: #f97316;">OS</span></span>
+    <div style="padding: 32px; flex-shrink: 0; display: flex; align-items: center; gap: 12px;">
+      <div id="sidebar-logo-container" style="width: 40px; height: 40px; background: linear-gradient(135deg, #f97316, #e11d48); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; color: white; font-size: 20px; font-style: italic; box-shadow: 0 10px 20px rgba(249, 115, 22, 0.2); overflow: hidden;">
+        <span id="sidebar-logo-fallback">B</span>
+      </div>
+      <span id="sidebar-brand-name" style="font-size: 18px; font-weight: 900; letter-spacing: -0.05em; text-transform: uppercase; font-style: italic; color: white;">Bobo <span style="color: #f97316;">OS</span></span>
     </div>
 
-    <nav class="no-scrollbar" style="flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto;">
-      <p style="padding: 0 16px; font-size: 10px; font-weight: 900; text-transform: uppercase; color: rgba(255,255,255,0.2); letter-spacing: 0.3em; margin: 16px 0; font-style: italic;">Matrix Terminal</p>
+    <nav class="no-scrollbar" style="flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; min-height: 0;">
+      <p style="padding: 0 16px; font-size: 10px; font-weight: 900; text-transform: uppercase; color: rgba(255,255,255,0.2); letter-spacing: 0.3em; margin: 16px 0; font-style: italic;">SYSTEM TERMINAL Hub</p>
       
       <a href="/restaurant-dashboard#dashboard" class="nav-link" data-section="dashboard">
         <i class="lucide-layout-grid"></i>
         <span>Dashboard</span>
       </a>
-      <a href="/restaurant-os/pos" class="nav-link" data-section="pos">
+      <a href="/restaurant-dashboard#pos" class="nav-link" data-section="pos">
         <i class="lucide-receipt"></i>
         <span>POS Terminal</span>
       </a>
-      <a href="/restaurant-os/tables" class="nav-link" data-section="tables">
+      <a href="/restaurant-dashboard#tables" class="nav-link" data-section="tables">
         <i class="lucide-layout"></i>
         <span>Tables</span>
       </a>
-      <a href="/restaurant-os/kitchen" class="nav-link" data-section="kitchen">
+      <a href="/restaurant-dashboard#kitchen" class="nav-link" data-section="kitchen">
         <i class="lucide-chef-hat"></i>
         <span>Kitchen Hub</span>
       </a>
-      <a href="/waiter-dashboard" class="nav-link" data-section="waiter">
+      <a href="/restaurant-dashboard#waiter" class="nav-link" data-section="waiter">
         <i class="lucide-user-check"></i>
         <span>Waiter Queue</span>
       </a>
-      <a href="/restaurant-os/menu" class="nav-link" data-section="menu">
+      <a href="/restaurant-dashboard#menu" class="nav-link" data-section="menu">
         <i class="lucide-book-open"></i>
         <span>Menu Hub</span>
       </a>
-      <a href="/restaurant-os/menu-upload" class="nav-link" data-section="menu-upload">
+      <a href="/restaurant-dashboard#upload" class="nav-link" data-section="menu-upload">
         <i class="lucide-upload"></i>
         <span>Smart Upload</span>
       </a>
 
-      <div style="height: 1px; background: rgba(255,255,255,0.05); margin: 24px 16px;"></div>
-      
-      <a href="/restaurant-dashboard#customers" class="nav-link" data-section="customers">
-        <i class="lucide-users-2"></i>
-        <span>Customer CRM</span>
-      </a>
-      <a href="/restaurant-dashboard#analytics" class="nav-link" data-section="analytics">
-        <i class="lucide-bar-chart-3"></i>
-        <span>Analytics</span>
-      </a>
-      <a href="/restaurant-dashboard#staff" class="nav-link" data-section="staff">
-        <i class="lucide-users"></i>
-        <span>Staff Governance</span>
-      </a>
-      <a href="/restaurant-os/billing" class="nav-link" data-section="billing">
-        <i class="lucide-credit-card"></i>
-        <span>Billing & Plan</span>
-      </a>
     </nav>
 
-       <a href="/crm-login" style="display: flex; align-items: center; gap: 12px; color: rgba(255,255,255,0.2); text-decoration: none; font-size: 10px; font-weight: 900; text-transform: uppercase; font-style: italic;">
-          <i class="lucide-log-out"></i>
-          <span>Exit Portal</span>
-       </a>
+       <!-- Audit & Break Control -->
+       <div id="staffControlPanel" class="mt-8 pt-8 border-t border-white/5 space-y-4">
+          <button onclick="recordStaffEvent('break_start')" class="w-full flex items-center gap-4 px-6 py-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-500 font-black italic text-[10px] uppercase tracking-widest hover:bg-amber-500/20 transition-all transition-transform active:scale-95">
+             <i class="lucide-coffee"></i> <span>Request Break</span>
+          </button>
+          <button onclick="recordStaffEvent('logout')" class="w-full flex items-center gap-4 px-6 py-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500 font-black italic text-[10px] uppercase tracking-widest hover:bg-rose-500/20 transition-all transition-transform active:scale-95">
+             <i class="lucide-log-out"></i> <span>Terminate Shift</span>
+          </button>
+       </div>
 
        <!-- INSTALL APP PORTAL (PERMANENTLY VISIBLE) -->
        <div id="install-container" style="padding: 12px; margin-top: 20px; background: rgba(249, 115, 22, 0.1); border-radius: 16px; border: 1px dashed #f97316; display: block;">
@@ -155,6 +176,24 @@ const { title = "Restaurant OS" } = Astro.props;
   </aside>
 
   <script is:inline>
+     async function recordStaffEvent(type) {
+        const user = localStorage.getItem('ro_username') || 'system_root';
+        try {
+           await fetch('/api/v2/restaurant/staff/logs', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username: user, event_type: type })
+           });
+
+           if (type === 'logout') {
+              localStorage.removeItem('restaurant_auth');
+              window.location.href = '/restaurant-login';
+           } else {
+              alert(`Shift Event [${type.toUpperCase()}] Recorded.`);
+           }
+        } catch (err) { console.error("Log Fail:", err); }
+     }
+
      let deferredPrompt;
      const btnInstall = document.getElementById('btnInstall');
 
@@ -206,7 +245,6 @@ const { title = "Restaurant OS" } = Astro.props;
         document.body.setAttribute('data-role', role);
      })();
 
-     // Final Sync for Active Link
      // --- AUTH GUARD ---
      function checkAuth() {
        try {
@@ -226,49 +264,55 @@ const { title = "Restaurant OS" } = Astro.props;
             }
 
             if ((localStorage.getItem('subscription_status') === 'expired') || (expiry > 0 && expiry < now)) {
-                // Lock the UI
                 document.getElementById('restaurant-main-view').style.display = 'none';
                 const overlay = document.getElementById('global-expired-overlay');
                 if(overlay) overlay.style.display = 'flex';
-                // Update local storage so badges show expired correctly everywhere
                 localStorage.setItem('subscription_status', 'expired');
             }
          }
-       } catch (e) {
-         console.warn("Auth check failed:", e);
-       }
+       } catch (e) { console.warn("Auth check failed:", e); }
      }
-     checkAuth();
-     function updateActiveLink() {
-        const hash = window.location.hash.substring(1) || 'dashboard';
-        const path = window.location.pathname;
-        document.querySelectorAll('.nav-link').forEach(link => {
-           const section = link.getAttribute('data-section');
-           if ((hash === section) || (path.includes(section))) {
-              link.style.backgroundColor = 'rgba(249, 115, 22, 0.1)';
-              link.style.border = '1px solid rgba(249, 115, 22, 0.1)';
-              link.style.color = '#f97316';
-           } else {
-              link.style.backgroundColor = 'transparent';
-              link.style.border = 'none';
-              link.style.color = 'rgba(255,255,255,0.4)';
-           }
-        });
-     }
-     window.addEventListener('hashchange', updateActiveLink);
-     window.addEventListener('load', updateActiveLink);
-     updateActiveLink();
+     // --- IDENTITY SYNC (Logo & Name) ---
+     function syncIdentity() {
+        const saved = localStorage.getItem('ro_identity');
+        if (saved) {
+           try {
+              const config = JSON.parse(saved);
+              const logoContainers = [
+                 document.getElementById('sidebar-logo-container'),
+                 document.getElementById('header-logo-container')
+              ];
+              const brandNames = [
+                 document.getElementById('sidebar-brand-name'),
+                 document.getElementById('header-brand-name'),
+                 document.getElementById('activeBranch')
+              ];
 
-     // --- ENTERPRISE ROLE LOCKDOWN ---
-     function applySecurityLockdown() {
-        // Handled by CSS [data-role] for zero flicker and 100% lockout
-        const role = localStorage.getItem('ro_role') || 'owner';
-        
-        const matrixHeader = document.querySelector('p[style*="Matrix Terminal"]');
-        if (role !== 'owner' && matrixHeader) matrixHeader.innerText = 'Service Node';
+              if (config.logo) {
+                 logoContainers.forEach(container => {
+                    if (container) {
+                       container.innerHTML = `<img src="${config.logo}" style="width:100%; height:100%; object-fit:cover;" />`;
+                    }
+                 });
+              }
+
+              if (config.name) {
+                 // Update specific brand name elements if they exist
+                 const sidebarBrand = document.getElementById('sidebar-brand-name');
+                 if (sidebarBrand) {
+                    sidebarBrand.innerHTML = `${config.name.split(' ')[0]} <span style="color: #f97316;">OS</span>`;
+                 }
+              }
+           } catch (e) { console.warn("Identity Sync Fail:", e); }
+        }
      }
-     window.addEventListener('load', applySecurityLockdown);
-     applySecurityLockdown();
+     
+     syncIdentity();
+     window.addEventListener('storage', (e) => {
+        if (e.key === 'ro_identity') syncIdentity();
+     });
+     // Also sync on frequent intervals for in-memory changes
+     setInterval(syncIdentity, 2000);
   </script>
 </body>
 </html>

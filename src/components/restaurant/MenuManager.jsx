@@ -162,6 +162,9 @@ const MenuManager = () => {
     searchTerm.length > 1 && it.name.toLowerCase().includes(searchTerm.toLowerCase())
   ).slice(0, 8);
 
+  const role = typeof window !== 'undefined' ? localStorage.getItem('ro_role') || 'owner' : 'owner';
+  const isOwner = role === 'owner';
+
   return (
     <div className="space-y-12 animate-in fade-in duration-700 font-['Plus_Jakarta_Sans']">
       
@@ -172,10 +175,12 @@ const MenuManager = () => {
           <p className="text-white/30 mt-3 uppercase text-[10px] font-black tracking-[0.4em] italic leading-none">Global Master Menu Database | {items.length} Elements Linked</p>
         </div>
         <div className="flex gap-4 relative z-10">
+           {isOwner && (
            <button onClick={() => setShowAddModal(true)} className="px-10 py-5 bg-gradient-to-r from-orange-600 to-orange-500 rounded-3xl font-black italic uppercase tracking-[0.2em] text-[10px] shadow-2xl shadow-orange-600/30 flex items-center gap-4 transition-all hover:scale-[1.05] active:scale-95 border border-orange-400/20">
               <Plus className="w-5 h-5" />
               Provision Master Node
            </button>
+           )}
         </div>
         <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/5 blur-[100px] -z-10 group-hover:bg-orange-500/10 transition-all"></div>
       </header>
@@ -318,6 +323,7 @@ const MenuManager = () => {
                      </div>
 
                      {/* Action buttons — wired up with real handlers */}
+                     {isOwner && (
                      <div className="flex flex-col gap-2 shrink-0">
                         <button 
                           onClick={() => openEditModal(item)}
@@ -335,14 +341,17 @@ const MenuManager = () => {
                           {deletingId === item.id ? <span className="text-[8px] animate-spin">⟳</span> : <Trash2 className="w-4 h-4" />}
                         </button>
                      </div>
+                     )}
                   </div>
                 ))
               )}
               
+              {isOwner && (
               <div onClick={() => setShowAddModal(true)} className="h-44 border-4 border-dashed border-white/5 rounded-[56px] flex flex-col items-center justify-center gap-6 text-white/10 hover:text-orange-400/40 hover:border-orange-500/20 transition-all cursor-pointer group hover:bg-orange-500/5">
                  <div className="w-16 h-16 bg-white/5 rounded-3xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all border border-white/5"><Plus /></div>
                  <p className="font-black italic uppercase tracking-[0.3em] text-[10px]">Deploy New Terminal Node</p>
               </div>
+              )}
            </div>
         </div>
       </section>

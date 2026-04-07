@@ -1,0 +1,252 @@
+---
+import "../styles/restaurant.css";
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bobo Analytics | Enterprise Master Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            background: #000; 
+            color: #fff; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            overflow: hidden; 
+            margin: 0;
+        }
+        .demo-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .background-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: cover;
+            opacity: 0.4;
+            filter: blur(2px) grayscale(0.5);
+            transition: all 1s ease;
+        }
+        .active-scene .background-video {
+            opacity: 0.7;
+            filter: blur(0) grayscale(0);
+        }
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent, rgba(0,0,0,0.8));
+            pointer-events: none;
+        }
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 1200px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        .subtitle-box {
+            background: rgba(0,0,0,0.4);
+            backdrop-blur: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 40px;
+            max-width: 700px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .subtitle-box.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .hinglish-tag {
+            background: #f97316;
+            color: #000;
+            font-size: 8px;
+            font-weight: 900;
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .headline {
+            font-size: 32px;
+            font-weight: 800;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            line-height: 1.1;
+            margin-bottom: 16px;
+        }
+        .narration {
+            font-size: 16px;
+            color: rgba(255,255,255,0.6);
+            line-height: 1.6;
+            font-weight: 500;
+        }
+        .avatar-node {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            width: 300px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 40px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+            animation: slideUp 1s ease-out;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .avatar-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 24px;
+            object-fit: cover;
+            border: 2px solid #f97316;
+        }
+        .hardware-shot {
+                position: absolute;
+                bottom: 100px;
+                right: 100px;
+                width: 500px;
+                border-radius: 48px;
+                border: 2px solid rgba(255,255,255,0.1);
+                box-shadow: 0 50px 150px rgba(0,0,0,1);
+                opacity: 0;
+                transform: scale(0.8);
+                transition: all 1s ease;
+        }
+        .hardware-shot.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="demo-container" id="presentation">
+        <img src="/demo/bobo_master_demo.webp" class="background-video" alt="OS Walkthrough" />
+        <div class="overlay"></div>
+
+        <div class="content-layer">
+            <div id="scene-box" class="subtitle-box">
+                <span class="hinglish-tag" id="scene-type">Neural AI Hub</span>
+                <h2 id="scene-headline" class="headline">Intuitive Intelligence</h2>
+                <p id="scene-narration" class="narration"></p>
+            </div>
+        </div>
+
+        <div class="avatar-node">
+            <img src="/demo/avatar.png" class="avatar-img" alt="Bobo Assistant" />
+            <div>
+                <p class="text-[10px] font-black uppercase tracking-widest italic text-orange-500 mb-1">Bobo Assistant</p>
+                <p class="text-[12px] font-black text-white italic">"Hum saath mein grow karenge."</p>
+            </div>
+        </div>
+
+        <img src="/demo/pos_bundle.png" id="hardware-showcase" class="hardware-shot" alt="Touch POS" />
+
+        <div class="fixed top-10 left-10 z-[100]">
+            <h1 class="text-2xl font-black italic uppercase tracking-tighter text-white">BOBO <span class="text-orange-500">ANALYTICS</span></h1>
+            <p class="text-[10px] font-black text-white/20 tracking-[0.4em] uppercase">Enterprise Demo v2.3</p>
+        </div>
+
+        <div class="fixed bottom-10 left-10">
+            <p class="text-[8px] font-black uppercase tracking-widest text-white/30 italic mb-2">Request Custom Setup</p>
+            <p class="text-[12px] font-black text-white italic">support@boboanalytics.com</p>
+        </div>
+    </div>
+
+    <script is:inline>
+        const scenes = [
+            {
+                type: "Neural Dashboard",
+                headline: "Pura Restaurant Ab Aapki Mutthi Mein",
+                narration: "Maan lijiye aapke restaurant ka ek 'Personal Consultant' ho jo 24/7 data analyze kare. This is the Bobo Analytics Dashboard. Yahan aap sirf stats nahi dekhte, aap future dekhte hain. AI khud batata hai ki aaj revenue badhne waala hai ya stock kab khatam hoga.",
+                time: 5000
+            },
+            {
+                type: "Touch POS Terminal",
+                headline: "Ultra-Fast, Zero Tension Sales",
+                narration: "Humein pata hai ki rush hours mein slow software sabse badi tension hoti hai. Our POS is ultra-fast. Bas ek tap aur order active! Hum ise optimized karke dete hain hamare special Touch Screen POS Hardware ke liye. Zero lag, zero stress.",
+                time: 6000
+            },
+            {
+                type: "Management Lab",
+                headline: "Power Under Your Command",
+                narration: "Saare administrative controls - Revenue rules, Menu timing, aur Staff Governance - humne Settings hub mein centralize kar diye hain. Operational staff ko sirf wahi dikhega jo unke liye zaroori hai. Your financials are secured at the highest level.",
+                time: 6000
+            },
+            {
+                type: "Hardware Bundle",
+                headline: "Built For High-End Scale",
+                narration: "We don't just give you code. Hum detein hain Software + Touch Screen Hardware + High-Speed Bill Printer. It's a premium ecosystem designed for luxurious scale. Best in class yields, zero downtime.",
+                showHardware: true,
+                time: 7000
+            },
+            {
+                type: "Next Generation Scale",
+                headline: "Upgrade To Excellence Aaj Hi",
+                narration: "Compared to any other legacy system, Bobo humesha proactive hai. Agar aap bhi apne business ko upgrade karna chahte hain, toh aaj hi humein contact karein: support@boboanalytics.com.",
+                time: 7000
+            }
+        ];
+
+        let currentScene = 0;
+        const box = document.getElementById('scene-box');
+        const headline = document.getElementById('scene-headline');
+        const narration = document.getElementById('scene-narration');
+        const type = document.getElementById('scene-type');
+        const hardware = document.getElementById('hardware-showcase');
+
+        function updateScene() {
+            const scene = scenes[currentScene];
+            
+            box.classList.remove('active');
+            
+            setTimeout(() => {
+                headline.innerText = scene.headline;
+                narration.innerText = scene.narration;
+                type.innerText = scene.type;
+                
+                if (scene.showHardware) {
+                    hardware.classList.add('visible');
+                } else {
+                    hardware.classList.remove('visible');
+                }
+                
+                box.classList.add('active');
+                
+                currentScene = (currentScene + 1) % scenes.length;
+                setTimeout(updateScene, scene.time);
+            }, 600);
+        }
+
+        updateScene();
+    </script>
+</body>
+</html>

@@ -60,21 +60,43 @@ import "../styles/restaurant.css";
 
     form.onsubmit = async (e) => {
        e.preventDefault();
-       const id = document.getElementById("adminId").value.trim();
+       const id = document.getElementById("adminId").value.trim().toLowerCase();
        const pass = document.getElementById("password").value.trim();
 
-       // Hardcoded Credentials
+       let role = 'owner';
+       let access = false;
+
+       // Hardcoded Credential Matrix
        if ((id === 'rest_admin' || id === 'admin') && pass === 'password123') {
-          errorBox.innerText = "Provisioning Dashboard Matrix...";
+          role = 'owner';
+          access = true;
+       } else if (id === 'waiter1' && pass === 'waiter123') {
+          role = 'waiter';
+          access = true;
+       }
+
+       if (access) {
+          errorBox.innerText = `Authorizing ${role.toUpperCase()} Node...`;
           errorBox.style.color = "#fb923c";
           
           localStorage.setItem('restaurant_auth', 'true');
+          localStorage.setItem('ro_role', role);
+          localStorage.setItem('ro_role_display', role === 'owner' ? 'Owner Protocol' : 'Service Access');
+          localStorage.setItem('ro_username', id);
+
+          // Record Analytics Log
+          fetch('/api/v2/restaurant/staff/logs', {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify({ username: id, event_type: 'login' })
+          });
           
           setTimeout(() => {
-             window.location.href = "/restaurant-dashboard";
+             // Waiters go straight to their specialized queue hash
+             window.location.href = role === 'waiter' ? "/restaurant-dashboard#waiter" : "/restaurant-dashboard#dashboard";
           }, 800);
        } else {
-          errorBox.innerText = "Invalid Master Token Identified";
+          errorBox.innerText = "Invalid Security Token Identified";
           errorBox.style.color = "#f43f5e";
           form.classList.add('shake');
           setTimeout(() => form.classList.remove('shake'), 400);

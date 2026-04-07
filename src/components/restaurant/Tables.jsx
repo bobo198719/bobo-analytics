@@ -142,7 +142,7 @@ const Tables = () => {
         {tableData.map((table) => {
           const config = getStatusConfig(table.status);
           const domain = typeof window !== 'undefined' ? window.location.origin : 'https://boboanalytics.com';
-          const qrUrl = `${domain}/order/${table.table_number}`;
+          const qrUrl = `${domain}/qr/${table.table_number}`;
           const qrImgSrc = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrUrl)}&bgcolor=ffffff&color=000000&margin=20`;
           return (
             <div key={table.id} className="group relative bg-white/5 border border-white/10 rounded-[48px] overflow-hidden shadow-2xl transition-all hover:border-orange-500/30 hover:bg-white/[0.07]">

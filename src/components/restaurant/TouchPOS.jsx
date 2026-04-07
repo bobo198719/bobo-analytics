@@ -13,6 +13,8 @@ const TouchPOS = () => {
   const [fsMode, setFsMode] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const role = typeof window !== 'undefined' ? localStorage.getItem('ro_role') || 'owner' : 'owner';
+  const isOwner = role === 'owner';
 
   const showToast = (msg) => {
      setToastMessage(msg);
@@ -43,6 +45,28 @@ const TouchPOS = () => {
   useEffect(() => {
     setItems(menuData);
     setTables(tablesData);
+
+    const handleKeyboard = (e) => {
+        // QUICK SEARCH (/)
+        if (e.key === '/') {
+            e.preventDefault();
+            document.querySelector('input[placeholder="Search item..."]')?.focus();
+        }
+        // GENERATE BILL (Enter)
+        if (e.key === 'Enter' && cart.length > 0 && selectedTable) {
+            handleGenerateBill();
+        }
+        // CLEAR (Esc)
+        if (e.key === 'Escape') {
+            if (showReceipt) setShowReceipt(false);
+            else if (cart.length > 0) {
+               if(confirm("Clear current cart?")) setCart([]);
+            }
+        }
+    };
+
+    window.addEventListener('keydown', handleKeyboard);
+    
     // Auto Fullscreen Request
     const tryFs = () => {
        if (!document.fullscreenElement) {
@@ -50,7 +74,9 @@ const TouchPOS = () => {
        }
     };
     document.addEventListener('click', tryFs, {once: true});
-  }, []);
+
+    return () => window.removeEventListener('keydown', handleKeyboard);
+  }, [cart, selectedTable, showReceipt]);
 
   const toggleFs = () => {
      if (!document.fullscreenElement) {
@@ -235,7 +261,10 @@ const TouchPOS = () => {
          </div>
          <div className="flex items-center gap-4">
              <button onClick={toggleFs} className="bg-[#333] p-3 rounded-xl hover:bg-[#444] transition-all"><MonitorPlay size={20}/></button>
-             <button onClick={() => window.location.href='/touch-pos-login'} className="bg-red-500/20 text-red-500 font-bold px-4 py-3 rounded-xl flex items-center gap-2 hover:bg-red-500 hover:text-white transition-all"><LogOut size={16}/> EXIT</button>
+             <button onClick={() => {
+                if (window.location.hash === '#pos') window.location.hash = '#dashboard';
+                else window.location.href='/restaurant-dashboard#tables';
+             }} className="bg-red-500/20 text-red-500 font-bold px-4 py-3 rounded-xl flex items-center gap-2 hover:bg-red-500 hover:text-white transition-all"><LogOut size={16}/> EXIT</button>
          </div>
       </div>
 
@@ -330,14 +359,21 @@ const TouchPOS = () => {
                   </div>
                   <span className="font-black text-white tracking-tighter" style={{ fontSize: '42px' }}>₹{getTotal().toFixed(2)}</span>
                </div>
-               <button 
-                  onClick={handleGenerateBill}
-                  className="w-full flex items-center justify-center gap-4 text-white font-black uppercase tracking-wider"
-                  style={{ height: '80px', fontSize: '24px', background: 'orange', borderRadius: '12px', boxShadow: '0 10px 30px rgba(255,120,0,0.4)', transition: 'all 0.1s', ":active": { transform: 'scale(0.98)' } }}
-               >
-                  <Printer size={32} />
-                  <span>GENERATE BILL</span>
-               </button>
+                {isOwner ? (
+                <button 
+                   onClick={handleGenerateBill}
+                   className="w-full flex items-center justify-center gap-4 text-white font-black uppercase tracking-wider"
+                   style={{ height: '80px', fontSize: '24px', background: 'orange', borderRadius: '12px', boxShadow: '0 10px 30px rgba(255,120,0,0.4)', transition: 'all 0.1s', ":active": { transform: 'scale(0.98)' } }}
+                >
+                   <Printer size={32} />
+                   <span>GENERATE BILL</span>
+                </button>
+                ) : (
+                <div className="w-full h-20 bg-white/5 border border-white/10 rounded-xl flex flex-col items-center justify-center">
+                   <p className="text-[10px] font-black uppercase text-white/30 italic">Order Placement Only</p>
+                   <p className="text-[8px] text-orange-500 font-bold mt-1 uppercase tracking-widest italic">Waiters Cannot Generate Final Bill</p>
+                </div>
+                )}
             </div>
          </div>
       </div>

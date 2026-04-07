@@ -18,12 +18,12 @@ const KDS = () => {
 
   const fetchOrders = async () => {
     try {
-      // Phase 5: Polling every 3s. Removing filter to allow status mapping.
-      const res = await fetch('/api/v2/restaurant/orders');
+      const res = await fetch('/api/v2/restaurant/qr-orders?active_only=true');
       if (!res.ok) throw new Error("KDS HUB OFFLINE");
-      const data = await res.json();
-      // Show confirmed, preparing, ready orders
-      const activeStates = ['confirmed', 'preparing', 'ready'];
+      let data = await res.json();
+      data = data.orders || [];
+      
+      const activeStates = ['waiter_confirmed', 'kitchen_preparing', 'kitchen_ready'];
       setOrders(data.filter(o => activeStates.includes(o.status)));
       setError(null);
       setLoading(false);
@@ -54,10 +54,10 @@ const KDS = () => {
 
   const updateStatus = async (orderId, nextStatus) => {
     try {
-        const res = await fetch(`/api/v2/restaurant/orders/${orderId}/status`, {
-            method: 'PUT',
+        const res = await fetch(`/api/v2/restaurant/qr-orders`, {
+            method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: nextStatus })
+            body: JSON.stringify({ order_id: orderId, status: nextStatus })
         });
         if (res.ok) fetchOrders();
     } catch (err) { console.error("KDS Update Error:", err); }
@@ -66,7 +66,7 @@ const KDS = () => {
   // Phase 2: Kitchen Status Colors
   const getStatusConfig = (status) => {
     switch (status) {
-      case 'confirmed':
+      case 'waiter_confirmed':
         return { 
           bg: 'bg-[#facc15]/10', 
           border: 'border-[#facc15]/40', 
@@ -74,7 +74,7 @@ const KDS = () => {
           glow: 'shadow-[#facc15]/20',
           label: 'Pending Confirmed'
         };
-      case 'preparing':
+      case 'kitchen_preparing':
         return { 
           bg: 'bg-[#fb923c]/10', 
           border: 'border-[#fb923c]/40', 
@@ -82,7 +82,7 @@ const KDS = () => {
           glow: 'shadow-[#fb923c]/20',
           label: 'Prepping'
         };
-      case 'ready':
+      case 'kitchen_ready':
         return { 
           bg: 'bg-[#38bdf8]/10', 
           border: 'border-[#38bdf8]/40', 
@@ -117,14 +117,14 @@ const KDS = () => {
           </div>
           <div className="flex gap-6 relative z-10">
              <div className="bg-white/5 p-6 rounded-3xl border border-white/10 flex items-center gap-6 shadow-2xl backdrop-blur-xl">
-                <div className="w-14 h-14 bg-yellow-500/20 rounded-2xl flex items-center justify-center text-yellow-500 font-black italic text-2xl shadow-xl shadow-yellow-500/10">{orders.filter(o => o.status === 'confirmed').length}</div>
+                <div className="w-14 h-14 bg-yellow-500/20 rounded-2xl flex items-center justify-center text-yellow-500 font-black italic text-2xl shadow-xl shadow-yellow-500/10">{orders.filter(o => o.status === 'waiter_confirmed').length}</div>
                 <div>
                    <p className="text-[8px] font-black uppercase text-white/20 tracking-widest italic">Inbound KOTs</p>
                    <p className="text-xs font-black italic uppercase">Confirmed Queue</p>
                 </div>
              </div>
              <div className="bg-white/5 p-6 rounded-3xl border border-white/10 flex items-center gap-6 shadow-2xl backdrop-blur-xl">
-                <div className="w-14 h-14 bg-orange-500/20 rounded-2xl flex items-center justify-center text-orange-500 font-black italic text-2xl shadow-xl shadow-orange-500/10">{orders.filter(o => o.status === 'preparing' || o.status === 'ready').length}</div>
+                <div className="w-14 h-14 bg-orange-500/20 rounded-2xl flex items-center justify-center text-orange-500 font-black italic text-2xl shadow-xl shadow-orange-500/10">{orders.filter(o => o.status === 'kitchen_preparing' || o.status === 'kitchen_ready').length}</div>
                 <div>
                    <p className="text-[8px] font-black uppercase text-white/20 tracking-widest italic">Station Activity</p>
                    <p className="text-xs font-black italic uppercase">In-Progress</p>
@@ -163,7 +163,7 @@ const KDS = () => {
                          <h3 className="text-3xl font-black italic tracking-tighter uppercase leading-none">ORDER #{order.id}</h3>
                          <div className="flex items-center gap-2 text-white/20 font-black uppercase text-[8px] tracking-[0.2em] mt-3 italic">
                             <Zap size={12} className={cfg.text} />
-                            TABLE {order.table_number}
+                            TABLE {order.table_id || order.table_number || '?'}
                          </div>
                      </div>
                      <div className={`p-1.5 px-4 rounded-xl text-[8px] font-black uppercase tracking-widest border shadow-lg ${cfg.bg} ${cfg.border} ${cfg.text}`}>
@@ -206,30 +206,30 @@ const KDS = () => {
                         <div className="flex items-center gap-2"><Clock className="w-3.5 h-3.5" /> Pipeline Signal: Active</div>
                      </div>
 
-                     {order.status === 'confirmed' && (
+                     {order.status === 'waiter_confirmed' && (
                        <button 
-                         onClick={() => updateStatus(order.id, 'preparing')}
+                         onClick={() => updateStatus(order.order_id, 'kitchen_preparing')}
                          className="w-full py-6 bg-orange-500 rounded-3xl font-black italic uppercase tracking-[0.3em] text-[10px] shadow-2xl shadow-orange-600/30 hover:scale-[1.05] active:scale-95 transition-all text-white"
                        >
                          Commence Prep
                        </button>
                      )}
 
-                     {order.status === 'preparing' && (
+                     {order.status === 'kitchen_preparing' && (
                        <button 
-                         onClick={() => updateStatus(order.id, 'ready')}
+                         onClick={() => updateStatus(order.order_id, 'kitchen_ready')}
                          className="w-full py-6 bg-[#38bdf8] rounded-3xl font-black italic uppercase tracking-[0.3em] text-[10px] shadow-2xl shadow-blue-600/30 hover:scale-[1.05] active:scale-95 transition-all text-white"
                        >
                          Commence Delivery
                        </button>
                      )}
 
-                     {order.status === 'ready' && (
+                     {order.status === 'kitchen_ready' && (
                        <button 
-                         onClick={() => updateStatus(order.id, 'completed')}
+                         onClick={() => updateStatus(order.order_id, 'served')}
                          className="w-full py-6 bg-[#4ade80] rounded-3xl font-black italic uppercase tracking-[0.3em] text-[10px] shadow-2xl shadow-emerald-600/30 hover:scale-[1.05] active:scale-95 transition-all text-white"
                        >
-                         KOT Finalized
+                         Mark as Served
                        </button>
                      )}
                   </div>
