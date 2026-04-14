@@ -36,7 +36,7 @@ const Dashboard = () => {
   });
 
   const [aiInsights, setAiInsights] = useState([
-    { id: 1, title: 'Revenue Surge Predicted', desc: 'Expected +18% increase between 7 PM - 9 PM based on historical trend.', icon: <TrendingUp className="w-4 h-4 text-emerald-400" />, type: 'prediction' },
+    { id: 1, title: 'Profit Surge Predicted', desc: 'Expected +18% increase between 7 PM - 9 PM based on historical trend.', icon: <TrendingUp className="w-4 h-4 text-emerald-400" />, type: 'prediction' },
     { id: 2, title: 'Inventory Alert', desc: 'Avocado stock is depleting 2.4x faster than usual. Restock recommended.', icon: <AlertCircle className="w-4 h-4 text-orange-400" />, type: 'alert' },
     { id: 3, title: 'Item Optimization', desc: '"Classic Margherita" shows high re-order rate (+88%). Consider featuring.', icon: <Sparkles className="w-4 h-4 text-indigo-400" />, type: 'insight' }
   ]);
@@ -167,7 +167,7 @@ const Dashboard = () => {
 
             {/* CORE STATS GRID */}
             <section className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${isOwner ? '4' : '2'} gap-8`}>
-              {isOwner && <div className="cursor-pointer"><Card title="Shift Revenue" value={`₹${stats.todayRevenue.toLocaleString()}`} icon={<TrendingUp className="text-white w-6 h-6" />} gradient="bg-gradient-to-br from-orange-400 to-orange-600" trend="+12.4%" subValue="Performance: Optimal" /></div>}
+              {isOwner && <div className="cursor-pointer"><Card title="Shift Profit" value={`₹${stats.todayRevenue.toLocaleString()}`} icon={<TrendingUp className="text-white w-6 h-6" />} gradient="bg-gradient-to-br from-orange-400 to-orange-600" trend="+12.4%" subValue="Performance: Optimal" /></div>}
               <div onClick={() => switchSection('pos')} className="cursor-pointer"><Card title="Traffic Volume" value={stats.totalOrders} icon={<ShoppingCart className="text-white w-6 h-6" />} gradient="bg-gradient-to-br from-indigo-400 to-indigo-600" trend="+8.2%" subValue="Dine-in Activity Live" /></div>
               <div onClick={() => switchSection('tables')} className="cursor-pointer"><Card title="Active Tables" value={stats.activeTables} icon={<Zap className="text-white w-6 h-6" />} gradient="bg-gradient-to-br from-amber-400 to-amber-600" subValue="Occupied Now" /></div>
               {isOwner && <div onClick={() => switchSection('kitchen')} className="cursor-pointer"><Card title="Kitchen Queue" value={`${stats.pendingOrders} KOTs`} icon={<Clock className="text-white w-6 h-6" />} gradient="bg-gradient-to-br from-rose-400 to-rose-600" subValue="Avg: 18 min prep time" /></div>}
@@ -176,11 +176,11 @@ const Dashboard = () => {
             {/* DUAL COLUMN ANALYSIS HUB */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 
-                {/* REVENUE PROJECTION (LEFT 2/3) */}
+                {/* PROFIT PROJECTION (LEFT 2/3) */}
                 <div className="lg:col-span-2 bg-white/5 border border-white/10 rounded-[56px] p-12 relative overflow-hidden group shadow-2xl">
                     <div className="flex justify-between items-center mb-16 relative z-10">
                         <div>
-                          <h3 className="text-2xl font-black italic uppercase tracking-tighter text-white">Revenue <span className="text-orange-500">Projection</span></h3>
+                          <h3 className="text-2xl font-black italic uppercase tracking-tighter text-white">Profit <span className="text-orange-500">Projection</span></h3>
                           <p className="text-[10px] font-black uppercase text-white/20 tracking-[0.2em] italic mt-2">7-Day Profit Matrix | Real-time Synchronization</p>
                         </div>
                     </div>
