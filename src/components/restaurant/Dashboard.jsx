@@ -27,6 +27,7 @@ import MatrixAnalytics from './MatrixAnalytics';
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('ops'); // ops or market
   const [showProfitModal, setShowProfitModal] = useState(false);
+  const [selectedDayHistory, setSelectedDayHistory] = useState(null);
   const [stats, setStats] = useState({
     todayRevenue: 0,
     totalOrders: 0,
@@ -54,13 +55,13 @@ const Dashboard = () => {
         active_tables: 14,
         kitchen_queue: 8,
         history: [
-            { date: 'MON', total: 62000 },
-            { date: 'TUE', total: 45000 },
-            { date: 'WED', total: 78000 },
-            { date: 'THU', total: 52000 },
-            { date: 'FRI', total: 89000 },
-            { date: 'SAT', total: 110000 },
-            { date: 'SUN', total: 95000 }
+            { date: 'MON', total: 62000, itemsSold: [{ name: 'Margherita Pizza', price: 650, qty: 30 }, { name: 'Truffle Pasta', price: 850, qty: 25 }, { name: 'Coke', price: 100, qty: 85 }, { name: 'Biryani', price: 400, qty: 31 }] },
+            { date: 'TUE', total: 45000, itemsSold: [{ name: 'Butter Chicken', price: 650, qty: 20 }, { name: 'Garlic Naan', price: 80, qty: 60 }, { name: 'Lassi', price: 120, qty: 40 }, { name: 'Paneer Tikka', price: 350, qty: 15 }] },
+            { date: 'WED', total: 78000, itemsSold: [{ name: 'Grilled Salmon', price: 1200, qty: 15 }, { name: 'Mint Mojito', price: 300, qty: 65 }, { name: 'Truffle Pasta', price: 850, qty: 40 }] },
+            { date: 'THU', total: 52000, itemsSold: [{ name: 'Sushi Platter', price: 1500, qty: 12 }, { name: 'Miso Soup', price: 200, qty: 30 }, { name: 'Tempura Udon', price: 800, qty: 25 }, { name: 'Green Tea', price: 150, qty: 50 }] },
+            { date: 'FRI', total: 89000, itemsSold: [{ name: 'Ribeye Steak', price: 2000, qty: 18 }, { name: 'Mashed Potatoes', price: 300, qty: 20 }, { name: 'Red Wine', price: 800, qty: 45 }] },
+            { date: 'SAT', total: 110000, itemsSold: [{ name: 'Margherita Pizza', price: 650, qty: 50 }, { name: 'BBQ Wings', price: 450, qty: 60 }, { name: 'Craft Beer', price: 350, qty: 120 }, { name: 'Nachos', price: 300, qty: 40 }] },
+            { date: 'SUN', total: 95000, itemsSold: [{ name: 'Sunday Roast', price: 1200, qty: 35 }, { name: 'Pancakes', price: 400, qty: 50 }, { name: 'Cappuccino', price: 200, qty: 80 }, { name: 'Cheesecake', price: 450, qty: 40 }] }
         ],
         recent: [
            { id: 1, table_number: 'VIP 1', total: 4500, status: 'Served' },
@@ -134,6 +135,42 @@ const Dashboard = () => {
   return (
     <div className="space-y-10 animate-in fade-in duration-700 font-['Plus_Jakarta_Sans'] pb-20">
       
+      {selectedDayHistory && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] flex items-center justify-center p-6 animate-in fade-in duration-300">
+           <div className="bg-[#0f172a] border border-orange-500/30 rounded-[48px] w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+              <div className="p-8 border-b border-white/10 flex justify-between items-center bg-white/5">
+                 <div>
+                    <h2 className="text-3xl font-black italic uppercase text-white tracking-tighter">{selectedDayHistory.date} <span className="text-orange-500">Sales Matrix</span></h2>
+                    <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em] mt-1 space-x-2"><span>Daily Profit Render</span> <span className="opacity-50">|</span> <span>Detailed Item Log</span></p>
+                 </div>
+                 <button onClick={() => setSelectedDayHistory(null)} className="w-12 h-12 bg-white/5 border border-white/10 hover:bg-rose-500/20 text-white/40 hover:text-rose-500 rounded-[20px] flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-xl">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                 </button>
+              </div>
+              <div className="p-8 overflow-y-auto space-y-4 no-scrollbar">
+                 <div className="bg-white/5 rounded-[24px] p-6 border border-white/5">
+                    <p className="text-[9px] font-black uppercase text-white/30 tracking-widest mb-4 flex items-center gap-2"><Receipt className="w-3 h-3" /> Items Sold Matrix</p>
+                    <div className="space-y-3">
+                       {selectedDayHistory.itemsSold?.map((item, i) => (
+                          <div key={i} className="flex justify-between items-start text-sm font-bold italic group/item pb-2 border-b border-white/5 last:border-0 last:pb-0">
+                             <div className="flex gap-3 text-white/80 group-hover/item:text-white transition-colors">
+                                <span className="text-white/30">{item.qty}x</span>
+                                <span>{item.name} <span className="text-[10px] text-white/20 uppercase tracking-widest block not-italic mt-0.5">₹{item.price} unit</span></span>
+                             </div>
+                             <span className="text-orange-400">₹{item.price * item.qty}</span>
+                          </div>
+                       ))}
+                    </div>
+                 </div>
+                 <div className="mt-4 pt-4 flex justify-between items-end px-4">
+                    <span className="text-[11px] font-black uppercase text-white/40 tracking-widest">Total Day Yield</span>
+                    <span className="text-4xl font-black text-white italic">₹{Number(selectedDayHistory.total).toLocaleString()}</span>
+                 </div>
+              </div>
+           </div>
+        </div>
+      )}
+
       {showProfitModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] flex items-center justify-center p-6 animate-in fade-in duration-300">
            <div className="bg-[#0f172a] border border-orange-500/30 rounded-[48px] w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
@@ -255,7 +292,7 @@ const Dashboard = () => {
                                 const max = Math.max(...stats.history.map(x => Number(x.total))) || 1;
                                 const height = (Number(h.total) / max) * 100;
                                 return (
-                                    <div key={i} className="flex-1 group relative flex flex-col items-center">
+                                    <div key={i} onClick={() => setSelectedDayHistory(h)} className="flex-1 group relative flex flex-col items-center cursor-pointer">
                                         <div className="absolute -top-14 bg-white text-black px-4 py-3 rounded-2xl text-[11px] font-black italic opacity-0 group-hover:opacity-100 transition-all transform translate-y-4 group-hover:translate-y-0 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-20 border-2 border-orange-500/20">₹{Number(h.total).toLocaleString()}</div>
                                         <div 
                                             style={{ height: `${height}%`, minHeight: '16px' }} 
