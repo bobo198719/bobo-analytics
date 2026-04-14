@@ -78,7 +78,7 @@ const MatrixAnalytics = () => {
         if (typeof XLSX === 'undefined') return alert('Matrix Ledger Bridge Initializing... try in 5 seconds.');
         const ws = XLSX.utils.json_to_sheet(data.dailySales.map(d => ({
             Date: d.date,
-            Yield: `₹${Math.round(d.total)}`,
+            Profit: `₹${Math.round(d.total)}`,
             Status: d.total > 10000 ? 'PEAK' : 'STABLE'
         })));
         const wb = XLSX.utils.book_new();
@@ -124,7 +124,7 @@ const MatrixAnalytics = () => {
                     { label: 'Yearly', val: data.periods.yearly, color: 'text-orange-500' },
                 ].map((p, i) => (
                     <div key={i} className="bg-white/5 border border-white/10 rounded-[40px] p-8 hover:bg-white/[0.08] transition-all group">
-                        <span className="text-[10px] font-black uppercase text-white/30 tracking-widest italic block mb-4">{p.label} Yield</span>
+                        <span className="text-[10px] font-black uppercase text-white/30 tracking-widest italic block mb-4">{p.label} Profit</span>
                         <h4 className={`text-2xl md:text-3xl lg:text-4xl font-black italic tracking-tighter ${p.color}`}>
                             ₹{(Number(p.val) || 0).toLocaleString()}
                         </h4>
@@ -137,9 +137,9 @@ const MatrixAnalytics = () => {
                 <div className="lg:col-span-2 bg-white/5 border border-white/10 rounded-[48px] p-10 relative overflow-hidden group shadow-2xl">
                     <div className="flex justify-between items-start md:items-end mb-12">
                         <div>
-                            <h3 className="text-2xl font-black italic uppercase tracking-tighter text-white">Yield Trajectory</h3>
-                            <p className="text-[10px] font-black uppercase text-white/20 tracking-widest italic mt-2">Profits: <span className="text-emerald-400">Emerald Matrix</span> | Stabil: <span className="text-orange-400">Orange</span></p>
-                        </div>
+                             <h3 className="text-2xl font-black italic uppercase tracking-tighter text-white">Profit Trajectory</h3>
+                             <p className="text-[10px] font-black uppercase text-white/20 tracking-widest italic mt-2">Profits: <span className="text-emerald-400">Emerald Matrix</span> | Stabil: <span className="text-orange-400">Orange</span></p>
+                         </div>
                         <button onClick={downloadExcel} className="hidden md:flex px-6 py-4 bg-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white border border-white/10 hover:bg-white hover:text-black transition-all italic items-center gap-3">
                            <Activity className="w-4 h-4 text-emerald-400" /> Export Excel
                         </button>
@@ -203,7 +203,7 @@ const MatrixAnalytics = () => {
             {/* ── CATEGORY LEADERS ────────────────────────────── */}
             <div className="relative">
                 <div className="flex items-center justify-between mb-10">
-                    <h2 className="text-3xl font-black italic uppercase tracking-tighter">Category <span className="text-orange-500">Yield Leadership</span></h2>
+                    <h2 className="text-3xl font-black italic uppercase tracking-tighter">Category <span className="text-orange-500">Profit Leadership</span></h2>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">

@@ -8,6 +8,7 @@ import KDS from "../components/restaurant/KDS.jsx";
 import MenuManager from "../components/restaurant/MenuManager.jsx";
 import WaiterDashboard from "../components/restaurant/WaiterDashboard.jsx";
 import SettingsNode from "../components/restaurant/SettingsNode.jsx";
+import CRMManager from "../components/restaurant/CRMManager.jsx";
 import "../styles/restaurant.css";
 ---
 
@@ -101,6 +102,12 @@ import "../styles/restaurant.css";
          <h1 class="text-4xl font-black italic uppercase italic tracking-tighter text-white">Smart <span class="text-indigo-400">AI Upload</span></h1>
          <p class="text-[10px] font-black uppercase italic text-white/30 tracking-[0.2em] mb-10">Automated Catalog Generation Matrix Operational</p>
          <button class="mt-10 px-12 py-6 bg-indigo-600 rounded-3xl font-black italic uppercase tracking-widest text-[10px] text-white hover:scale-[1.05] shadow-2xl transition-all">Initialize AI Parser</button>
+      </div>
+   </div>
+
+   <div id="crmSection" class="section hidden animate-in fade-in transition-all">
+      <div class="max-w-7xl mx-auto p-10">
+         <CRMManager client:load />
       </div>
    </div>
 

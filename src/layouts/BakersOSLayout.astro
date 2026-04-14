@@ -10,33 +10,68 @@ const { title = "Baker OS" } = Astro.props;
     <title>{title}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --sidebar-width: 280px;
-            --bg-dark: #0f172a;
-            --bg-card: #111827;
-            --primary: #6366f1; /* Indigo */
-            --secondary: #fb923c; 
-            --accent: #4f46e5;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: rgba(255, 255, 255, 0.08);
-            --sidebar-bg: #0f172a;
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style is:global>
+        * { box-sizing: border-box !important; }
+        
+        html, body {
+            width: 100% !important;
+            height: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #0b0f1a !important;
+            color: white !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            overflow: hidden !important;
         }
 
-        [data-theme="midnight"] { --bg-dark: #020617; --sidebar-bg: #0f172a; }
-        [data-theme="luxury"] { --primary: #d4af37; --accent: #ffffff; }
+        .no-scrollbar::-webkit-scrollbar { display: none !important; }
+        .no-scrollbar { -ms-overflow-style: none !important; scrollbar-width: none !important; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-dark);
-            color: var(--text-main);
-            display: flex;
-            min-height: 100vh;
-            overflow: hidden;
+        .nav-link {
+            display: flex !important;
+            align-items: center !important;
+            gap: 16px !important;
+            padding: 16px 20px !important;
+            color: rgba(255,255,255,0.4) !important;
+            text-decoration: none !important;
+            font-weight: 800 !important;
+            text-transform: uppercase !important;
+            font-style: italic !important;
+            font-size: 11px !important;
+            border-radius: 16px !important;
+            transition: all 0.3s ease !important;
         }
+        .nav-link:hover {
+            background: rgba(255,255,255,0.05) !important;
+            color: white !important;
+            transform: translateX(4px);
+        }
+        .nav-link.active {
+            background: rgba(99, 102, 241, 0.15) !important;
+            color: #fff !important;
+            box-shadow: inset 0 0 20px rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        #baker-sidebar {
+            width: 280px !important;
+            background: #0c0c0d !important;
+            border-right: 1px solid rgba(255,255,255,0.05) !important;
+            height: 100vh !important;
+            display: flex !important;
+            flex-direction: column !important;
+            z-index: 100 !important;
+        }
+
+        #baker-main {
+            flex: 1 !important;
+            height: 100vh !important;
+            overflow-y: auto !important;
+            padding: 40px !important;
+            background: radial-gradient(circle at 100% 0%, rgba(99, 102, 241, 0.03) 0%, transparent 50%);
+        }
+    </style>
 
         /* Access Denied Overlay */
         #access-denied {
@@ -127,115 +162,109 @@ const { title = "Baker OS" } = Astro.props;
         <a href="/portal/dashboard" style="margin-top: 40px; color: var(--primary); font-weight: 700;">Return to Main Dashboard</a>
     </div>
 
-    <aside class="sidebar">
-        <a href="/bakers-os" class="logo-area">
-            <div class="logo-orb" id="bizLogo">
-                <img src="/bakers-logo.png" style="width:48px; height:48px; object-fit:contain; border-radius:8px; display: block;" alt="Baker OS Logo">
+    <aside id="baker-sidebar">
+        <div style="padding: 32px; flex-shrink: 0; display: flex; align-items: center; gap: 12px;">
+            <div id="baker-logo-container" style="width: 44px; height: 44px; background: linear-gradient(135deg, #6366f1, #a855f7); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-weight: 900; color: white; font-size: 22px; font-style: italic; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.2); overflow: hidden;">
+                <span id="baker-logo-fallback">B</span>
             </div>
-            <span id="bizName">Baker OS</span>
-        </a>
+            <span id="baker-brand-name" style="font-size: 18px; font-weight: 900; letter-spacing: -0.05em; text-transform: uppercase; font-style: italic; color: white;">Baker <span style="color: #6366f1;">OS</span></span>
+        </div>
 
-        <div class="nav-group">
-            <span class="nav-label">Operations</span>
-            <a href="/bakers-os" class="nav-link" data-nav="/bakers-os">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                <span>Dashboard</span>
+        <nav class="no-scrollbar" style="flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto;">
+            <p style="padding: 0 16px; font-size: 10px; font-weight: 900; text-transform: uppercase; color: rgba(255,255,255,0.2); letter-spacing: 0.3em; margin: 16px 0; font-style: italic;">Operational Hubs</p>
+            
+            <a href="/bakers-os#dashboard" class="nav-link" data-section="dashboard">
+                <i class="lucide-layout-grid"></i>
+                <span>Intelligence</span>
             </a>
-            <a href="/bakers-os/orders" class="nav-link" data-nav="/bakers-os/orders">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <a href="/bakers-os#orders" class="nav-link" data-section="orders">
+                <i class="lucide-shopping-bag"></i>
                 <span>Order Hub</span>
             </a>
-            <a href="/bakers-os/delivery" class="nav-link" data-nav="/bakers-os/delivery">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                <span>Delivery Calendar</span>
+            <a href="/bakers-os#costing" class="nav-link" data-section="costing">
+                <i class="lucide-calculator"></i>
+                <span>Bake Lab</span>
             </a>
-            <a href="/bakers-os/products" class="nav-link" data-nav="/bakers-os/products">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg>
-                <span>Products & Cake Menu</span>
+            <a href="/bakers-os#products" class="nav-link" data-section="products">
+                <i class="lucide-pizza"></i>
+                <span>Catalog</span>
             </a>
-            <a href="/bakers-os/gallery" class="nav-link" data-nav="/bakers-os/gallery">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                <span>Creation Gallery</span>
+            <a href="/bakers-os#delivery" class="nav-link" data-section="delivery">
+                <i class="lucide-calendar"></i>
+                <span>Logistics</span>
             </a>
-            <a href="/bakers-os/edit-website" class="nav-link" data-nav="/bakers-os/edit-website">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"/><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"/></svg>
-                <span>Website Customizer</span>
-            </a>
-        </div>
 
-        <div class="nav-group">
-            <span class="nav-label">Finance & Growth</span>
-            <a href="/bakers-os/recipe-costing" class="nav-link" data-nav="/bakers-os/recipe-costing">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg>
-                <span>Recipe Costing</span>
-            </a>
-            <a href="/bakers-os/portfolio" class="nav-link" data-nav="/bakers-os/portfolio">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-                <span>Recipe Portfolio</span>
-            </a>
-            <a href="/bakers-os/analytics" class="nav-link" data-nav="/bakers-os/analytics">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                <span>Sales Intelligence</span>
-            </a>
-            <a href="/bakers-os/customers" class="nav-link" data-nav="/bakers-os/customers">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-3-3.87"/><path d="M9 21v-2a4 4 0 0 0 3-3.87"/><circle cx="12" cy="7" r="4"/></svg>
-                <span>Customer CRM</span>
-            </a>
-        </div>
-
-        <div class="nav-group" style="margin-top: auto;">
-            <a href="/bakers-os/settings" class="nav-link" data-nav="/bakers-os/settings">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                <span>Portal Settings</span>
-            </a>
-            <a href="/portal/dashboard" class="nav-link" style="color: #ef4444;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                <span>Exit Portal</span>
-            </a>
-            <button onclick="if(confirm('Reset all system data?')) { localStorage.clear(); indexedDB.deleteDatabase('bobo_image_store'); window.location.reload(); }" class="nav-link" style="background: none; border: none; width: 100%; cursor: pointer; color: #64748b; font-size: 0.7rem; margin-top: 10px;">
-                ⚙️ Emergency Reset Layout
-            </button>
+            <div style="height: 1px; background: rgba(255,255,255,0.05); margin: 24px 16px;"></div>
             
-            <!-- INSTALL APP PORTAL (PERMANENTLY VISIBLE) -->
-            <div id="install-container" style="padding: 12px; margin-top: 20px; background: rgba(99, 102, 241, 0.1); border-radius: 16px; border: 1px dashed var(--primary); display: block;">
-                <span style="font-size: 0.65rem; color: var(--primary); font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 8px; text-align: center;">📲 Bobo Apps & APK Center</span>
-                <button id="btnInstall" class="nav-link" style="background: var(--primary); color: white; border: none; width: 100%; cursor: pointer; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:16px; height:16px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    <span>Download App</span>
-                </button>
-            </div>
+            <p style="padding: 0 16px; font-size: 10px; font-weight: 900; text-transform: uppercase; color: rgba(255,255,255,0.2); letter-spacing: 0.3em; margin: 16px 0; font-style: italic;">Strategy Hubs</p>
+            
+            <a href="/bakers-os#analytics" class="nav-link" data-section="analytics">
+                <i class="lucide-bar-chart-3"></i>
+                <span>Sales Matrix</span>
+            </a>
+            <a href="/bakers-os#crm" class="nav-link" data-section="crm">
+                <i class="lucide-users"></i>
+                <span>Client CRM</span>
+            </a>
+            <a href="/bakers-os#website" class="nav-link" data-section="website">
+                <i class="lucide-globe"></i>
+                <span>Portal Edit</span>
+            </a>
+        </nav>
+
+        <div style="padding: 24px; border-top: 1px solid rgba(255,255,255,0.05);">
+            <a href="/bakers-os#settings" class="nav-link" data-section="settings">
+                <i class="lucide-settings"></i>
+                <span>Master Config</span>
+            </a>
         </div>
     </aside>
 
+    <main id="baker-main" class="no-scrollbar">
+        <slot />
+    </main>
+
     <script is:inline>
-        let deferredPrompt;
-        const btnInstall = document.getElementById('btnInstall');
+        // --- IDENTITY SYNC (Logo & Name) ---
+        function syncBakerIdentity() {
+            const saved = localStorage.getItem('ro_identity');
+            if (saved) {
+                try {
+                    const config = JSON.parse(saved);
+                    const lo = document.getElementById('baker-logo-container');
+                    const bn = document.getElementById('baker-brand-name');
+                    
+                    if (config.logo && lo) {
+                        lo.innerHTML = `<img src="${config.logo}" style="width:100%; height:100%; object-fit:cover;" />`;
+                    }
+                    if (config.name && bn) {
+                        bn.innerHTML = `${config.name.split(' ')[0]} <span style="color: #6366f1;">OS</span>`;
+                    }
+                } catch (e) { console.warn("Identity Fail:", e); }
+            }
+        }
 
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            console.log('✅ Software Install Ready');
-        });
+        function switchToSection(target) {
+            if (!target) return;
+            document.querySelectorAll('.section').forEach(sec => sec.classList.add('hidden'));
+            const targetSec = document.getElementById(target + 'Section');
+            if (targetSec) targetSec.classList.remove('hidden');
 
-        if (btnInstall) {
-            btnInstall.addEventListener('click', async () => {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    console.log(`User response: ${outcome}`);
-                    deferredPrompt = null;
-                } else {
-                    // Fallback for browsers that don't support the prompt or already have it installed
-                    alert("App Installation Info:\n\n1. If you're on Mobile (Chrome): Tap 'Install App' or 'Add to Home Screen' in your browser menu.\n2. If you're on PC: Click the 'Install' icon ⊕ in the URL bar.\n3. If already installed: Open it from your home screen!");
-                }
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(target)) link.classList.add('active');
             });
         }
 
-        window.addEventListener('appinstalled', (evt) => {
-            console.log('✅ Baker OS Software Installed Successfully.');
+        window.addEventListener('hashchange', () => switchToSection(window.location.hash.substring(1) || 'dashboard'));
+        window.addEventListener('DOMContentLoaded', () => {
+            syncBakerIdentity();
+            switchToSection(window.location.hash.substring(1) || 'dashboard');
         });
+        setInterval(syncBakerIdentity, 2000);
     </script>
-
+</body>
+</html>
     <main class="content-wrapper">
         <header class="top-bar">
             <input type="text" class="search-box" placeholder="Search orders, ingredients, or clients..." />

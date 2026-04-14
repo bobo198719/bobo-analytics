@@ -127,6 +127,16 @@ const { title = "Restaurant OS" } = Astro.props;
         <i class="lucide-layout-grid"></i>
         <span>Dashboard</span>
       </a>
+      <a href="/restaurant-dashboard#crm" class="nav-link" data-section="crm">
+        <i class="lucide-users"></i>
+        <span>Guest CRM</span>
+      </a>
+      <button onclick="recordStaffEvent('logout')" class="w-[calc(100%-32px)] mx-4 flex items-center gap-4 px-6 py-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500 font-black italic text-[10px] uppercase tracking-widest hover:bg-rose-500/20 transition-all transition-transform active:scale-95 mb-4">
+         <i class="lucide-power"></i> <span>Exit Terminal</span>
+      </button>
+
+      <div style="height: 1px; background: rgba(255,255,255,0.05); margin: 16px 16px 24px 16px;"></div>
+
       <a href="/restaurant-dashboard#pos" class="nav-link" data-section="pos">
         <i class="lucide-receipt"></i>
         <span>POS Terminal</span>
@@ -152,15 +162,13 @@ const { title = "Restaurant OS" } = Astro.props;
         <span>Smart Upload</span>
       </a>
 
+
     </nav>
 
        <!-- Audit & Break Control -->
        <div id="staffControlPanel" class="mt-8 pt-8 border-t border-white/5 space-y-4">
           <button onclick="recordStaffEvent('break_start')" class="w-full flex items-center gap-4 px-6 py-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-500 font-black italic text-[10px] uppercase tracking-widest hover:bg-amber-500/20 transition-all transition-transform active:scale-95">
              <i class="lucide-coffee"></i> <span>Request Break</span>
-          </button>
-          <button onclick="recordStaffEvent('logout')" class="w-full flex items-center gap-4 px-6 py-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500 font-black italic text-[10px] uppercase tracking-widest hover:bg-rose-500/20 transition-all transition-transform active:scale-95">
-             <i class="lucide-log-out"></i> <span>Terminate Shift</span>
           </button>
        </div>
 

@@ -160,7 +160,7 @@ const Dashboard = () => {
                       <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.7)]"></div>
                       <span className="text-[10px] font-black uppercase text-white/40 tracking-widest italic">Live Neural Link Active</span>
                    </div>
-                   <button onClick={() => setActiveTab('market')} className="px-10 py-5 bg-white/5 border border-white/10 rounded-[32px] text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all italic text-white/40">View Historical Yields</button>
+                   <button onClick={() => setActiveTab('market')} className="px-10 py-5 bg-white/5 border border-white/10 rounded-[32px] text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all italic text-white/40">View Historical Profit</button>
                 </div>
                 <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/5 blur-[100px] -z-10 group-hover:bg-orange-500/10 transition-all"></div>
             </header>
@@ -181,7 +181,7 @@ const Dashboard = () => {
                     <div className="flex justify-between items-center mb-16 relative z-10">
                         <div>
                           <h3 className="text-2xl font-black italic uppercase tracking-tighter text-white">Revenue <span className="text-orange-500">Projection</span></h3>
-                          <p className="text-[10px] font-black uppercase text-white/20 tracking-[0.2em] italic mt-2">7-Day Yield Matrix | Real-time Synchronization</p>
+                          <p className="text-[10px] font-black uppercase text-white/20 tracking-[0.2em] italic mt-2">7-Day Profit Matrix | Real-time Synchronization</p>
                         </div>
                     </div>
 
@@ -246,7 +246,7 @@ const Dashboard = () => {
            <header className="bg-white/5 border border-white/10 p-10 rounded-[48px] relative overflow-hidden group shadow-2xl mb-12">
                <div className="relative z-10">
                   <h1 className="text-4xl font-black italic uppercase tracking-tighter leading-none text-white">Market <span className="bg-gradient-to-r from-indigo-500 to-indigo-300 bg-clip-text text-transparent text-5xl">Intelligence Lab</span></h1>
-                  <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.4em] mt-3 italic leading-none">Deep History Ledger | Yield Leadership Analysis</p>
+                  <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.4em] mt-3 italic leading-none">Deep History Ledger | Profit Leadership Analysis</p>
                </div>
                <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[100px] -z-10 transition-all"></div>
            </header>

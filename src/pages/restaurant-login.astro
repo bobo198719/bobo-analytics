@@ -70,6 +70,9 @@ import "../styles/restaurant.css";
        if ((id === 'rest_admin' || id === 'admin') && pass === 'password123') {
           role = 'owner';
           access = true;
+       } else if (id === 'society' && pass === 'society') {
+          role = 'owner';
+          access = true;
        } else if (id === 'waiter1' && pass === 'waiter123') {
           role = 'waiter';
           access = true;
