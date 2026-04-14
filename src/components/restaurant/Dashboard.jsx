@@ -155,7 +155,7 @@ const Dashboard = () => {
                           <div key={i} className="flex justify-between items-start text-sm font-bold italic group/item pb-2 border-b border-white/5 last:border-0 last:pb-0">
                              <div className="flex gap-3 text-white/80 group-hover/item:text-white transition-colors">
                                 <span className="text-white/30">{item.qty}x</span>
-                                <span>{item.name} <span className="text-[10px] text-white/20 uppercase tracking-widest block not-italic mt-0.5">₹{item.price} unit</span></span>
+                                <span>{item.name} <span className="text-[10px] text-white/20 uppercase tracking-widest block not-italic mt-0.5">₹{item.price} price</span></span>
                              </div>
                              <span className="text-orange-400">₹{item.price * item.qty}</span>
                           </div>
@@ -203,7 +203,7 @@ const Dashboard = () => {
                                 <div key={i} className="flex justify-between items-start text-sm font-bold italic group/item">
                                    <div className="flex gap-3 text-white/80 group-hover/item:text-white transition-colors">
                                       <span className="text-white/30">{item.qty}x</span>
-                                      <span>{item.name} <span className="text-[10px] text-white/20 uppercase tracking-widest block not-italic mt-0.5">₹{item.price} unit</span></span>
+                                      <span>{item.name} <span className="text-[10px] text-white/20 uppercase tracking-widest block not-italic mt-0.5">₹{item.price} price</span></span>
                                    </div>
                                    <span className="text-orange-400">₹{item.price * item.qty}</span>
                                 </div>
