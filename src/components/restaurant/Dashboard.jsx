@@ -26,13 +26,15 @@ import MatrixAnalytics from './MatrixAnalytics';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('ops'); // ops or market
+  const [showProfitModal, setShowProfitModal] = useState(false);
   const [stats, setStats] = useState({
     todayRevenue: 0,
     totalOrders: 0,
     activeTables: 0,
     pendingOrders: 0,
     history: [],
-    recent: []
+    recent: [],
+    shiftDetails: []
   });
 
   const [aiInsights, setAiInsights] = useState([
@@ -64,6 +66,12 @@ const Dashboard = () => {
            { id: 1, table_number: 'VIP 1', total: 4500, status: 'Served' },
            { id: 2, table_number: '04', total: 1200, status: 'Preparing' },
            { id: 3, table_number: '12', total: 3200, status: 'Pending' }
+        ],
+        shiftDetails: [
+           { id: 'ORD-101', table: 'VIP 1', waiter: 'Rajesh K.', inTime: '19:30', outTime: '20:45', items: [{ name: 'Truffle Pasta', price: 850, qty: 2 }, { name: 'Garlic Bread', price: 250, qty: 1 }], total: 1950 },
+           { id: 'ORD-102', table: 'Table 04', waiter: 'Simran M.', inTime: '20:00', outTime: '21:10', items: [{ name: 'Margherita Pizza', price: 650, qty: 1 }, { name: 'Coke', price: 100, qty: 2 }], total: 850 },
+           { id: 'ORD-103', table: 'Table 12', waiter: 'Amit S.', inTime: '20:15', outTime: '21:30', items: [{ name: 'Grilled Salmon', price: 1200, qty: 1 }, { name: 'Mint Mojito', price: 300, qty: 2 }], total: 1800 },
+           { id: 'ORD-104', table: 'Table 08', waiter: 'Vikram D.', inTime: '18:45', outTime: '19:50', items: [{ name: 'Butter Chicken', price: 650, qty: 1 }, { name: 'Garlic Naan', price: 80, qty: 3 }, { name: 'Lassi', price: 120, qty: 2 }], total: 1130 }
         ]
       };
       
@@ -73,7 +81,8 @@ const Dashboard = () => {
         activeTables: Number(data.active_tables) || 0,
         pendingOrders: Number(data.kitchen_queue) || 0,
         history: data.history || [],
-        recent: data.recent || []
+        recent: data.recent || [],
+        shiftDetails: data.shiftDetails || []
       });
       setError(null);
       setLoading(false);
@@ -125,6 +134,56 @@ const Dashboard = () => {
   return (
     <div className="space-y-10 animate-in fade-in duration-700 font-['Plus_Jakarta_Sans'] pb-20">
       
+      {showProfitModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] flex items-center justify-center p-6 animate-in fade-in duration-300">
+           <div className="bg-[#0f172a] border border-orange-500/30 rounded-[48px] w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+              <div className="p-8 border-b border-white/10 flex justify-between items-center bg-white/5">
+                 <div>
+                    <h2 className="text-3xl font-black italic uppercase text-white tracking-tighter">Shift <span className="text-orange-500">Profit Ledger</span></h2>
+                    <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em] mt-1 space-x-2"><span>Live Node Active</span> <span className="opacity-50">|</span> <span>Detailed Order Matrix</span></p>
+                 </div>
+                 <button onClick={() => setShowProfitModal(false)} className="w-12 h-12 bg-white/5 border border-white/10 hover:bg-rose-500/20 text-white/40 hover:text-rose-500 rounded-[20px] flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-xl">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                 </button>
+              </div>
+              <div className="p-8 overflow-y-auto space-y-4 no-scrollbar">
+                 {stats.shiftDetails.map((log, idx) => (
+                    <div key={idx} className="p-6 bg-black/40 border border-white/5 rounded-[32px] hover:border-orange-500/30 hover:bg-white/5 transition-all flex flex-col md:flex-row gap-8 shadow-xl group">
+                       <div className="w-full md:w-56 flex-shrink-0 space-y-4">
+                          <div className="px-4 py-2 bg-gradient-to-r from-orange-500/20 to-rose-500/20 border border-orange-500/30 text-orange-400 rounded-2xl text-[12px] font-black uppercase tracking-widest text-center shadow-inner">
+                             {log.table}
+                          </div>
+                          <div className="space-y-2">
+                              <div className="text-[10px] font-black text-white/40 uppercase tracking-widest flex justify-between items-center"><span>Waiter:</span> <span className="text-white text-[11px]">{log.waiter}</span></div>
+                              <div className="text-[10px] font-black text-white/40 uppercase tracking-widest flex justify-between items-center"><span>In:</span> <span className="text-emerald-400 text-[11px]">{log.inTime}</span></div>
+                              <div className="text-[10px] font-black text-white/40 uppercase tracking-widest flex justify-between items-center"><span>Out:</span> <span className="text-rose-400 text-[11px]">{log.outTime}</span></div>
+                          </div>
+                       </div>
+                       <div className="flex-1 bg-white/5 rounded-[24px] p-6 border border-white/5 group-hover:border-white/10 transition-colors">
+                          <p className="text-[9px] font-black uppercase text-white/30 tracking-widest mb-4 flex items-center gap-2"><Receipt className="w-3 h-3" /> Order Matrix</p>
+                          <div className="space-y-3">
+                             {log.items.map((item, i) => (
+                                <div key={i} className="flex justify-between items-start text-sm font-bold italic group/item">
+                                   <div className="flex gap-3 text-white/80 group-hover/item:text-white transition-colors">
+                                      <span className="text-white/30">{item.qty}x</span>
+                                      <span>{item.name} <span className="text-[10px] text-white/20 uppercase tracking-widest block not-italic mt-0.5">₹{item.price} unit</span></span>
+                                   </div>
+                                   <span className="text-orange-400">₹{item.price * item.qty}</span>
+                                </div>
+                             ))}
+                          </div>
+                          <div className="mt-6 pt-4 border-t border-white/10 flex justify-between items-end">
+                             <span className="text-[11px] font-black uppercase text-white/40 tracking-widest">Total Yield</span>
+                             <span className="text-2xl font-black text-white italic">₹{log.total}</span>
+                          </div>
+                       </div>
+                    </div>
+                 ))}
+              </div>
+           </div>
+        </div>
+      )}
+
       {error && (
           <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 bg-rose-600 px-8 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-2xl animate-bounce italic text-white">
               ALERT: {error}
@@ -167,7 +226,7 @@ const Dashboard = () => {
 
             {/* CORE STATS GRID */}
             <section className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${isOwner ? '4' : '2'} gap-8`}>
-              {isOwner && <div className="cursor-pointer"><Card title="Shift Profit" value={`₹${stats.todayRevenue.toLocaleString()}`} icon={<TrendingUp className="text-white w-6 h-6" />} gradient="bg-gradient-to-br from-orange-400 to-orange-600" trend="+12.4%" subValue="Performance: Optimal" /></div>}
+              {isOwner && <div className="cursor-pointer" onClick={() => setShowProfitModal(true)}><Card title="Shift Profit" value={`₹${stats.todayRevenue.toLocaleString()}`} icon={<TrendingUp className="text-white w-6 h-6" />} gradient="bg-gradient-to-br from-orange-400 to-orange-600" trend="+12.4%" subValue="Tap To View Ledger" /></div>}
               <div onClick={() => switchSection('pos')} className="cursor-pointer"><Card title="Traffic Volume" value={stats.totalOrders} icon={<ShoppingCart className="text-white w-6 h-6" />} gradient="bg-gradient-to-br from-indigo-400 to-indigo-600" trend="+8.2%" subValue="Dine-in Activity Live" /></div>
               <div onClick={() => switchSection('tables')} className="cursor-pointer"><Card title="Active Tables" value={stats.activeTables} icon={<Zap className="text-white w-6 h-6" />} gradient="bg-gradient-to-br from-amber-400 to-amber-600" subValue="Occupied Now" /></div>
               {isOwner && <div onClick={() => switchSection('kitchen')} className="cursor-pointer"><Card title="Kitchen Queue" value={`${stats.pendingOrders} KOTs`} icon={<Clock className="text-white w-6 h-6" />} gradient="bg-gradient-to-br from-rose-400 to-rose-600" subValue="Avg: 18 min prep time" /></div>}
