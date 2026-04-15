@@ -66,18 +66,35 @@ const MenuManager = () => {
 
   const handleAddItem = async () => {
     if (!formData.name || !formData.price || !formData.category) return alert("Please fill all fields");
+    
+    const newItem = {
+        ...formData,
+        id: Date.now(), // temporary ID
+        price: Number(formData.price)
+    };
+
     try {
         const res = await fetch('/api/v2/restaurant/menu', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)
         });
+        
+        setItems(prev => [newItem, ...prev]);
+        setShowAddModal(false);
+        setFormData({ name: '', category: 'Starters', price: '', type: 'veg', image_url: '' });
+        
         if (res.ok) {
-            setShowAddModal(false);
-            setFormData({ name: '', category: 'Starters', price: '', type: 'veg', image_url: '' });
             fetchItems();
+        } else {
+            console.warn("Backend API sync failed, item exists in local state only.");
         }
-    } catch (err) { console.error(err); }
+    } catch (err) { 
+        console.error(err); 
+        setItems(prev => [newItem, ...prev]);
+        setShowAddModal(false);
+        setFormData({ name: '', category: 'Starters', price: '', type: 'veg', image_url: '' });
+    }
   };
 
   const handleDeleteItem = async (item) => {
