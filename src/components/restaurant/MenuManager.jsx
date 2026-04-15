@@ -32,6 +32,7 @@ const MenuManager = () => {
   const [editForm, setEditForm] = useState({ name: '', price: '', category: 'Starters', type: 'veg', image_url: '' });
   const [deletingId, setDeletingId] = useState(null); // track which item is being deleted
   const pendingItems = useRef([]); // locally-added items not yet confirmed by server
+  const deletedIds = useRef(new Set()); // permanently deleted item IDs
 
   const searchRef = useRef(null);
 
@@ -46,8 +47,10 @@ const MenuManager = () => {
       pendingItems.current = pendingItems.current.filter(
         p => !serverNames.has(p.name?.toLowerCase().trim())
       );
+      // Filter out any deleted items
+      const notDeleted = sorted.filter(r => !deletedIds.current.has(String(r.id)));
       // Merge remaining pending items at top
-      setItems([...pendingItems.current, ...sorted].slice(0, 253));
+      setItems([...pendingItems.current, ...notDeleted].slice(0, 253));
       setLoading(false);
     } catch (err) { 
       console.error("Fetch Fail:", err); 
@@ -109,12 +112,13 @@ const MenuManager = () => {
     if (!window.confirm(`Delete "${item.name}"? This cannot be undone.`)) return;
     setDeletingId(item.id);
 
+    // Permanently mark as deleted on this client session
+    deletedIds.current.add(String(item.id));
     // Optimistic: remove from UI and pending list immediately
     setItems(prev => prev.filter(it => it.id !== item.id));
     pendingItems.current = pendingItems.current.filter(p => p.id !== item.id);
 
     try {
-      // Try DELETE, then fallback to a soft-delete approach
       const res = await fetch(`/api/v2/restaurant/menu/${item.id}`, { method: 'DELETE' });
       if (!res.ok && res.status !== 404) {
         // Try PATCH as a soft-delete fallback if DELETE is blocked

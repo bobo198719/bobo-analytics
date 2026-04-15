@@ -625,6 +625,40 @@ export async function ALL({ request, params }) {
     // ==========================================
     // 🛡️ RESTAURANT EDGE CACHE / BYPASS (V99)
     // ==========================================
+
+    // 🗑️ MENU DELETE STORE (Serverless Memory)
+    if (!global.DELETED_MENU_IDS) global.DELETED_MENU_IDS = new Set();
+
+    // MENU DELETE — Edge handler (intercept before VPS proxy)
+    if (pathname.match(/\/api\/v2\/restaurant\/menu\/\d+/) && method === 'DELETE') {
+        const menuId = pathname.split('/').pop();
+        global.DELETED_MENU_IDS.add(String(menuId));
+        // Also try deleting on VPS in background (fire & forget)
+        const hostingerBase = 'http://187.124.97.144:5000';
+        fetch(`${hostingerBase}${pathname}`, { method: 'DELETE', signal: AbortSignal.timeout(4000) }).catch(() => {});
+        return new Response(JSON.stringify({ success: true, deleted: menuId }), { status: 200, headers: {'Content-Type': 'application/json'} });
+    }
+
+    // MENU GET — filter out deleted items
+    if (pathname === '/api/v2/restaurant/menu' && method === 'GET') {
+        try {
+            const db = await getMySQL();
+            const [rows] = await db.query('SELECT * FROM menu_items ORDER BY id DESC LIMIT 500');
+            const filtered = rows.filter(r => !global.DELETED_MENU_IDS.has(String(r.id)));
+            return new Response(JSON.stringify(filtered), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        } catch (e) {
+            // Fallback: proxy to VPS and filter
+            try {
+                const vpsRes = await fetch('http://187.124.97.144:5000/api/v2/restaurant/menu', { signal: AbortSignal.timeout(6000) });
+                const vpsData = await vpsRes.json();
+                const filtered = Array.isArray(vpsData) ? vpsData.filter(r => !global.DELETED_MENU_IDS.has(String(r.id))) : vpsData;
+                return new Response(JSON.stringify(filtered), { status: 200, headers: { 'Content-Type': 'application/json' } });
+            } catch (e2) {
+                return new Response(JSON.stringify([]), { status: 200, headers: { 'Content-Type': 'application/json' } });
+            }
+        }
+    }
+
     if (pathname.includes('/api/v2/restaurant/analytics') && method === 'GET') {
         try {
             const db = await getMySQL();
