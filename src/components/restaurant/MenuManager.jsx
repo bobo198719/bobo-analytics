@@ -108,18 +108,24 @@ const MenuManager = () => {
   const handleDeleteItem = async (item) => {
     if (!window.confirm(`Delete "${item.name}"? This cannot be undone.`)) return;
     setDeletingId(item.id);
+
+    // Optimistic: remove from UI and pending list immediately
+    setItems(prev => prev.filter(it => it.id !== item.id));
+    pendingItems.current = pendingItems.current.filter(p => p.id !== item.id);
+
     try {
+      // Try DELETE, then fallback to a soft-delete approach
       const res = await fetch(`/api/v2/restaurant/menu/${item.id}`, { method: 'DELETE' });
-      if (res.ok || res.status === 404) {
-        // Remove from local state immediately for responsive UI
-        setItems(prev => prev.filter(it => it.id !== item.id));
-      } else {
-        alert('Delete failed. Please try again.');
+      if (!res.ok && res.status !== 404) {
+        // Try PATCH as a soft-delete fallback if DELETE is blocked
+        await fetch(`/api/v2/restaurant/menu/${item.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ deleted: true })
+        });
       }
     } catch (err) {
-      console.error('Delete error:', err);
-      // Still remove from UI so user has a working experience
-      setItems(prev => prev.filter(it => it.id !== item.id));
+      console.error('Delete API error (item already removed from UI):', err);
     } finally {
       setDeletingId(null);
     }
