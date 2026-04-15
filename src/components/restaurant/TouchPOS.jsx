@@ -318,24 +318,24 @@ const TouchPOS = () => {
             </div>
 
             {/* Selected Items Panel */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3" style={{ scrollbarWidth: 'none' }}>
+            <div className="flex-1 overflow-y-auto p-2 space-y-1" style={{ scrollbarWidth: 'none' }}>
                {cart.length === 0 ? (
                   <div className="h-full flex flex-col items-center justify-center text-gray-500 opacity-50">
-                     <ShoppingCart size={64} className="mb-4" />
-                     <p className="font-bold font-lg">BASKET IS EMPTY</p>
-                     <p className="text-sm">Tap items to add them.</p>
+                     <ShoppingCart size={48} className="mb-2" />
+                     <p className="font-bold text-sm">BASKET IS EMPTY</p>
+                     <p className="text-xs">Tap items to add them.</p>
                   </div>
                ) : (
                   cart.map(item => (
-                     <div key={item.id} className="bg-[#333] p-4 rounded-xl flex items-center justify-between border-l-4 border-orange-500">
-                        <div className="flex-1 pr-4">
-                           <div className="font-bold text-lg leading-tight uppercase truncate">{item.name}</div>
-                           <div className="text-orange-400 font-black">₹{item.price}</div>
+                     <div key={item.id} className="bg-[#333] px-3 py-2 rounded-lg flex items-center justify-between border-l-4 border-orange-500">
+                        <div className="flex-1 pr-2 truncate">
+                           <div className="font-bold text-sm leading-tight uppercase truncate">{item.name}</div>
+                           <div className="text-orange-400 font-black text-xs">₹{item.price}</div>
                         </div>
-                        <div className="flex items-center gap-4 bg-[#111] p-2 rounded-lg">
-                           <button onClick={() => removeFromCart(item.id)} className="bg-red-500/20 text-red-500 font-black active:bg-red-500 active:text-white transition-colors flex items-center justify-center" style={{ width: '40px', height: '40px', fontSize: '20px', borderRadius: '10px' }}>-</button>
-                           <span className="font-black text-xl w-6 text-center">{item.quantity}</span>
-                           <button onClick={() => addToCart(item)} className="bg-green-500/20 text-green-500 font-black active:bg-green-500 active:text-white transition-colors flex items-center justify-center" style={{ width: '40px', height: '40px', fontSize: '20px', borderRadius: '10px' }}>+</button>
+                        <div className="flex items-center gap-2 bg-[#111] p-1 rounded-md">
+                           <button onClick={() => removeFromCart(item.id)} className="bg-red-500/20 text-red-500 font-black active:bg-red-500 active:text-white transition-colors flex items-center justify-center" style={{ width: '28px', height: '28px', fontSize: '18px', borderRadius: '6px' }}>-</button>
+                           <span className="font-black text-sm w-4 text-center">{item.quantity}</span>
+                           <button onClick={() => addToCart(item)} className="bg-green-500/20 text-green-500 font-black active:bg-green-500 active:text-white transition-colors flex items-center justify-center" style={{ width: '28px', height: '28px', fontSize: '18px', borderRadius: '6px' }}>+</button>
                         </div>
                      </div>
                   ))
