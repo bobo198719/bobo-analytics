@@ -166,7 +166,7 @@ const MenuManager = () => {
   // 1. Trust the DB-stored URL first
   // 2. If missing, use Unsplash keyword search (reliable fallback)
   const getImageUrl = (item) => {
-    if (item.image_url && item.image_url.startsWith('http')) return item.image_url;
+    if (item.image_url && (item.image_url.startsWith('http') || item.image_url.startsWith('data:'))) return item.image_url;
     // Keyword-based fallback map
     const kwMap = {
       'Starters': 'food,appetizer,starter',
