@@ -31,6 +31,7 @@ const MenuManager = () => {
   const [editItem, setEditItem] = useState(null); // item being edited
   const [editForm, setEditForm] = useState({ name: '', price: '', category: 'Starters', type: 'veg', image_url: '' });
   const [deletingId, setDeletingId] = useState(null); // track which item is being deleted
+  const pendingItems = useRef([]); // locally-added items not yet confirmed by server
 
   const searchRef = useRef(null);
 
@@ -40,7 +41,13 @@ const MenuManager = () => {
       if (!res.ok) throw new Error("Catalog Matrix Offline");
       const data = await res.json();
       const sorted = [...data].sort((a, b) => b.id - a.id);
-      setItems(sorted.slice(0, 253));
+      const serverNames = new Set(data.map(d => d.name?.toLowerCase().trim()));
+      // Remove pending items that now exist in server data
+      pendingItems.current = pendingItems.current.filter(
+        p => !serverNames.has(p.name?.toLowerCase().trim())
+      );
+      // Merge remaining pending items at top
+      setItems([...pendingItems.current, ...sorted].slice(0, 253));
       setLoading(false);
     } catch (err) { 
       console.error("Fetch Fail:", err); 
@@ -69,9 +76,15 @@ const MenuManager = () => {
     
     const newItem = {
         ...formData,
-        id: Date.now(), // temporary ID
+        id: Date.now(), // temporary local ID
         price: Number(formData.price)
     };
+
+    // Optimistically add to pending list and UI immediately
+    pendingItems.current = [newItem, ...pendingItems.current];
+    setItems(prev => [newItem, ...prev]);
+    setShowAddModal(false);
+    setFormData({ name: '', category: 'Starters', price: '', type: 'veg', image_url: '' });
 
     try {
         const res = await fetch('/api/v2/restaurant/menu', {
@@ -80,20 +93,15 @@ const MenuManager = () => {
             body: JSON.stringify(formData)
         });
         
-        setItems(prev => [newItem, ...prev]);
-        setShowAddModal(false);
-        setFormData({ name: '', category: 'Starters', price: '', type: 'veg', image_url: '' });
-        
         if (res.ok) {
+            // Server confirmed — do a fresh fetch which will also clean pendingItems
             fetchItems();
         } else {
-            console.warn("Backend API sync failed, item exists in local state only.");
+            console.warn("Backend save failed, dish is shown locally only.");
         }
     } catch (err) { 
-        console.error(err); 
-        setItems(prev => [newItem, ...prev]);
-        setShowAddModal(false);
-        setFormData({ name: '', category: 'Starters', price: '', type: 'veg', image_url: '' });
+        console.error("Add dish network error:", err);
+        // Item already added to UI, will persist until next hard reload
     }
   };
 
