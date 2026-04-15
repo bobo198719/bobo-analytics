@@ -111,6 +111,14 @@ if (isSubdomain) {
         <span class="launch-label">Explore Solutions →</span>
       </div>
 
+      <!-- 2. RESTAURANT -->
+      <div class="industry-card orange-glow" onclick="openIndustry('restaurant')">
+        <div class="card-icon">🍽️ <span class="badge-new" style="background: linear-gradient(135deg, #f97316, #ef4444);">LIVE</span></div>
+        <h3>Restaurant OS</h3>
+        <p>Full-stack restaurant intelligence — POS, menu, tables, kitchen display, CRM & analytics.</p>
+        <span class="launch-label">Explore Solutions →</span>
+      </div>
+
       <!-- 2. HEALTHCARE -->
       <div class="industry-card" onclick="openIndustry('healthcare')">
         <div class="card-icon">🏥</div>
@@ -183,6 +191,7 @@ if (isSubdomain) {
         <a href="/bakery-software" style="color: #6366f1; font-weight: 700; text-decoration: none; font-size: 1.1rem; padding: 10px 20px; border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 30px; transition: 0.3s;">Bakery Software</a>
         <a href="/pharmacy-pos" style="color: #6366f1; font-weight: 700; text-decoration: none; font-size: 1.1rem; padding: 10px 20px; border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 30px; transition: 0.3s;">Pharmacy POS</a>
         <a href="/retail-crm" style="color: #6366f1; font-weight: 700; text-decoration: none; font-size: 1.1rem; padding: 10px 20px; border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 30px; transition: 0.3s;">Retail CRM</a>
+        <a href="/industry/restaurant" style="color: #f97316; font-weight: 700; text-decoration: none; font-size: 1.1rem; padding: 10px 20px; border: 1px solid rgba(249, 115, 22, 0.3); border-radius: 30px; transition: 0.3s;">Restaurant Software</a>
       </div>
     </div>
   </section>
@@ -483,6 +492,29 @@ if (isSubdomain) {
     transform: translateY(-8px);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   }
+
+  .industry-card.pink-glow {
+    border-color: rgba(244, 114, 182, 0.25);
+    background: rgba(244, 114, 182, 0.04);
+  }
+  .industry-card.pink-glow:hover {
+    border-color: #f472b6;
+    box-shadow: 0 20px 50px rgba(244, 114, 182, 0.2);
+  }
+
+  .industry-card.orange-glow {
+    border-color: rgba(249, 115, 22, 0.3);
+    background: rgba(249, 115, 22, 0.05);
+  }
+  .industry-card.orange-glow:hover {
+    border-color: #f97316;
+    box-shadow: 0 20px 50px rgba(249, 115, 22, 0.2);
+    transform: translateY(-8px);
+  }
+  .industry-card.orange-glow .launch-label {
+    color: #f97316;
+  }
+
 
   .card-icon {
     font-size: 2.5rem;

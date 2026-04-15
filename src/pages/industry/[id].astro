@@ -128,6 +128,30 @@ const industryData = {
         ["Checkouts", "Multi-terminal sync", "Individual POS lag"],
         ["Sourcing", "Demand-based ordering", "Bulk buying blind"]
      ]
+  },
+  restaurant: {
+    title: "Restaurant OS",
+    tagline: "The Complete Intelligence Layer for Modern Restaurants",
+    description: "Full-stack restaurant management platform — from table to kitchen to analytics. Built for ambitious restaurateurs who want real-time control of every operation.",
+    icon: "🍽️",
+    benefits: [
+      "Live Touch POS with instant KOT generation & kitchen routing",
+      "Smart Menu Catalog with image upload, bulk import & live edit",
+      "Table management — real-time floor map with status tracking",
+      "Kitchen Display System (KDS) with order prioritization",
+      "Guest Intelligence CRM — loyalty, visit history & feedback",
+      "Revenue analytics — daily, weekly & monthly profit insights",
+      "Multi-role access — Owner, Chef & Waiter dashboards",
+      "Bulk menu import via Excel, CSV or PDF — 1-click catalog sync"
+    ],
+    comparison: [
+      ["Order Taking", "Touch POS with instant KOT", "Paper slips & manual calls"],
+      ["Menu Updates", "Live edit + image upload", "Reprinting paper menus"],
+      ["Kitchen Sync", "Real-time KDS display", "Shouting across the kitchen"],
+      ["Table Status", "Live floor map view", "Walking around to check"],
+      ["Analytics", "Revenue radar & profit trends", "End-of-day manual tally"],
+      ["CRM", "Guest loyalty & visit history", "No customer data at all"]
+    ]
   }
 };
 
@@ -296,6 +320,67 @@ const data = industryData[id] || industryData.baker;
                      </div>
                   </div>
                </div>
+            </div>
+          ) : id === 'restaurant' ? (
+            <div class="restaurant-dashboard-sim">
+              <div class="rd-topbar">
+                <span class="rd-logo">🍽️ RESTAURANT OS</span>
+                <div class="rd-tabs">
+                  <span class="rd-tab active">Dashboard</span>
+                  <span class="rd-tab">POS</span>
+                  <span class="rd-tab">KDS</span>
+                  <span class="rd-tab">Menu</span>
+                </div>
+                <span class="rd-live">● LIVE</span>
+              </div>
+              <div class="rd-body">
+                <div class="rd-metrics">
+                  <div class="rd-metric">
+                    <span class="rd-m-icon">💰</span>
+                    <span class="rd-m-val">₹18,450</span>
+                    <span class="rd-m-label">Today's Revenue</span>
+                  </div>
+                  <div class="rd-metric">
+                    <span class="rd-m-icon">🧾</span>
+                    <span class="rd-m-val">47</span>
+                    <span class="rd-m-label">Orders Today</span>
+                  </div>
+                  <div class="rd-metric rd-metric-alert">
+                    <span class="rd-m-icon">🔥</span>
+                    <span class="rd-m-val">6</span>
+                    <span class="rd-m-label">Kitchen Queue</span>
+                  </div>
+                  <div class="rd-metric">
+                    <span class="rd-m-icon">🪑</span>
+                    <span class="rd-m-val">12/18</span>
+                    <span class="rd-m-label">Tables Active</span>
+                  </div>
+                </div>
+                <div class="rd-split">
+                  <div class="rd-orders-box">
+                    <div class="rd-box-title">🧾 LIVE ORDERS</div>
+                    <div class="rd-order-row active-order">T-3 · Chicken Biryani × 2 <span class="rd-badge">COOKING</span></div>
+                    <div class="rd-order-row">T-7 · Paneer Butter Masala × 1 <span class="rd-badge done">READY</span></div>
+                    <div class="rd-order-row">T-1 · Veg Thali × 3 <span class="rd-badge pending">PENDING</span></div>
+                    <div class="rd-order-row">T-5 · Cold Coffee × 2 <span class="rd-badge done">READY</span></div>
+                  </div>
+                  <div class="rd-chart-box">
+                    <div class="rd-box-title">📈 REVENUE TREND</div>
+                    <div class="rd-bars">
+                      <div class="rd-bar" style="--rh:40%"></div>
+                      <div class="rd-bar" style="--rh:65%"></div>
+                      <div class="rd-bar" style="--rh:50%"></div>
+                      <div class="rd-bar" style="--rh:80%"></div>
+                      <div class="rd-bar" style="--rh:60%"></div>
+                      <div class="rd-bar" style="--rh:90%"></div>
+                      <div class="rd-bar rd-bar-live" style="--rh:75%"></div>
+                    </div>
+                    <div class="rd-bar-labels">
+                      <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Today</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           ) : (
             <img src={`https://images.unsplash.com/photo-1551288049-bbda38a5f452?auto=format&fit=crop&q=80&w=1000`} alt="Dashboard Preview" />
@@ -528,4 +613,53 @@ const data = industryData[id] || industryData.baker;
      0% { height: 0%; }
      100% { height: var(--h); }
   }
+
+  /* --- RESTAURANT OS DASHBOARD MOCKUP --- */
+  .restaurant-dashboard-sim {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: #05081a; color: white; display: flex; flex-direction: column;
+    font-family: 'Inter', sans-serif; font-size: 0.8rem;
+  }
+  .rd-topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 20px; background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .rd-logo { font-weight: 900; color: #f97316; letter-spacing: -0.5px; font-size: 0.85rem; }
+  .rd-tabs { display: flex; gap: 6px; }
+  .rd-tab { padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; color: rgba(255,255,255,0.4); cursor: pointer; }
+  .rd-tab.active { background: #f97316; color: white; }
+  .rd-live { color: #10b981; font-size: 0.7rem; font-weight: 800; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .rd-body { flex: 1; display: flex; flex-direction: column; gap: 12px; padding: 14px; overflow: hidden; }
+  .rd-metrics { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+  .rd-metric {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 4px;
+  }
+  .rd-metric-alert { border-color: rgba(249,115,22,0.3); background: rgba(249,115,22,0.05); }
+  .rd-m-icon { font-size: 1.2rem; }
+  .rd-m-val { font-size: 1.3rem; font-weight: 900; color: white; }
+  .rd-m-label { font-size: 0.65rem; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .rd-split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; flex: 1; overflow: hidden; }
+  .rd-orders-box, .rd-chart-box {
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px; padding: 14px; overflow: hidden;
+  }
+  .rd-box-title { font-size: 0.65rem; font-weight: 900; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+  .rd-order-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 7px 10px; border-radius: 8px; margin-bottom: 5px;
+    font-size: 0.72rem; font-weight: 600; color: rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.02);
+  }
+  .active-order { background: rgba(249,115,22,0.08); color: white; }
+  .rd-badge { font-size: 0.6rem; font-weight: 800; padding: 2px 7px; border-radius: 6px; background: rgba(249,115,22,0.2); color: #f97316; }
+  .rd-badge.done { background: rgba(16,185,129,0.15); color: #10b981; }
+  .rd-badge.pending { background: rgba(148,163,184,0.15); color: #94a3b8; }
+  .rd-bars { display: flex; align-items: flex-end; gap: 6px; height: 90px; padding-top: 10px; }
+  .rd-bar { flex: 1; background: rgba(249,115,22,0.25); border-radius: 3px 3px 0 0; animation: rdGrowBar 1.5s ease forwards; transform-origin: bottom; }
+  .rd-bar-live { background: #f97316; }
+  .rd-bar-labels { display: flex; justify-content: space-between; font-size: 0.55rem; color: rgba(255,255,255,0.3); margin-top: 5px; font-weight: 700; }
+  @keyframes rdGrowBar { 0%{height:0} 100%{height:var(--rh)} }
 </style>
