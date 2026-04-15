@@ -33,6 +33,7 @@ const MenuManager = () => {
   const [deletingId, setDeletingId] = useState(null); // track which item is being deleted
   const pendingItems = useRef([]); // locally-added items not yet confirmed by server
   const deletedIds = useRef(new Set()); // permanently deleted item IDs
+  const editedItems = useRef(new Map()); // locally-edited items (id -> editedData)
 
   const searchRef = useRef(null);
 
@@ -49,8 +50,13 @@ const MenuManager = () => {
       );
       // Filter out any deleted items
       const notDeleted = sorted.filter(r => !deletedIds.current.has(String(r.id)));
+      // Apply any local edits on top of server data
+      const withEdits = notDeleted.map(r => {
+        const localEdit = editedItems.current.get(String(r.id));
+        return localEdit ? { ...r, ...localEdit } : r;
+      });
       // Merge remaining pending items at top
-      setItems([...pendingItems.current, ...notDeleted].slice(0, 253));
+      setItems([...pendingItems.current, ...withEdits].slice(0, 253));
       setLoading(false);
     } catch (err) { 
       console.error("Fetch Fail:", err); 
@@ -148,8 +154,14 @@ const MenuManager = () => {
 
   const handleSaveEdit = async () => {
     if (!editForm.name || !editForm.price) return alert('Please fill all required fields');
+    
+    // Immediately store the edit locally so it survives server refreshes
+    editedItems.current.set(String(editItem.id), { ...editForm });
+    setItems(prev => prev.map(it => it.id === editItem.id ? { ...it, ...editForm } : it));
+    setEditItem(null);
+
     try {
-      // Try PUT first, then PATCH
+      // Try PUT first, then PATCH to sync with VPS
       let res = await fetch(`/api/v2/restaurant/menu/${editItem.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -162,13 +174,12 @@ const MenuManager = () => {
           body: JSON.stringify(editForm)
         });
       }
-      // Update local state optimistically regardless of API response
-      setItems(prev => prev.map(it => it.id === editItem.id ? { ...it, ...editForm } : it));
-      setEditItem(null);
+      if (res.ok) {
+        // Server confirmed — edit is persisted, remove from local override map
+        editedItems.current.delete(String(editItem.id));
+      }
     } catch (err) {
-      console.error('Edit error:', err);
-      setItems(prev => prev.map(it => it.id === editItem.id ? { ...it, ...editForm } : it));
-      setEditItem(null);
+      console.error('Edit sync error (local edit preserved):', err);
     }
   };
 
