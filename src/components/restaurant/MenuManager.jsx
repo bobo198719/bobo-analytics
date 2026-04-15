@@ -32,8 +32,27 @@ const MenuManager = () => {
   const [editForm, setEditForm] = useState({ name: '', price: '', category: 'Starters', type: 'veg', image_url: '' });
   const [deletingId, setDeletingId] = useState(null); // track which item is being deleted
   const pendingItems = useRef([]); // locally-added items not yet confirmed by server
-  const deletedIds = useRef(new Set()); // permanently deleted item IDs
-  const editedItems = useRef(new Map()); // locally-edited items (id -> editedData)
+  const deletedIds = useRef(new Set(
+    typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('ro_deleted_ids') || '[]') : []
+  ));
+  const editedItems = useRef(new Map(
+    typeof window !== 'undefined' ? Object.entries(JSON.parse(localStorage.getItem('ro_edited_items') || '{}')) : []
+  ));
+
+  // Persist helpers
+  const saveDeletedIds = (set) => {
+    try { localStorage.setItem('ro_deleted_ids', JSON.stringify([...set])); } catch(e) {}
+  };
+  const saveEditedItems = (map) => {
+    try {
+      const obj = {};
+      map.forEach((v, k) => {
+        // Don't store huge base64 images in localStorage (keep only http URLs)
+        obj[k] = { ...v, image_url: v.image_url?.startsWith('data:') ? '___base64___' : v.image_url };
+      });
+      localStorage.setItem('ro_edited_items', JSON.stringify(obj));
+    } catch(e) {}
+  };
 
   const searchRef = useRef(null);
 
@@ -53,6 +72,11 @@ const MenuManager = () => {
       // Apply any local edits on top of server data
       const withEdits = notDeleted.map(r => {
         const localEdit = editedItems.current.get(String(r.id));
+        // Don't apply base64 placeholder from localStorage (image was not persisted)
+        if (localEdit && localEdit.image_url === '___base64___') {
+          const { image_url, ...rest } = localEdit;
+          return { ...r, ...rest };
+        }
         return localEdit ? { ...r, ...localEdit } : r;
       });
       // Merge remaining pending items at top
@@ -120,6 +144,7 @@ const MenuManager = () => {
 
     // Permanently mark as deleted on this client session
     deletedIds.current.add(String(item.id));
+    saveDeletedIds(deletedIds.current);
     // Optimistic: remove from UI and pending list immediately
     setItems(prev => prev.filter(it => it.id !== item.id));
     pendingItems.current = pendingItems.current.filter(p => p.id !== item.id);
@@ -154,32 +179,27 @@ const MenuManager = () => {
 
   const handleSaveEdit = async () => {
     if (!editForm.name || !editForm.price) return alert('Please fill all required fields');
-    
+    const idStr = String(editItem.id);
+    const savedForm = { ...editForm };
     // Immediately store the edit locally so it survives server refreshes
-    editedItems.current.set(String(editItem.id), { ...editForm });
-    setItems(prev => prev.map(it => it.id === editItem.id ? { ...it, ...editForm } : it));
+    editedItems.current.set(idStr, savedForm);
+    saveEditedItems(editedItems.current);
+    setItems(prev => prev.map(it => it.id === editItem.id ? { ...it, ...savedForm } : it));
     setEditItem(null);
 
     try {
-      // Try PUT first, then PATCH to sync with VPS
-      let res = await fetch(`/api/v2/restaurant/menu/${editItem.id}`, {
+      const res = await fetch(`/api/v2/restaurant/menu/${idStr}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editForm)
+        body: JSON.stringify(savedForm)
       });
-      if (!res.ok) {
-        res = await fetch(`/api/v2/restaurant/menu/${editItem.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(editForm)
-        });
-      }
       if (res.ok) {
-        // Server confirmed — edit is persisted, remove from local override map
-        editedItems.current.delete(String(editItem.id));
+        // Server confirmed — edit is persisted in DB, remove local override
+        editedItems.current.delete(idStr);
+        saveEditedItems(editedItems.current);
       }
     } catch (err) {
-      console.error('Edit sync error (local edit preserved):', err);
+      console.error('Edit sync error (local edit preserved via localStorage):', err);
     }
   };
 

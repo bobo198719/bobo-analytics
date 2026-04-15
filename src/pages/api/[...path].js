@@ -663,27 +663,18 @@ export async function ALL({ request, params }) {
             const menuId = pathname.split('/').pop();
             const body = JSON.parse(bodyText);
             const db = await getMySQL();
-            const imageUrl = body.image_url?.startsWith('http') ? body.image_url : null;
-            const fields = [
-                body.name !== undefined ? 'name = ?' : null,
-                body.category !== undefined ? 'category = ?' : null,
-                body.type !== undefined ? 'type = ?' : null,
-                body.price !== undefined ? 'price = ?' : null,
-                imageUrl !== null ? 'image_url = ?' : null,
-            ].filter(Boolean);
-            const values = [
-                body.name,
-                body.category,
-                body.type,
-                body.price !== undefined ? Number(body.price) : undefined,
-                imageUrl,
-            ].filter((v, i) => v !== undefined && [
-                body.name, body.category, body.type,
-                body.price !== undefined ? Number(body.price) : undefined,
-                imageUrl
-            ][i] !== undefined);
-            if (fields.length > 0) {
-                await db.query(`UPDATE menu_items SET ${fields.join(', ')} WHERE id = ?`, [...values, menuId]);
+            // Ensure image_url column can hold large strings
+            await db.query('ALTER TABLE menu_items MODIFY COLUMN image_url LONGTEXT').catch(() => {});
+            const updates = [];
+            const vals = [];
+            if (body.name !== undefined)     { updates.push('name = ?');     vals.push(body.name); }
+            if (body.category !== undefined) { updates.push('category = ?'); vals.push(body.category); }
+            if (body.type !== undefined)     { updates.push('type = ?');     vals.push(body.type); }
+            if (body.price !== undefined)    { updates.push('price = ?');    vals.push(Number(body.price)); }
+            if (body.image_url !== undefined) { updates.push('image_url = ?'); vals.push(body.image_url || ''); }
+            if (updates.length > 0) {
+                vals.push(menuId);
+                await db.query(`UPDATE menu_items SET ${updates.join(', ')} WHERE id = ?`, vals);
             }
             return new Response(JSON.stringify({ success: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
         } catch (e) {
