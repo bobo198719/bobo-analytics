@@ -9,6 +9,7 @@ import MenuManager from "../components/restaurant/MenuManager.jsx";
 import WaiterDashboard from "../components/restaurant/WaiterDashboard.jsx";
 import SettingsNode from "../components/restaurant/SettingsNode.jsx";
 import CRMManager from "../components/restaurant/CRMManager.jsx";
+import SmartUpload from "../components/restaurant/SmartUpload.jsx";
 import "../styles/restaurant.css";
 ---
 
@@ -96,12 +97,8 @@ import "../styles/restaurant.css";
    </div>
 
    <div id="uploadSection" class="section hidden animate-in fade-in transition-all">
-      <div class="p-20 text-center bg-white/5 border border-white/10 rounded-[48px] shadow-2xl relative overflow-hidden">
-         <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-600/5 blur-[100px] -z-10"></div>
-         <div class="w-20 h-20 bg-indigo-600 rounded-3xl flex items-center justify-center mx-auto mb-10 shadow-xl shadow-indigo-600/20"><i class="lucide-upload text-3xl text-white"></i></div>
-         <h1 class="text-4xl font-black italic uppercase italic tracking-tighter text-white">Smart <span class="text-indigo-400">AI Upload</span></h1>
-         <p class="text-[10px] font-black uppercase italic text-white/30 tracking-[0.2em] mb-10">Automated Catalog Generation Matrix Operational</p>
-         <button class="mt-10 px-12 py-6 bg-indigo-600 rounded-3xl font-black italic uppercase tracking-widest text-[10px] text-white hover:scale-[1.05] shadow-2xl transition-all">Initialize AI Parser</button>
+      <div class="max-w-6xl mx-auto p-10">
+         <SmartUpload client:load />
       </div>
    </div>
 
