@@ -639,22 +639,79 @@ export async function ALL({ request, params }) {
         return new Response(JSON.stringify({ success: true, deleted: menuId }), { status: 200, headers: {'Content-Type': 'application/json'} });
     }
 
+    // MENU POST — add new item directly to MySQL
+    if (pathname === '/api/v2/restaurant/menu' && method === 'POST') {
+        try {
+            const body = JSON.parse(bodyText);
+            const db = await getMySQL();
+            // Store image_url only if it's an http URL (base64 too large for DB)
+            const imageUrl = body.image_url?.startsWith('http') ? body.image_url : '';
+            const [result] = await db.query(
+                'INSERT INTO menu_items (name, category, type, price, image_url) VALUES (?, ?, ?, ?, ?)',
+                [body.name, body.category, body.type || 'veg', Number(body.price), imageUrl]
+            );
+            return new Response(JSON.stringify({ success: true, id: result.insertId }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        } catch (e) {
+            console.error('Menu POST error:', e);
+            return new Response(JSON.stringify({ success: false, error: e.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+        }
+    }
+
+    // MENU PUT/PATCH — edit item directly in MySQL
+    if (pathname.match(/\/api\/v2\/restaurant\/menu\/\d+/) && (method === 'PUT' || method === 'PATCH')) {
+        try {
+            const menuId = pathname.split('/').pop();
+            const body = JSON.parse(bodyText);
+            const db = await getMySQL();
+            const imageUrl = body.image_url?.startsWith('http') ? body.image_url : null;
+            const fields = [
+                body.name !== undefined ? 'name = ?' : null,
+                body.category !== undefined ? 'category = ?' : null,
+                body.type !== undefined ? 'type = ?' : null,
+                body.price !== undefined ? 'price = ?' : null,
+                imageUrl !== null ? 'image_url = ?' : null,
+            ].filter(Boolean);
+            const values = [
+                body.name,
+                body.category,
+                body.type,
+                body.price !== undefined ? Number(body.price) : undefined,
+                imageUrl,
+            ].filter((v, i) => v !== undefined && [
+                body.name, body.category, body.type,
+                body.price !== undefined ? Number(body.price) : undefined,
+                imageUrl
+            ][i] !== undefined);
+            if (fields.length > 0) {
+                await db.query(`UPDATE menu_items SET ${fields.join(', ')} WHERE id = ?`, [...values, menuId]);
+            }
+            return new Response(JSON.stringify({ success: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        } catch (e) {
+            console.error('Menu PUT/PATCH error:', e);
+            return new Response(JSON.stringify({ success: false, error: e.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+        }
+    }
+
     // MENU GET — filter out deleted items
     if (pathname === '/api/v2/restaurant/menu' && method === 'GET') {
         try {
             const db = await getMySQL();
             const [rows] = await db.query('SELECT * FROM menu_items ORDER BY id DESC LIMIT 500');
+            if (!global.MENU_CACHE) global.MENU_CACHE = [];
+            if (rows.length > 0) global.MENU_CACHE = rows; // cache for fallback
             const filtered = rows.filter(r => !global.DELETED_MENU_IDS.has(String(r.id)));
             return new Response(JSON.stringify(filtered), { status: 200, headers: { 'Content-Type': 'application/json' } });
         } catch (e) {
-            // Fallback: proxy to VPS and filter
+            // Fallback: return cached data or proxy to VPS
             try {
                 const vpsRes = await fetch('http://187.124.97.144:5000/api/v2/restaurant/menu', { signal: AbortSignal.timeout(6000) });
                 const vpsData = await vpsRes.json();
                 const filtered = Array.isArray(vpsData) ? vpsData.filter(r => !global.DELETED_MENU_IDS.has(String(r.id))) : vpsData;
                 return new Response(JSON.stringify(filtered), { status: 200, headers: { 'Content-Type': 'application/json' } });
             } catch (e2) {
-                return new Response(JSON.stringify([]), { status: 200, headers: { 'Content-Type': 'application/json' } });
+                // Last resort: return cached menu so UI doesn't go blank
+                const cached = (global.MENU_CACHE || []).filter(r => !global.DELETED_MENU_IDS.has(String(r.id)));
+                return new Response(JSON.stringify(cached), { status: 200, headers: { 'Content-Type': 'application/json' } });
             }
         }
     }
