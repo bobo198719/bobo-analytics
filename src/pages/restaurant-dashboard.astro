@@ -10,6 +10,7 @@ import WaiterDashboard from "../components/restaurant/WaiterDashboard.jsx";
 import SettingsNode from "../components/restaurant/SettingsNode.jsx";
 import CRMManager from "../components/restaurant/CRMManager.jsx";
 import SmartUpload from "../components/restaurant/SmartUpload.jsx";
+import DailyReport from "../components/restaurant/DailyReport.jsx";
 import "../styles/restaurant.css";
 ---
 
@@ -106,6 +107,12 @@ import "../styles/restaurant.css";
    <div id="crmSection" class="section hidden animate-in fade-in transition-all">
       <div class="max-w-7xl mx-auto p-10">
          <CRMManager client:load />
+      </div>
+   </div>
+
+   <div id="reportsSection" class="section hidden animate-in fade-in transition-all">
+      <div class="max-w-7xl mx-auto p-10">
+         <DailyReport client:load />
       </div>
    </div>
 
