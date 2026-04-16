@@ -7,7 +7,7 @@ const DailyReport = () => {
   const [selectedUser, setSelectedUser] = useState('All Users');
 
   const exportToExcel = async (printType) => {
-    if (!window.ExcelJS || !window.saveAs) {
+    if (!window.ExcelJS) {
       alert("Excel export library is currently loading. Please try again in a few seconds.");
       return;
     }
@@ -125,10 +125,19 @@ const DailyReport = () => {
       });
     });
 
-    // Write buffer and download
+    // Write buffer and download natively without FileSaver
     const buffer = await wb.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-    window.saveAs(blob, `Daily_Report_${printType.replace(/\s+/g, '_')}_${dateFrom}.xlsx`);
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `Daily_Report_${printType.replace(/\s+/g, '_')}_${dateFrom}.xlsx`;
+    document.body.appendChild(link);
+    link.click();
+    setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+    }, 100);
   };
 
   return (
