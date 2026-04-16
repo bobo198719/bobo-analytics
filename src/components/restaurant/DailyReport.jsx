@@ -5,6 +5,14 @@ const DailyReport = () => {
   const [dateFrom, setDateFrom] = useState(new Date().toISOString().split('T')[0]);
   const [dateTo, setDateTo] = useState(new Date().toISOString().split('T')[0]);
   const [selectedUser, setSelectedUser] = useState('All Users');
+  const [activeTab, setActiveTab] = useState('All');
+
+  // MOCK DATA for Order Ledger
+  const ordersData = [
+    { id: 1, orderNo: '72\n[303590]', receiptNo: '66\n[113897]', channel: '-', orderFor: 'Dine In', table: 'Lounge / 2', dateTime: '2025-01-10\n16:04:35', guest: 'pawan', staff: '-', amount: 165.900, due: 0.000, status: 'Completed', orderBy: 'admin', paidAmt: 'Cash: 65.900\nMaster Card: 100.000' },
+    { id: 2, orderNo: '[303589]', receiptNo: '[113896]', channel: 'mentorpos # 10000331', orderFor: 'Online Order', table: '-', dateTime: '2025-01-10\n15:03:16', guest: 'Vinayaka', staff: '-', amount: 223, due: 0, status: 'Completed', orderBy: 'admin', paidAmt: 'Mentorpos:\n223' },
+    { id: 3, orderNo: '71\n[303588]', receiptNo: '65\n[113895]', channel: '-', orderFor: 'Dine In', table: 'Lounge / 3', dateTime: '2025-01-10\n14:52:02', guest: 'Vinayaka', staff: '-', amount: 332.850, due: 0.000, status: 'Completed', orderBy: 'admin', paidAmt: 'Cash: 232.850\nMaster Card: 100.000' }
+  ];
 
   const exportToExcel = async (printType) => {
     if (!window.ExcelJS) {
@@ -282,6 +290,97 @@ const DailyReport = () => {
                 <td className="px-6 py-5 text-right font-black text-white/80">223.000</td>
                 <td className="px-6 py-5 text-right font-black text-xl text-indigo-400">1376.600</td>
               </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* ORDER LEDGER (DETAILED HISTORY) */}
+      <div className="bg-[#0f172a] border border-white/10 rounded-3xl overflow-hidden shadow-xl mt-8">
+        
+        {/* TABS */}
+        <div className="flex border-b border-white/10 bg-black/20">
+          {['All (3)', 'Dine In (2)', 'Online Order (1)'].map(tab => {
+            const rawName = tab.split(' ')[0] === 'All' ? 'All' : tab.includes('Dine') ? 'Dine In' : 'Online Order';
+            const isActive = activeTab === rawName;
+            return (
+              <button 
+                key={tab}
+                onClick={() => setActiveTab(rawName)}
+                className={`flex-1 py-4 text-[11px] font-black uppercase tracking-[0.2em] transition-all relative ${isActive ? 'text-indigo-400' : 'text-white/40 hover:text-white/70 hover:bg-white/5'}`}
+              >
+                {tab}
+                {isActive && <div className="absolute bottom-0 left-0 w-full h-[2px] bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]" />}
+              </button>
+            )
+          })}
+        </div>
+
+        {/* FILTERS */}
+        <div className="p-4 bg-white/5 border-b border-white/10 flex flex-wrap gap-4 items-center">
+           <div className="relative flex-1 min-w-[200px]">
+             <Search className="absolute left-3 top-2.5 w-4 h-4 text-white/40" />
+             <input type="text" placeholder="Search..." className="w-full bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 py-2 text-sm font-bold text-white outline-none focus:border-indigo-500 transition-all placeholder:text-white/20" />
+           </div>
+           <select className="bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-sm font-bold text-white outline-none focus:border-indigo-500 appearance-none min-w-[150px]">
+             <option>All Status</option>
+             <option>Completed</option>
+             <option>Pending</option>
+           </select>
+           <select className="bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-sm font-bold text-white outline-none focus:border-indigo-500 appearance-none min-w-[150px]">
+             <option>Staff</option>
+           </select>
+           <select className="bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-sm font-bold text-white outline-none focus:border-indigo-500 appearance-none min-w-[150px]">
+             <option>Pay Type</option>
+             <option>Cash</option>
+             <option>Master Card</option>
+           </select>
+        </div>
+
+        {/* TABLE */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm font-bold whitespace-nowrap">
+            <thead className="bg-[#1e293b]/60 border-b border-white/10 text-[10px] uppercase tracking-widest text-indigo-300">
+              <tr>
+                <th className="px-4 py-4">Sr.<br/>No</th>
+                <th className="px-4 py-4">Order No ↕</th>
+                <th className="px-4 py-4">Receipt No ↕</th>
+                <th className="px-4 py-4">Channel ↕</th>
+                <th className="px-4 py-4">Order For ↕</th>
+                <th className="px-4 py-4">Dining Area<br/>/ Table ↕</th>
+                <th className="px-4 py-4">Date Time ↕</th>
+                <th className="px-4 py-4">Guest Name ↕</th>
+                <th className="px-4 py-4">Staff ↕</th>
+                <th className="px-4 py-4 text-right">Amount ↕</th>
+                <th className="px-4 py-4 text-right">Due ↕</th>
+                <th className="px-4 py-4 text-center">Status ↕</th>
+                <th className="px-4 py-4">Order By ↕</th>
+                <th className="px-4 py-4">Paid Amt.</th>
+                <th className="px-4 py-4 text-center">Void</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/5 text-[11px] leading-relaxed">
+              {ordersData.filter(o => activeTab === 'All' ? true : o.orderFor === activeTab).map((order) => (
+                <tr key={order.id} className="hover:bg-white/5 transition-colors group">
+                  <td className="px-4 py-3 text-white/40">{order.id}</td>
+                  <td className="px-4 py-3 font-mono whitespace-pre-wrap">{order.orderNo}</td>
+                  <td className="px-4 py-3 font-mono whitespace-pre-wrap">{order.receiptNo}</td>
+                  <td className="px-4 py-3 text-white/70 whitespace-pre-wrap">{order.channel}</td>
+                  <td className="px-4 py-3 font-black text-white/90">{order.orderFor}</td>
+                  <td className="px-4 py-3 text-white/80">{order.table}</td>
+                  <td className="px-4 py-3 text-white/60 font-mono whitespace-pre-wrap">{order.dateTime}</td>
+                  <td className="px-4 py-3 text-white/90">{order.guest}</td>
+                  <td className="px-4 py-3 text-white/40">{order.staff}</td>
+                  <td className="px-4 py-3 text-right font-black text-white">{order.amount}</td>
+                  <td className="px-4 py-3 text-right text-emerald-400">{order.due}</td>
+                  <td className="px-4 py-3 text-center">
+                     <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-1 rounded text-[9px] font-black uppercase tracking-wider">{order.status}</span>
+                  </td>
+                  <td className="px-4 py-3 text-white/70">{order.orderBy}</td>
+                  <td className="px-4 py-3 font-mono text-[10px] text-white/60 whitespace-pre-wrap leading-tight">{order.paidAmt}</td>
+                  <td className="px-4 py-3 text-center">-</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
