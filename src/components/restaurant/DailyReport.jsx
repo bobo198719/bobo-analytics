@@ -6,6 +6,49 @@ const DailyReport = () => {
   const [dateTo, setDateTo] = useState(new Date().toISOString().split('T')[0]);
   const [selectedUser, setSelectedUser] = useState('All Users');
 
+  const exportToExcel = (printType) => {
+    if (!window.XLSX) {
+      alert("Excel export library is currently loading. Please try again in a few seconds.");
+      return;
+    }
+
+    const wsData = [
+      [`Bobo OS - Daily Report (${printType})`],
+      [`Date From: ${dateFrom}`, `Date To: ${dateTo}`, `User: ${selectedUser}`],
+      [],
+      ['TODAYS SUMMARY'],
+      ['Category', 'Amount'],
+      ['Amount', 673.000],
+      ['Tax', 33.650],
+      ['Extra Charges', 15.000],
+      ['Round Off', 0.100],
+      ['Total Sale', 721.750],
+      [],
+      ['OVERALL TRANSACTIONS'],
+      ['Transaction Type', 'Cash', 'Master Card', 'Mentorpos', 'Total'],
+      ['Sale', 298.750, 200.000, 223.000, 721.750],
+      ['In Transactions', 3804.850, 0.000, 0.000, 3804.850],
+      ['Out Transactions', 3150.000, 0.000, 0.000, 3150.000],
+      ['Total', 953.600, 200.000, 223.000, 1376.600],
+    ];
+
+    const ws = window.XLSX.utils.aoa_to_sheet(wsData);
+    
+    // Auto-size columns based on content
+    const colWidths = [
+      { wch: 25 }, // First column
+      { wch: 15 }, // Cash / Value
+      { wch: 15 }, // Master Card
+      { wch: 15 }, // Mentorpos
+      { wch: 15 }  // Total
+    ];
+    ws['!cols'] = colWidths;
+
+    const wb = window.XLSX.utils.book_new();
+    window.XLSX.utils.book_append_sheet(wb, ws, "Report");
+    window.XLSX.writeFile(wb, `Daily_Report_${printType.replace(/\s+/g, '_')}_${dateFrom}.xlsx`);
+  };
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500 font-['Plus_Jakarta_Sans']">
       {/* HEADER SECTION */}
@@ -67,10 +110,10 @@ const DailyReport = () => {
               </select>
            </div>
            <div className="flex gap-4 w-full md:w-auto">
-              <button className="flex-1 md:flex-none px-6 py-2 border border-white/10 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-white flex items-center justify-center gap-2 transition-all">
+              <button onClick={() => exportToExcel('Thermal')} className="flex-1 md:flex-none px-6 py-2 border border-white/10 bg-white/5 hover:bg-white/10 hover:text-emerald-400 rounded-xl text-[10px] font-black uppercase tracking-widest text-white flex items-center justify-center gap-2 transition-all">
                 <FileText className="w-4 h-4 text-white/50" /> Thermal Print
               </button>
-              <button className="flex-1 md:flex-none px-6 py-2 border border-white/10 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-white flex items-center justify-center gap-2 transition-all">
+              <button onClick={() => exportToExcel('Day Report')} className="flex-1 md:flex-none px-6 py-2 border border-white/10 bg-white/5 hover:bg-white/10 hover:text-indigo-400 rounded-xl text-[10px] font-black uppercase tracking-widest text-white flex items-center justify-center gap-2 transition-all">
                 <Printer className="w-4 h-4 text-white/50" /> Day Report Print
               </button>
            </div>
