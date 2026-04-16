@@ -140,6 +140,9 @@ import "../styles/restaurant.css";
               link.classList.add('active');
           }
       });
+      
+      // Toggle POS Touch Screen Mode
+      document.body.classList.toggle('pos-active-mode', target === 'pos');
    }
 
    function toggleBranchMenu() {
