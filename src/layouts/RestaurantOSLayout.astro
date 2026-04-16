@@ -125,6 +125,20 @@ const { title = "Restaurant OS" } = Astro.props;
                          }
                      }
                  });
+             } else if (role === 'waiter') {
+                 const allLinks = document.querySelectorAll('[data-section]');
+                 allLinks.forEach(link => {
+                     const sectionId = link.getAttribute('data-section');
+                     if (sectionId !== 'pos' && sectionId !== 'waiter' && sectionId !== 'tables') {
+                         link.style.setProperty('display', 'none', 'important');
+                     } else {
+                         if (link.classList.contains('nav-link')) {
+                             link.style.setProperty('display', 'flex', 'important');
+                         } else {
+                             link.style.display = '';
+                         }
+                     }
+                 });
              } else if (permission === 'limited' && role !== 'owner') {
                  const allLinks = document.querySelectorAll('[data-section]');
                  allLinks.forEach(link => {

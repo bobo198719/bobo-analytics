@@ -361,6 +361,7 @@ const Dashboard = () => {
          ].filter(card => {
              if (role === 'owner') return true;
              if (role === 'chef') return ['kitchen', 'waiter', 'tables'].includes(card.id);
+             if (role === 'waiter') return ['pos', 'waiter', 'tables'].includes(card.id);
              
              const permission = typeof window !== 'undefined' ? localStorage.getItem('ro_permission') || 'entire' : 'entire';
              if (permission === 'entire') return true;

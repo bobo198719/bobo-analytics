@@ -132,6 +132,13 @@ import "../styles/restaurant.css";
           }
       }
       
+      if (role === 'waiter' && !['pos', 'waiter', 'tables'].includes(target)) {
+          target = 'pos';
+          if (window.location.hash !== '#pos') {
+              window.history.replaceState(null, '', '#pos');
+          }
+      }
+      
       document.querySelectorAll('.section').forEach(sec => {
          sec.classList.add('hidden');
          sec.classList.remove('active');
