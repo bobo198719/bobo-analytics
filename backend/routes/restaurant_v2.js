@@ -9,8 +9,35 @@ const db = require('../mysql_db');
 router.get('/menu', async (req, res) => {
     try {
         const { rows } = await db.query('SELECT * FROM menu_items ORDER BY category ASC');
-        res.json(rows);
-    } catch (err) { res.status(500).json({ error: err.message }); }
+        if (rows && rows.length > 0) {
+            return res.json(rows);
+        }
+        
+        // Fallback to local JSON if DB is empty 
+        try {
+            const fs = require('fs');
+            const path = require('path');
+            const fallbackPath = path.join(__dirname, '../../src/data/restaurant_menu.json');
+            if (fs.existsSync(fallbackPath)) {
+                const localData = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
+                return res.json(localData);
+            }
+        } catch (e) {}
+        
+        res.json([]);
+    } catch (err) { 
+        // Critical Fallback on DB Timeout/Error
+        try {
+            const fs = require('fs');
+            const path = require('path');
+            const fallbackPath = path.join(__dirname, '../../src/data/restaurant_menu.json');
+            if (fs.existsSync(fallbackPath)) {
+                const localData = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
+                return res.json(localData);
+            }
+        } catch (e) {}
+        res.status(500).json({ error: err.message }); 
+    }
 });
 
 router.post('/menu', async (req, res) => {
