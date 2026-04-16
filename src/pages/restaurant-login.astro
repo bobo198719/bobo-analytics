@@ -66,16 +66,32 @@ import "../styles/restaurant.css";
        let role = 'owner';
        let access = false;
 
-       // Hardcoded Credential Matrix
-       if ((id === 'rest_admin' || id === 'admin') && pass === 'password123') {
-          role = 'owner';
-          access = true;
-       } else if (id === 'society' && pass === 'society') {
-          role = 'owner';
-          access = true;
-       } else if (id === 'waiter1' && pass === 'waiter123') {
-          role = 'waiter';
-          access = true;
+       try {
+           const res = await fetch('/api/v2/restaurant/staff');
+           if (res.ok) {
+               const staffList = await res.json();
+               const staffUser = staffList.find(s => s.username.toLowerCase() === id && s.password === pass);
+               if (staffUser) {
+                   role = staffUser.role || 'waiter';
+                   access = staffUser;
+               }
+           }
+       } catch (err) {
+           console.error("Link to Staff Data Failed", err);
+       }
+
+       // Hardcoded Credential Matrix (Fallback)
+       if (!access) {
+           if ((id === 'rest_admin' || id === 'admin') && pass === 'password123') {
+              role = 'owner';
+              access = true;
+           } else if (id === 'society' && pass === 'society') {
+              role = 'owner';
+              access = true;
+           } else if (id === 'waiter1' && pass === 'waiter123') {
+              role = 'waiter';
+              access = true;
+           }
        }
 
        if (access) {
@@ -84,8 +100,15 @@ import "../styles/restaurant.css";
           
           localStorage.setItem('restaurant_auth', 'true');
           localStorage.setItem('ro_role', role);
-          localStorage.setItem('ro_role_display', role === 'owner' ? 'Owner Protocol' : 'Service Access');
+          localStorage.setItem('ro_role_display', role === 'owner' ? 'Owner Protocol' : role === 'chef' ? 'Kitchen Hub Access' : 'Service Access');
           localStorage.setItem('ro_username', id);
+          if (typeof access === 'object' && access.permission) {
+             localStorage.setItem('ro_permission', access.permission);
+             localStorage.setItem('ro_modules', JSON.stringify(access.modules || []));
+          } else {
+             localStorage.setItem('ro_permission', 'entire');
+             localStorage.setItem('ro_modules', '[]');
+          }
 
           // Record Analytics Log
           fetch('/api/v2/restaurant/staff/logs', {
@@ -95,8 +118,7 @@ import "../styles/restaurant.css";
           });
           
           setTimeout(() => {
-             // Waiters go straight to their specialized queue hash
-             window.location.href = role === 'waiter' ? "/restaurant-dashboard#waiter" : "/restaurant-dashboard#dashboard";
+             window.location.href = role === 'waiter' ? "/restaurant-dashboard#pos" : role === 'chef' ? "/restaurant-dashboard#kitchen" : "/restaurant-dashboard#dashboard";
           }, 800);
        } else {
           errorBox.innerText = "Invalid Security Token Identified";

@@ -350,21 +350,32 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* QUICK TERMINAL ACCESS (ALWAYS SHOWN) */}
+      {/* QUICK TERMINAL ACCESS (ROLE BASED) */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
          {[
-            { id: 'pos', title: "POS Rail", desc: "Live Yeild Matrix", icon: <Receipt className="w-5 h-5" />, grad: "from-orange-500 to-rose-600" },
-            { id: 'menu', title: "Inventory", desc: "Product Matrix", icon: <LayoutGrid className="w-5 h-5" />, grad: "from-rose-500 to-indigo-600" },
-            { id: 'tables', title: "Floor Grid", desc: "Space & Order Sync", icon: <LayoutGrid className="w-5 h-5" />, grad: "from-indigo-500 to-cyan-600" },
-            { id: 'kitchen', title: "Kitchen Hub", desc: "KDS Queue Terminal", icon: <ChefHat className="w-5 h-5" />, grad: "from-cyan-500 to-emerald-600" }
-         ].map((card, idx) => (
+            { id: 'pos', title: "POS Rail", desc: "Live Yeild Matrix", icon: <Receipt className="w-5 h-5" />, grad: "from-orange-500 to-rose-600", roles: ['owner', 'waiter'] },
+            { id: 'menu', title: "Inventory", desc: "Product Matrix", icon: <LayoutGrid className="w-5 h-5" />, grad: "from-rose-500 to-indigo-600", roles: ['owner'] },
+            { id: 'tables', title: "Floor Grid", desc: "Space & Order Sync", icon: <LayoutGrid className="w-5 h-5" />, grad: "from-indigo-500 to-cyan-600", roles: ['owner', 'waiter', 'chef'] },
+            { id: 'kitchen', title: "Kitchen Hub", desc: "KDS Queue Terminal", icon: <ChefHat className="w-5 h-5" />, grad: "from-cyan-500 to-emerald-600", roles: ['owner', 'chef'] },
+            { id: 'waiter', title: "Waiter Queue", desc: "Service Pending", icon: <Users2 className="w-5 h-5" />, grad: "from-blue-500 to-indigo-600", roles: ['owner', 'chef', 'waiter'] }
+         ].filter(card => {
+             if (role === 'owner') return true;
+             if (role === 'chef') return ['kitchen', 'waiter', 'tables'].includes(card.id);
+             
+             const permission = typeof window !== 'undefined' ? localStorage.getItem('ro_permission') || 'entire' : 'entire';
+             if (permission === 'entire') return true;
+             const rawModules = typeof window !== 'undefined' ? localStorage.getItem('ro_modules') || '[]' : '[]';
+             let modules = [];
+             try { modules = JSON.parse(rawModules); } catch(e){}
+             return modules.includes(card.id);
+         }).map((card, idx) => (
             <div key={idx} onClick={() => switchSection(card.id)} className={`p-6 bg-gradient-to-br ${card.grad} rounded-[32px] flex flex-col justify-between min-h-[160px] group shadow-xl hover:scale-[1.03] transition-all cursor-pointer relative overflow-hidden border border-white/20 active:scale-95`}>
                <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center text-white mb-4 border border-white/20 group-hover:scale-110 group-hover:rotate-6 transition-transform shadow-lg">{card.icon}</div>
                <div className="relative z-10">
                   <h2 className="text-xl font-black italic uppercase tracking-tighter leading-none text-white">{card.title}</h2>
                   <p className="text-white/70 text-[9px] font-black uppercase tracking-widest mt-2 italic">{card.desc}</p>
                </div>
-               <div className="absolute -top-4 -right-4 text-white/10 text-8xl font-black italic -z-0">0{idx+1}</div>
+               <div className="absolute -top-4 -right-4 text-white/10 text-8xl font-black italic -z-0">0{filterIdx(card, idx)}</div>
             </div>
          ))}
       </section>
@@ -372,5 +383,8 @@ const Dashboard = () => {
     </div>
   );
 };
+
+// Helper for index numbering in filtered array
+const filterIdx = (card, idx) => idx + 1;
 
 export default Dashboard;

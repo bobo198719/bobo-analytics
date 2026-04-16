@@ -46,8 +46,8 @@ const { title = "Restaurant OS" } = Astro.props;
       }
 
       .nav-link {
-        display: flex !important;
-        align-items: center !important;
+        display: flex;
+        align-items: center;
         padding: 10px 16px !important;
         color: rgba(255,255,255,0.6) !important;
         text-decoration: none !important;
@@ -89,22 +89,7 @@ const { title = "Restaurant OS" } = Astro.props;
       }
 
 
-      /* OS Lockdown: Hide administrative terminals from operational staff */
-      body[data-role="waiter"] [data-section="staff"],
-      body[data-role="waiter"] [data-section="analytics"],
-      body[data-role="waiter"] [data-section="finance"],
-      body[data-role="waiter"] [data-section="schedule"],
-      body[data-role="waiter"] [data-section="billing"],
-      body[data-role="waiter"] [data-section="customers"],
-
-      body[data-role="chef"] [data-section="staff"],
-      body[data-role="chef"] [data-section="analytics"],
-      body[data-role="chef"] [data-section="finance"],
-      body[data-role="chef"] [data-section="schedule"],
-      body[data-role="chef"] [data-section="billing"],
-      body[data-role="chef"] [data-section="customers"] {
-        display: none !important;
-      }
+      /* Removed CSS-based lockdown: relying on dynamic terminal module loading from backend schema below */
 
       /* Hide Break/Logout for Privilege Roles (Only show for chef/waiter) */
       body:not([data-role="waiter"]):not([data-role="chef"]) #staffControlPanel { 
@@ -115,15 +100,63 @@ const { title = "Restaurant OS" } = Astro.props;
     <script is:inline>
       (function syncRole() {
          const role = localStorage.getItem('ro_role') || 'owner';
+         const permission = localStorage.getItem('ro_permission') || 'entire';
+         const rawModules = localStorage.getItem('ro_modules') || '[]';
+         
+         let modules = [];
+         try { modules = JSON.parse(rawModules); } catch(e){}
+
          document.documentElement.setAttribute('data-role', role);
          
+         const enforcePermissions = () => {
+             document.body.setAttribute('data-role', role);
+             // Role-based structural limits
+             if (role === 'chef') {
+                 const allLinks = document.querySelectorAll('[data-section]');
+                 allLinks.forEach(link => {
+                     const sectionId = link.getAttribute('data-section');
+                     if (sectionId !== 'kitchen' && sectionId !== 'waiter' && sectionId !== 'tables') {
+                         link.style.setProperty('display', 'none', 'important');
+                     } else {
+                         if (link.classList.contains('nav-link')) {
+                             link.style.setProperty('display', 'flex', 'important');
+                         } else {
+                             link.style.display = '';
+                         }
+                     }
+                 });
+             } else if (permission === 'limited' && role !== 'owner') {
+                 const allLinks = document.querySelectorAll('[data-section]');
+                 allLinks.forEach(link => {
+                     const sectionId = link.getAttribute('data-section');
+                     
+                     let mappedModule = sectionId;
+                     if (sectionId === 'menu-upload') mappedModule = 'upload';
+                     if (sectionId === 'crm') mappedModule = 'customers';
+                     if (sectionId === 'reports') mappedModule = 'analytics';
+                     if (sectionId === 'settings') mappedModule = 'staff';
+                     
+                     if (mappedModule !== 'dashboard' && mappedModule !== 'pos' && mappedModule !== 'waiter' && mappedModule !== 'kitchen' && mappedModule !== 'tables' && mappedModule !== 'menu' && mappedModule !== 'upload' && mappedModule !== 'customers' && mappedModule !== 'analytics' && mappedModule !== 'staff' && mappedModule !== 'billing') {
+                         return;
+                     }
+                     
+                     if (!modules.includes(mappedModule)) {
+                         link.style.setProperty('display', 'none', 'important');
+                     }
+                 });
+             }
+         };
+
          const syncBody = () => {
-            if (document.body) {
-               document.body.setAttribute('data-role', role);
+            if (document.body && document.querySelectorAll('[data-section]').length > 0) {
+               enforcePermissions();
             } else {
                requestAnimationFrame(syncBody);
             }
          };
+         syncBody();
+         
+         document.addEventListener('DOMContentLoaded', enforcePermissions);
          syncBody();
       })();
     </script>
