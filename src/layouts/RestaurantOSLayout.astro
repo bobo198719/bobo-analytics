@@ -48,15 +48,15 @@ const { title = "Restaurant OS" } = Astro.props;
       .nav-link {
         display: flex !important;
         align-items: center !important;
-        gap: 16px !important;
-        padding: 16px 20px !important;
+        padding: 10px 16px !important;
         color: rgba(255,255,255,0.4) !important;
         text-decoration: none !important;
         font-weight: 800 !important;
         text-transform: uppercase !important;
         font-style: italic !important;
-        font-size: 11px !important;
-        border-radius: 16px !important;
+        font-size: 9px !important;
+        letter-spacing: 0.05em !important;
+        border-radius: 12px !important;
       }
       .nav-link:hover {
         background: rgba(255,255,255,0.05) !important;
@@ -120,53 +120,44 @@ const { title = "Restaurant OS" } = Astro.props;
       <span id="sidebar-brand-name" style="font-size: 18px; font-weight: 900; letter-spacing: -0.05em; text-transform: uppercase; font-style: italic; color: white;">Bobo <span style="color: #f97316;">OS</span></span>
     </div>
 
-    <nav class="no-scrollbar" style="flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; min-height: 0;">
-      <p style="padding: 0 16px; font-size: 10px; font-weight: 900; text-transform: uppercase; color: rgba(255,255,255,0.2); letter-spacing: 0.3em; margin: 16px 0; font-style: italic;">SYSTEM TERMINAL Hub</p>
+    <nav class="no-scrollbar" style="flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; min-height: 0;">
+      <p style="padding: 0 16px; font-size: 9px; font-weight: 900; text-transform: uppercase; color: rgba(255,255,255,0.2); letter-spacing: 0.3em; margin: 8px 0 16px 0; font-style: italic;">SYSTEM TERMINAL Hub</p>
       
       <a href="/restaurant-dashboard#dashboard" class="nav-link" data-section="dashboard">
-        <i class="lucide-layout-grid"></i>
         <span>Dashboard</span>
       </a>
 
-      <div style="height: 1px; background: rgba(255,255,255,0.05); margin: 16px 16px 24px 16px;"></div>
+      <div style="height: 1px; background: rgba(255,255,255,0.05); margin: 12px 16px;"></div>
 
       <a href="/restaurant-dashboard#pos" class="nav-link" data-section="pos">
-        <i class="lucide-receipt"></i>
         <span>POS Terminal</span>
       </a>
       <a href="/restaurant-dashboard#tables" class="nav-link" data-section="tables">
-        <i class="lucide-layout"></i>
         <span>Tables</span>
       </a>
       <a href="/restaurant-dashboard#kitchen" class="nav-link" data-section="kitchen">
-        <i class="lucide-chef-hat"></i>
         <span>Kitchen Hub</span>
       </a>
       <a href="/restaurant-dashboard#waiter" class="nav-link" data-section="waiter">
-        <i class="lucide-user-check"></i>
         <span>Waiter Queue</span>
       </a>
       <a href="/restaurant-dashboard#menu" class="nav-link" data-section="menu">
-        <i class="lucide-book-open"></i>
         <span>Menu Hub</span>
       </a>
       <a href="/restaurant-dashboard#upload" class="nav-link" data-section="menu-upload">
-        <i class="lucide-upload"></i>
         <span>Smart Upload</span>
       </a>
 
-      <div style="height: 1px; background: rgba(255,255,255,0.05); margin: 16px 16px 24px 16px;"></div>
+      <div style="height: 1px; background: rgba(255,255,255,0.05); margin: 12px 16px;"></div>
 
       <a href="/restaurant-dashboard#crm" class="nav-link" data-section="crm">
-        <i class="lucide-users"></i>
         <span>Guest CRM</span>
       </a>
       <a href="/restaurant-dashboard#reports" class="nav-link" data-section="reports">
-        <i class="lucide-file-text"></i>
         <span>Daily Report</span>
       </a>
-      <button onclick="recordStaffEvent('logout')" class="w-[calc(100%-32px)] mx-4 flex items-center gap-4 px-6 py-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500 font-black italic text-[10px] uppercase tracking-widest hover:bg-rose-500/20 transition-all transition-transform active:scale-95 mb-4 mt-2">
-         <i class="lucide-power"></i> <span>Exit Terminal</span>
+      <button onclick="recordStaffEvent('logout')" class="w-[calc(100%-32px)] mx-4 flex items-center justify-center px-4 py-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 font-black italic text-[9px] uppercase tracking-widest hover:bg-rose-500/20 transition-all transition-transform active:scale-95 mb-4 mt-2">
+         <span>Exit Terminal</span>
       </button>
     </nav>
 
