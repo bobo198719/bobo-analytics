@@ -101,8 +101,8 @@ const Dashboard = () => {
   }, []);
 
   const Card = ({ title, value, icon, gradient, subValue, trend }) => (
-    <div className="bg-white/5 border border-white/10 rounded-[40px] p-8 hover:bg-white/[0.08] hover:border-orange-500/30 transition-all group relative overflow-hidden shadow-2xl">
-      <div className="flex justify-between items-start mb-6 relative z-10 transition-transform group-hover:-translate-y-1">
+    <div className="bg-white/5 border border-white/10 rounded-3xl p-5 hover:bg-white/[0.08] hover:border-orange-500/30 transition-all group relative overflow-hidden shadow-2xl">
+      <div className="flex justify-between items-start mb-3 relative z-10 transition-transform group-hover:-translate-y-1">
         <div className={`p-4 rounded-3xl ${gradient} shadow-lg shadow-orange-500/10 group-hover:scale-110 transition-transform`}>
            {icon}
         </div>
@@ -115,11 +115,11 @@ const Dashboard = () => {
       </div>
       
       <div className="relative z-10">
-         <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.2em] mb-2 italic">{title}</p>
-         <h3 className={`text-4xl font-black italic tracking-tighter ${loading ? 'animate-pulse opacity-20' : 'text-white'}`}>
+         <p className="text-white/30 text-[9px] font-black uppercase tracking-[0.2em] mb-1 italic">{title}</p>
+         <h3 className={`text-2xl font-black italic tracking-tighter ${loading ? 'animate-pulse opacity-20' : 'text-white'}`}>
             {loading ? '---' : value}
          </h3>
-         {subValue && <p className="text-white/20 text-[10px] mt-4 font-black uppercase tracking-widest italic">{subValue}</p>}
+         {subValue && <p className="text-white/20 text-[9px] mt-2 font-black uppercase tracking-widest italic">{subValue}</p>}
       </div>
       <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 blur-[60px] -mr-16 -mt-16 group-hover:bg-orange-500/10 transition-all opacity-0 group-hover:opacity-100"></div>
     </div>
@@ -133,7 +133,7 @@ const Dashboard = () => {
   const isOwner = role === 'owner';
 
   return (
-    <div className="space-y-10 animate-in fade-in duration-700 font-['Plus_Jakarta_Sans'] pb-20">
+    <div className="space-y-4 animate-in fade-in duration-700 font-['Plus_Jakarta_Sans'] pb-8">
       
       {selectedDayHistory && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] flex items-center justify-center p-6 animate-in fade-in duration-300">
@@ -228,16 +228,16 @@ const Dashboard = () => {
       )}
 
       {/* DASHBOARD MODAL NAV */}
-      <div className="flex items-center gap-4 bg-white/5 p-4 rounded-[32px] border border-white/10 w-fit">
+      <div className="flex items-center gap-2 bg-white/5 p-2 rounded-[24px] border border-white/10 w-fit">
           <button 
               onClick={() => setActiveTab('ops')}
-              className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest italic transition-all flex items-center gap-3 ${activeTab === 'ops' ? 'bg-orange-600 text-white shadow-xl shadow-orange-600/20' : 'text-white/30 hover:text-white'}`}
+              className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest italic transition-all flex items-center gap-2 ${activeTab === 'ops' ? 'bg-orange-600 text-white shadow-xl shadow-orange-600/20' : 'text-white/30 hover:text-white'}`}
           >
               <Monitor className="w-3 h-3" /> Live Operations
           </button>
           <button 
               onClick={() => setActiveTab('market')}
-              className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest italic transition-all flex items-center gap-3 ${activeTab === 'market' ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20' : 'text-white/30 hover:text-white'}`}
+              className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest italic transition-all flex items-center gap-2 ${activeTab === 'market' ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20' : 'text-white/30 hover:text-white'}`}
           >
               <PieChart className="w-3 h-3" /> Market Intelligence
           </button>
@@ -246,23 +246,23 @@ const Dashboard = () => {
       {activeTab === 'ops' ? (
         <>
             {/* OS HEADER */}
-            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 bg-white/5 border border-white/10 p-10 rounded-[48px] relative overflow-hidden group shadow-2xl">
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/5 border border-white/10 p-6 rounded-[32px] relative overflow-hidden group shadow-2xl">
                 <div className="relative z-10">
-                   <h1 className="text-4xl font-black italic uppercase tracking-tighter leading-none text-white">Restaurant <span className="bg-gradient-to-r from-orange-500 to-rose-400 bg-clip-text text-transparent">Intelligence</span></h1>
-                   <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.4em] mt-3 italic leading-none">Autonomous Operation Matrix | V2.3 | Active Terminal: ID-001</p>
+                   <h1 className="text-2xl font-black italic uppercase tracking-tighter leading-none text-white">Restaurant <span className="bg-gradient-to-r from-orange-500 to-rose-400 bg-clip-text text-transparent">Intelligence</span></h1>
+                   <p className="text-white/30 text-[9px] font-black uppercase tracking-[0.4em] mt-2 italic leading-none">Autonomous Operation Matrix | V2.3 | Active Terminal: ID-001</p>
                 </div>
-                <div className="flex items-center gap-6 relative z-10">
-                   <div className="flex items-center gap-3">
+                <div className="flex items-center gap-4 relative z-10">
+                   <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.7)]"></div>
-                      <span className="text-[10px] font-black uppercase text-white/40 tracking-widest italic">Live Neural Link Active</span>
+                      <span className="text-[9px] font-black uppercase text-white/40 tracking-widest italic">Live Neural Link</span>
                    </div>
-                   <button onClick={() => setActiveTab('market')} className="px-10 py-5 bg-white/5 border border-white/10 rounded-[32px] text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all italic text-white/40">View Historical Profit</button>
+                   <button onClick={() => setActiveTab('market')} className="px-6 py-3 bg-white/5 border border-white/10 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all italic text-white/40">Historical Profit</button>
                 </div>
-                <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/5 blur-[100px] -z-10 group-hover:bg-orange-500/10 transition-all"></div>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 blur-[80px] -z-10 group-hover:bg-orange-500/10 transition-all"></div>
             </header>
 
             {/* CORE STATS GRID */}
-            <section className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${isOwner ? '4' : '2'} gap-8`}>
+            <section className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${isOwner ? '4' : '2'} gap-4`}>
               {isOwner && <div className="cursor-pointer" onClick={() => setShowProfitModal(true)}><Card title="Shift Profit" value={`₹${stats.todayRevenue.toLocaleString()}`} icon={<TrendingUp className="text-white w-6 h-6" />} gradient="bg-gradient-to-br from-orange-400 to-orange-600" trend="+12.4%" subValue="Tap To View Ledger" /></div>}
               <div onClick={() => switchSection('pos')} className="cursor-pointer"><Card title="Traffic Volume" value={stats.totalOrders} icon={<ShoppingCart className="text-white w-6 h-6" />} gradient="bg-gradient-to-br from-indigo-400 to-indigo-600" trend="+8.2%" subValue="Dine-in Activity Live" /></div>
               <div onClick={() => switchSection('tables')} className="cursor-pointer"><Card title="Active Tables" value={stats.activeTables} icon={<Zap className="text-white w-6 h-6" />} gradient="bg-gradient-to-br from-amber-400 to-amber-600" subValue="Occupied Now" /></div>
@@ -270,18 +270,18 @@ const Dashboard = () => {
             </section>
 
             {/* DUAL COLUMN ANALYSIS HUB */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 
                 {/* PROFIT PROJECTION (LEFT 2/3) */}
-                <div className="lg:col-span-2 bg-white/5 border border-white/10 rounded-[56px] p-12 relative overflow-hidden group shadow-2xl">
-                    <div className="flex justify-between items-center mb-16 relative z-10">
+                <div className="lg:col-span-2 bg-white/5 border border-white/10 rounded-[32px] p-6 relative overflow-hidden group shadow-2xl">
+                    <div className="flex justify-between items-center mb-6 relative z-10">
                         <div>
-                          <h3 className="text-2xl font-black italic uppercase tracking-tighter text-white">Profit <span className="text-orange-500">Projection</span></h3>
-                          <p className="text-[10px] font-black uppercase text-white/20 tracking-[0.2em] italic mt-2">7-Day Profit Matrix | Real-time Synchronization</p>
+                          <h3 className="text-xl font-black italic uppercase tracking-tighter text-white">Profit <span className="text-orange-500">Projection</span></h3>
+                          <p className="text-[9px] font-black uppercase text-white/20 tracking-[0.2em] italic mt-1">7-Day Profit Matrix | Real-time Synchronization</p>
                         </div>
                     </div>
 
-                    <div className="h-[340px] flex items-end justify-between gap-6 px-10 relative z-10 pb-8">
+                    <div className="h-[180px] flex items-end justify-between gap-4 px-4 relative z-10 pb-4">
                         {stats.history.length === 0 ? (
                             <div className="w-full h-full flex flex-col items-center justify-center opacity-10">
                                 <Activity className="w-16 h-16 mb-6 animate-pulse" />
@@ -293,14 +293,14 @@ const Dashboard = () => {
                                 const height = (Number(h.total) / max) * 100;
                                 return (
                                     <div key={i} onClick={() => setSelectedDayHistory(h)} className="flex-1 group relative flex flex-col items-center cursor-pointer">
-                                        <div className="absolute -top-14 bg-white text-black px-4 py-3 rounded-2xl text-[11px] font-black italic opacity-0 group-hover:opacity-100 transition-all transform translate-y-4 group-hover:translate-y-0 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-20 border-2 border-orange-500/20">₹{Number(h.total).toLocaleString()}</div>
+                                        <div className="absolute -top-10 bg-white text-black px-3 py-2 rounded-xl text-[10px] font-black italic opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 shadow-lg z-20 border border-orange-500/20">₹{Number(h.total).toLocaleString()}</div>
                                         <div 
-                                            style={{ height: `${height}%`, minHeight: '16px' }} 
-                                            className={`w-full max-w-[56px] rounded-3xl transition-all duration-1000 relative overflow-hidden bg-white/5 group-hover:bg-white/10 group-hover:border-orange-500/40 border border-white/10 ${i === stats.history.length - 1 ? 'bg-gradient-to-t from-orange-600 to-orange-400 shadow-2xl shadow-orange-500/20' : 'shadow-inner'}`}
+                                            style={{ height: `${height}%`, minHeight: '12px' }} 
+                                            className={`w-full max-w-[36px] rounded-2xl transition-all duration-1000 relative overflow-hidden bg-white/5 group-hover:bg-white/10 group-hover:border-orange-500/40 border border-white/10 ${i === stats.history.length - 1 ? 'bg-gradient-to-t from-orange-600 to-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.3)]' : 'shadow-inner'}`}
                                         >
                                             <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                         </div>
-                                        <p className="text-center text-[9px] text-white/20 font-black mt-8 uppercase tracking-[0.2em] italic group-hover:text-white transition-colors">{h.date}</p>
+                                        <p className="text-center text-[8px] text-white/30 font-black mt-3 uppercase tracking-[0.2em] italic group-hover:text-white transition-colors">{h.date}</p>
                                     </div>
                                 );
                             })
@@ -309,27 +309,27 @@ const Dashboard = () => {
                 </div>
 
                 {/* AI ANALYTICS COLUMN (RIGHT 1/3) */}
-                <div className="bg-white/5 border border-white/10 rounded-[56px] p-12 relative overflow-hidden group shadow-2xl border-indigo-500/10">
-                    <div className="flex items-center gap-4 mb-12 relative z-10">
-                        <div className="p-4 bg-indigo-500/20 rounded-3xl border border-indigo-500/30 shadow-xl shadow-indigo-500/5">
-                            <Brain className="w-6 h-6 text-indigo-400" />
+                <div className="bg-white/5 border border-white/10 rounded-[32px] p-6 relative overflow-hidden group shadow-2xl border-indigo-500/10">
+                    <div className="flex items-center gap-3 mb-6 relative z-10">
+                        <div className="p-3 bg-indigo-500/20 rounded-2xl border border-indigo-500/30">
+                            <Brain className="w-5 h-5 text-indigo-400" />
                         </div>
                         <div>
-                          <h3 className="text-xl font-black italic uppercase tracking-tighter text-white">Neural <span className="text-indigo-400">Insights</span></h3>
-                          <p className="text-[9px] font-black uppercase text-indigo-400/40 tracking-widest italic group-hover:text-indigo-400 transition-colors">Intelligence Matrix Active</p>
+                          <h3 className="text-lg font-black italic uppercase tracking-tighter text-white">Neural <span className="text-indigo-400">Insights</span></h3>
+                          <p className="text-[8px] font-black uppercase text-indigo-400/40 tracking-widest italic group-hover:text-indigo-400 transition-colors">Intelligence Matrix Active</p>
                         </div>
                     </div>
 
-                    <div className="space-y-8 relative z-10">
+                    <div className="space-y-3 relative z-10">
                         {aiInsights.map(insight => (
-                            <div key={insight.id} className="p-6 bg-black/40 rounded-[32px] border border-white/5 hover:border-indigo-500/30 transition-all group/insight relative overflow-hidden">
-                                <div className="flex items-center gap-4 mb-4">
-                                    <div className="p-2 bg-white/5 rounded-xl group-hover/insight:bg-indigo-500/10 transition-colors">
+                            <div key={insight.id} className="p-4 bg-black/40 rounded-2xl border border-white/5 hover:border-indigo-500/30 transition-all group/insight relative overflow-hidden">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <div className="p-2 bg-white/5 rounded-lg group-hover/insight:bg-indigo-500/10 transition-colors">
                                         {insight.icon}
                                     </div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-white italic group-hover/insight:text-indigo-400 transition-colors">{insight.title}</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-white italic group-hover/insight:text-indigo-400 transition-colors">{insight.title}</p>
                                 </div>
-                                <p className="text-[11px] font-black text-white/40 leading-relaxed uppercase tracking-tight italic">{insight.desc}</p>
+                                <p className="text-[10px] font-black text-white/40 leading-relaxed uppercase tracking-tight italic">{insight.desc}</p>
                             </div>
                         ))}
                     </div>
@@ -339,32 +339,32 @@ const Dashboard = () => {
         </>
       ) : (
         <div className="animate-in slide-in-from-bottom-5 duration-500">
-           <header className="bg-white/5 border border-white/10 p-10 rounded-[48px] relative overflow-hidden group shadow-2xl mb-12">
+           <header className="bg-white/5 border border-white/10 p-6 rounded-[32px] relative overflow-hidden group shadow-2xl mb-6">
                <div className="relative z-10">
-                  <h1 className="text-4xl font-black italic uppercase tracking-tighter leading-none text-white">Market <span className="bg-gradient-to-r from-indigo-500 to-indigo-300 bg-clip-text text-transparent text-5xl">Intelligence Lab</span></h1>
-                  <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.4em] mt-3 italic leading-none">Deep History Ledger | Profit Leadership Analysis</p>
+                  <h1 className="text-2xl font-black italic uppercase tracking-tighter leading-none text-white">Market <span className="bg-gradient-to-r from-indigo-500 to-indigo-300 bg-clip-text text-transparent text-3xl">Intelligence Lab</span></h1>
+                  <p className="text-white/30 text-[9px] font-black uppercase tracking-[0.4em] mt-2 italic leading-none">Deep History Ledger | Profit Leadership Analysis</p>
                </div>
-               <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[100px] -z-10 transition-all"></div>
+               <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/5 blur-[80px] -z-10 transition-all"></div>
            </header>
            <MatrixAnalytics />
         </div>
       )}
 
       {/* QUICK TERMINAL ACCESS (ALWAYS SHOWN) */}
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
          {[
-            { id: 'pos', title: "POS Rail", desc: "Live Yeild Matrix", icon: <Receipt className="w-7 h-7" />, grad: "from-orange-500 to-rose-600" },
-            { id: 'menu', title: "Inventory Hub", desc: "Product Matrix Node", icon: <LayoutGrid className="w-7 h-7" />, grad: "from-rose-500 to-indigo-600" },
-            { id: 'tables', title: "Floor Grid", desc: "Space & Order Sync", icon: <LayoutGrid className="w-7 h-7" />, grad: "from-indigo-500 to-cyan-600" },
-            { id: 'kitchen', title: "Kitchen Hub", desc: "KDS Queue Terminal", icon: <ChefHat className="w-7 h-7" />, grad: "from-cyan-500 to-emerald-600" }
+            { id: 'pos', title: "POS Rail", desc: "Live Yeild Matrix", icon: <Receipt className="w-5 h-5" />, grad: "from-orange-500 to-rose-600" },
+            { id: 'menu', title: "Inventory", desc: "Product Matrix", icon: <LayoutGrid className="w-5 h-5" />, grad: "from-rose-500 to-indigo-600" },
+            { id: 'tables', title: "Floor Grid", desc: "Space & Order Sync", icon: <LayoutGrid className="w-5 h-5" />, grad: "from-indigo-500 to-cyan-600" },
+            { id: 'kitchen', title: "Kitchen Hub", desc: "KDS Queue Terminal", icon: <ChefHat className="w-5 h-5" />, grad: "from-cyan-500 to-emerald-600" }
          ].map((card, idx) => (
-            <div key={idx} onClick={() => switchSection(card.id)} className={`p-10 bg-gradient-to-br ${card.grad} rounded-[56px] flex flex-col justify-between min-h-[300px] group shadow-[0_40px_100px_rgba(0,0,0,0.5)] hover:scale-[1.03] transition-all cursor-pointer relative overflow-hidden border border-white/20 active:scale-95`}>
-               <div className="w-20 h-20 bg-white/20 backdrop-blur-2xl rounded-3xl flex items-center justify-center text-white mb-8 border border-white/20 group-hover:scale-110 group-hover:rotate-6 transition-transform shadow-3xl">{card.icon}</div>
+            <div key={idx} onClick={() => switchSection(card.id)} className={`p-6 bg-gradient-to-br ${card.grad} rounded-[32px] flex flex-col justify-between min-h-[160px] group shadow-xl hover:scale-[1.03] transition-all cursor-pointer relative overflow-hidden border border-white/20 active:scale-95`}>
+               <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center text-white mb-4 border border-white/20 group-hover:scale-110 group-hover:rotate-6 transition-transform shadow-lg">{card.icon}</div>
                <div className="relative z-10">
-                  <h2 className="text-2xl font-black italic uppercase tracking-tighter leading-none text-white">{card.title}</h2>
-                  <p className="text-white/70 text-[10px] font-black uppercase tracking-widest mt-4 italic">{card.desc}</p>
+                  <h2 className="text-xl font-black italic uppercase tracking-tighter leading-none text-white">{card.title}</h2>
+                  <p className="text-white/70 text-[9px] font-black uppercase tracking-widest mt-2 italic">{card.desc}</p>
                </div>
-               <div className="absolute top-8 right-12 text-white/10 text-9xl font-black italic -z-0">0{idx+1}</div>
+               <div className="absolute -top-4 -right-4 text-white/10 text-8xl font-black italic -z-0">0{idx+1}</div>
             </div>
          ))}
       </section>
