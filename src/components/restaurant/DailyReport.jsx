@@ -6,47 +6,129 @@ const DailyReport = () => {
   const [dateTo, setDateTo] = useState(new Date().toISOString().split('T')[0]);
   const [selectedUser, setSelectedUser] = useState('All Users');
 
-  const exportToExcel = (printType) => {
-    if (!window.XLSX) {
+  const exportToExcel = async (printType) => {
+    if (!window.ExcelJS || !window.saveAs) {
       alert("Excel export library is currently loading. Please try again in a few seconds.");
       return;
     }
 
-    const wsData = [
-      [`Bobo OS - Daily Report (${printType})`],
-      [`Date From: ${dateFrom}`, `Date To: ${dateTo}`, `User: ${selectedUser}`],
-      [],
-      ['TODAYS SUMMARY'],
-      ['Category', 'Amount'],
+    const wb = new window.ExcelJS.Workbook();
+    const ws = wb.addWorksheet("Daily Report", {
+       views: [{ showGridLines: false }] // Hide default faint gridlines, we'll draw solid borders
+    });
+
+    // --- STYLES ---
+    const borderAll = {
+      top: { style: 'thin' }, left: { style: 'thin' },
+      bottom: { style: 'thin' }, right: { style: 'thin' }
+    };
+    const titleFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E293B' } }; // Dark Slate
+    const headerFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF97316' } }; // Orange
+    const subHeaderFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF1F5F9' } }; // Light Gray
+    
+    // Column Widths
+    ws.columns = [
+      { width: 25 }, { width: 18 }, { width: 18 }, { width: 18 }, { width: 18 }
+    ];
+
+    // --- TOP META INFO ---
+    ws.mergeCells('A1:E1');
+    ws.getCell('A1').value = `Bobo OS - Daily Report (${printType})`;
+    ws.getCell('A1').font = { bold: true, size: 16, color: { argb: 'FFFFFFFF' } };
+    ws.getCell('A1').fill = titleFill;
+    ws.getCell('A1').alignment = { vertical: 'middle', horizontal: 'center' };
+
+    ws.mergeCells('A2:E2');
+    ws.getCell('A2').value = `Date: ${dateFrom} to ${dateTo} | User: ${selectedUser}`;
+    ws.getCell('A2').font = { italic: true, size: 11, color: { argb: 'FF475569' } };
+    ws.getCell('A2').alignment = { vertical: 'middle', horizontal: 'center' };
+    
+    ws.addRow([]); // Blank spacer
+
+    // --- TODAYS SUMMARY TABLE ---
+    ws.mergeCells('A4:B4');
+    ws.getCell('A4').value = "TODAYS SUMMARY";
+    ws.getCell('A4').font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    ws.getCell('A4').fill = headerFill;
+    ws.getCell('A4').alignment = { horizontal: 'center' };
+    ws.getCell('A4').border = borderAll;
+    ws.getCell('B4').border = borderAll;
+
+    const summaryData = [
       ['Amount', 673.000],
       ['Tax', 33.650],
       ['Extra Charges', 15.000],
       ['Round Off', 0.100],
-      ['Total Sale', 721.750],
-      [],
-      ['OVERALL TRANSACTIONS'],
-      ['Transaction Type', 'Cash', 'Master Card', 'Mentorpos', 'Total'],
+      ['Total Sale', 721.750]
+    ];
+
+    summaryData.forEach((row, idx) => {
+      const dbRow = ws.addRow([row[0], row[1]]);
+      const isTotal = (idx === summaryData.length - 1);
+      
+      const c1 = dbRow.getCell(1);
+      const c2 = dbRow.getCell(2);
+      
+      c1.border = borderAll;
+      c2.border = borderAll;
+      
+      if (isTotal) {
+         c1.font = { bold: true };
+         c2.font = { bold: true, color: { argb: 'FF6366F1' } };
+         c1.fill = subHeaderFill;
+         c2.fill = subHeaderFill;
+      }
+      
+      c2.numFmt = '#,##0.00';
+    });
+
+    ws.addRow([]); // Blank spacer
+
+    // --- OVERALL TRANSACTIONS TABLE ---
+    const transStart = ws.rowCount + 1;
+    ws.mergeCells(`A${transStart}:E${transStart}`);
+    ws.getCell(`A${transStart}`).value = "OVERALL TRANSACTIONS";
+    ws.getCell(`A${transStart}`).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    ws.getCell(`A${transStart}`).fill = headerFill;
+    ws.getCell(`A${transStart}`).alignment = { horizontal: 'center' };
+    for (let c = 1; c <= 5; c++) ws.getCell(transStart, c).border = borderAll;
+
+    const tableHeaders = ['Transaction Type', 'Cash', 'Master Card', 'Mentorpos', 'Total'];
+    const thRow = ws.addRow(tableHeaders);
+    thRow.eachCell(c => {
+       c.font = { bold: true };
+       c.fill = subHeaderFill;
+       c.border = borderAll;
+       c.alignment = { horizontal: 'center' };
+    });
+
+    const transData = [
       ['Sale', 298.750, 200.000, 223.000, 721.750],
       ['In Transactions', 3804.850, 0.000, 0.000, 3804.850],
       ['Out Transactions', 3150.000, 0.000, 0.000, 3150.000],
       ['Total', 953.600, 200.000, 223.000, 1376.600],
     ];
 
-    const ws = window.XLSX.utils.aoa_to_sheet(wsData);
-    
-    // Auto-size columns based on content
-    const colWidths = [
-      { wch: 25 }, // First column
-      { wch: 15 }, // Cash / Value
-      { wch: 15 }, // Master Card
-      { wch: 15 }, // Mentorpos
-      { wch: 15 }  // Total
-    ];
-    ws['!cols'] = colWidths;
+    transData.forEach((row, idx) => {
+      const dbRow = ws.addRow(row);
+      const isTotal = (idx === transData.length - 1);
+      
+      dbRow.eachCell((c, colNum) => {
+         c.border = borderAll;
+         if (colNum > 1) c.numFmt = '#,##0.00'; // currency format
+         
+         if (isTotal) {
+            c.font = { bold: true };
+            c.fill = subHeaderFill;
+            if (colNum === 5) c.font = { bold: true, color: { argb: 'FF6366F1' } };
+         }
+      });
+    });
 
-    const wb = window.XLSX.utils.book_new();
-    window.XLSX.utils.book_append_sheet(wb, ws, "Report");
-    window.XLSX.writeFile(wb, `Daily_Report_${printType.replace(/\s+/g, '_')}_${dateFrom}.xlsx`);
+    // Write buffer and download
+    const buffer = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    window.saveAs(blob, `Daily_Report_${printType.replace(/\s+/g, '_')}_${dateFrom}.xlsx`);
   };
 
   return (
