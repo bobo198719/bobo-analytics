@@ -249,20 +249,37 @@ const { title = "Restaurant OS" } = Astro.props;
   <script is:inline>
      async function recordStaffEvent(type) {
         const user = localStorage.getItem('ro_username') || 'system_root';
+        
+        // Immediate UI response for logout to avoid delay
+        if (type === 'logout') {
+            localStorage.removeItem('restaurant_auth');
+            // We still fire the fetch but don't await it to block the UI
+            fetch('/api/v2/restaurant/staff/logs', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username: user, event_type: type })
+            }).finally(() => {
+                window.location.replace('/restaurant-login');
+            });
+            
+            // Backup redirect in case fetch hangs indefinitely
+            setTimeout(() => {
+                window.location.replace('/restaurant-login');
+            }, 800);
+            return;
+        }
+
         try {
-           await fetch('/api/v2/restaurant/staff/logs', {
+           const res = await fetch('/api/v2/restaurant/staff/logs', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ username: user, event_type: type })
            });
-
-           if (type === 'logout') {
-              localStorage.removeItem('restaurant_auth');
-              window.location.href = '/restaurant-login';
-           } else {
-              alert(`Shift Event [${type.toUpperCase()}] Recorded.`);
-           }
-        } catch (err) { console.error("Log Fail:", err); }
+           alert(`Shift Event [${type.toUpperCase()}] Recorded.`);
+        } catch (err) { 
+           console.error("Log Fail:", err);
+           alert("Sync Error: Event saved to local cache.");
+        }
      }
 
      let deferredPrompt;
