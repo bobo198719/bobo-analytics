@@ -331,45 +331,58 @@ try {
        };
 
        window.placeOrder = async () => {
-          const currentTable = tablesData.find(t => t.table_number.toString() === table.toString());
-          if (!currentTable) return alert("System Error: Table configuration not found.");
-
           const btn = document.querySelector('#floatingCart button');
           const originalText = btn.innerText;
           btn.innerText = "Sending...";
           btn.disabled = true;
 
-          const total = cart.reduce((acc, c)=>acc + (c.price*c.qty), 0);
-          
           try {
-              const res = await fetch('/api/v2/restaurant/orders', { 
-                  method: 'POST', 
-                  headers: {'Content-Type': 'application/json'}, 
-                  body: JSON.stringify({ 
-                      table_id: currentTable.id, 
-                      items: cart, 
-                      total, 
+              // Ensure tables are loaded — fetch on-demand if SSR failed
+              if (tablesData.length === 0) {
+                 const tr = await fetch('/api/v2/restaurant/tables');
+                 const raw = await tr.json();
+                 if (Array.isArray(raw)) tablesData = raw;
+              }
+
+              // Resolve table_id: match by table number, or use the URL param as-is
+              let tableId = null;
+              const found = tablesData.find(t => t.table_number != null && t.table_number.toString() === table.toString());
+              if (found) {
+                 tableId = found.id;
+              } else {
+                 // Graceful fallback: try using numeric value of table directly
+                 tableId = parseInt(table) || 1;
+                 console.warn('Table lookup miss — using fallback id:', tableId);
+              }
+
+              const total = cart.reduce((acc, c) => acc + (c.price * c.qty), 0);
+
+              const res = await fetch('/api/v2/restaurant/orders', {
+                  method: 'POST',
+                  headers: {'Content-Type': 'application/json'},
+                  body: JSON.stringify({
+                      table_id: tableId,
+                      items: cart,
+                      total,
                       mode: orderMode,
                       status: 'pending_waiter'
-                  }) 
+                  })
               });
-              
+
               const data = await res.json();
-              
-              if(data.success || data.orderId) { 
+
+              if (data.success || data.orderId) {
                   toggleCart();
                   document.getElementById('viewMenuHub').classList.add('hidden');
-                  activeOrderId = data.orderId; 
-                  localStorage.setItem('active_qr_order_' + table, activeOrderId); 
-                  showTracker(); 
+                  activeOrderId = data.orderId;
+                  localStorage.setItem('active_qr_order_' + table, activeOrderId);
+                  showTracker();
               } else {
-                  alert("Order failed: " + (data.error || "Please try again."));
-                  btn.innerText = originalText;
-                  btn.disabled = false;
+                  throw new Error(data.error || 'Order rejected by server');
               }
-          } catch(err) { 
+          } catch(err) {
               console.error("Order error:", err);
-              alert("Connection error. Please try again.");
+              alert("Could not send order: " + err.message + ". Please try again.");
               btn.innerText = originalText;
               btn.disabled = false;
           }
