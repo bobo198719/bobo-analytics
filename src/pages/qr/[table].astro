@@ -357,24 +357,22 @@ try {
 
               const total = cart.reduce((acc, c) => acc + (c.price * c.qty), 0);
 
-              const res = await fetch('/api/v2/restaurant/orders', {
+              const res = await fetch('/api/v2/restaurant/qr-orders', {
                   method: 'POST',
                   headers: {'Content-Type': 'application/json'},
                   body: JSON.stringify({
-                      table_id: tableId,
+                      table: tableId,
                       items: cart,
-                      total,
-                      mode: orderMode,
-                      status: 'pending_waiter'
+                      total
                   })
               });
 
               const data = await res.json();
 
-              if (data.success || data.orderId) {
+              if (data.success || data.order_id) {
                   toggleCart();
                   document.getElementById('viewMenuHub').classList.add('hidden');
-                  activeOrderId = data.orderId;
+                  activeOrderId = data.order_id;
                   localStorage.setItem('active_qr_order_' + table, activeOrderId);
                   showTracker();
               } else {
@@ -400,9 +398,9 @@ try {
           const f = async () => {
               if(!activeOrderId) return;
               try {
-                  const res = await fetch(`/api/v2/restaurant/orders/${activeOrderId}`);
-                  const order = await res.json();
-                  if(order && !order.error) renderTrackerSteps(order.status, order.total_amount);
+                  const res = await fetch(`/api/v2/restaurant/qr-orders?order_id=${activeOrderId}`);
+                  const { order } = await res.json();
+                  if(order) renderTrackerSteps(order.status, order.total_amount);
               } catch(e) {}
           };
           f(); pollInterval = setInterval(f, 5000);
@@ -432,10 +430,10 @@ try {
        window.simulatePayment = async () => {
           if(!activeOrderId) return;
           document.querySelector('#paymentBox button').innerText = "Processing...";
-          await fetch(`/api/v2/restaurant/orders/${activeOrderId}/status`, { 
-              method: 'PUT', 
+          await fetch('/api/v2/restaurant/qr-orders', { 
+              method: 'PATCH', 
               headers: {'Content-Type':'application/json'}, 
-              body: JSON.stringify({ status: 'paid' }) 
+              body: JSON.stringify({ order_id: activeOrderId, status: 'paid' }) 
           });
        };
 
