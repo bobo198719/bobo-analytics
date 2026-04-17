@@ -18,10 +18,9 @@ const KDS = () => {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch('/api/v2/restaurant/qr-orders?active_only=true');
+      const res = await fetch('/api/v2/restaurant/orders');
       if (!res.ok) throw new Error("KDS HUB OFFLINE");
-      let data = await res.json();
-      data = data.orders || [];
+      const data = await res.json();
       
       const activeStates = ['waiter_confirmed', 'kitchen_preparing', 'kitchen_ready'];
       setOrders(data.filter(o => activeStates.includes(o.status)));
@@ -54,10 +53,10 @@ const KDS = () => {
 
   const updateStatus = async (orderId, nextStatus) => {
     try {
-        const res = await fetch(`/api/v2/restaurant/qr-orders`, {
+        const res = await fetch(`/api/v2/restaurant/orders/${orderId}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ order_id: orderId, status: nextStatus })
+            body: JSON.stringify({ status: nextStatus })
         });
         if (res.ok) fetchOrders();
     } catch (err) { console.error("KDS Update Error:", err); }
