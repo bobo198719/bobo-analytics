@@ -683,24 +683,34 @@ export async function ALL({ request, params }) {
         }
     }
 
-    // MENU GET — filter out deleted items
+    // MENU GET — Instant Response logic (V101)
     if (pathname === '/api/v2/restaurant/menu' && method === 'GET') {
+        const fetchWithTimeout = async (task, ms) => {
+            const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), ms));
+            return Promise.race([task, timeout]);
+        };
+
         try {
             const db = await getMySQL();
-            const [rows] = await db.query('SELECT * FROM menu_items ORDER BY id DESC LIMIT 500');
-            if (!global.MENU_CACHE) global.MENU_CACHE = [];
-            if (rows.length > 0) global.MENU_CACHE = rows; // cache for fallback
-            const filtered = rows.filter(r => !global.DELETED_MENU_IDS.has(String(r.id)));
-            return new Response(JSON.stringify(filtered), { status: 200, headers: { 'Content-Type': 'application/json' } });
+            // Race the DB query against an aggressive 800ms timeout
+            const [rows] = await fetchWithTimeout(db.query('SELECT * FROM menu_items ORDER BY id DESC LIMIT 500'), 800);
+            
+            if (rows && rows.length > 0) {
+                if (!global.MENU_CACHE) global.MENU_CACHE = [];
+                global.MENU_CACHE = rows;
+                const filtered = rows.filter(r => !global.DELETED_MENU_IDS.has(String(r.id)));
+                return new Response(JSON.stringify(filtered), { status: 200, headers: { 'Content-Type': 'application/json' } });
+            }
+            throw new Error('EMPTY_DB');
         } catch (e) {
-            // Fallback: return cached data or proxy to VPS
+            // If DB sluggish or empty, try VPS proxy with same fast timeout
             try {
-                const vpsRes = await fetch('http://187.124.97.144:5000/api/v2/restaurant/menu', { signal: AbortSignal.timeout(6000) });
+                const vpsRes = await fetch('http://187.124.97.144:5000/api/v2/restaurant/menu', { signal: AbortSignal.timeout(800) });
                 const vpsData = await vpsRes.json();
                 const filtered = Array.isArray(vpsData) ? vpsData.filter(r => !global.DELETED_MENU_IDS.has(String(r.id))) : vpsData;
                 return new Response(JSON.stringify(filtered), { status: 200, headers: { 'Content-Type': 'application/json' } });
             } catch (e2) {
-                // Last resort: return imported menu JSON so UI doesn't go blank
+                // INSTANT FALLBACK: Use imported menu JSON
                 const baseData = (global.MENU_CACHE && global.MENU_CACHE.length > 0) ? global.MENU_CACHE : (menuItems || []);
                 const filtered = baseData.filter(r => !global.DELETED_MENU_IDS.has(String(r.id)));
                 return new Response(JSON.stringify(filtered), { status: 200, headers: { 'Content-Type': 'application/json' } });
