@@ -131,12 +131,14 @@ const POS = () => {
     if (cart.length === 0) return alert("BASKET EMPTY");
     setIsSubmitting(true);
     try {
-        const res = await fetch('/api/v2/restaurant/orders', {
+        const res = await fetch('/api/v2/restaurant/qr-orders', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                table_id: selectedTable,
-                items: cart.map(i => ({ menu_item_id: i.id, quantity: i.quantity }))
+                table: selectedTableNum || selectedTable,
+                items: cart.map(i => ({ menu_item_id: i.id, name: i.name, quantity: i.quantity, price: i.price, total: i.price * i.quantity })),
+                total: getTotal(),
+                status: 'waiter_confirmed'
             })
         });
         if (res.ok) {

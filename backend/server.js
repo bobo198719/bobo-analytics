@@ -185,6 +185,18 @@ const wss = new WebSocket.Server({ port: 8080 });
 
 wss.on("connection", ws => {
     console.log("🔔 Dashboard Client connected to Real-time Hub");
+    ws.on('message', (message) => {
+        try {
+            const parsed = JSON.parse(message);
+            if (parsed.type === 'NEW_ORDER' || parsed.type === 'STATUS_CHANGE') {
+                wss.clients.forEach(client => {
+                    if (client !== ws && client.readyState === WebSocket.OPEN) {
+                        client.send(message.toString());
+                    }
+                });
+            }
+        } catch(e) {}
+    });
 });
 
 global.broadcastNewOrder = (order) => {

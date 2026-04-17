@@ -170,6 +170,91 @@ router.get('/orders/:id', async (req, res) => {
 });
 
 /**
+ * 4.5 OPTIMISTIC QR ORDERS (IN-MEMORY ENGINE)
+ */
+if (!global.__QR_ORDERS__) global.__QR_ORDERS__ = new Map();
+
+// Helper to push to MySQL safely (fire-and-forget)
+const persistQrToDb = async (order) => {
+    try {
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS restaurant_qr_orders (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                order_id VARCHAR(50) UNIQUE,
+                table_id VARCHAR(20),
+                items LONGTEXT,
+                total_amount INT,
+                status VARCHAR(50) DEFAULT 'placed',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+        await db.query(
+            'INSERT IGNORE INTO restaurant_qr_orders (order_id, table_id, items, total_amount, status) VALUES (?, ?, ?, ?, ?)',
+            [order.order_id, order.table_id, JSON.stringify(order.items), order.total_amount, order.status]
+        );
+    } catch(e) {}
+};
+
+router.get('/qr-orders', async (req, res) => {
+    const { order_id, active_only } = req.query;
+    if (order_id) {
+        const memOrder = global.__QR_ORDERS__.get(order_id);
+        if (memOrder) return res.json({ order: memOrder });
+        try {
+            const [rows] = await db.query('SELECT * FROM restaurant_qr_orders WHERE order_id = ?', [order_id]);
+            if (rows[0]) global.__QR_ORDERS__.set(order_id, rows[0]);
+            return res.json({ order: rows[0] || null });
+        } catch (e) {
+            return res.json({ order: null });
+        }
+    }
+    if (active_only) {
+        const allOrders = Array.from(global.__QR_ORDERS__.values())
+            .filter(o => o.status !== 'paid')
+            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        return res.json({ orders: allOrders });
+    }
+    res.status(400).json({ error: 'Missing logic' });
+});
+
+router.post('/qr-orders', async (req, res) => {
+    const { table, items, total, status } = req.body;
+    const orderId = 'QR-' + Date.now() + '-' + Math.floor(Math.random() * 9999);
+    const order = {
+        order_id: orderId,
+        table_id: String(table),
+        items: items || [],
+        total_amount: total || 0,
+        status: status || 'placed',
+        created_at: new Date().toISOString()
+    };
+    global.__QR_ORDERS__.set(orderId, order);
+    persistQrToDb(order);
+    
+    if (global.broadcastNewOrder) {
+        global.broadcastNewOrder(order);
+    }
+    res.json({ success: true, order_id: orderId });
+});
+
+router.patch('/qr-orders', async (req, res) => {
+    const { order_id, status } = req.body;
+    const order = global.__QR_ORDERS__.get(order_id);
+    if (order) {
+        order.status = status;
+        global.__QR_ORDERS__.set(order_id, order);
+        if (global.broadcastNewOrder) {
+            // Re-using broadcast method for status change
+            global.broadcastNewOrder(order);
+        }
+    }
+    try {
+        await db.query('UPDATE restaurant_qr_orders SET status = ? WHERE order_id = ?', [status, order_id]);
+    } catch(e) {}
+    res.json({ success: true });
+});
+
+/**
  * 5. ANALYTICS & INSIGHTS (NEW)
  */
 router.get('/analytics', async (req, res) => {
