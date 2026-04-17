@@ -404,10 +404,6 @@ try {
                   const { order } = await res.json();
                   if (order) {
                       renderTrackerSteps(order.status, order.total_amount);
-                  } else if (res.ok) {
-                      // Order no longer exists (e.g. server reset or completed and purged)
-                      localStorage.removeItem('active_qr_order_' + table);
-                      window.location.reload();
                   }
               } catch(e) {}
           };
