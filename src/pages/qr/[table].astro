@@ -11,53 +11,125 @@ const { table } = Astro.params;
 </head>
 <body class="bg-[#111] text-white font-sans antialiased pb-24">
     
-    <div id="app" class="max-w-md mx-auto relative min-h-screen">
-        <!-- Header -->
-        <header class="bg-[#222] p-5 sticky top-0 z-50 border-b border-[#333] flex justify-between items-center shadow-lg">
-           <div class="flex items-center gap-3">
-              <div class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center font-black italic text-xl">B</div>
-              <div>
-                  <h1 class="font-black italic uppercase leading-none">Grand Cafe Bobo</h1>
-                  <p class="text-xs text-orange-400 font-bold uppercase tracking-widest mt-1">Table {table}</p>
-              </div>
-           </div>
-           <button onclick="toggleCart()" class="relative p-2 bg-[#333] rounded-full">
-              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-              <span id="cartBadge" class="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
-           </button>
-        </header>
-
-        <!-- Search & Filter Layer -->
-        <div class="sticky top-[81px] bg-[#111] z-40 p-4 pb-2 space-y-4">
-            <div class="relative group">
-                <input 
-                    type="text" 
-                    id="searchInput"
-                    oninput="handleSearch(this.value)"
-                    placeholder="Search for dishes..." 
-                    class="w-full bg-[#222] border border-[#333] rounded-2xl py-4 px-12 text-sm font-bold focus:outline-none focus:border-orange-500 transition-all placeholder:text-white/20"
-                />
-                <div class="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-orange-500 transition-colors">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+    <div id="app" class="max-w-md mx-auto relative min-h-screen flex flex-col">
+        
+        <!-- ========================================== -->
+        <!-- 1. WELCOME VIEW (LANDING) -->
+        <!-- ========================================== -->
+        <div id="viewWelcome" class="flex-1 flex flex-col p-6 animate-in fade-in duration-700">
+            <div class="relative w-full h-80 rounded-[40px] overflow-hidden shadow-2xl mb-8">
+                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover scale-110" />
+                <div class="absolute inset-0 bg-gradient-to-t from-[#111] via-[#111]/20 to-transparent"></div>
+                <div class="absolute bottom-6 left-6">
+                    <div class="w-16 h-16 bg-white text-black rounded-2xl flex items-center justify-center font-black italic text-3xl shadow-xl mb-3">B</div>
+                    <h1 class="text-3xl font-black italic uppercase leading-tight tracking-tighter">Grand Cafe Bobo</h1>
                 </div>
             </div>
 
-            <div id="categoryBar" class="flex gap-2 overflow-x-auto no-scrollbar pb-2 pt-1 border-t border-white/5">
-                <!-- Categories rendered via JS -->
+            <div class="space-y-6 flex-1">
+                <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center shrink-0">📍</div>
+                    <div>
+                        <p class="text-[10px] text-white/30 font-black uppercase tracking-widest mb-1">Location</p>
+                        <p class="text-xs font-bold leading-relaxed">123 Culinary Boulevard, Tech Park Sector, Digital City - 560001</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center shrink-0">📞</div>
+                    <div>
+                        <p class="text-[10px] text-white/30 font-black uppercase tracking-widest mb-1">Contact</p>
+                        <p class="text-xs font-bold leading-relaxed">+91 95185 25420</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center shrink-0">🕒</div>
+                    <div>
+                        <p class="text-[10px] text-white/30 font-black uppercase tracking-widest mb-1">Hours</p>
+                        <p class="text-xs font-bold leading-relaxed">Open: 09:00 AM • Close: 11:30 PM</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-8 mb-4">
+                <button onclick="goToModeSelector()" class="w-full py-5 bg-white text-black rounded-3xl font-black uppercase tracking-[0.2em] italic shadow-xl shadow-white/5 active:scale-95 transition-all text-sm">
+                    Order Food →
+                </button>
             </div>
         </div>
 
-        <!-- Dynamic Content Engine -->
-        <div id="viewMenu" class="p-4 space-y-4">
-            <!-- Rendered via JS -->
+        <!-- ========================================== -->
+        <!-- 2. MODE SELECTOR VIEW -->
+        <!-- ========================================== -->
+        <div id="viewModeSelector" class="hidden flex-1 flex flex-col p-8 justify-center animate-in slide-in-from-bottom duration-500">
+            <h2 class="text-3xl font-black italic uppercase mb-12 text-center leading-tight">How would you like<br/><span class="text-orange-500">to order?</span></h2>
+            
+            <div class="space-y-4">
+                <button onclick="startOrdering('dine_in')" class="w-full group p-6 bg-[#222] border border-white/5 rounded-[32px] flex items-center gap-6 hover:border-orange-500 transition-all">
+                    <div class="w-16 h-16 bg-orange-500/10 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">🍽️</div>
+                    <div class="text-left">
+                        <h3 class="font-black uppercase text-sm italic">Dine-In</h3>
+                        <p class="text-[10px] text-white/30 font-bold tracking-widest uppercase mt-1">Serve at Table {table}</p>
+                    </div>
+                </button>
+
+                <button onclick="startOrdering('pickup')" class="w-full group p-6 bg-[#222] border border-white/5 rounded-[32px] flex items-center gap-6 hover:border-orange-500 transition-all">
+                    <div class="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">🛍️</div>
+                    <div class="text-left">
+                        <h3 class="font-black uppercase text-sm italic">Pick-Up</h3>
+                        <p class="text-[10px] text-white/30 font-bold tracking-widest uppercase mt-1">Take away from Counter</p>
+                    </div>
+                </button>
+
+                <button onclick="startOrdering('delivery')" class="w-full group p-6 bg-[#222] border border-white/5 rounded-[32px] flex items-center gap-6 hover:border-orange-500 transition-all">
+                    <div class="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">🛵</div>
+                    <div class="text-left">
+                        <h3 class="font-black uppercase text-sm italic">Home Delivery</h3>
+                        <p class="text-[10px] text-white/30 font-bold tracking-widest uppercase mt-1">Free delivery via Bobo</p>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 3. MENU HUB VIEW (THE MAIN ENGINE) -->
+        <!-- ========================================== -->
+        <div id="viewMenuHub" class="hidden flex flex-col flex-1">
+            <header class="bg-[#111] p-5 sticky top-0 z-50 border-b border-white/5 flex justify-between items-center backdrop-blur-xl">
+               <div class="flex items-center gap-3">
+                  <div onclick="window.location.reload()" class="w-10 h-10 bg-white text-black rounded-xl flex items-center justify-center font-black italic text-xl">B</div>
+                  <div>
+                      <h1 class="font-black italic uppercase leading-none text-xs">Menu Intelligence</h1>
+                      <p id="activeModeLabel" class="text-[8px] text-orange-400 font-bold uppercase tracking-widest mt-1">DINE-IN • T-{table}</p>
+                  </div>
+               </div>
+               <button onclick="toggleCart()" class="relative p-2.5 bg-white/5 rounded-2xl border border-white/5">
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                  <span id="cartBadge" class="absolute -top-1 -right-1 bg-white text-black text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
+               </button>
+            </header>
+
+            <div class="sticky top-[81px] bg-[#111] z-40 p-4 pb-2 space-y-4">
+                <div class="relative group">
+                    <input 
+                        type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="Search for dishes..." 
+                        class="w-full bg-[#1a1a1a] border border-white/10 rounded-2xl py-4 px-12 text-sm font-bold focus:outline-none focus:border-white transition-all placeholder:text-white/20"
+                    />
+                    <div class="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-white transition-colors">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    </div>
+                </div>
+                <div id="categoryBar" class="flex gap-2 overflow-x-auto no-scrollbar pb-2 pt-1 border-t border-white/5"></div>
+            </div>
+
+            <div id="menuItemsGrid" class="p-4 space-y-4 pb-32"></div>
         </div>
         
         <!-- Live Status Tracking View -->
         <div id="viewTracker" class="hidden p-6">
-            <h2 class="text-2xl font-black uppercase text-center mb-8 italic">Order Tracker</h2>
-            <div class="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-white/20 before:to-transparent">
-                <!-- Status steps rendered via JS -->
-            </div>
+            <h2 class="text-3xl font-black uppercase text-center mb-8 italic">Order Tracker</h2>
+            <div class="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-white/20 before:to-transparent"></div>
             
             <div id="paymentBox" class="hidden mt-12 bg-[#222] p-6 border border-[#333] rounded-2xl shadow-xl shadow-orange-500/10">
                <h3 class="text-xl font-black uppercase text-center mb-4">Total: ₹<span id="liveTotal">0</span></h3>
@@ -89,34 +161,46 @@ const { table } = Astro.params;
                   <span>TOTAL</span>
                   <span class="text-orange-400">₹<span id="cartTotal">0</span></span>
                </div>
-               <button onclick="placeOrder()" class="w-full py-4 bg-orange-500 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-orange-500/20 active:scale-95 transition-all">Send to Waiter</button>
+               <button onclick="placeOrder()" class="w-full py-4 bg-white text-black rounded-xl font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all">Send to Waiter</button>
             </div>
         </div>
     </div>
 
-    <!-- Client Logic -->
     <script define:vars={{ table }}>
        let menuData = [];
        let cart = [];
        let activeOrderId = localStorage.getItem('active_qr_order_' + table);
        let activeCategory = 'All';
        let searchQuery = '';
+       let orderMode = '';
 
        const fetchMenu = async () => {
           try {
+             // 1. Fetch data in backgrounds
              const res = await fetch('/api/v2/restaurant/menu');
              menuData = await res.json();
              
+             // 2. Decide initial view
              if (activeOrderId) {
                 showTracker();
-             } else {
-                renderCategories();
-                renderMenu();
              }
-          } catch (e) {
-             console.error("Menu fetch failed:", e);
-             if (!activeOrderId) renderMenu();
-          }
+             // Otherwise wait for user to click "Order Food"
+          } catch (e) { console.error("Menu fetch failed:", e); }
+       };
+
+       // NAVIGATION ENGINE
+       const goToModeSelector = () => {
+          document.getElementById('viewWelcome').classList.add('hidden');
+          document.getElementById('viewModeSelector').classList.remove('hidden');
+       };
+
+       const startOrdering = (mode) => {
+          orderMode = mode;
+          document.getElementById('activeModeLabel').innerText = mode.replace('_',' ').toUpperCase() + ` • T-${table}`;
+          document.getElementById('viewModeSelector').classList.add('hidden');
+          document.getElementById('viewMenuHub').classList.remove('hidden');
+          renderCategories();
+          renderMenu();
        };
 
        const handleSearch = (val) => {
@@ -133,12 +217,10 @@ const { table } = Astro.params;
        const renderCategories = () => {
           const bar = document.getElementById('categoryBar');
           if (!bar) return;
-          
           const cats = ['All', ...new Set(menuData.map(i => i.category))];
           bar.innerHTML = cats.map(cat => `
-             <button 
-                onclick="setCategory('${cat}')"
-                class="whitespace-nowrap px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border ${activeCategory === cat ? 'bg-orange-500 border-orange-400 text-white shadow-lg shadow-orange-500/20' : 'bg-[#222] border-[#333] text-white/40'}"
+             <button onclick="setCategory('${cat}')" 
+                class="whitespace-nowrap px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border ${activeCategory === cat ? 'bg-white border-white text-black shadow-lg shadow-white/10' : 'bg-[#222] border-[#333] text-white/40'}"
              >
                 ${cat}
              </button>
@@ -146,27 +228,17 @@ const { table } = Astro.params;
        };
 
        const renderMenu = () => {
-          const c = document.getElementById('viewMenu');
+          const c = document.getElementById('menuItemsGrid');
           if (!c) return;
-          
-          if (menuData.length === 0) {
-              c.innerHTML = `<div class="p-8 text-center text-white/30 font-black italic uppercase">Synchronizing Catalog...</div>`;
-              return;
-          }
+          if (menuData.length === 0) { c.innerHTML = `<div class="p-8 text-center text-white/30 font-black italic uppercase">Synchronizing...</div>`; return; }
 
           const filtered = menuData.filter(item => {
              const matchesCat = activeCategory === 'All' || item.category === activeCategory;
-             const matchesSearch = item.name.toLowerCase().includes(searchQuery) || (item.description || '').toLowerCase().includes(searchQuery);
-             return matchesCat && matchesSearch;
+             return matchesCat && (item.name.toLowerCase().includes(searchQuery) || (item.description || '').toLowerCase().includes(searchQuery));
           });
 
-          if (filtered.length === 0) {
-              c.innerHTML = `<div class="p-20 text-center text-white/10 font-black italic uppercase">No items found</div>`;
-              return;
-          }
-
           c.innerHTML = filtered.map(item => `
-             <div class="bg-[#1a1a1a] border border-white/5 rounded-3xl overflow-hidden flex shadow-2xl hover:border-white/10 transition-all p-2 group">
+             <div class="bg-white/5 border border-white/5 rounded-3xl overflow-hidden flex shadow-2xl p-2 group">
                 <div class="relative w-24 h-24 rounded-2xl overflow-hidden shrink-0">
                     <img src="${item.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300'}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
@@ -184,9 +256,7 @@ const { table } = Astro.params;
                           <span class="text-[8px] text-white/20 font-black uppercase">Price</span>
                           <span class="text-orange-500 font-black text-sm italic">₹${item.price}</span>
                       </div>
-                      <button onclick="addToCart(${item.id})" class="bg-white text-black hover:bg-orange-500 hover:text-white w-8 h-8 rounded-xl flex items-center justify-center font-black transition-all shadow-lg active:scale-90">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" /></svg>
-                      </button>
+                      <button onclick="addToCart(${item.id})" class="bg-white text-black hover:bg-orange-500 hover:text-white w-8 h-8 rounded-xl flex items-center justify-center font-black transition-all shadow-lg active:scale-90">+</button>
                    </div>
                 </div>
              </div>
@@ -197,76 +267,47 @@ const { table } = Astro.params;
           const item = menuData.find(i => i.id === id);
           if (!item) return;
           const ext = cart.find(c => c.id === id);
-          if(ext) ext.qty++;
-          else cart.push({...item, qty:1});
+          if(ext) ext.qty++; else cart.push({...item, qty:1});
           updateCartUI();
        };
 
        const updateCartUI = () => {
           const badge = document.getElementById('cartBadge');
           const totalQty = cart.reduce((acc, c)=>acc+c.qty, 0);
-          if(totalQty > 0) {
-             badge.classList.remove('hidden');
-             badge.innerText = totalQty;
-          } else {
-             badge.classList.add('hidden');
-          }
-
+          if(totalQty > 0) { badge.classList.remove('hidden'); badge.innerText = totalQty; } else { badge.classList.add('hidden'); }
           const c = document.getElementById('cartItems');
-          c.innerHTML = cart.map(i => `
-             <div class="flex justify-between items-center text-sm font-bold border-b border-[#333] pb-2">
-                <span>${i.name} (x${i.qty})</span>
-                <span>₹${i.price * i.qty}</span>
-             </div>
-          `).join('');
-
+          c.innerHTML = cart.map(i => `<div class="flex justify-between items-center text-sm font-bold border-b border-white/5 pb-2"><span>${i.name} (x${i.qty})</span><span>₹${i.price * i.qty}</span></div>`).join('');
           const total = cart.reduce((acc, c)=>acc + (c.price*c.qty), 0);
           document.getElementById('cartTotal').innerText = total;
        };
 
        const toggleCart = () => {
-          if (cart.length === 0 && !document.getElementById('floatingCart').classList.contains('translate-y-0')) {
-             return alert("Your basket is empty.");
-          }
           const el = document.getElementById('floatingCart');
-          el.classList.toggle('translate-y-full');
-          el.classList.toggle('translate-y-0');
+          if (cart.length === 0 && !el.classList.contains('translate-y-0')) return alert("Empty basket");
+          el.classList.toggle('translate-y-full'); el.classList.toggle('translate-y-0');
        };
 
        const placeOrder = async () => {
           toggleCart();
           const total = cart.reduce((acc, c)=>acc + (c.price*c.qty), 0);
-          
-          document.getElementById('viewMenu').classList.add('hidden');
-          
+          document.getElementById('viewMenuHub').classList.add('hidden');
           try {
-              const res = await fetch('/api/v2/restaurant/qr-orders', {
-                  method: 'POST',
-                  headers: {'Content-Type': 'application/json'},
-                  body: JSON.stringify({ table, items: cart, total })
-              });
+              const res = await fetch('/api/v2/restaurant/qr-orders', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ table, items: cart, total, mode: orderMode }) });
               const data = await res.json();
-              if(data.success) {
-                  activeOrderId = data.order_id;
-                  localStorage.setItem('active_qr_order_' + table, activeOrderId);
-                  showTracker();
-              }
-          } catch(err) {
-              alert("Network error.");
-              window.location.reload();
-          }
+              if(data.success) { activeOrderId = data.order_id; localStorage.setItem('active_qr_order_' + table, activeOrderId); showTracker(); }
+          } catch(err) { window.location.reload(); }
        };
 
-       // TRACKER SYSTEM
        const showTracker = () => {
-          document.getElementById('viewMenu').classList.add('hidden');
+          document.getElementById('viewMenuHub').classList.add('hidden');
+          document.getElementById('viewWelcome').classList.add('hidden');
           document.getElementById('viewTracker').classList.remove('hidden');
           pollStatus();
        };
 
        let pollInterval;
        const pollStatus = async () => {
-          const fetchState = async () => {
+          const f = async () => {
               if(!activeOrderId) return;
               try {
                   const res = await fetch(`/api/v2/restaurant/qr-orders?order_id=${activeOrderId}`);
@@ -274,75 +315,37 @@ const { table } = Astro.params;
                   if(order) renderTrackerSteps(order.status, order.total_amount);
               } catch(e) {}
           };
-          fetchState();
-          pollInterval = setInterval(fetchState, 3000); // Polling every 3s for native reactivity
+          f(); pollInterval = setInterval(f, 3000);
        };
 
        const renderTrackerSteps = (status, total) => {
           document.getElementById('liveTotal').innerText = total || 0;
-          
           const states = [
-             { key: 'placed', label: 'Order Placed', desc: 'Waiting for waiter confirmation', icon: '📝' },
-             { key: 'waiter_confirmed', label: 'Order Confirmed', desc: 'Waiter sent order to kitchen', icon: '👨‍🍳' },
-             { key: 'kitchen_preparing', label: 'Preparing', desc: 'Chefs are cooking your meal', icon: '🔥' },
-             { key: 'kitchen_ready', label: 'Ready to Serve', desc: 'Food is coming to your table', icon: '🛎️' },
+             { key: 'placed', label: 'Order Placed', desc: 'Waiting for confirmation', icon: '📝' },
+             { key: 'waiter_confirmed', label: 'Order Confirmed', desc: 'Sent to kitchen', icon: '👨‍🍳' },
+             { key: 'kitchen_preparing', label: 'Preparing', desc: 'Chefs are cooking', icon: '🔥' },
+             { key: 'kitchen_ready', label: 'Ready', desc: 'Food is coming', icon: '🛎️' },
              { key: 'served', label: 'Served', desc: 'Enjoy your meal!', icon: '✨' },
-             { key: 'paid', label: 'Completed', desc: 'Thank you for dining.', icon: '❤️' }
+             { key: 'paid', label: 'Completed', desc: 'Thank you!', icon: '❤️' }
           ];
-
           const currentIndex = states.findIndex(s => s.key === status);
-          
           const c = document.querySelector('#viewTracker > .space-y-6');
           c.innerHTML = states.map((s, idx) => {
-              const isPast = idx < currentIndex;
-              const isCurrent = idx === currentIndex;
-              const isFuture = idx > currentIndex;
-              
-              let color = isPast ? 'bg-emerald-500' : (isCurrent ? 'bg-orange-500 animate-pulse' : 'bg-[#333]');
-              let textColor = isFuture ? 'text-white/30' : 'text-white';
-              
-              return `
-              <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                  <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-[#111] ${color} shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-xl z-10 text-lg">
-                      ${s.icon}
-                  </div>
-                  <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-[#222] p-4 rounded-2xl border border-[#333] shadow-lg ${textColor}">
-                      <h4 class="font-black uppercase text-sm">${s.label}</h4>
-                      <p class="text-[10px] opacity-70 border-t border-white/5 pt-2 mt-2 font-bold">${s.desc}</p>
-                  </div>
-              </div>`
+              const color = idx < currentIndex ? 'bg-emerald-500' : (idx === currentIndex ? 'bg-orange-500 animate-pulse' : 'bg-[#333]');
+              const textColor = idx > currentIndex ? 'text-white/30' : 'text-white';
+              return `<div class="relative flex items-center justify-between group"><div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-[#111] ${color} shrink-0 z-10 text-lg">${s.icon}</div><div class="w-[calc(100%-4rem)] bg-[#222] p-4 rounded-2xl border border-[#333] shadow-lg ${textColor}"><h4 class="font-black uppercase text-sm">${s.label}</h4><p class="text-[10px] opacity-70 border-t border-white/5 pt-2 mt-2 font-bold">${s.desc}</p></div></div>`
           }).join('');
-
-          if (status === 'served') {
-              document.getElementById('paymentBox').classList.remove('hidden');
-          }
-          
-          if (status === 'paid') {
-              clearInterval(pollInterval);
-              document.getElementById('paymentBox').classList.add('hidden');
-              document.getElementById('feedbackBox').classList.remove('hidden');
-          }
+          if (status === 'served') document.getElementById('paymentBox').classList.remove('hidden');
+          if (status === 'paid') { clearInterval(pollInterval); document.getElementById('paymentBox').classList.add('hidden'); document.getElementById('feedbackBox').classList.remove('hidden'); }
        };
 
        const simulatePayment = async () => {
           if(!activeOrderId) return;
-          const btn = document.querySelector('#paymentBox button');
-          btn.innerText = "Processing...";
-          
-          await fetch('/api/v2/restaurant/qr-orders', {
-             method: 'PATCH',
-             headers: {'Content-Type':'application/json'},
-             body: JSON.stringify({ order_id: activeOrderId, status: 'paid' })
-          });
-          
-          // Next poll handles the UI shift
+          document.querySelector('#paymentBox button').innerText = "Processing...";
+          await fetch('/api/v2/restaurant/qr-orders', { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ order_id: activeOrderId, status: 'paid' }) });
        };
 
-       const submitFeedback = () => {
-          alert("Thank you for your feedback! The QR session is now closed.");
-          localStorage.removeItem('active_qr_order_' + table);
-          window.location.reload();
-       };
+       const submitFeedback = () => { localStorage.removeItem('active_qr_order_' + table); window.location.reload(); };
 
        fetchMenu();
     </script>
