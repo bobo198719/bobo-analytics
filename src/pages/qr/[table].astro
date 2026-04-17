@@ -77,11 +77,15 @@ const { table } = Astro.params;
     <!-- Client Logic -->
     <script define:vars={{ table }}>
        let menuData = [];
+       let cart = [];
+       let activeOrderId = localStorage.getItem('active_qr_order_' + table);
 
        const fetchMenu = async () => {
           try {
+             // Reset state for clean reload if needed
              const res = await fetch('/api/v2/restaurant/menu');
              menuData = await res.json();
+             
              if (activeOrderId) {
                 showTracker();
              } else {
@@ -89,37 +93,40 @@ const { table } = Astro.params;
              }
           } catch (e) {
              console.error("Menu fetch failed:", e);
+             // Safety fallback rendering
+             if (!activeOrderId) renderMenu();
           }
        };
 
-       let cart = [];
-       let activeOrderId = localStorage.getItem('active_qr_order_' + table);
-
-       const init = () => {
-          if (activeOrderId) {
-             showTracker();
-          } else {
        const renderMenu = () => {
           const c = document.getElementById('viewMenu');
-           c.innerHTML = menuData.map(item => `
-              <div class="bg-[#222] border border-[#333] rounded-2xl overflow-hidden flex shadow-lg">
-                 <img src="${item.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300'}" class="w-28 object-cover" />
-                 <div class="p-4 flex-1 flex flex-col justify-between">
-                    <div>
-                       <h4 class="font-black uppercase leading-tight text-sm mb-1">${item.name}</h4>
-                       <p class="text-[10px] text-white/50 leading-tight">${item.description || item.name}</p>
-                    </div>
-                    <div class="flex justify-between items-center mt-3">
-                       <span class="text-orange-400 font-black">₹${item.price}</span>
-                       <button onclick="addToCart(${item.id})" class="bg-[#333] hover:bg-orange-500 w-8 h-8 rounded-lg flex items-center justify-center font-black transition-colors">+</button>
-                    </div>
-                 </div>
-              </div>
-           `).join('');
+          if (!c) return;
+          
+          if (menuData.length === 0) {
+              c.innerHTML = `<div class="p-8 text-center text-white/30 font-black italic uppercase">Synchronizing Catalog...</div>`;
+              return;
+          }
+
+          c.innerHTML = menuData.map(item => `
+             <div class="bg-[#222] border border-[#333] rounded-2xl overflow-hidden flex shadow-lg">
+                <img src="${item.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300'}" class="w-28 object-cover" />
+                <div class="p-4 flex-1 flex flex-col justify-between">
+                   <div>
+                      <h4 class="font-black uppercase leading-tight text-sm mb-1">${item.name}</h4>
+                      <p class="text-[10px] text-white/50 leading-tight">${item.description || item.name}</p>
+                   </div>
+                   <div class="flex justify-between items-center mt-3">
+                      <span class="text-orange-400 font-black">₹${item.price}</span>
+                      <button onclick="addToCart(${item.id})" class="bg-[#333] hover:bg-orange-500 w-8 h-8 rounded-lg flex items-center justify-center font-black transition-colors">+</button>
+                   </div>
+                </div>
+             </div>
+          `).join('');
        };
 
        const addToCart = (id) => {
           const item = menuData.find(i => i.id === id);
+          if (!item) return;
           const ext = cart.find(c => c.id === id);
           if(ext) ext.qty++;
           else cart.push({...item, qty:1});
