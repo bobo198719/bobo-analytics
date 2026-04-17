@@ -174,12 +174,19 @@ const { table } = Astro.params;
        let searchQuery = '';
        let orderMode = '';
 
+       let tablesData = [];
+
        const fetchMenu = async () => {
           try {
-             const res = await fetch('/api/v2/restaurant/menu');
-             menuData = await res.json();
+             const [menuRes, tablesRes] = await Promise.all([
+                 fetch('/api/v2/restaurant/menu'),
+                 fetch('/api/v2/restaurant/tables')
+             ]);
+             menuData = await menuRes.json();
+             tablesData = await tablesRes.json();
+             
              if (activeOrderId) showTracker();
-          } catch (e) { console.error("Menu fetch failed:", e); }
+          } catch (e) { console.error("Sync failed:", e); }
        };
 
        // NAVIGATION ENGINE (Exposed to Global for onclick)
@@ -282,14 +289,48 @@ const { table } = Astro.params;
        };
 
        window.placeOrder = async () => {
-          toggleCart();
+          const currentTable = tablesData.find(t => t.table_number.toString() === table.toString());
+          if (!currentTable) return alert("System Error: Table configuration not found.");
+
+          const btn = document.querySelector('#floatingCart button');
+          const originalText = btn.innerText;
+          btn.innerText = "Sending...";
+          btn.disabled = true;
+
           const total = cart.reduce((acc, c)=>acc + (c.price*c.qty), 0);
-          document.getElementById('viewMenuHub').classList.add('hidden');
+          
           try {
-              const res = await fetch('/api/v2/restaurant/qr-orders', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ table, items: cart, total, mode: orderMode }) });
+              const res = await fetch('/api/v2/restaurant/orders', { 
+                  method: 'POST', 
+                  headers: {'Content-Type': 'application/json'}, 
+                  body: JSON.stringify({ 
+                      table_id: currentTable.id, 
+                      items: cart, 
+                      total, 
+                      mode: orderMode,
+                      status: 'pending_waiter'
+                  }) 
+              });
+              
               const data = await res.json();
-              if(data.success) { activeOrderId = data.order_id; localStorage.setItem('active_qr_order_' + table, activeOrderId); showTracker(); }
-          } catch(err) { window.location.reload(); }
+              
+              if(data.success || data.orderId) { 
+                  toggleCart();
+                  document.getElementById('viewMenuHub').classList.add('hidden');
+                  activeOrderId = data.orderId; 
+                  localStorage.setItem('active_qr_order_' + table, activeOrderId); 
+                  showTracker(); 
+              } else {
+                  alert("Order failed: " + (data.error || "Please try again."));
+                  btn.innerText = originalText;
+                  btn.disabled = false;
+              }
+          } catch(err) { 
+              console.error("Order error:", err);
+              alert("Connection error. Please try again.");
+              btn.innerText = originalText;
+              btn.disabled = false;
+          }
        };
 
        const showTracker = () => {
@@ -304,12 +345,12 @@ const { table } = Astro.params;
           const f = async () => {
               if(!activeOrderId) return;
               try {
-                  const res = await fetch(`/api/v2/restaurant/qr-orders?order_id=${activeOrderId}`);
-                  const { order } = await res.json();
-                  if(order) renderTrackerSteps(order.status, order.total_amount);
+                  const res = await fetch(`/api/v2/restaurant/orders/${activeOrderId}`);
+                  const order = await res.json();
+                  if(order && !order.error) renderTrackerSteps(order.status, order.total_amount);
               } catch(e) {}
           };
-          f(); pollInterval = setInterval(f, 3000);
+          f(); pollInterval = setInterval(f, 5000);
        };
 
        const renderTrackerSteps = (status, total) => {
@@ -336,7 +377,11 @@ const { table } = Astro.params;
        window.simulatePayment = async () => {
           if(!activeOrderId) return;
           document.querySelector('#paymentBox button').innerText = "Processing...";
-          await fetch('/api/v2/restaurant/qr-orders', { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ order_id: activeOrderId, status: 'paid' }) });
+          await fetch(`/api/v2/restaurant/orders/${activeOrderId}/status`, { 
+              method: 'PUT', 
+              headers: {'Content-Type':'application/json'}, 
+              body: JSON.stringify({ status: 'paid' }) 
+          });
        };
 
        window.submitFeedback = () => { localStorage.removeItem('active_qr_order_' + table); window.location.reload(); };
