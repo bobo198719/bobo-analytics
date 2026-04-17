@@ -2,6 +2,26 @@
 export const prerender = false;
 import "../../styles/restaurant.css";
 const { table } = Astro.params;
+
+// ⚡ SERVER-SIDE PRE-FETCH: Embed menu data directly in HTML for instant load
+let ssrMenuData = [];
+let ssrTablesData = [];
+
+try {
+    const origin = Astro.url.origin;
+    const [menuRes, tablesRes] = await Promise.all([
+        fetch(`${origin}/api/v2/restaurant/menu`),
+        fetch(`${origin}/api/v2/restaurant/tables`)
+    ]);
+    const rawMenu = await menuRes.json();
+    const rawTables = await tablesRes.json();
+    ssrMenuData = Array.isArray(rawMenu) ? rawMenu : [];
+    ssrTablesData = Array.isArray(rawTables) ? rawTables : [];
+} catch (e) {
+    // SSR fetch failed — client-side will do a fallback fetch
+    ssrMenuData = [];
+    ssrTablesData = [];
+}
 ---
 <html lang="en">
 <head>
@@ -166,19 +186,19 @@ const { table } = Astro.params;
         </div>
     </div>
 
-    <script define:vars={{ table }}>
-       let menuData = [];
+    <script define:vars={{ table, ssrMenuData, ssrTablesData }}>
+       // ⚡ INSTANT LOAD: Data pre-rendered server-side — zero client wait
+       let menuData = Array.isArray(ssrMenuData) ? ssrMenuData : [];
+       let tablesData = Array.isArray(ssrTablesData) ? ssrTablesData : [];
        let cart = [];
        let activeOrderId = localStorage.getItem('active_qr_order_' + table);
        let activeCategory = 'All';
        let searchQuery = '';
        let orderMode = '';
+       let dataReady = menuData.length > 0;
 
-       let tablesData = [];
-
-       let dataReady = false;
-
-       const fetchMenu = async () => {
+       // Silent background refresh for freshness (does NOT block UI)
+       const backgroundSync = async () => {
           try {
              const [menuRes, tablesRes] = await Promise.all([
                  fetch('/api/v2/restaurant/menu'),
@@ -186,24 +206,15 @@ const { table } = Astro.params;
              ]);
              const rawMenu = await menuRes.json();
              const rawTables = await tablesRes.json();
-
-             // Validate responses are arrays (not error objects)
-             menuData = Array.isArray(rawMenu) ? rawMenu : [];
-             tablesData = Array.isArray(rawTables) ? rawTables : [];
-             
+             if (Array.isArray(rawMenu) && rawMenu.length > 0) menuData = rawMenu;
+             if (Array.isArray(rawTables) && rawTables.length > 0) tablesData = rawTables;
              dataReady = true;
-
-             if (activeOrderId) showTracker();
-             
-             // If menu view is already visible (user clicked before data loaded), re-render now
+             // Silently refresh the visible menu grid
              if (!document.getElementById('viewMenuHub').classList.contains('hidden')) {
                 renderCategories();
                 renderMenu();
              }
-          } catch (e) { 
-             console.error("Sync failed:", e);
-             dataReady = true; // unblock even on error
-          }
+          } catch (e) { /* silent — SSR data still serves the page */ }
        };
 
        // NAVIGATION ENGINE (Exposed to Global for onclick)
@@ -417,7 +428,11 @@ const { table } = Astro.params;
 
        window.submitFeedback = () => { localStorage.removeItem('active_qr_order_' + table); window.location.reload(); };
 
-       fetchMenu();
+       // Boot: check for active order first, then sync in background
+       if (activeOrderId) {
+          showTracker();
+       }
+       backgroundSync(); // silent refresh in background
     </script>
 </body>
 </html>
