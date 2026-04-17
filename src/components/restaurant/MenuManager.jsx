@@ -20,7 +20,7 @@ import {
 import ImagePicker from './ImagePicker.jsx';
 
 const MenuManager = () => {
-  const [categories, setCategories] = useState(['All', 'Starters', 'Main Course', 'Beverages', 'Desserts']);
+  const [categories, setCategories] = useState(['All', 'Starters', 'Mains', 'Beverages', 'Desserts', 'Chef Specials']);
   const [activeCategory, setActiveCategory] = useState('All');
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -268,7 +268,9 @@ const MenuManager = () => {
                     className={`w-full text-left p-5 rounded-3xl font-black italic text-xs transition-all group flex justify-between items-center border ${activeCategory === cat ? 'bg-orange-600 border-orange-400 text-white shadow-lg shadow-orange-500/10' : 'bg-transparent border-white/5 text-white/20 hover:text-white hover:bg-white/5'}`}
                   >
                     <span className="tracking-widest uppercase">{cat}</span>
-                    <span className="text-[10px] bg-white/10 px-3 py-1.5 rounded-xl font-black">{items.filter(it => it.category === cat).length}</span>
+                    <span className="text-[10px] bg-white/10 px-3 py-1.5 rounded-xl font-black">
+                      {cat === 'All' ? items.length : items.filter(it => it.category === cat).length}
+                    </span>
                   </button>
                 ))}
                 <button className="w-full p-5 border-2 border-dashed border-white/5 rounded-3xl text-[10px] font-black uppercase tracking-widest text-white/10 hover:text-white/30 hover:border-white/10 transition-all italic">+ Custom Cluster</button>
