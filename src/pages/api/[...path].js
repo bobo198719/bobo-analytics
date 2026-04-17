@@ -700,9 +700,10 @@ export async function ALL({ request, params }) {
                 const filtered = Array.isArray(vpsData) ? vpsData.filter(r => !global.DELETED_MENU_IDS.has(String(r.id))) : vpsData;
                 return new Response(JSON.stringify(filtered), { status: 200, headers: { 'Content-Type': 'application/json' } });
             } catch (e2) {
-                // Last resort: return cached menu so UI doesn't go blank
-                const cached = (global.MENU_CACHE || []).filter(r => !global.DELETED_MENU_IDS.has(String(r.id)));
-                return new Response(JSON.stringify(cached), { status: 200, headers: { 'Content-Type': 'application/json' } });
+                // Last resort: return imported menu JSON so UI doesn't go blank
+                const baseData = (global.MENU_CACHE && global.MENU_CACHE.length > 0) ? global.MENU_CACHE : (menuItems || []);
+                const filtered = baseData.filter(r => !global.DELETED_MENU_IDS.has(String(r.id)));
+                return new Response(JSON.stringify(filtered), { status: 200, headers: { 'Content-Type': 'application/json' } });
             }
         }
     }
