@@ -176,25 +176,19 @@ const { table } = Astro.params;
 
        const fetchMenu = async () => {
           try {
-             // 1. Fetch data in backgrounds
              const res = await fetch('/api/v2/restaurant/menu');
              menuData = await res.json();
-             
-             // 2. Decide initial view
-             if (activeOrderId) {
-                showTracker();
-             }
-             // Otherwise wait for user to click "Order Food"
+             if (activeOrderId) showTracker();
           } catch (e) { console.error("Menu fetch failed:", e); }
        };
 
-       // NAVIGATION ENGINE
-       const goToModeSelector = () => {
+       // NAVIGATION ENGINE (Exposed to Global for onclick)
+       window.goToModeSelector = () => {
           document.getElementById('viewWelcome').classList.add('hidden');
           document.getElementById('viewModeSelector').classList.remove('hidden');
        };
 
-       const startOrdering = (mode) => {
+       window.startOrdering = (mode) => {
           orderMode = mode;
           document.getElementById('activeModeLabel').innerText = mode.replace('_',' ').toUpperCase() + ` • T-${table}`;
           document.getElementById('viewModeSelector').classList.add('hidden');
@@ -203,12 +197,12 @@ const { table } = Astro.params;
           renderMenu();
        };
 
-       const handleSearch = (val) => {
+       window.handleSearch = (val) => {
           searchQuery = val.toLowerCase();
           renderMenu();
        };
 
-       const setCategory = (cat) => {
+       window.setCategory = (cat) => {
           activeCategory = cat;
           renderCategories();
           renderMenu();
@@ -263,7 +257,7 @@ const { table } = Astro.params;
           `).join('');
        };
 
-       const addToCart = (id) => {
+       window.addToCart = (id) => {
           const item = menuData.find(i => i.id === id);
           if (!item) return;
           const ext = cart.find(c => c.id === id);
@@ -281,13 +275,13 @@ const { table } = Astro.params;
           document.getElementById('cartTotal').innerText = total;
        };
 
-       const toggleCart = () => {
+       window.toggleCart = () => {
           const el = document.getElementById('floatingCart');
           if (cart.length === 0 && !el.classList.contains('translate-y-0')) return alert("Empty basket");
           el.classList.toggle('translate-y-full'); el.classList.toggle('translate-y-0');
        };
 
-       const placeOrder = async () => {
+       window.placeOrder = async () => {
           toggleCart();
           const total = cart.reduce((acc, c)=>acc + (c.price*c.qty), 0);
           document.getElementById('viewMenuHub').classList.add('hidden');
@@ -339,13 +333,13 @@ const { table } = Astro.params;
           if (status === 'paid') { clearInterval(pollInterval); document.getElementById('paymentBox').classList.add('hidden'); document.getElementById('feedbackBox').classList.remove('hidden'); }
        };
 
-       const simulatePayment = async () => {
+       window.simulatePayment = async () => {
           if(!activeOrderId) return;
           document.querySelector('#paymentBox button').innerText = "Processing...";
           await fetch('/api/v2/restaurant/qr-orders', { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ order_id: activeOrderId, status: 'paid' }) });
        };
 
-       const submitFeedback = () => { localStorage.removeItem('active_qr_order_' + table); window.location.reload(); };
+       window.submitFeedback = () => { localStorage.removeItem('active_qr_order_' + table); window.location.reload(); };
 
        fetchMenu();
     </script>
