@@ -108,15 +108,13 @@ export async function POST({ request }) {
         persistToDb(order);
         await new Promise(r => setTimeout(r, 200));
 
-        // Attempt WS broadcast safely
+        // Proxy the broadcast via HTTP to the VPS instead so we don't hold the WS connection open
         try {
-            const WebSocket = await import('ws');
-            const ws = new WebSocket.default('ws://187.124.97.144:8080'); // Pointing WS out to LIVE explicitly
-            ws.on('open', () => {
-                ws.send(JSON.stringify({ type: 'NEW_ORDER', order }));
-                ws.close();
-            });
-            ws.on('error', () => {}); 
+            fetch('http://187.124.97.144:5000/api/v2/restaurant/admin/broadcast', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ type: 'NEW_ORDER', order })
+            }).catch(() => {});
         } catch(e) {}
 
         return new Response(JSON.stringify({ success: true, order_id: orderId }), {
@@ -139,13 +137,11 @@ export async function PATCH({ request }) {
             global.__QR_ORDERS__.set(order_id, order);
 
             try {
-                const WebSocket = await import('ws');
-                const ws = new WebSocket.default('ws://187.124.97.144:8080');
-                ws.on('open', () => {
-                    ws.send(JSON.stringify({ type: 'STATUS_CHANGE', order }));
-                    ws.close();
-                });
-                ws.on('error', () => {});
+                fetch('http://187.124.97.144:5000/api/v2/restaurant/admin/broadcast', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ type: 'STATUS_CHANGE', order })
+                }).catch(() => {});
             } catch(e) {}
         }
 
