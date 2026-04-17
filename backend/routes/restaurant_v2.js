@@ -7,6 +7,10 @@ const db = require('../mysql_db');
  * 1. MENU APIS
  */
 router.get('/menu', async (req, res) => {
+    const fs = require('fs');
+    const path = require('path');
+    const fallbackPath = path.join(__dirname, '../data/restaurant_menu.json');
+
     try {
         const { rows } = await db.query('SELECT * FROM menu_items ORDER BY category ASC');
         if (rows && rows.length > 0) {
@@ -14,29 +18,23 @@ router.get('/menu', async (req, res) => {
         }
         
         // Fallback to local JSON if DB is empty 
-        try {
-            const fs = require('fs');
-            const path = require('path');
-            const fallbackPath = path.join(__dirname, '../../src/data/restaurant_menu.json');
-            if (fs.existsSync(fallbackPath)) {
-                const localData = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
-                return res.json(localData);
-            }
-        } catch (e) {}
-        
+        if (fs.existsSync(fallbackPath)) {
+            const localData = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
+            return res.json(localData);
+        }
         res.json([]);
     } catch (err) { 
+        console.error("Menu DB Fail:", err.message);
         // Critical Fallback on DB Timeout/Error
         try {
-            const fs = require('fs');
-            const path = require('path');
-            const fallbackPath = path.join(__dirname, '../../src/data/restaurant_menu.json');
             if (fs.existsSync(fallbackPath)) {
                 const localData = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
                 return res.json(localData);
             }
-        } catch (e) {}
-        res.status(500).json({ error: err.message }); 
+        } catch (e) {
+            console.error("Critical Fallback Error:", e.message);
+        }
+        res.status(500).json({ error: "Catalog Offline - Syncing..." }); 
     }
 });
 
