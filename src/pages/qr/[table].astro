@@ -10,15 +10,15 @@ let ssrTablesData = [];
 try {
     const origin = Astro.url.origin;
     const [menuRes, tablesRes] = await Promise.all([
-        fetch(`${origin}/api/v2/restaurant/menu`),
-        fetch(`${origin}/api/v2/restaurant/tables`)
+        fetch(`${origin}/api/v2/restaurant/menu`, { signal: AbortSignal.timeout(2000) }),
+        fetch(`${origin}/api/v2/restaurant/tables`, { signal: AbortSignal.timeout(2000) })
     ]);
     const rawMenu = await menuRes.json();
     const rawTables = await tablesRes.json();
     ssrMenuData = Array.isArray(rawMenu) ? rawMenu : [];
     ssrTablesData = Array.isArray(rawTables) ? rawTables : [];
 } catch (e) {
-    // SSR fetch failed — client-side will do a fallback fetch
+    // SSR timed out or failed — client-side backgroundSync will load data
     ssrMenuData = [];
     ssrTablesData = [];
 }
