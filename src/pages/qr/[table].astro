@@ -76,12 +76,21 @@ const { table } = Astro.params;
 
     <!-- Client Logic -->
     <script define:vars={{ table }}>
-       const menuData = [
-          { id: 1, name: "Truffle Mushroom Risotto", desc: "Creamy arborio rice with wild mushrooms and truffle oil.", price: 650, img: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&q=80&w=400" },
-          { id: 2, name: "Spicy Tuna Tartare", desc: "Fresh raw tuna with spices and avocado.", price: 450, img: "https://images.unsplash.com/photo-1541544741938-0af808871cc0?auto=format&fit=crop&q=80&w=400" },
-          { id: 3, name: "Artisan Margherita", desc: "Wood-fired crust, San Marzano tomatoes, fresh mozzarella.", price: 550, img: "https://images.unsplash.com/photo-1604068549290-dea0e4a30536?auto=format&fit=crop&q=80&w=400" },
-          { id: 4, name: "Wagyu Beef Burger", desc: "Premium wagyu patty with caramelized onions and brioche bun.", price: 950, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=400" }
-       ];
+       let menuData = [];
+
+       const fetchMenu = async () => {
+          try {
+             const res = await fetch('/api/v2/restaurant/menu');
+             menuData = await res.json();
+             if (activeOrderId) {
+                showTracker();
+             } else {
+                renderMenu();
+             }
+          } catch (e) {
+             console.error("Menu fetch failed:", e);
+          }
+       };
 
        let cart = [];
        let activeOrderId = localStorage.getItem('active_qr_order_' + table);
@@ -90,27 +99,23 @@ const { table } = Astro.params;
           if (activeOrderId) {
              showTracker();
           } else {
-             renderMenu();
-          }
-       };
-
        const renderMenu = () => {
           const c = document.getElementById('viewMenu');
-          c.innerHTML = menuData.map(item => `
-             <div class="bg-[#222] border border-[#333] rounded-2xl overflow-hidden flex shadow-lg">
-                <img src="${item.img}" class="w-28 object-cover" />
-                <div class="p-4 flex-1 flex flex-col justify-between">
-                   <div>
-                      <h4 class="font-black uppercase leading-tight text-sm mb-1">${item.name}</h4>
-                      <p class="text-[10px] text-white/50 leading-tight">${item.desc}</p>
-                   </div>
-                   <div class="flex justify-between items-center mt-3">
-                      <span class="text-orange-400 font-black">₹${item.price}</span>
-                      <button onclick="addToCart(${item.id})" class="bg-[#333] hover:bg-orange-500 w-8 h-8 rounded-lg flex items-center justify-center font-black transition-colors">+</button>
-                   </div>
-                </div>
-             </div>
-          `).join('');
+           c.innerHTML = menuData.map(item => `
+              <div class="bg-[#222] border border-[#333] rounded-2xl overflow-hidden flex shadow-lg">
+                 <img src="${item.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300'}" class="w-28 object-cover" />
+                 <div class="p-4 flex-1 flex flex-col justify-between">
+                    <div>
+                       <h4 class="font-black uppercase leading-tight text-sm mb-1">${item.name}</h4>
+                       <p class="text-[10px] text-white/50 leading-tight">${item.description || item.name}</p>
+                    </div>
+                    <div class="flex justify-between items-center mt-3">
+                       <span class="text-orange-400 font-black">₹${item.price}</span>
+                       <button onclick="addToCart(${item.id})" class="bg-[#333] hover:bg-orange-500 w-8 h-8 rounded-lg flex items-center justify-center font-black transition-colors">+</button>
+                    </div>
+                 </div>
+              </div>
+           `).join('');
        };
 
        const addToCart = (id) => {
@@ -263,7 +268,7 @@ const { table } = Astro.params;
           window.location.reload();
        };
 
-       init();
+       fetchMenu();
     </script>
 </body>
 </html>
