@@ -5,25 +5,15 @@ export async function GET({ params }) {
     try {
         const mysql = await import('mysql2/promise');
         const db = await mysql.createConnection({
-            host: 'srv1449576.hstgr.cloud', user: 'bobo_admin', password: 'BoboPass2026!', database: 'bobo_analytics', connectTimeout: 8000
+            host: 'srv1449576.hstgr.cloud', user: 'bobo_admin', password: 'BoboPass2026!', database: 'bobo_analytics', connectTimeout: 25000
         });
         
         const [rows] = await db.query('SELECT o.*, t.table_number FROM restaurant_orders o JOIN restaurant_tables t ON o.table_id = t.id WHERE o.id = ?', [id]);
         db.end();
         
         if (!rows.length) return new Response(JSON.stringify({ error: "Order not found" }), { status: 404, headers: {'Content-Type': 'application/json'} });
-        
-        // Save to global memory for redundancy
-        if (!global.__VERCEL_ORDERS__) global.__VERCEL_ORDERS__ = [];
-        const idx = global.__VERCEL_ORDERS__.findIndex(x => x.id === rows[0].id);
-        if (idx >= 0) global.__VERCEL_ORDERS__[idx] = rows[0]; else global.__VERCEL_ORDERS__.push(rows[0]);
-        
         return new Response(JSON.stringify(rows[0]), { status: 200, headers: {'Content-Type': 'application/json'} });
     } catch(err) {
-        if (global.__VERCEL_ORDERS__) {
-            const memOrder = global.__VERCEL_ORDERS__.find(o => String(o.id) === String(id));
-            if (memOrder) return new Response(JSON.stringify(memOrder), { status: 200, headers: {'Content-Type': 'application/json'} });
-        }
         return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: {'Content-Type': 'application/json'} });
     }
 }
@@ -36,7 +26,7 @@ export async function PATCH({ params, request }) {
         
         const mysql = await import('mysql2/promise');
         const db = await mysql.createConnection({
-            host: 'srv1449576.hstgr.cloud', user: 'bobo_admin', password: 'BoboPass2026!', database: 'bobo_analytics', connectTimeout: 8000
+            host: 'srv1449576.hstgr.cloud', user: 'bobo_admin', password: 'BoboPass2026!', database: 'bobo_analytics', connectTimeout: 25000
         });
         
         await db.query('UPDATE restaurant_orders SET status = ? WHERE id = ?', [status, id]);
@@ -48,26 +38,9 @@ export async function PATCH({ params, request }) {
         const [rows] = await db.query('SELECT * FROM restaurant_orders WHERE id = ?', [id]);
         db.end();
         
-        // Save to global memory
-        if (!global.__VERCEL_ORDERS__) global.__VERCEL_ORDERS__ = [];
         const finalObj = rows[0] || { success: true, status };
-        if (rows[0]) {
-            const idx = global.__VERCEL_ORDERS__.findIndex(x => x.id === rows[0].id);
-            if (idx >= 0) global.__VERCEL_ORDERS__[idx] = rows[0]; else global.__VERCEL_ORDERS__.push(rows[0]);
-        }
-        
         return new Response(JSON.stringify(finalObj), { status: 200, headers: {'Content-Type': 'application/json'} });
     } catch(err) {
-        if (global.__VERCEL_ORDERS__) {
-            const memOrder = global.__VERCEL_ORDERS__.find(o => String(o.id) === String(id));
-            if (memOrder) {
-                try {
-                    const reqBody = await request.clone().json();
-                    if (reqBody.status) memOrder.status = reqBody.status;
-                } catch(e) {}
-                return new Response(JSON.stringify(memOrder), { status: 200, headers: {'Content-Type': 'application/json'} });
-            }
-        }
         return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: {'Content-Type': 'application/json'} });
     }
 }

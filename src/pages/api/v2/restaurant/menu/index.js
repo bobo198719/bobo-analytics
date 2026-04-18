@@ -4,7 +4,7 @@ export async function GET({ request }) {
     try {
         const mysql = await import('mysql2/promise');
         const db = await mysql.createConnection({
-            host: 'srv1449576.hstgr.cloud', user: 'bobo_admin', password: 'BoboPass2026!', database: 'bobo_analytics', connectTimeout: 8000
+            host: 'srv1449576.hstgr.cloud', user: 'bobo_admin', password: 'BoboPass2026!', database: 'bobo_analytics', connectTimeout: 25000
         });
         
         await db.query(`CREATE TABLE IF NOT EXISTS restaurant_menu (
@@ -46,7 +46,7 @@ export async function POST({ request }) {
         
         const mysql = await import('mysql2/promise');
         const db = await mysql.createConnection({
-            host: 'srv1449576.hstgr.cloud', user: 'bobo_admin', password: 'BoboPass2026!', database: 'bobo_analytics', connectTimeout: 8000
+            host: 'srv1449576.hstgr.cloud', user: 'bobo_admin', password: 'BoboPass2026!', database: 'bobo_analytics', connectTimeout: 25000
         });
         
         const [result] = await db.query(

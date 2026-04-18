@@ -1,14 +1,13 @@
 export const prerender = false;
 
 export async function GET({ request, url }) {
-    if (!global.__VERCEL_ORDERS__) global.__VERCEL_ORDERS__ = [];
     const status = new URL(url).searchParams.get('status');
     const active_only = new URL(url).searchParams.get('active_only');
     
     try {
         const mysql = await import('mysql2/promise');
         const db = await mysql.createConnection({
-            host: 'srv1449576.hstgr.cloud', user: 'bobo_admin', password: 'BoboPass2026!', database: 'bobo_analytics', connectTimeout: 800
+            host: 'srv1449576.hstgr.cloud', user: 'bobo_admin', password: 'BoboPass2026!', database: 'bobo_analytics', connectTimeout: 25000
         });
         
         let q = 'SELECT o.*, t.table_number FROM restaurant_orders o JOIN restaurant_tables t ON o.table_id = t.id';
@@ -17,22 +16,9 @@ export async function GET({ request, url }) {
         if (active_only) { q += " WHERE o.status NOT IN ('completed', 'paid', 'rejected')"; }
         q += ' ORDER BY o.created_at DESC';
         
-        const [rows] = await db.query(q, params);
-        db.end();
-        
-        // Update local memory with live DB data for redundancy
-        rows.forEach(r => {
-            const idx = global.__VERCEL_ORDERS__.findIndex(x => x.id === r.id);
-            if (idx >= 0) global.__VERCEL_ORDERS__[idx] = r;
-            else global.__VERCEL_ORDERS__.push(r);
-        });
-        
         return new Response(JSON.stringify(rows), { status: 200, headers: {'Content-Type': 'application/json'} });
     } catch(err) {
-        let mem = global.__VERCEL_ORDERS__;
-        if (status) mem = mem.filter(o => o.status === status);
-        if (active_only) mem = mem.filter(o => !['completed', 'paid', 'rejected'].includes(o.status));
-        return new Response(JSON.stringify(mem.reverse()), { status: 200, headers: {'Content-Type': 'application/json'} });
+        return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: {'Content-Type': 'application/json'} });
     }
 }
 
@@ -43,7 +29,7 @@ export async function POST({ request }) {
         
         const mysql = await import('mysql2/promise');
         const db = await mysql.createConnection({
-            host: 'srv1449576.hstgr.cloud', user: 'bobo_admin', password: 'BoboPass2026!', database: 'bobo_analytics', connectTimeout: 8000
+            host: 'srv1449576.hstgr.cloud', user: 'bobo_admin', password: 'BoboPass2026!', database: 'bobo_analytics', connectTimeout: 25000
         });
         
         await db.query("START SESSION"); // Fake start transaction to keep compatibility
@@ -69,31 +55,6 @@ export async function POST({ request }) {
         
         return new Response(JSON.stringify({ success: true, orderId: result.insertId, total: total + gst, status }), { status: 200, headers: {'Content-Type': 'application/json'} });
     } catch(err) {
-        const body = await request.clone().json().catch(()=>({}));
-        const { table_id, items, special_notes, status = 'pending_waiter' } = body;
-        
-        const processedItems = (items || []).map(it => ({
-            ...it,
-            price: parseFloat(it.price || it.menu_item_price || 0),
-            total: (it.quantity || it.qty || 1) * parseFloat(it.price || it.menu_item_price || 0)
-        }));
-        const total = processedItems.reduce((acc, it) => acc + (it.total || 0), 0);
-        
-        const fakeId = Date.now() % 100000;
-        const fakeOrder = {
-            id: fakeId,
-            table_id: parseInt(table_id || 1),
-            table_number: String(table_id || 1),
-            status: status,
-            total_amount: total * 1.05,
-            items: JSON.stringify(processedItems),
-            special_notes: special_notes || '',
-            created_at: new Date().toISOString()
-        };
-        
-        if (!global.__VERCEL_ORDERS__) global.__VERCEL_ORDERS__ = [];
-        global.__VERCEL_ORDERS__.push(fakeOrder);
-        
-        return new Response(JSON.stringify({ success: true, orderId: fakeId, total: total * 1.05, status }), { status: 200, headers: {'Content-Type': 'application/json'} });
+        return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: {'Content-Type': 'application/json'} });
     }
 }

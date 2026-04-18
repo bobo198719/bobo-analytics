@@ -7,7 +7,7 @@ const DB_CONFIG = {
     user: 'bobo_admin',
     password: 'BoboPass2026!',
     database: 'bobo_analytics',
-    connectTimeout: 800, // FAST FAILURE
+    connectTimeout: 25000, // FAST FAILURE
 };
 
 const persistToDb = async (order) => {

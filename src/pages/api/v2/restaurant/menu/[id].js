@@ -3,7 +3,7 @@ export const prerender = false;
 const getConn = async () => {
     const mysql = await import('mysql2/promise');
     return mysql.createConnection({
-        host: 'srv1449576.hstgr.cloud', user: 'bobo_admin', password: 'BoboPass2026!', database: 'bobo_analytics', connectTimeout: 8000
+        host: 'srv1449576.hstgr.cloud', user: 'bobo_admin', password: 'BoboPass2026!', database: 'bobo_analytics', connectTimeout: 25000
     });
 };
 
