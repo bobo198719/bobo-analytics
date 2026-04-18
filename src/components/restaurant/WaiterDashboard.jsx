@@ -41,13 +41,13 @@ export default function WaiterDashboard() {
     }
   };
 
-  const rejectOrder = async (orderId) => {
+    const rejectOrder = async (orderId) => {
     if (!confirm("Reject this order request?")) return;
     try {
-      await fetch(`/api/v2/restaurant/qr-orders`, {
+      await fetch(`/api/v2/restaurant/orders/${orderId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ order_id: orderId, status: 'rejected' })
+        body: JSON.stringify({ status: 'rejected' })
       });
       setOrders(prev => prev.filter(o => o.id !== orderId));
     } catch (err) {
