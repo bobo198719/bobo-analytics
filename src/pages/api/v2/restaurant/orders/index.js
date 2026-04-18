@@ -7,7 +7,7 @@ export async function GET({ request, url }) {
     try {
         const mysql = await import('mysql2/promise');
         const db = await mysql.createConnection({
-            host: 'srv1449576.hstgr.cloud', user: 'bobo_admin', password: 'BoboPass2026!', database: 'bobo_analytics', connectTimeout: 25000
+            host: 'srv1449576.hstgr.cloud', user: 'bobo_admin', password: 'BoboPass2026!', database: 'bobo_analytics', connectTimeout: 4000
         });
         
         let q = 'SELECT o.*, t.table_number FROM restaurant_orders o JOIN restaurant_tables t ON o.table_id = t.id';
@@ -17,6 +17,9 @@ export async function GET({ request, url }) {
         q += ' ORDER BY o.created_at DESC';
         
         if (!global.__VERCEL_ORDERS__) global.__VERCEL_ORDERS__ = [];
+        
+        const [rows] = await db.query(q, params);
+        db.end();
         
         return new Response(JSON.stringify(rows), { status: 200, headers: {'Content-Type': 'application/json'} });
     } catch(err) {
@@ -36,7 +39,7 @@ export async function POST({ request }) {
         
         const mysql = await import('mysql2/promise');
         const db = await mysql.createConnection({
-            host: 'srv1449576.hstgr.cloud', user: 'bobo_admin', password: 'BoboPass2026!', database: 'bobo_analytics', connectTimeout: 25000
+            host: 'srv1449576.hstgr.cloud', user: 'bobo_admin', password: 'BoboPass2026!', database: 'bobo_analytics', connectTimeout: 4000
         });
         
         await db.query("START SESSION"); // Fake start transaction to keep compatibility
