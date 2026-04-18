@@ -141,12 +141,11 @@ export async function ALL({ request, params }) {
     if (pathname.includes('/diag/logs')) {
         return new Response(JSON.stringify(global.RESCUE_LOGS || []), { status: 200, headers: {'Content-Type': 'application/json'} });
     }
-
+    // Stop proxying restaurant namespace to Hostinger, let native Vercel API handle it
+    if (pathname.includes('/api/v2/restaurant')) return undefined;
+    
     // Only intercept paths that should go to the Hostinger API
     if (!pathname.includes('/api/')) return undefined;
-    if (pathname.includes('/api/v2/') && !pathname.includes('/api/v2/restaurant')) {
-        return undefined;
-    }
 
     // 📦 PRE-READ BODY (CRITICAL: FIXES 503 STREAM CONFLICT)
     let bodyText = "";

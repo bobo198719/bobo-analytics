@@ -1,0 +1,59 @@
+export const prerender = false;
+
+export async function GET({ request, url }) {
+    try {
+        const status = new URL(url).searchParams.get('status');
+        const mysql = await import('mysql2/promise');
+        const db = await mysql.createConnection({
+            host: 'srv1449576.hstgr.cloud', user: 'bobo_admin', password: 'BoboPass2026!', database: 'bobo_analytics', connectTimeout: 8000
+        });
+        
+        let q = 'SELECT o.*, t.table_number FROM restaurant_orders o JOIN restaurant_tables t ON o.table_id = t.id';
+        const params = [];
+        if (status) { q += ' WHERE o.status = ?'; params.push(status); }
+        q += ' ORDER BY o.created_at DESC';
+        
+        const [rows] = await db.query(q, params);
+        db.end();
+        return new Response(JSON.stringify(rows), { status: 200, headers: {'Content-Type': 'application/json'} });
+    } catch(err) {
+        return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: {'Content-Type': 'application/json'} });
+    }
+}
+
+export async function POST({ request }) {
+    try {
+        const body = await request.json();
+        const { table_id, items, special_notes, status = 'pending_waiter' } = body;
+        
+        const mysql = await import('mysql2/promise');
+        const db = await mysql.createConnection({
+            host: 'srv1449576.hstgr.cloud', user: 'bobo_admin', password: 'BoboPass2026!', database: 'bobo_analytics', connectTimeout: 8000
+        });
+        
+        await db.query("START SESSION"); // Fake start transaction to keep compatibility
+        
+        const processedItems = (items || []).map(it => ({
+            ...it,
+            price: parseFloat(it.price || it.menu_item_price || 0),
+            total: (it.quantity || it.qty || 1) * parseFloat(it.price || it.menu_item_price || 0),
+            id: it.menu_item_id || it.id,
+            menu_name: it.menu_name || it.name
+        }));
+        
+        const total = processedItems.reduce((acc, it) => acc + (it.total || 0), 0);
+        const gst = total * 0.05;
+        
+        const [result] = await db.query(
+            'INSERT INTO restaurant_orders (table_id, status, total_amount, gst_amount, special_notes, items) VALUES (?, ?, ?, ?, ?, ?)',
+            [parseInt(table_id), status, total + gst, gst, special_notes || '', JSON.stringify(processedItems)]
+        );
+        
+        await db.query("UPDATE restaurant_tables SET status = 'occupied' WHERE id = ?", [parseInt(table_id)]);
+        db.end();
+        
+        return new Response(JSON.stringify({ success: true, orderId: result.insertId, total: total + gst, status }), { status: 200, headers: {'Content-Type': 'application/json'} });
+    } catch(err) {
+        return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: {'Content-Type': 'application/json'} });
+    }
+}
