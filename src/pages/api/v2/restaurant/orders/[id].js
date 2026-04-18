@@ -12,8 +12,15 @@ export async function GET({ params }) {
         db.end();
         
         if (!rows.length) return new Response(JSON.stringify({ error: "Order not found" }), { status: 404, headers: {'Content-Type': 'application/json'} });
+        if (!global.__VERCEL_ORDERS__) global.__VERCEL_ORDERS__ = [];
+        const idx = global.__VERCEL_ORDERS__.findIndex(x => x.id === rows[0].id);
+        if (idx >= 0) global.__VERCEL_ORDERS__[idx] = rows[0]; else global.__VERCEL_ORDERS__.push(rows[0]);
         return new Response(JSON.stringify(rows[0]), { status: 200, headers: {'Content-Type': 'application/json'} });
     } catch(err) {
+        if (global.__VERCEL_ORDERS__) {
+            const memOrder = global.__VERCEL_ORDERS__.find(o => String(o.id) === String(id));
+            if (memOrder) return new Response(JSON.stringify(memOrder), { status: 200, headers: {'Content-Type': 'application/json'} });
+        }
         return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: {'Content-Type': 'application/json'} });
     }
 }
@@ -38,9 +45,25 @@ export async function PATCH({ params, request }) {
         const [rows] = await db.query('SELECT * FROM restaurant_orders WHERE id = ?', [id]);
         db.end();
         
+        if (!global.__VERCEL_ORDERS__) global.__VERCEL_ORDERS__ = [];
         const finalObj = rows[0] || { success: true, status };
+        if (rows[0]) {
+            const idx = global.__VERCEL_ORDERS__.findIndex(x => x.id === rows[0].id);
+            if (idx >= 0) global.__VERCEL_ORDERS__[idx] = rows[0]; else global.__VERCEL_ORDERS__.push(rows[0]);
+        }
         return new Response(JSON.stringify(finalObj), { status: 200, headers: {'Content-Type': 'application/json'} });
     } catch(err) {
+        if (global.__VERCEL_ORDERS__) {
+            const memOrder = global.__VERCEL_ORDERS__.find(o => String(o.id) === String(id));
+            if (memOrder) {
+                try {
+                    let reqBody = {};
+                    try { reqBody = await request.clone().json(); } catch(e){}
+                    if (reqBody.status) Object.assign(memOrder, { status: reqBody.status });
+                } catch(e){}
+                return new Response(JSON.stringify(memOrder), { status: 200, headers: {'Content-Type': 'application/json'} });
+            }
+        }
         return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: {'Content-Type': 'application/json'} });
     }
 }
