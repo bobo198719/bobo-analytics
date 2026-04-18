@@ -5,7 +5,7 @@ const getConn = async () => mysql.createConnection({
     user: 'bobo_admin',
     password: 'BoboPass2026!',
     database: 'bobo_analytics',
-    connectTimeout: 4000 // ⚡ FAILING FAST: 800ms timeout block instead of 8 seconds
+    connectTimeout: 200 // ⚡ FAILING FAST: 800ms timeout block instead of 8 seconds
 });
 
 export async function GET({ request }) {

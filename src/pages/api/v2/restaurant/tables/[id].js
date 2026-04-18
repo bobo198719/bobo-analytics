@@ -5,7 +5,7 @@ const getConn = async () => mysql.createConnection({
     user: 'bobo_admin',
     password: 'BoboPass2026!',
     database: 'bobo_analytics',
-    connectTimeout: 4000
+    connectTimeout: 200
 });
 
 export async function DELETE({ params }) {
