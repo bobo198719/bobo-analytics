@@ -78,8 +78,59 @@ import "../styles/restaurant.css";
 
 </RestaurantOSLayout>
 
+<script is:inline>
+     // --- TERMINAL HUB NAVIGATION HEARTBEAT (100ms) ---
+     (function initializeTerminalSync() {
+        console.log("🔓 TERMINAL SYNC ACTIVE: Listening for Node Shifts");
+        const initialRole = localStorage.getItem('ro_role') || 'owner';
+        const dH = initialRole === 'waiter' ? 'pos' : initialRole === 'chef' ? 'kitchen' : 'dashboard';
 
+        function syncTerminalViewState() {
+            let h;
+            try { 
+                h = window.location.hash.substring(1) || dH;
+            } catch(e) { h = 'dashboard'; }
+            
+            const targetId = h + 'Section';
+            const allNodes = document.querySelectorAll('[data-section-node]');
+            
+            if (allNodes.length > 0) {
+                allNodes.forEach(node => {
+                    if (node.id === targetId) {
+                        node.style.setProperty('display', 'block', 'important');
+                        node.style.setProperty('opacity', '1', 'important');
+                        node.style.setProperty('visibility', 'visible', 'important');
+                        node.style.setProperty('pointer-events', 'auto', 'important');
+                        node.classList.remove('hidden');
+                    } else {
+                        node.style.setProperty('display', 'none', 'important');
+                        node.style.setProperty('opacity', '0', 'important');
+                        node.style.setProperty('visibility', 'hidden', 'important');
+                        node.style.setProperty('pointer-events', 'none', 'important');
+                        node.classList.add('hidden');
+                    }
+                });
+            }
 
-<style is:global>
-  .section.hidden { display: none; }
-</style>
+            // Sync Sidebar Links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                const href = link.getAttribute('href');
+                const iA = href && (href.includes('#' + h) || (h === 'dashboard' && href.endsWith('dashboard')));
+                link.classList.toggle('active', !!iA);
+            });
+            
+            document.body.classList.toggle('pos-active-mode', h === 'pos');
+        }
+
+        setInterval(syncTerminalViewState, 100);
+        window.addEventListener('hashchange', syncTerminalViewState);
+        document.addEventListener('DOMContentLoaded', syncTerminalViewState);
+        syncTerminalViewState();
+
+        // Control Exports
+        window.switchToSection = (t) => { window.location.hash = t; };
+        window.toggleBranchMenu = () => { document.getElementById('branchMenu')?.classList.toggle('opacity-100'); };
+        window.toggleRoleMenu = () => { document.getElementById('roleMenu')?.classList.toggle('opacity-100'); };
+        window.setAccessMode = (r, d) => { localStorage.setItem('ro_role', r); localStorage.setItem('ro_role_display', d); window.location.reload(); };
+     })();
+</script>
