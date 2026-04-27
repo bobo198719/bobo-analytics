@@ -149,8 +149,12 @@ try {
         <!-- Live Status Tracking View -->
         <div id="viewTracker" class="hidden p-6">
             <h2 class="text-3xl font-black uppercase text-center mb-8 italic">Order Tracker</h2>
-            <div class="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-white/20 before:to-transparent">
-                <div class="flex flex-col items-center justify-center py-10 gap-4 opacity-50 relative z-10"><div class="w-8 h-8 border-4 border-white/10 border-t-orange-500 rounded-full animate-spin"></div><p class="text-[10px] font-black uppercase tracking-widest text-white">Locating Order...</p></div>
+            <div id="trackerSteps" class="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-white/20 before:to-transparent">
+                <div class="flex flex-col items-center justify-center py-10 gap-4 opacity-50 relative z-10">
+                    <div class="w-8 h-8 border-4 border-white/10 border-t-orange-500 rounded-full animate-spin"></div>
+                    <p class="text-[10px] font-black uppercase tracking-widest text-white">Locating Order...</p>
+                    <button onclick="localStorage.removeItem('active_qr_order_' + table); window.location.reload();" class="mt-4 px-4 py-2 border border-white/10 rounded-xl text-[8px] font-black uppercase">Refresh Menu</button>
+                </div>
             </div>
             
             <div id="paymentBox" class="hidden mt-12 bg-[#222] p-6 border border-[#333] rounded-2xl shadow-xl shadow-orange-500/10">
@@ -198,8 +202,8 @@ try {
        let searchQuery = '';
        let orderMode = '';
        let dataReady = menuData.length > 0;
+       let pollAttempts = 0;
 
-       // Silent background refresh for freshness (does NOT block UI)
        const backgroundSync = async () => {
           try {
              const [menuRes, tablesRes] = await Promise.all([
@@ -211,15 +215,13 @@ try {
              if (Array.isArray(rawMenu) && rawMenu.length > 0) menuData = rawMenu;
              if (Array.isArray(rawTables) && rawTables.length > 0) tablesData = rawTables;
              dataReady = true;
-             // Silently refresh the visible menu grid
              if (!document.getElementById('viewMenuHub').classList.contains('hidden')) {
                 renderCategories();
                 renderMenu();
              }
-          } catch (e) { /* silent — SSR data still serves the page */ }
+          } catch (e) { }
        };
 
-       // NAVIGATION ENGINE (Exposed to Global for onclick)
        window.goToModeSelector = () => {
           document.getElementById('viewWelcome').classList.add('hidden');
           document.getElementById('viewModeSelector').classList.remove('hidden');
@@ -230,34 +232,11 @@ try {
           document.getElementById('activeModeLabel').innerText = mode.replace('_',' ').toUpperCase() + ` • T-${table}`;
           document.getElementById('viewModeSelector').classList.add('hidden');
           document.getElementById('viewMenuHub').classList.remove('hidden');
-
-          if (dataReady && menuData.length > 0) {
-             // Data already loaded — render immediately
-             renderCategories();
-             renderMenu();
-          } else {
-             // Data still loading — show spinner and wait
-             const grid = document.getElementById('menuItemsGrid');
-             if (grid) grid.innerHTML = `
-                <div class="flex flex-col items-center justify-center py-24 gap-6">
-                   <div class="w-12 h-12 border-4 border-white/10 border-t-orange-500 rounded-full animate-spin"></div>
-                   <p class="text-xs font-black uppercase tracking-widest text-white/30 italic">Loading Menu...</p>
-                </div>
-             `;
-             // fetchMenu() will re-render once complete (handled above)
-          }
+          if (dataReady) { renderCategories(); renderMenu(); }
        };
 
-       window.handleSearch = (val) => {
-          searchQuery = val.toLowerCase();
-          renderMenu();
-       };
-
-       window.setCategory = (cat) => {
-          activeCategory = cat;
-          renderCategories();
-          renderMenu();
-       };
+       window.handleSearch = (val) => { searchQuery = val.toLowerCase(); renderMenu(); };
+       window.setCategory = (cat) => { activeCategory = cat; renderCategories(); renderMenu(); };
 
        const renderCategories = () => {
           const bar = document.getElementById('categoryBar');
@@ -273,35 +252,24 @@ try {
        };
 
        const renderMenu = () => {
-          const c = document.getElementById('menuItemsGrid');
-          if (!c) return;
-          if (menuData.length === 0) { c.innerHTML = `<div class="p-8 text-center text-white/30 font-black italic uppercase">Synchronizing...</div>`; return; }
-
+          const c = document.getElementById('menuItemsGrid'); if (!c) return;
           const filtered = menuData.filter(item => {
              const matchesCat = activeCategory === 'All' || item.category === activeCategory;
              return matchesCat && (item.name.toLowerCase().includes(searchQuery) || (item.description || '').toLowerCase().includes(searchQuery));
           });
-
           c.innerHTML = filtered.map(item => `
              <div class="bg-white/5 border border-white/5 rounded-3xl overflow-hidden flex shadow-2xl p-2 group">
                 <div class="relative w-24 h-24 rounded-2xl overflow-hidden shrink-0">
-                    <img src="${item.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300'}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <img src="${item.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300'}" class="w-full h-full object-cover" />
                 </div>
                 <div class="p-3 pl-4 flex-1 flex flex-col justify-between">
                    <div>
-                      <div class="flex justify-between items-start gap-2">
-                          <h4 class="font-black italic uppercase leading-none text-xs mb-1 line-clamp-2">${item.name}</h4>
-                          <span class="bg-emerald-500/10 text-emerald-500 text-[8px] font-black px-1.5 py-0.5 rounded italic">VEG</span>
-                      </div>
+                      <h4 class="font-black italic uppercase leading-none text-xs mb-1 line-clamp-2">${item.name}</h4>
                       <p class="text-[9px] text-white/30 leading-tight line-clamp-2 mt-1">${item.description || item.name}</p>
                    </div>
                    <div class="flex justify-between items-end mt-2">
-                      <div class="flex flex-col">
-                          <span class="text-[8px] text-white/20 font-black uppercase">Price</span>
-                          <span class="text-orange-500 font-black text-sm italic">₹${item.price}</span>
-                      </div>
-                      <button onclick="addToCart(${item.id})" class="bg-white text-black hover:bg-orange-500 hover:text-white w-8 h-8 rounded-xl flex items-center justify-center font-black transition-all shadow-lg active:scale-90">+</button>
+                       <span class="text-orange-500 font-black text-sm italic">₹${item.price}</span>
+                       <button onclick="addToCart(${item.id})" class="bg-white text-black w-8 h-8 rounded-xl flex items-center justify-center font-black">+</button>
                    </div>
                 </div>
              </div>
@@ -309,10 +277,8 @@ try {
        };
 
        window.addToCart = (id) => {
-          const item = menuData.find(i => i.id === id);
-          if (!item) return;
-          const ext = cart.find(c => c.id === id);
-          if(ext) ext.qty++; else cart.push({...item, qty:1});
+          const item = menuData.find(i => i.id === id); if (!item) return;
+          const ext = cart.find(c => c.id === id); if(ext) ext.qty++; else cart.push({...item, qty:1});
           updateCartUI();
        };
 
@@ -322,8 +288,7 @@ try {
           if(totalQty > 0) { badge.classList.remove('hidden'); badge.innerText = totalQty; } else { badge.classList.add('hidden'); }
           const c = document.getElementById('cartItems');
           c.innerHTML = cart.map(i => `<div class="flex justify-between items-center text-sm font-bold border-b border-white/5 pb-2"><span>${i.name} (x${i.qty})</span><span>₹${i.price * i.qty}</span></div>`).join('');
-          const total = cart.reduce((acc, c)=>acc + (c.price*c.qty), 0);
-          document.getElementById('cartTotal').innerText = total;
+          document.getElementById('cartTotal').innerText = cart.reduce((acc, c)=>acc + (c.price*c.qty), 0);
        };
 
        window.toggleCart = () => {
@@ -334,82 +299,32 @@ try {
 
        window.placeOrder = async () => {
           const btn = document.querySelector('#floatingCart button');
-          const originalText = btn.innerText;
-          btn.innerText = "Sending...";
-          btn.disabled = true;
-
+          btn.innerText = "Sending..."; btn.disabled = true;
           try {
-              // Ensure tables are loaded — fetch on-demand if SSR failed
-              if (tablesData.length === 0) {
-                 const tr = await fetch('/api/v2/restaurant/tables');
-                 const raw = await tr.json();
-                 if (Array.isArray(raw)) tablesData = raw;
-              }
-
-              // Resolve table_id: match by table number, or use the URL param as-is
-              let tableId = null;
-              const found = tablesData.find(t => t.table_number != null && t.table_number.toString() === table.toString());
-              if (found) {
-                 tableId = found.id;
-              } else {
-                 // Graceful fallback: try using numeric value of table directly
-                 tableId = parseInt(table) || 1;
-                 console.warn('Table lookup miss — using fallback id:', tableId);
-              }
-
               const total = cart.reduce((acc, c) => acc + (c.price * c.qty), 0);
-
               const res = await fetch('/api/v2/restaurant/qr-orders', {
                   method: 'POST',
                   headers: {'Content-Type': 'application/json'},
-                  body: JSON.stringify({
-                      table: table,
-                      items: cart,
-                      total: total,
-                      status: 'placed'
-                  })
+                  body: JSON.stringify({ table, items: cart, total, status: 'placed' })
               });
-
               const data = await res.json();
-
               if (data.success || data.order_id) {
                   toggleCart();
                   document.getElementById('viewMenuHub').classList.add('hidden');
                   activeOrderId = data.order_id;
                   localStorage.setItem('active_qr_order_' + table, activeOrderId);
-                  
-                  // OPTIMISTIC CACHE: Store current state for instant reload
-                  localStorage.setItem('last_order_state_' + table, JSON.stringify({
-                      total,
-                      status: 'placed'
-                  }));
-                  
+                  localStorage.setItem('last_order_state_' + table, JSON.stringify({ total, status: 'placed' }));
                   showTracker();
-              } else {
-                  throw new Error(data.error || 'Order rejected by server');
-              }
-          } catch(err) {
-              console.error("Order error:", err);
-              alert("Could not send order: " + err.message + ". Please try again.");
-              btn.innerText = originalText;
-              btn.disabled = false;
-          }
+              } else throw new Error(data.error);
+          } catch(err) { alert(err.message); btn.innerText = "Re-try"; btn.disabled = false; }
        };
 
        const showTracker = () => {
           document.getElementById('viewMenuHub').classList.add('hidden');
           document.getElementById('viewWelcome').classList.add('hidden');
           document.getElementById('viewTracker').classList.remove('hidden');
-          
-          // OPTIMISTIC RESTORE: Show last known data immediately while polling
           const cached = localStorage.getItem('last_order_state_' + table);
-          if (cached) {
-              try {
-                  const state = JSON.parse(cached);
-                  renderTrackerSteps(state.status, state.total);
-              } catch(e) {}
-          }
-          
+          if (cached) { try { const state = JSON.parse(cached); renderTrackerSteps(state.status, state.total); } catch(e) {} }
           pollStatus();
        };
 
@@ -417,28 +332,38 @@ try {
        const pollStatus = async () => {
           const f = async () => {
               if(!activeOrderId) return;
-              const controller = new AbortController();
-              const tId = setTimeout(() => controller.abort(), 2500); // 2.5s timeout for production
+              const ctrl = new AbortController();
+              const tid = setTimeout(() => ctrl.abort(), 2500);
               try {
-                  const res = await fetch(`/api/v2/restaurant/qr-orders?order_id=${activeOrderId}&v=${Date.now()}`, { signal: controller.signal });
+                  const res = await fetch(`/api/v2/restaurant/qr-orders?order_id=${activeOrderId}&v=${Date.now()}`, { signal: ctrl.signal });
                   const { order } = await res.json();
-                  clearTimeout(tId);
+                  clearTimeout(tid);
                   if (order && !order.error) {
+                      pollAttempts = 0;
                       renderTrackerSteps(order.status, order.total_amount);
-                      // Keep cache fresh
-                      localStorage.setItem('last_order_state_' + table, JSON.stringify({
-                           total: order.total_amount,
-                           status: order.status
-                      }));
+                      localStorage.setItem('last_order_state_' + table, JSON.stringify({ total: order.total_amount, status: order.status }));
+                  } else {
+                      pollAttempts++;
+                      // If order not found for more than 5 attempts, it's likely purged or invalid. Offer reset.
+                      if (pollAttempts > 5) {
+                          document.getElementById('trackerSteps').innerHTML = `
+                             <div class="flex flex-col items-center justify-center py-20 text-center gap-4 animate-in fade-in zoom-in duration-500">
+                                <p class="text-xs font-black uppercase text-white/40 tracking-widest leading-loose">The previous session has expired<br/>or been completed.</p>
+                                <button onclick="localStorage.removeItem('active_qr_order_' + table); window.location.reload();" class="px-8 py-4 bg-white text-black rounded-3xl font-black uppercase italic text-xs shadow-xl active:scale-95 transition-all">New Order →</button>
+                             </div>
+                          `;
+                          clearInterval(pollInterval);
+                      }
                   }
-              } catch(e) { /* sync occurs next cycle */ }
+              } catch(e) { }
           };
-          f(); pollInterval = setInterval(f, 3000);
+          f(); pollInterval = setInterval(f, 3500);
        };
 
        const renderTrackerSteps = (status, total) => {
-          if (!status) return; // Protect against empty syncs
-          document.getElementById('liveTotal').innerText = total || 0;
+          if (!status) return;
+          const liveTotalEl = document.getElementById('liveTotal');
+          if (liveTotalEl) liveTotalEl.innerText = total || 0;
           const states = [
              { key: 'placed', label: 'Order Placed', desc: 'Waiting for confirmation', icon: '📝' },
              { key: 'waiter_confirmed', label: 'Order Confirmed', desc: 'Sent to kitchen', icon: '👨‍🍳' },
@@ -448,41 +373,35 @@ try {
              { key: 'paid', label: 'Completed', desc: 'Thank you!', icon: '❤️' }
           ];
           const currentIndex = states.findIndex(s => s.key === status);
-          const c = document.querySelector('#viewTracker > .space-y-6');
+          const c = document.getElementById('trackerSteps');
           if (!c) return;
           c.innerHTML = states.map((s, idx) => {
-              const color = idx < currentIndex ? 'bg-emerald-500' : (idx === currentIndex ? 'bg-orange-500 animate-pulse' : 'bg-[#333]');
-              const textColor = idx > currentIndex ? 'text-white/30' : 'text-white';
-              return `<div class="relative flex items-center justify-between group"><div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-[#111] ${color} shrink-0 z-10 text-lg">${s.icon}</div><div class="w-[calc(100%-4rem)] bg-[#222] p-4 rounded-2xl border border-[#333] shadow-lg ${textColor}"><h4 class="font-black uppercase text-sm">${s.label}</h4><p class="text-[10px] opacity-70 border-t border-white/5 pt-2 mt-2 font-bold">${s.desc}</p></div></div>`
+              const color = idx < currentIndex ? 'bg-emerald-500' : (idx === currentIndex ? 'bg-orange-500 animate-pulse border-white/20' : 'bg-[#222] border-white/5');
+              const textColor = idx > currentIndex ? 'text-white/20' : 'text-white';
+              return `<div class="relative flex items-center justify-between group">
+                 <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-[#111] ${color} shrink-0 z-10 text-lg transition-colors duration-500">${s.icon}</div>
+                 <div class="w-[calc(100%-4rem)] bg-[#222] p-4 rounded-2xl border border-white/5 shadow-lg ${textColor} transition-all duration-500">
+                    <h4 class="font-black uppercase text-[11px] tracking-widest italic">${s.label}</h4>
+                    <p class="text-[9px] opacity-70 border-t border-white/5 pt-2 mt-2 font-bold">${s.desc}</p>
+                 </div>
+              </div>`
           }).join('');
-          if (status === 'served') document.getElementById('paymentBox') && document.getElementById('paymentBox').classList.remove('hidden');
-          if (status === 'paid') { 
-              clearInterval(pollInterval); 
-              document.getElementById('paymentBox') && document.getElementById('paymentBox').classList.add('hidden'); 
-              document.getElementById('feedbackBox') && document.getElementById('feedbackBox').classList.remove('hidden'); 
-          }
+          if (status === 'served') document.getElementById('paymentBox').classList.remove('hidden');
+          if (status === 'paid') { clearInterval(pollInterval); document.getElementById('paymentBox').classList.add('hidden'); document.getElementById('feedbackBox').classList.remove('hidden'); }
        };
 
-        window.simulatePayment = async () => {
+       window.simulatePayment = async () => {
           if(!activeOrderId) return;
           const btn = document.querySelector('#paymentBox button');
-          if (btn) btn.innerText = "Processing...";
-          await fetch(`/api/v2/restaurant/qr-orders`, { 
-              method: 'PATCH', 
-              headers: {'Content-Type':'application/json'}, 
-              body: JSON.stringify({ order_id: activeOrderId, status: 'paid' }) 
-          });
-          // Update tracker instantly via local memory mimic
+          btn.innerText = "Processing Scan..."; btn.disabled = true;
+          await fetch(`/api/v2/restaurant/qr-orders`, { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ order_id: activeOrderId, status: 'paid' }) });
           renderTrackerSteps('paid', document.getElementById('liveTotal').innerText);
        };
 
        window.submitFeedback = () => { localStorage.removeItem('active_qr_order_' + table); window.location.reload(); };
 
-       // Boot: check for active order first, then sync in background
-       if (activeOrderId) {
-          showTracker();
-       }
-       backgroundSync(); // silent refresh in background
+       if (activeOrderId) showTracker();
+       backgroundSync();
     </script>
 </body>
 </html>
