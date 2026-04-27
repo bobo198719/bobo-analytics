@@ -120,46 +120,43 @@ import "../styles/restaurant.css";
 </RestaurantOSLayout>
 
 <script is:inline>
-   function switchToSection(target) {
-      console.log("📍 Section Navigation Protocol Initiated:", target);
+   window.switchToSection = function(target) {
+      console.log("📍 Terminal Hub: Switching to Node:", target);
       if (!target) return;
       
       const role = localStorage.getItem('ro_role') || 'owner';
       
+      // Role Enforcement Protocol
       if (role === 'chef' && !['kitchen', 'waiter', 'tables'].includes(target)) {
-          console.warn("Permission Intercept: Chef role restricted to service nodes.");
           target = 'kitchen';
-          if (window.location.hash !== '#kitchen') {
-              window.history.replaceState(null, '', '#kitchen');
-          }
+          if (window.location.hash !== '#kitchen') window.history.replaceState(null, '', '#kitchen');
       }
-      
       if (role === 'waiter' && !['pos', 'waiter', 'tables'].includes(target)) {
-          console.warn("Permission Intercept: Waiter role restricted to POS/Service nodes.");
           target = 'pos';
-          if (window.location.hash !== '#pos') {
-              window.history.replaceState(null, '', '#pos');
-          }
+          if (window.location.hash !== '#pos') window.history.replaceState(null, '', '#pos');
       }
       
-      console.log("🔓 Unlocking Terminal Section:", target + 'Section');
-      document.querySelectorAll('.section').forEach(sec => {
+      // Node Toggle Cycle
+      const sections = document.querySelectorAll('.section');
+      sections.forEach(sec => {
          sec.classList.add('hidden');
          sec.classList.remove('active');
-         sec.style.display = 'none'; // Force hide
+         sec.style.display = 'none';
       });
       
       const targetSec = document.getElementById(target + 'Section');
       if (targetSec) {
          targetSec.classList.remove('hidden');
          targetSec.classList.add('active');
-         targetSec.style.display = 'block'; // Force show
-         console.log("✅ Node Active:", target);
+         targetSec.style.display = 'block';
+         console.log("✅ Node Synchronized:", target);
       } else {
-         console.error("❌ Target Node Not Found in DOM:", target + 'Section');
+         console.error("❌ Node Missing in DOM:", target + 'Section');
+         // Fallback to dashboard if target is ghost
+         if (target !== 'dashboard') window.switchToSection('dashboard');
       }
 
-      // Sync Sidebar Active State
+      // Sidebar UX Sync
       document.querySelectorAll('.nav-link').forEach(link => {
           link.classList.remove('active');
           const href = link.getAttribute('href');
@@ -168,11 +165,33 @@ import "../styles/restaurant.css";
           }
       });
       
-      // Toggle POS Touch Screen Mode
       document.body.classList.toggle('pos-active-mode', target === 'pos');
    }
 
-   function toggleBranchMenu() {
+   // Primary Initialization
+   const initialRole = localStorage.getItem('ro_role');
+   const defaultHash = initialRole === 'waiter' ? 'pos' : initialRole === 'chef' ? 'kitchen' : 'dashboard';
+   
+   window.addEventListener('hashchange', () => {
+      const h = window.location.hash.substring(1);
+      window.switchToSection(h || defaultHash);
+   });
+
+   // Initial Boot
+   document.addEventListener('DOMContentLoaded', () => {
+      const h = window.location.hash.substring(1);
+      window.switchToSection(h || defaultHash);
+   });
+   
+   // Initial Identity Sync
+   const accessDisplay = localStorage.getItem('ro_role_display') || 'Owner Protocol';
+   const displayEl = document.getElementById('activeRoleDisplay');
+   if (displayEl) displayEl.innerText = accessDisplay;
+   
+   // Sync on load
+   window.switchToSection(window.location.hash.substring(1) || defaultHash);
+
+   window.toggleBranchMenu = function() {
       const menu = document.getElementById('branchMenu');
       const isVisible = menu.classList.contains('opacity-100');
       document.getElementById('roleMenu').classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
@@ -181,7 +200,7 @@ import "../styles/restaurant.css";
       menu.classList.toggle('pointer-events-auto', !isVisible);
    }
 
-   function toggleRoleMenu() {
+   window.toggleRoleMenu = function() {
       const menu = document.getElementById('roleMenu');
       const isVisible = menu.classList.contains('opacity-100');
       document.getElementById('branchMenu').classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
@@ -190,26 +209,17 @@ import "../styles/restaurant.css";
       menu.classList.toggle('pointer-events-auto', !isVisible);
    }
 
-   window.RO_ACCESS_ROLE = localStorage.getItem('ro_role') || 'owner';
-   window.RO_ACCESS_DISPLAY = localStorage.getItem('ro_role_display') || 'Owner Protocol';
-   document.getElementById('activeRoleDisplay').innerText = window.RO_ACCESS_DISPLAY;
-
-   function setAccessMode(role, display) {
+   window.setAccessMode = function(role, display) {
       localStorage.setItem('ro_role', role);
       localStorage.setItem('ro_role_display', display);
       window.location.hash = role === 'waiter' ? '#pos' : role === 'chef' ? '#kitchen' : '#dashboard';
       window.location.reload();
    }
 
-   function selectBranch(name) {
+   window.selectBranch = function(name) {
       document.getElementById('activeBranch').innerText = name;
-      toggleBranchMenu();
+      window.toggleBranchMenu();
    }
-
-   const _r = localStorage.getItem('ro_role');
-   const dH = _r === 'waiter' ? 'pos' : _r === 'chef' ? 'kitchen' : 'dashboard';
-   window.addEventListener('hashchange', () => switchToSection(window.location.hash.substring(1) || dH));
-   switchToSection(window.location.hash.substring(1) || dH);
 </script>
 
 <style is:global>
