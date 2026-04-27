@@ -1,16 +1,6 @@
 ---
 import RestaurantOSLayout from "../layouts/RestaurantOSLayout.astro";
-import Dashboard from "../components/restaurant/Dashboard.jsx";
-import MatrixAnalytics from "../components/restaurant/MatrixAnalytics.jsx";
-import TouchPOS from "../components/restaurant/TouchPOS.jsx";
-import Tables from "../components/restaurant/Tables.jsx";
-import KDS from "../components/restaurant/KDS.jsx";
-import MenuManager from "../components/restaurant/MenuManager.jsx";
-import WaiterDashboard from "../components/restaurant/WaiterDashboard.jsx";
-import SettingsNode from "../components/restaurant/SettingsNode.jsx";
-import CRMManager from "../components/restaurant/CRMManager.jsx";
-import SmartUpload from "../components/restaurant/SmartUpload.jsx";
-import DailyReport from "../components/restaurant/DailyReport.jsx";
+import ManagerControlHub from "../components/restaurant/ManagerControlHub.jsx";
 import "../styles/restaurant.css";
 ---
 
@@ -19,120 +9,32 @@ import "../styles/restaurant.css";
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" is:inline></script>
 
 <RestaurantOSLayout title="Restaurant Intelligence Terminal | Bobo OS">
-   <!-- Enterprise Control Layer -->
-    <nav class="hidden">
-       <!-- Legacy Nav Halted to prevent Z-Index Conflicts -->
-    </nav>
-
-    <div id="dashboard" data-section-node class="section active animate-in fade-in transition-all">
-       <Dashboard client:load />
+    <div class="terminal-main-container">
+       <ManagerControlHub client:load />
     </div>
-
-    <div id="pos" data-section-node class="section hidden animate-in fade-in transition-all">
-       <TouchPOS client:load />
-    </div>
-
-    <div id="tables" data-section-node class="section hidden animate-in fade-in transition-all">
-       <Tables client:load />
-    </div>
-
-    <div id="kitchen" data-section-node class="section hidden animate-in fade-in transition-all">
-       <KDS client:load />
-    </div>
-
-    <div id="menu" data-section-node class="section hidden animate-in fade-in transition-all">
-       <MenuManager client:load />
-    </div>
-
-    <div id="analytics" data-section-node class="section hidden animate-in fade-in transition-all">
-       <MatrixAnalytics client:only="react" />
-    </div>
-
-    <div id="waiter" data-section-node class="section hidden animate-in fade-in transition-all">
-       <div class="max-w-6xl mx-auto p-10">
-          <WaiterDashboard client:load />
-       </div>
-    </div>
-
-    <div id="settings" data-section-node class="section hidden animate-in fade-in transition-all">
-       <SettingsNode client:load />
-    </div>
-
-    <div id="upload" data-section-node class="section hidden animate-in fade-in transition-all">
-       <div class="max-w-6xl mx-auto p-10">
-          <SmartUpload client:load />
-       </div>
-    </div>
-
-    <div id="crm" data-section-node class="section hidden animate-in fade-in transition-all">
-       <div class="max-w-7xl mx-auto p-10">
-          <CRMManager client:load />
-       </div>
-    </div>
-
-    <div id="reports" data-section-node class="section hidden animate-in fade-in transition-all">
-       <div class="max-w-7xl mx-auto p-10">
-          <DailyReport client:load />
-       </div>
-    </div>
-
 </RestaurantOSLayout>
 
 <style is:global>
-  .section { display: none !important; }
-  .section.active { display: block !important; }
-  .section:target { display: block !important; }
+  .terminal-main-container { width: 100%; min-height: 100vh; }
 </style>
 
 <script is:inline>
-     (function hSync() {
-        console.log("🔓 TERMINAL SYNC ACTIVE");
-        const dR = localStorage.getItem('ro_role') || 'owner';
-        const dH = dR === 'waiter' ? 'pos' : dR === 'chef' ? 'kitchen' : 'dashboard';
-
+     // Ensure sidebar highlights sync with the React Hub
+     (function navPilot() {
         function sync() {
-            let h;
-            try { 
-                h = window.location.hash.substring(1) || dH; 
-            } catch(e) { h = 'dashboard'; }
-            
-            const nodes = document.querySelectorAll('[data-section-node]');
-            
-            if (nodes.length === 0) {
-                console.warn("⚠️ NAV CRITICAL: No Section Nodes Found!");
-                return;
-            }
-
-            if (window._lastH !== h) {
-                console.log("🚀 TERMINAL SWITCH:", h, "(Nodes found:", nodes.length, ")");
-                window._lastH = h;
-            }
-            
-            nodes.forEach(n => {
-                try {
-                    const isActive = n.id === h;
-                    n.style.setProperty('display', isActive ? 'block' : 'none', 'important');
-                    if (isActive) {
-                        n.classList.remove('hidden');
-                        n.classList.add('active');
-                    } else {
-                        n.classList.add('hidden');
-                        n.classList.remove('active');
-                    }
-                } catch(e) { console.error("NodeSync Error for " + n.id, e); }
-            });
-
+            const h = window.location.hash.substring(1) || 'dashboard';
             document.querySelectorAll('.nav-link').forEach(l => {
                 const href = l.getAttribute('href');
                 const iA = href && (href.includes('#' + h) || (h === 'dashboard' && href.endsWith('dashboard')));
                 l.classList.toggle('active', !!iA);
             });
+            document.body.classList.toggle('pos-active-mode', h === 'pos');
         }
-
-        setInterval(sync, 100);
+        setInterval(sync, 200);
         window.addEventListener('hashchange', sync);
         sync();
-        
+
+        // Control Exports
         window.switchToSection = (t) => { window.location.hash = t; };
         window.setAccessMode = (r, d) => { localStorage.setItem('ro_role', r); localStorage.setItem('ro_role_display', d); window.location.reload(); };
      })();
