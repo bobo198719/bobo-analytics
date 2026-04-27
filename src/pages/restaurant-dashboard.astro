@@ -112,12 +112,20 @@ import "../styles/restaurant.css";
                 });
             }
 
-            // Sync Sidebar Links
-            document.querySelectorAll('.nav-link').forEach(link => {
-                const href = link.getAttribute('href');
-                const iA = href && (href.includes('#' + h) || (h === 'dashboard' && href.endsWith('dashboard')));
-                link.classList.toggle('active', !!iA);
-            });
+             // Sync Sidebar Links
+             document.querySelectorAll('.nav-link').forEach(link => {
+                 const href = link.getAttribute('href');
+                 const iA = href && (href.includes('#' + h) || (h === 'dashboard' && href.endsWith('dashboard')));
+                 link.classList.toggle('active', !!iA);
+                 
+                 // FORCE RELOAD on first click to ensure sync if stuck
+                 if (link.dataset.bound !== 'true') {
+                     link.addEventListener('click', () => {
+                         setTimeout(() => window.location.reload(), 50);
+                     });
+                     link.dataset.bound = 'true';
+                 }
+             });
             
             document.body.classList.toggle('pos-active-mode', h === 'pos');
         }
