@@ -14,17 +14,6 @@ const persistToDb = async (order) => {
     try {
         const mysql = await import('mysql2/promise');
         const db = await mysql.createConnection(DB_CONFIG);
-        await db.query(`
-            CREATE TABLE IF NOT EXISTS restaurant_qr_orders (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                order_id VARCHAR(50) UNIQUE,
-                table_id VARCHAR(20),
-                items LONGTEXT,
-                total_amount DECIMAL(10,2),
-                status VARCHAR(50) DEFAULT 'placed',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
         // MIGRATION: Ensure total_amount is decimal (V72)
         try { await db.query("ALTER TABLE restaurant_qr_orders MODIFY total_amount DECIMAL(10,2)"); } catch(e) {}
         await db.query(

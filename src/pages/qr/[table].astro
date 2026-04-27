@@ -377,6 +377,12 @@ try {
                   document.getElementById('viewMenuHub').classList.add('hidden');
                   activeOrderId = data.order_id;
                   localStorage.setItem('active_qr_order_' + table, activeOrderId);
+                  // CACHE STATE FOR INSTANT LOAD
+                  localStorage.setItem('last_order_state_' + table, JSON.stringify({
+                      total,
+                      items: cart,
+                      status: 'placed'
+                  }));
                   showTracker();
               } else {
                   throw new Error(data.error || 'Order rejected by server');
@@ -393,6 +399,16 @@ try {
           document.getElementById('viewMenuHub').classList.add('hidden');
           document.getElementById('viewWelcome').classList.add('hidden');
           document.getElementById('viewTracker').classList.remove('hidden');
+          
+          // OPTIMISTIC RESTORE: Show last known data immediately while polling
+          const cached = localStorage.getItem('last_order_state_' + table);
+          if (cached) {
+              try {
+                  const state = JSON.parse(cached);
+                  renderTrackerSteps(state.status, state.total);
+              } catch(e) {}
+          }
+          
           pollStatus();
        };
 
