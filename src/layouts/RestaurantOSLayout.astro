@@ -410,7 +410,6 @@ const { title = "Restaurant OS" } = Astro.props;
             const h = window.location.hash.substring(1) || defaultHash;
             
             // --- ABSOLUTE HUB SYNC ---
-            let h;
             try {
                 h = window.location.hash.substring(1) || defaultHash;
             } catch(e) { h = 'dashboard'; }
