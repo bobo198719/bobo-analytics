@@ -7,7 +7,7 @@ const DB_CONFIG = {
     user: 'bobo_admin',
     password: 'BoboPass2026!',
     database: 'bobo_analytics',
-    connectTimeout: 200, // FAST FAILURE
+    connectTimeout: 5000, // INCREASED FOR PRODUCTION STABILITY
 };
 
 const persistToDb = async (order) => {
@@ -20,11 +20,13 @@ const persistToDb = async (order) => {
                 order_id VARCHAR(50) UNIQUE,
                 table_id VARCHAR(20),
                 items LONGTEXT,
-                total_amount INT,
+                total_amount DECIMAL(10,2),
                 status VARCHAR(50) DEFAULT 'placed',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
+        // MIGRATION: Ensure total_amount is decimal (V72)
+        try { await db.query("ALTER TABLE restaurant_qr_orders MODIFY total_amount DECIMAL(10,2)"); } catch(e) {}
         await db.query(
             'INSERT IGNORE INTO restaurant_qr_orders (order_id, table_id, items, total_amount, status) VALUES (?, ?, ?, ?, ?)',
             [order.order_id, order.table_id, JSON.stringify(order.items), order.total_amount, order.status]
@@ -69,16 +71,24 @@ export async function GET({ request, url }) {
     }
 
     if (activeOnly) {
+        let rows = [];
         try {
             const mysql = await import('mysql2/promise');
             const db = await mysql.createConnection(DB_CONFIG);
-            const [rows] = await db.query("SELECT * FROM restaurant_qr_orders WHERE status NOT IN ('paid', 'rejected')");
+            const [fetchedRows] = await db.query("SELECT * FROM restaurant_qr_orders WHERE status NOT IN ('paid', 'rejected')");
             await db.end();
+            rows = fetchedRows;
+            // Seed the memory cache for fast status polling
             rows.forEach(r => global.__QR_ORDERS__.set(r.order_id, r));
-        } catch (e) {}
+        } catch (e) {
+            console.error("[QR Orders DB Fail]:", e.message);
+        }
         
-        const allOrders = Array.from(global.__QR_ORDERS__.values())
-            .filter(o => o.status !== 'paid')
+        // Return DB rows if available, otherwise fallback to memory store
+        const sourceData = rows.length > 0 ? rows : Array.from(global.__QR_ORDERS__.values());
+        
+        const allOrders = sourceData
+            .filter(o => o.status !== 'paid' && o.status !== 'rejected')
             .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
         return new Response(JSON.stringify({ orders: allOrders }), { status: 200, headers: { 'Content-Type': 'application/json' } });
@@ -104,9 +114,8 @@ export async function POST({ request }) {
 
         global.__QR_ORDERS__.set(orderId, order);
         
-        // Wait 200ms before returning to ensure Lambda doesn't freeze the persistToDb process instantly
-        persistToDb(order);
-        await new Promise(r => setTimeout(r, 200));
+        // CRITICAL: Must await DB persistence in Serverless environments
+        await persistToDb(order);
 
         // Proxy the broadcast via HTTP to the VPS instead so we don't hold the WS connection open
         try {

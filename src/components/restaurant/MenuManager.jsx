@@ -242,10 +242,42 @@ const MenuManager = () => {
         </div>
         <div className="flex gap-4 relative z-10">
            {isOwner && (
-           <button onClick={() => setShowAddModal(true)} className="px-10 py-5 bg-gradient-to-r from-orange-600 to-orange-500 rounded-3xl font-black italic uppercase tracking-[0.2em] text-[10px] shadow-2xl shadow-orange-600/30 flex items-center gap-4 transition-all hover:scale-[1.05] active:scale-95 border border-orange-400/20">
-              <Plus className="w-5 h-5" />
-              Provision Master Node
-           </button>
+            <>
+              <button 
+                onClick={async (e) => {
+                   if(!confirm("Deploy Master Catalog? This will reset all current dishes to global defaults.")) return;
+                   const btn = e.currentTarget;
+                   const originalText = btn.innerText;
+                   btn.innerText = "PROVISIONING...";
+                   btn.disabled = true;
+                   setLoading(true);
+                   try {
+                       const res = await fetch('/api/v2/restaurant/seed-menu', { method: 'POST' });
+                       const data = await res.json();
+                       if (res.ok) {
+                           alert(`SUCCESS: ${data.count} Catalog Elements Provisioned!`);
+                           fetchItems();
+                       } else {
+                           alert(`FAIL: ${data.error || 'Sync Interrupted'}`);
+                       }
+                   } catch(e) { 
+                       alert("NODE_ERROR: Catalog Link Disrupted");
+                       console.error(e); 
+                   } finally {
+                       btn.innerText = originalText;
+                       btn.disabled = false;
+                       setLoading(false);
+                   }
+                }} 
+                className="px-8 py-5 bg-white/5 border border-white/10 rounded-3xl font-black italic uppercase tracking-[0.2em] text-[10px] hover:bg-white/10 transition-all text-white/40 hover:text-white disabled:opacity-50"
+              >
+                 Sync Master Catalog
+              </button>
+              <button onClick={() => setShowAddModal(true)} className="px-10 py-5 bg-gradient-to-r from-orange-600 to-orange-500 rounded-3xl font-black italic uppercase tracking-[0.2em] text-[10px] shadow-2xl shadow-orange-600/30 flex items-center gap-4 transition-all hover:scale-[1.05] active:scale-95 border border-orange-400/20">
+                 <Plus className="w-5 h-5" />
+                 Provision Master Node
+              </button>
+            </>
            )}
         </div>
         <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/5 blur-[100px] -z-10 group-hover:bg-orange-500/10 transition-all"></div>

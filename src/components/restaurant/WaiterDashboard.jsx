@@ -8,10 +8,11 @@ export default function WaiterDashboard() {
 
   const fetchPendingOrders = async () => {
     try {
-      const res = await fetch('/api/v2/restaurant/orders?active_only=true');
+      const res = await fetch(`/api/v2/restaurant/qr-orders?active_only=true&cache=${Date.now()}`);
       let data = await res.json();
-      data = (data.orders || []).filter(o => o.status === 'placed');
-      console.log("QR Orders from API:", data);
+      // Show ALL active orders including confirmed/preparing so they can be settled
+      data = (data.orders || []).filter(o => ['placed', 'waiter_confirmed', 'kitchen_preparing', 'kitchen_ready', 'served'].includes(o.status));
+      console.log("Active QR Sessions:", data);
       setOrders(data);
       setLoading(false);
       setLastUpdate(new Date());
@@ -26,30 +27,30 @@ export default function WaiterDashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  const approveOrder = async (orderId) => {
+  const approveOrder = async (orderId, targetStatus = 'waiter_confirmed') => {
     try {
-      const res = await fetch(`/api/v2/restaurant/orders/${orderId}`, {
+      const res = await fetch(`/api/v2/restaurant/qr-orders`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'waiter_confirmed' })
+        body: JSON.stringify({ order_id: orderId, status: targetStatus })
       });
       if (res.ok) {
-        setOrders(prev => prev.filter(o => o.id !== orderId));
+        setOrders(prev => prev.filter(o => o.order_id !== orderId));
       }
     } catch (err) {
-      alert("Failed to confirm order.");
+      alert("Failed to update order.");
     }
   };
 
     const rejectOrder = async (orderId) => {
     if (!confirm("Reject this order request?")) return;
     try {
-      await fetch(`/api/v2/restaurant/orders/${orderId}`, {
+      await fetch(`/api/v2/restaurant/qr-orders`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'rejected' })
+        body: JSON.stringify({ order_id: orderId, status: 'rejected' })
       });
-      setOrders(prev => prev.filter(o => o.id !== orderId));
+      setOrders(prev => prev.filter(o => o.order_id !== orderId));
     } catch (err) {
       alert("Failed to reject order.");
     }
@@ -90,7 +91,7 @@ export default function WaiterDashboard() {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {orders.map(order => (
-            <div key={order.id} className="bg-white/5 border border-white/10 rounded-[32px] overflow-hidden hover:bg-white/[0.08] transition-all group flex flex-col">
+            <div key={order.order_id} className="bg-white/5 border border-white/10 rounded-[32px] overflow-hidden hover:bg-white/[0.08] transition-all group flex flex-col">
               <div className="p-6 bg-white/5 border-b border-white/5 flex justify-between items-center">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center font-black italic text-lg shadow-lg shadow-orange-600/20">
@@ -141,20 +142,32 @@ export default function WaiterDashboard() {
               </div>
 
               <div className="p-6 pt-0 mt-auto grid grid-cols-2 gap-4">
-                <button 
-                  onClick={() => rejectOrder(order.id)}
-                  className="py-4 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center gap-2 hover:bg-rose-500/10 hover:border-rose-500/20 transition-all text-white/30 hover:text-rose-500"
-                >
-                  <XCircle className="w-4 h-4" />
-                  <span className="text-[10px] font-black uppercase italic">Reject</span>
-                </button>
-                <button 
-                  onClick={() => approveOrder(order.id)}
-                  className="py-4 bg-orange-500 hover:bg-orange-400 border border-orange-400 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20 transition-all text-black"
-                >
-                  <CheckCircle className="w-4 h-4" />
-                  <span className="text-[10px] font-black uppercase italic">Confirm Order</span>
-                </button>
+                {order.status === 'placed' ? (
+                  <>
+                    <button 
+                      onClick={() => rejectOrder(order.order_id)}
+                      className="py-4 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center gap-2 hover:bg-rose-500/10 hover:border-rose-500/20 transition-all text-white/30 hover:text-rose-500"
+                    >
+                      <XCircle className="w-4 h-4" />
+                      <span className="text-[10px] font-black uppercase italic">Reject</span>
+                    </button>
+                    <button 
+                      onClick={() => approveOrder(order.order_id)}
+                      className="py-4 bg-orange-500 hover:bg-orange-400 border border-orange-400 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20 transition-all text-black"
+                    >
+                      <CheckCircle className="w-4 h-4" />
+                      <span className="text-[10px] font-black uppercase italic">Confirm Order</span>
+                    </button>
+                  </>
+                ) : (
+                  <button 
+                    onClick={() => approveOrder(order.order_id, 'paid')}
+                    className="col-span-2 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all text-white"
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    <span className="text-[10px] font-black uppercase italic">Settle Session & Clear Table</span>
+                  </button>
+                )}
               </div>
             </div>
           ))}

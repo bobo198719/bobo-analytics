@@ -18,12 +18,13 @@ const KDS = () => {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch('/api/v2/restaurant/orders');
+      const res = await fetch('/api/v2/restaurant/qr-orders?active_only=true');
       if (!res.ok) throw new Error("KDS HUB OFFLINE");
       const data = await res.json();
       
       const activeStates = ['waiter_confirmed', 'kitchen_preparing', 'kitchen_ready'];
-      setOrders(data.filter(o => activeStates.includes(o.status)));
+      const filtered = (data.orders || []).filter(o => activeStates.includes(o.status));
+      setOrders(filtered);
       setError(null);
       setLoading(false);
     } catch (err) { 
@@ -53,10 +54,10 @@ const KDS = () => {
 
   const updateStatus = async (orderId, nextStatus) => {
     try {
-        const res = await fetch(`/api/v2/restaurant/orders/${orderId}`, {
+        const res = await fetch(`/api/v2/restaurant/qr-orders`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: nextStatus })
+            body: JSON.stringify({ order_id: orderId, status: nextStatus })
         });
         if (res.ok) fetchOrders();
     } catch (err) { console.error("KDS Update Error:", err); }
@@ -159,7 +160,7 @@ const KDS = () => {
 
                   <div className="flex items-center justify-between mb-10 relative z-10">
                      <div className="flex flex-col">
-                         <h3 className="text-3xl font-black italic tracking-tighter uppercase leading-none">ORDER #{order.id}</h3>
+                         <h3 className="text-3xl font-black italic tracking-tighter uppercase leading-none">ORDER #{order.order_id || order.id}</h3>
                          <div className="flex items-center gap-2 text-white/20 font-black uppercase text-[8px] tracking-[0.2em] mt-3 italic">
                             <Zap size={12} className={cfg.text} />
                             TABLE {order.table_id || order.table_number || '?'}

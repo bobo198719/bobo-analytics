@@ -27,11 +27,11 @@ const MatrixAnalytics = () => {
             total: Math.floor(Math.random() * 8000) + 2000 
         })),
         topProducts: [
-            { category: 'Starter', name: 'Truffle Mushroom Arancini', sales_count: 84, total_revenue: 16800 },
-            { category: 'Main Course', name: 'Wagyu Beef Ribeye', sales_count: 42, total_revenue: 84000 },
-            { category: 'Fast Food', name: 'Double Truffle Burger', sales_count: 124, total_revenue: 24800 },
-            { category: 'Dessert', name: 'Gold Leaf Lava Cake', sales_count: 56, total_revenue: 11200 },
-            { category: 'Beverage', name: 'Aged Whiskey Sour', sales_count: 92, total_revenue: 18400 }
+            { category: 'Starter', name: 'Truffle Mushroom Arancini', sales_count: 84, total_profit: 16800 },
+            { category: 'Main Course', name: 'Wagyu Beef Ribeye', sales_count: 42, total_profit: 84000 },
+            { category: 'Fast Food', name: 'Double Truffle Burger', sales_count: 124, total_profit: 24800 },
+            { category: 'Dessert', name: 'Gold Leaf Lava Cake', sales_count: 56, total_profit: 11200 },
+            { category: 'Beverage', name: 'Aged Whiskey Sour', sales_count: 92, total_profit: 18400 }
         ],
         busyHours: [
             { hour: 20, order_count: 45 }, { hour: 13, order_count: 38 }, 
@@ -132,7 +132,7 @@ const MatrixAnalytics = () => {
                 ))}
             </div>
 
-            {/* ── REVENUE CHANNEL MATRIX ───────────────────────── */}
+            {/* ── PROFIT CHANNEL MATRIX ───────────────────────── */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 bg-white/5 border border-white/10 rounded-[48px] p-10 relative overflow-hidden group shadow-2xl">
                     <div className="flex justify-between items-start md:items-end mb-12">

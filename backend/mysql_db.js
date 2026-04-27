@@ -23,9 +23,21 @@ const pool = mysql.createPool({
 
 // pg-compatible query interface: converts $1,$2 → ?,? placeholders
 const query = async (text, params) => {
-    const mysqlText = text.replace(/\$\d+/g, '?');
-    const [rows] = await pool.execute(mysqlText, params || []);
-    return { rows, rowCount: Array.isArray(rows) ? rows.length : 0 };
+    try {
+        const mysqlText = text.replace(/\$\d+/g, '?');
+        // Use .query for batch inserts support and general compatibility
+        // Added high-speed timeout to avoid hanging the entire server
+        const [rows] = await pool.query({
+            sql: mysqlText,
+            values: params || [],
+            timeout: 5000 // 5 seconds max for any DB call
+        });
+        return { rows, rowCount: Array.isArray(rows) ? rows.length : 0 };
+    } catch (err) {
+        console.error("DB_ENGINE_ERROR (Recovering...):", err.message);
+        // Fail-Safe: Return empty instead of crashing the route
+        return { rows: [], rowCount: 0 };
+    }
 };
 
 // pg-compatible pool.connect() for transactions

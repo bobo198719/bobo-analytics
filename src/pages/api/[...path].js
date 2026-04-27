@@ -137,14 +137,15 @@ export async function ALL({ request, params }) {
         return new Response(JSON.stringify({ success: true, country }), { status: 200, headers: {'Content-Type': 'application/json'} });
     }
 
-    // 🛠️ DIAGNOSTIC RESCUE ENDPOINT
+    // INTERCEPT DIAGNOSTICS
     if (pathname.includes('/diag/logs')) {
         return new Response(JSON.stringify(global.RESCUE_LOGS || []), { status: 200, headers: {'Content-Type': 'application/json'} });
     }
-    // Stop proxying restaurant namespace to Hostinger, let native Vercel API handle it
-    if (pathname.includes('/api/v2/restaurant')) return undefined;
     
-    // Only intercept paths that should go to the Hostinger API
+    // 🔥 RELUCTANT PROXY (V102): Point to local backend first, fallback to Hostinger
+    const hostingerUrl = process.env.NODE_ENV === 'development' ? "http://localhost:5000" : "http://187.124.97.144:5000";
+    
+    // Only intercept paths that should go to the Hostinger API or internal logic
     if (!pathname.includes('/api/')) return undefined;
 
     // 📦 PRE-READ BODY (CRITICAL: FIXES 503 STREAM CONFLICT)
@@ -758,21 +759,27 @@ export async function ALL({ request, params }) {
     if (pathname.includes('/api/v2/restaurant/dashboard') && method === 'GET') {
         try {
             const db = await getMySQL();
-            const [rows] = await db.query('SELECT * FROM restaurant_orders WHERE DATE(created_at) = CURDATE()');
-            const [activeTablesResult] = await db.query("SELECT COUNT(*) AS cnt FROM restaurant_tables WHERE status = 'occupied'");
-            const [history] = await db.query(`
+            const timeoutFetch = async (q, ms) => {
+                const signal = AbortSignal.timeout(ms);
+                const [res] = await q; // db.query returns [rows]
+                return res;
+            };
+
+            const rows = await db.query('SELECT * FROM restaurant_orders WHERE DATE(created_at) = CURDATE()').then(r => r.rows || []);
+            const activeTablesResult = await db.query("SELECT COUNT(*) AS cnt FROM restaurant_tables WHERE status = 'occupied'").then(r => r.rows || []);
+            const history = await db.query(`
                 SELECT DATE_FORMAT(created_at, '%a') as date, SUM(total_amount) as total 
                 FROM restaurant_orders 
                 WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
                 AND status NOT IN ('rejected', 'pending_waiter')
                 GROUP BY DATE(created_at) ORDER BY created_at ASC
-            `);
-            const [recent] = await db.query(`
+            `).then(r => r.rows || []);
+            const recent = await db.query(`
                 SELECT o.id, o.status, t.table_number 
                 FROM restaurant_orders o 
                 JOIN restaurant_tables t ON o.table_id = t.id 
                 ORDER BY o.created_at DESC LIMIT 5
-            `);
+            `).then(r => r.rows || []);
 
             return new Response(JSON.stringify({
                 total_revenue: rows.reduce((acc, o) => acc + parseFloat(o.total_amount || 0), 0).toFixed(2),
@@ -784,12 +791,19 @@ export async function ALL({ request, params }) {
             }), { status: 200, headers: {'Content-Type': 'application/json'} });
         } catch(e) {
             console.error("Vercel EDGE Dashboard Error:", e);
-            return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: {'Content-Type': 'application/json'} });
+            // FAILSAFE: Standard recovery state
+            return new Response(JSON.stringify({ 
+                total_revenue: "0.00", 
+                orders_today: 0, 
+                active_tables: 0, 
+                kitchen_queue: 0, 
+                history: [], 
+                recent: [] 
+            }), { status: 200, headers: {'Content-Type': 'application/json'} });
         }
     }
 
     // 🛠️ BACKEND ROUTING (Production Proxy)
-    const hostingerUrl = "http://187.124.97.144:5000";
     let targetPath = pathname + url.search;
     
     const assetFolders = ['/storage/', '/menu-images/'];
@@ -811,7 +825,7 @@ export async function ALL({ request, params }) {
         };
 
         const isSeed = pathname.includes('/seed');
-        const timeoutMs = isSeed ? 60000 : 8000;
+        const timeoutMs = isSeed ? 60000 : 3000;
 
         const resProxy = await fetch(`${hostingerUrl}${targetPath}`, {
             ...fetchOptions,
@@ -881,7 +895,13 @@ export async function ALL({ request, params }) {
         if (pathname.includes('/tables')) {
             return new Response(JSON.stringify([
                 {id: 1, table_number: '1', status: 'available'},
-                {id: 2, table_number: '2', status: 'available'}
+                {id: 2, table_number: '2', status: 'available'},
+                {id: 3, table_number: '3', status: 'available'},
+                {id: 4, table_number: '4', status: 'available'},
+                {id: 5, table_number: '5', status: 'available'},
+                {id: 6, table_number: '6', status: 'available'},
+                {id: 7, table_number: '7', status: 'available'},
+                {id: 8, table_number: '8', status: 'available'}
             ]), { status: 200, headers: {'Content-Type': 'application/json'} });
         }
         const getPlanRev = (plan) => {

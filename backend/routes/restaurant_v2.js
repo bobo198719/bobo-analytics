@@ -12,29 +12,25 @@ router.get('/menu', async (req, res) => {
     const fallbackPath = path.join(__dirname, '../data/restaurant_menu.json');
 
     try {
-        const { rows } = await db.query('SELECT * FROM menu_items ORDER BY category ASC');
-        if (rows && rows.length > 0) {
-            return res.json(rows);
-        }
+        const { rows: dbItems } = await db.query('SELECT * FROM menu_items ORDER BY category ASC');
         
-        // Fallback to local JSON if DB is empty 
+        let catalogItems = [];
         if (fs.existsSync(fallbackPath)) {
-            const localData = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
-            return res.json(localData);
+            catalogItems = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
+        }
+
+        // Hybrid Merge: DB Items + Catalog Items (avoiding duplicates by name)
+        const dbNames = new Set(dbItems.map(it => it.name.toLowerCase()));
+        const uniqueCatalog = catalogItems.filter(it => !dbNames.has(it.name.toLowerCase()));
+        
+        return res.json([...dbItems, ...uniqueCatalog].slice(0, 1000)); // Limit to first 1k for speed
+    } catch (err) { 
+        console.error("Menu Sync Lag:", err.message);
+        // Instant Fallback
+        if (fs.existsSync(fallbackPath)) {
+            return res.json(JSON.parse(fs.readFileSync(fallbackPath, 'utf8')));
         }
         res.json([]);
-    } catch (err) { 
-        console.error("Menu DB Fail:", err.message);
-        // Critical Fallback on DB Timeout/Error
-        try {
-            if (fs.existsSync(fallbackPath)) {
-                const localData = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
-                return res.json(localData);
-            }
-        } catch (e) {
-            console.error("Critical Fallback Error:", e.message);
-        }
-        res.status(500).json({ error: "Catalog Offline - Syncing..." }); 
     }
 });
 
@@ -99,7 +95,11 @@ router.post('/orders', async (req, res) => {
 router.get('/tables', async (req, res) => {
     try {
         const { rows } = await db.query('SELECT * FROM restaurant_tables ORDER BY table_number ASC');
-        res.json(rows);
+        if (rows.length > 0) return res.json(rows);
+        
+        // Default Provisioning if DB is isolated
+        const defaults = Array.from({length: 12}, (_, i) => ({ id: i+1000, table_number: String(i+1), status: 'available' }));
+        res.json(defaults);
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -117,7 +117,16 @@ router.post('/tables', async (req, res) => {
 
 router.delete('/tables/:id', async (req, res) => {
     try {
-        await db.query('DELETE FROM restaurant_tables WHERE id = ?', [req.params.id]);
+        const { id } = req.params;
+        const { rows } = await db.query('SELECT table_number FROM restaurant_tables WHERE id = ?', [id]);
+        const tbl = rows[0];
+        if (tbl) {
+            const tableNum = String(tbl.table_number);
+            for (const [key, val] of global.__QR_ORDERS__.entries()) {
+                if (String(val.table_id) === tableNum) global.__QR_ORDERS__.delete(key);
+            }
+        }
+        await db.query('DELETE FROM restaurant_tables WHERE id = ?', [id]);
         res.json({ success: true });
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -125,8 +134,26 @@ router.delete('/tables/:id', async (req, res) => {
 router.put('/tables/:id/status', async (req, res) => {
     try {
         const { status } = req.body;
-        await db.query('UPDATE restaurant_tables SET status = ? WHERE id = ?', [status, req.params.id]);
-        const { rows } = await db.query('SELECT * FROM restaurant_tables WHERE id = ?', [req.params.id]);
+        const { id } = req.params;
+        
+        // 1. Update SQL DB
+        await db.query('UPDATE restaurant_tables SET status = ? WHERE id = ?', [status, id]);
+        
+        // 2. If status is 'available', clear associated optimistic orders
+        if (status === 'available') {
+            const { rows } = await db.query('SELECT table_number FROM restaurant_tables WHERE id = ?', [id]);
+            const tbl = rows[0];
+            if (tbl) {
+                const tableNum = String(tbl.table_number);
+                for (const [key, val] of global.__QR_ORDERS__.entries()) {
+                    if (String(val.table_id) === tableNum) {
+                        global.__QR_ORDERS__.delete(key);
+                    }
+                }
+            }
+        }
+
+        const { rows } = await db.query('SELECT * FROM restaurant_tables WHERE id = ?', [id]);
         res.json(rows[0]);
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -198,15 +225,25 @@ const persistQrToDb = async (order) => {
 router.get('/qr-orders', async (req, res) => {
     const { order_id, active_only } = req.query;
     if (order_id) {
+        // High Speed Memory First
         const memOrder = global.__QR_ORDERS__.get(order_id);
         if (memOrder) return res.json({ order: memOrder });
-        try {
-            const [rows] = await db.query('SELECT * FROM restaurant_qr_orders WHERE order_id = ?', [order_id]);
-            if (rows[0]) global.__QR_ORDERS__.set(order_id, rows[0]);
-            return res.json({ order: rows[0] || null });
-        } catch (e) {
-            return res.json({ order: null });
-        }
+        
+        // Fallback to DB with high sensitivity (protect against hangs)
+        const dbPromise = db.query('SELECT * FROM restaurant_qr_orders WHERE order_id = ?', [order_id])
+            .then(({ rows }) => {
+                if (rows && rows[0]) {
+                    global.__QR_ORDERS__.set(order_id, rows[0]);
+                    return { order: rows[0] };
+                }
+                return { order: null };
+            })
+            .catch(() => ({ order: null }));
+
+        // racing with a 1.5s timeout for the tracker
+        const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ order: null, error: 'DB_LATENCY' }), 1500));
+        const result = await Promise.race([dbPromise, timeoutPromise]);
+        return res.json(result);
     }
     if (active_only) {
         const allOrders = Array.from(global.__QR_ORDERS__.values())
@@ -342,6 +379,10 @@ router.get('/dashboard', async (req, res) => {
         const [rows] = await db.rawPool.execute('SELECT * FROM restaurant_orders WHERE DATE(created_at) = CURDATE()');
         const [activeTablesResult] = await db.rawPool.execute("SELECT COUNT(*) AS cnt FROM restaurant_tables WHERE status = 'occupied'");
         
+        // Memory orders (Optimistic Engine)
+        const memoryOrders = Array.from(global.__QR_ORDERS__.values());
+        const memoryProfit = memoryOrders.reduce((sum, o) => sum + (Number(o.total) || 0), 0);
+
         // Extended Dashboard: Weekly history for the chart
         const [history] = await db.rawPool.execute(`
             SELECT DATE_FORMAT(created_at, '%a') as date, SUM(total_amount) as total 
@@ -351,7 +392,18 @@ router.get('/dashboard', async (req, res) => {
             GROUP BY DATE(created_at) ORDER BY created_at ASC
         `);
 
-        // Extended Dashboard: Recent 5 orders
+        // Merge today's memory into history
+        const todayDay = new Intl.DateTimeFormat('en-US', {weekday: 'short'}).format(new Date()).toUpperCase();
+        const finalHistory = (history || []).map(h => {
+             if (h.date.toUpperCase() === todayDay) {
+                 return { ...h, total: parseFloat(h.total || 0) + memoryProfit };
+             }
+             return h;
+        });
+        if (!finalHistory.find(h => h.date.toUpperCase() === todayDay)) {
+             finalHistory.push({ date: todayDay, total: memoryProfit });
+        }
+
         const [recent] = await db.rawPool.execute(`
             SELECT o.id, o.status, t.table_number 
             FROM restaurant_orders o 
@@ -360,11 +412,12 @@ router.get('/dashboard', async (req, res) => {
         `);
 
         res.json({
-            total_revenue: rows.reduce((acc, o) => acc + parseFloat(o.total_amount || 0), 0).toFixed(2),
-            orders_today: rows.length,
+            total_revenue: (rows.reduce((acc, o) => acc + parseFloat(o.total_amount || 0), 0) + memoryProfit).toFixed(2),
+            orders_today: rows.length + memoryOrders.length,
             active_tables: activeTablesResult[0]?.cnt || 0,
-            kitchen_queue: rows.filter(o => o.status === 'pending_waiter' || o.status === 'confirmed').length,
-            history,
+            kitchen_queue: rows.filter(o => ['waiter_confirmed', 'kitchen_preparing'].includes(o.status)).length + 
+                           memoryOrders.filter(o => ['waiter_confirmed', 'kitchen_preparing'].includes(o.status)).length,
+            history: finalHistory,
             recent
         });
     } catch (err) { res.status(500).json({ error: err.message }); }
@@ -375,9 +428,35 @@ router.post('/seed-orders', async (req, res) => {
         const { orders } = req.body;
         console.log(`Seeding ${orders.length} orders...`);
         const values = orders.map(o => [o.table_id, o.status, parseFloat(o.total_amount), parseFloat(o.gst_amount), '', o.items, o.created_at]);
-        await db.rawPool.query('INSERT INTO restaurant_orders (table_id, status, total_amount, gst_amount, special_notes, items, created_at) VALUES ?', [values]);
+        await db.query('INSERT IGNORE INTO restaurant_orders (table_id, status, total_amount, gst_amount, waiter_name, items, created_at) VALUES ?', [values]);
         res.json({ success: true, count: orders.length });
     } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.post('/seed-menu', async (req, res) => {
+    const fs = require('fs');
+    const path = require('path');
+    const catalogPath = path.join(__dirname, '../data/restaurant_menu.json');
+
+    try {
+        if (!fs.existsSync(catalogPath)) throw new Error("Catalog File Missing");
+        const items = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
+        
+        // Use a pool to batch insert for speed (Standard MariaDB Batch)
+        const values = items.map(it => [
+            it.name, it.category, it.type, it.price, it.gst_percent || 5, it.image_url || ''
+        ]);
+
+        await db.query('DELETE FROM menu_items'); // Clear previous fragments
+        await db.query(`
+            INSERT INTO menu_items (name, category, type, price, gst_percent, image_url) 
+            VALUES ?
+        `, [values]);
+
+        res.json({ success: true, count: items.length });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 /**

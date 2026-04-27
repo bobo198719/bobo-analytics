@@ -4,8 +4,21 @@ export async function GET() {
     try {
         const mysql = await import('mysql2/promise');
         const db = await mysql.createConnection({
-            host: 'srv1449576.hstgr.cloud', user: 'bobo_admin', password: 'BoboPass2026!', database: 'bobo_analytics', connectTimeout: 200
+            host: 'srv1449576.hstgr.cloud', user: 'bobo_admin', password: 'BoboPass2026!', database: 'bobo_analytics', connectTimeout: 5000
         });
+        
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS restaurant_orders (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                table_id INT,
+                status VARCHAR(50),
+                total_amount DECIMAL(10,2),
+                gst_amount DECIMAL(10,2),
+                special_notes TEXT,
+                items LONGTEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
         
         const [[stats]] = await db.query(`
             SELECT 

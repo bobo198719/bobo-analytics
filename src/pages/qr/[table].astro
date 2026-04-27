@@ -359,23 +359,23 @@ try {
 
               const total = cart.reduce((acc, c) => acc + (c.price * c.qty), 0);
 
-              const res = await fetch('/api/v2/restaurant/orders', {
+              const res = await fetch('/api/v2/restaurant/qr-orders', {
                   method: 'POST',
                   headers: {'Content-Type': 'application/json'},
                   body: JSON.stringify({
-                      table_id: tableId,
+                      table: table,
                       items: cart,
-                      special_notes: 'QR Express Order',
-                      status: 'waiter_confirmed' // Auto-confirm to skip waiter bottleneck
+                      total: total,
+                      status: 'placed'
                   })
               });
 
               const data = await res.json();
 
-              if (data.success || data.orderId) {
+              if (data.success || data.order_id) {
                   toggleCart();
                   document.getElementById('viewMenuHub').classList.add('hidden');
-                  activeOrderId = data.orderId || data.order_id;
+                  activeOrderId = data.order_id;
                   localStorage.setItem('active_qr_order_' + table, activeOrderId);
                   showTracker();
               } else {
@@ -401,14 +401,14 @@ try {
           const f = async () => {
               if(!activeOrderId) return;
               try {
-                  const res = await fetch(`/api/v2/restaurant/orders/${activeOrderId}`);
-                  const order = await res.json();
+                  const res = await fetch(`/api/v2/restaurant/qr-orders?order_id=${activeOrderId}`);
+                  const { order } = await res.json();
                   if (order && !order.error) {
                       renderTrackerSteps(order.status, order.total_amount);
                   }
               } catch(e) {}
           };
-          f(); pollInterval = setInterval(f, 5000);
+          f(); pollInterval = setInterval(f, 2000);
        };
 
        const renderTrackerSteps = (status, total) => {
@@ -435,10 +435,10 @@ try {
         window.simulatePayment = async () => {
           if(!activeOrderId) return;
           document.querySelector('#paymentBox button').innerText = "Processing...";
-          await fetch(`/api/v2/restaurant/orders/${activeOrderId}`, { 
+          await fetch(`/api/v2/restaurant/qr-orders`, { 
               method: 'PATCH', 
               headers: {'Content-Type':'application/json'}, 
-              body: JSON.stringify({ status: 'paid' }) 
+              body: JSON.stringify({ order_id: activeOrderId, status: 'paid' }) 
           });
           // Update tracker instantly via local memory mimic
           renderTrackerSteps('paid', document.getElementById('liveTotal').innerText);

@@ -18,7 +18,17 @@ const CRMManager = () => {
         { id: 4, name: "Sanya Gupta", email: "sanya.g@example.com", phone: "+91 77777 66666", visits: 5, spend: "₹4,100", favorite: "Dal Makhani", points: 150, tier: "Bronze" }
     ]);
 
-    const [searchTerm, setSearchTerm] = useState("");
+    const [campaignStatus, setCampaignStatus] = useState({});
+    const [loadingCampaign, setLoadingCampaign] = useState(null);
+
+    const activateCampaign = async (campaignName) => {
+        setLoadingCampaign(campaignName);
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        setCampaignStatus(prev => ({ ...prev, [campaignName]: 'active' }));
+        setLoadingCampaign(null);
+        alert(`Neural Pipeline: "${campaignName}" has been successfully broadcasted to target nodes.`);
+    };
 
     return (
         <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -26,7 +36,7 @@ const CRMManager = () => {
             {/* HUB HEADER */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div className="space-y-2">
-                    <h1 className="text-4xl font-black italic uppercase italic text-white flex items-center gap-4">
+                    <h1 className="text-4xl font-black italic uppercase text-white flex items-center gap-4">
                         Guest <span className="bg-gradient-to-r from-orange-500 to-rose-400 bg-clip-text text-transparent">Intelligence Hub</span>
                     </h1>
                     <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.4em] italic leading-none">Global CRM Terminal | Personalized Loyalty Engine</p>
@@ -43,7 +53,7 @@ const CRMManager = () => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
-                    <button className="px-8 py-4 bg-orange-600 rounded-2xl text-[10px] font-black uppercase tracking-widest italic hover:scale-105 transition-all">
+                    <button className="px-8 py-4 bg-orange-600 rounded-2xl text-[10px] font-black uppercase tracking-widest italic hover:scale-105 transition-all shadow-xl shadow-orange-600/20">
                         + New Profile
                     </button>
                 </div>
@@ -181,15 +191,31 @@ const CRMManager = () => {
                                 <p className="text-sm font-black italic uppercase text-white leading-none">Weekend Surge Invite</p>
                                 <p className="text-[10px] text-white/40 mt-1 italic">Targeting 452 High-Retention guests for Friday night.</p>
                             </div>
-                            <button className="px-6 py-2 bg-indigo-600 rounded-xl text-[9px] font-black uppercase italic">Activate</button>
+                            <button 
+                                onClick={() => activateCampaign('Weekend Surge')} 
+                                disabled={loadingCampaign === 'Weekend Surge' || campaignStatus['Weekend Surge'] === 'active'}
+                                className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase italic transition-all ${
+                                    campaignStatus['Weekend Surge'] === 'active' ? 'bg-emerald-500 text-black' : 'bg-indigo-600 text-white'
+                                }`}
+                            >
+                                {loadingCampaign === 'Weekend Surge' ? 'Sending...' : campaignStatus['Weekend Surge'] === 'active' ? 'Sent ✔' : 'Activate'}
+                            </button>
                         </div>
-                        <div className="flex items-center gap-6 p-6 bg-white/5 rounded-[32px] border border-white/5 opacity-50">
+                        <div className="flex items-center gap-6 p-6 bg-white/5 rounded-[32px] border border-white/5">
                             <div className="w-12 h-12 bg-rose-500/20 rounded-2xl flex items-center justify-center"><Award className="text-rose-400" /></div>
                             <div className="flex-1">
                                 <p className="text-sm font-black italic uppercase text-white leading-none">VVIP Appreciation Gift</p>
                                 <p className="text-[10px] text-white/40 mt-1 italic">Personalized coupon for Platinum and Gold tier.</p>
                             </div>
-                            <button className="px-6 py-2 bg-white/10 rounded-xl text-[9px] font-black uppercase italic">Scheduled</button>
+                            <button 
+                                onClick={() => activateCampaign('VVIP Gift')} 
+                                disabled={loadingCampaign === 'VVIP Gift' || campaignStatus['VVIP Gift'] === 'active'}
+                                className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase italic transition-all ${
+                                    campaignStatus['VVIP Gift'] === 'active' ? 'bg-emerald-500 text-black' : 'bg-rose-600 text-white'
+                                }`}
+                            >
+                                {loadingCampaign === 'VVIP Gift' ? 'Sending...' : campaignStatus['VVIP Gift'] === 'active' ? 'Sent ✔' : 'Activate'}
+                            </button>
                         </div>
                     </div>
                 </Card>

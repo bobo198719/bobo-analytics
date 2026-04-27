@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, LogOut, Printer, AlertTriangle, MonitorPlay, Usb } from 'lucide-react';
+import { ShoppingCart, LogOut, Printer, AlertTriangle, MonitorPlay, Usb, Zap } from 'lucide-react';
 import { ThermalPrinter } from '../../utils/ThermalPrinter.js';
+import { calculateOrderTotals } from '../../utils/finance.js';
 
 const TouchPOS = () => {
   const [categories, setCategories] = useState(['All', 'Starters', 'Main Course', 'Beverages', 'Desserts']);
@@ -13,6 +14,7 @@ const TouchPOS = () => {
   const [fsMode, setFsMode] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [financeSettings, setFinanceSettings] = useState({ surcharges: [], discounts: [], isoFeeMode: 'pass_on' });
   const role = typeof window !== 'undefined' ? localStorage.getItem('ro_role') || 'owner' : 'owner';
   const isOwner = role === 'owner';
 
@@ -45,6 +47,21 @@ const TouchPOS = () => {
   useEffect(() => {
     setItems(menuData);
     setTables(tablesData);
+
+    // Fetch Finance Settings
+    const fetchFinance = async () => {
+        try {
+            const res = await fetch('/api/settings/restaurant_finance');
+            if (res.ok) {
+                const data = await res.json();
+                setFinanceSettings(data);
+            }
+        } catch (e) {
+            const local = localStorage.getItem('ro_finance_settings');
+            if (local) setFinanceSettings(JSON.parse(local));
+        }
+    };
+    fetchFinance();
 
     const handleKeyboard = (e) => {
         // QUICK SEARCH (/)
@@ -107,8 +124,9 @@ const TouchPOS = () => {
   };
 
   const getSubtotal = () => cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-  const getGST = () => getSubtotal() * 0.05;
-  const getTotal = () => getSubtotal() + getGST();
+  
+  // New Calculation Engine
+  const { tax, total, isoFee, surcharges, discounts } = calculateOrderTotals(getSubtotal(), financeSettings);
 
   const handleGenerateBill = async () => {
     if (!selectedTable) return alert("Please select a table before generating the bill!");
@@ -136,7 +154,7 @@ const TouchPOS = () => {
            body: JSON.stringify({
                order_id: orderId,
                items: cart,
-               total_amount: getTotal(),
+               total_amount: total,
                table_id: selectedTable,
                saas_tenant_id: "demo_rest_01"
            })
@@ -154,8 +172,11 @@ const TouchPOS = () => {
                    table: tables.find(t=>t.id === selectedTable)?.num || 'Unknown',
                    items: cart,
                    subtotal: getSubtotal(),
-                   tax: getGST(),
-                   total: getTotal()
+                   tax,
+                   surcharges,
+                   discounts,
+                   isoFee,
+                   total
                });
                await printer.disconnect();
                showToast("Thermal Print Successful ✔");
@@ -199,9 +220,14 @@ const TouchPOS = () => {
                 </div>
             ))}
             <div className="border-b-2 border-dashed border-black my-4"></div>
-            <div className="flex justify-between font-bold"><span>Subtotal:</span><span>₹{getSubtotal().toFixed(2)}</span></div>
-            <div className="flex justify-between font-bold"><span>Tax (5%):</span><span>₹{getGST().toFixed(2)}</span></div>
-            <div className="flex justify-between text-2xl font-black mt-4"><span>TOTAL:</span><span>₹{getTotal().toFixed(2)}</span></div>
+            <div className="space-y-1">
+                <div className="flex justify-between font-bold"><span>Subtotal:</span><span>₹{getSubtotal().toFixed(2)}</span></div>
+                {surcharges > 0 && <div className="flex justify-between text-[10px]"><span>Surcharges:</span><span>₹{surcharges.toFixed(2)}</span></div>}
+                {discounts > 0 && <div className="flex justify-between text-[10px] text-green-700"><span>Discounts:</span><span>-₹{discounts.toFixed(2)}</span></div>}
+                <div className="flex justify-between font-bold"><span>Tax (5%):</span><span>₹{tax.toFixed(2)}</span></div>
+                {isoFee > 0 && <div className="flex justify-between text-[10px] italic"><span>ISO Processing Fee (3.5%):</span><span>₹{isoFee.toFixed(2)}</span></div>}
+            </div>
+            <div className="flex justify-between text-2xl font-black mt-4 pt-4 border-t-2 border-black"><span>TOTAL:</span><span>₹{total.toFixed(2)}</span></div>
             
             <div className="grid grid-cols-2 gap-4 mt-10 no-print">
                <button onClick={handlePrintDone} className="bg-red-500 text-white py-4 font-bold border-none">CANCEL / CLOSE</button>
@@ -344,20 +370,34 @@ const TouchPOS = () => {
 
             {/* Generate Bill Footer */}
             <div className="bg-[#111] p-6 border-t border-[#333] shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
-               <div className="flex justify-between items-center font-black text-gray-400 text-lg mb-2">
-                  <span>Subtotal</span>
-                  <span>₹{getSubtotal().toFixed(2)}</span>
-               </div>
-               <div className="flex justify-between items-center font-black text-gray-400 text-lg mb-4 cursor-pointer">
-                  <span>Tax (5%)</span>
-                  <span>₹{getGST().toFixed(2)}</span>
+               <div className="space-y-1 mb-4">
+                  <div className="flex justify-between items-center font-bold text-gray-500 text-xs uppercase">
+                     <span>Subtotal</span>
+                     <span>₹{getSubtotal().toFixed(2)}</span>
+                  </div>
+                  {surcharges > 0 && <div className="flex justify-between items-center font-bold text-emerald-500/50 text-[10px] uppercase">
+                     <span>Surcharges</span>
+                     <span>+₹{surcharges.toFixed(2)}</span>
+                  </div>}
+                  {discounts > 0 && <div className="flex justify-between items-center font-bold text-rose-500/50 text-[10px] uppercase">
+                     <span>Discounts</span>
+                     <span>-₹{discounts.toFixed(2)}</span>
+                  </div>}
+                  <div className="flex justify-between items-center font-bold text-gray-500 text-xs uppercase">
+                     <span>Tax (5%)</span>
+                     <span>₹{tax.toFixed(2)}</span>
+                  </div>
+                  {isoFee > 0 && <div className="flex justify-between items-center font-black text-orange-500/80 text-[10px] uppercase italic">
+                     <span>ISO Fee (Pass-on)</span>
+                     <span>₹{isoFee.toFixed(2)}</span>
+                  </div>}
                </div>
                <div className="flex justify-between items-center mb-6">
                   <div>
                      <span className="font-black text-xl text-gray-300 block">TOTAL</span>
                      {cart.length > 0 && <button onClick={() => setCart([])} className="clear-btn text-red-500 font-bold uppercase text-xs hover:underline mt-1">Clear Cart</button>}
                   </div>
-                  <span className="font-black text-white tracking-tighter" style={{ fontSize: '42px' }}>₹{getTotal().toFixed(2)}</span>
+                  <span className="font-black text-white tracking-tighter" style={{ fontSize: '42px' }}>₹{total.toFixed(2)}</span>
                </div>
                 {isOwner ? (
                 <button 

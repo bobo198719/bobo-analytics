@@ -16,7 +16,7 @@ export async function POST({ request }) {
             user: 'bobo_admin',
             password: 'BoboPass2026!',
             database: 'bobo_analytics',
-            connectTimeout: 200
+            connectTimeout: 5000
         });
 
         // Ensure POS table exists
