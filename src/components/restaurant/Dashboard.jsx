@@ -236,7 +236,7 @@ const Dashboard = () => {
             {/* OS HEADER */}
             <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/5 border border-white/10 p-6 rounded-[32px] relative overflow-hidden group shadow-2xl">
                 <div className="relative z-10">
-                   <h1 className="text-2xl font-black italic uppercase tracking-tighter leading-none text-white">Restaurant <span className="bg-gradient-to-r from-orange-500 to-rose-400 bg-clip-text text-transparent">Intelligence</span></h1>
+                   <h1 className="text-2xl font-black italic uppercase tracking-tighter leading-none text-white">Hub <span className="bg-gradient-to-r from-orange-500 to-rose-400 bg-clip-text text-transparent">Synchronized</span></h1>
                    <p className="text-white/30 text-[9px] font-black uppercase tracking-[0.4em] mt-2 italic leading-none">Autonomous Operation Matrix | V2.3 | Active Terminal: ID-001</p>
                 </div>
                 <div className="flex items-center gap-4 relative z-10">
