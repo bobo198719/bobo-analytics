@@ -62,11 +62,12 @@ export async function GET({ request, url }) {
         }
         try {
             const db = await getPool();
-            const [rows] = await db.query('SELECT * FROM restaurant_qr_orders WHERE order_id = ?', [orderId]);
+            const [rows] = await db.execute({ sql: 'SELECT * FROM restaurant_qr_orders WHERE order_id = ?', timeout: 1500 }, [orderId]);
             if (rows[0]) global.__QR_ORDERS__.set(orderId, rows[0]);
             return new Response(JSON.stringify({ order: rows[0] || null }), { status: 200, headers: { 'Content-Type': 'application/json' } });
         } catch (e) {
-            return new Response(JSON.stringify({ order: null }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+            console.warn("[QR API GET Fail]:", e.message);
+            return new Response(JSON.stringify({ order: null, error: 'TIMEOUT' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
         }
     }
 

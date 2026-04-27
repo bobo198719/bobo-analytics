@@ -204,22 +204,13 @@ if (!global.__QR_ORDERS__) global.__QR_ORDERS__ = new Map();
 // Helper to push to MySQL safely (fire-and-forget)
 const persistQrToDb = async (order) => {
     try {
-        await db.query(`
-            CREATE TABLE IF NOT EXISTS restaurant_qr_orders (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                order_id VARCHAR(50) UNIQUE,
-                table_id VARCHAR(20),
-                items LONGTEXT,
-                total_amount INT,
-                status VARCHAR(50) DEFAULT 'placed',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
         await db.query(
             'INSERT IGNORE INTO restaurant_qr_orders (order_id, table_id, items, total_amount, status) VALUES (?, ?, ?, ?, ?)',
             [order.order_id, order.table_id, JSON.stringify(order.items), order.total_amount, order.status]
         );
-    } catch(e) {}
+    } catch(e) {
+        console.error("[QR DB Persist Error]:", e.message);
+    }
 };
 
 router.get('/qr-orders', async (req, res) => {
@@ -231,17 +222,20 @@ router.get('/qr-orders', async (req, res) => {
         
         // Fallback to DB with high sensitivity (protect against hangs)
         const dbPromise = db.query('SELECT * FROM restaurant_qr_orders WHERE order_id = ?', [order_id])
-            .then(({ rows }) => {
+            .then(([rows]) => {
                 if (rows && rows[0]) {
                     global.__QR_ORDERS__.set(order_id, rows[0]);
                     return { order: rows[0] };
                 }
                 return { order: null };
             })
-            .catch(() => ({ order: null }));
+            .catch((err) => {
+                console.error("[QR DB Fetch Error]:", err.message);
+                return { order: null };
+            });
 
-        // racing with a 1.5s timeout for the tracker
-        const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ order: null, error: 'DB_LATENCY' }), 1500));
+        // racing with a 0.8s timeout for the tracker (tighter for production)
+        const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ order: null, error: 'DB_LATENCY' }), 800));
         const result = await Promise.race([dbPromise, timeoutPromise]);
         return res.json(result);
     }

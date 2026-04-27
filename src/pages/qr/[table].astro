@@ -377,12 +377,13 @@ try {
                   document.getElementById('viewMenuHub').classList.add('hidden');
                   activeOrderId = data.order_id;
                   localStorage.setItem('active_qr_order_' + table, activeOrderId);
-                  // CACHE STATE FOR INSTANT LOAD
+                  
+                  // OPTIMISTIC CACHE: Store current state for instant reload
                   localStorage.setItem('last_order_state_' + table, JSON.stringify({
                       total,
-                      items: cart,
                       status: 'placed'
                   }));
+                  
                   showTracker();
               } else {
                   throw new Error(data.error || 'Order rejected by server');
@@ -416,18 +417,27 @@ try {
        const pollStatus = async () => {
           const f = async () => {
               if(!activeOrderId) return;
+              const controller = new AbortController();
+              const tId = setTimeout(() => controller.abort(), 2500); // 2.5s timeout for production
               try {
-                  const res = await fetch(`/api/v2/restaurant/qr-orders?order_id=${activeOrderId}`);
+                  const res = await fetch(`/api/v2/restaurant/qr-orders?order_id=${activeOrderId}&v=${Date.now()}`, { signal: controller.signal });
                   const { order } = await res.json();
+                  clearTimeout(tId);
                   if (order && !order.error) {
                       renderTrackerSteps(order.status, order.total_amount);
+                      // Keep cache fresh
+                      localStorage.setItem('last_order_state_' + table, JSON.stringify({
+                           total: order.total_amount,
+                           status: order.status
+                      }));
                   }
-              } catch(e) {}
+              } catch(e) { /* sync occurs next cycle */ }
           };
-          f(); pollInterval = setInterval(f, 2000);
+          f(); pollInterval = setInterval(f, 3000);
        };
 
        const renderTrackerSteps = (status, total) => {
+          if (!status) return; // Protect against empty syncs
           document.getElementById('liveTotal').innerText = total || 0;
           const states = [
              { key: 'placed', label: 'Order Placed', desc: 'Waiting for confirmation', icon: '📝' },
@@ -439,18 +449,24 @@ try {
           ];
           const currentIndex = states.findIndex(s => s.key === status);
           const c = document.querySelector('#viewTracker > .space-y-6');
+          if (!c) return;
           c.innerHTML = states.map((s, idx) => {
               const color = idx < currentIndex ? 'bg-emerald-500' : (idx === currentIndex ? 'bg-orange-500 animate-pulse' : 'bg-[#333]');
               const textColor = idx > currentIndex ? 'text-white/30' : 'text-white';
               return `<div class="relative flex items-center justify-between group"><div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-[#111] ${color} shrink-0 z-10 text-lg">${s.icon}</div><div class="w-[calc(100%-4rem)] bg-[#222] p-4 rounded-2xl border border-[#333] shadow-lg ${textColor}"><h4 class="font-black uppercase text-sm">${s.label}</h4><p class="text-[10px] opacity-70 border-t border-white/5 pt-2 mt-2 font-bold">${s.desc}</p></div></div>`
           }).join('');
-          if (status === 'served') document.getElementById('paymentBox').classList.remove('hidden');
-          if (status === 'paid') { clearInterval(pollInterval); document.getElementById('paymentBox').classList.add('hidden'); document.getElementById('feedbackBox').classList.remove('hidden'); }
+          if (status === 'served') document.getElementById('paymentBox') && document.getElementById('paymentBox').classList.remove('hidden');
+          if (status === 'paid') { 
+              clearInterval(pollInterval); 
+              document.getElementById('paymentBox') && document.getElementById('paymentBox').classList.add('hidden'); 
+              document.getElementById('feedbackBox') && document.getElementById('feedbackBox').classList.remove('hidden'); 
+          }
        };
 
         window.simulatePayment = async () => {
           if(!activeOrderId) return;
-          document.querySelector('#paymentBox button').innerText = "Processing...";
+          const btn = document.querySelector('#paymentBox button');
+          if (btn) btn.innerText = "Processing...";
           await fetch(`/api/v2/restaurant/qr-orders`, { 
               method: 'PATCH', 
               headers: {'Content-Type':'application/json'}, 
