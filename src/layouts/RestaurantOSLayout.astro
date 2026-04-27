@@ -409,14 +409,18 @@ const { title = "Restaurant OS" } = Astro.props;
         function syncTerminalViewState() {
             const h = window.location.hash.substring(1) || defaultHash;
             
-            // Toggle Content Nodes
-            document.querySelectorAll('.section').forEach(sec => {
+            // --- HEARTBEAT NODE SYNC ---
+            const nodes = document.querySelectorAll('[data-section-node]');
+            if (nodes.length === 0) return; // Wait for hydration
+            
+            nodes.forEach(sec => {
                 const isTarget = sec.id === (h + 'Section');
                 if (isTarget) {
                     if (sec.style.display !== 'block') {
                         sec.style.setProperty('display', 'block', 'important');
                         sec.classList.remove('hidden');
                         sec.classList.add('active');
+                        console.log("🔓 TERMINAL NODE ACTIVE:", h);
                     }
                 } else {
                     if (sec.style.display !== 'none') {

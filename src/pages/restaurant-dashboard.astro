@@ -65,53 +65,53 @@ import "../styles/restaurant.css";
       </div>
    </nav>
 
-   <div id="dashboardSection" class="section active animate-in fade-in transition-all">
+   <div id="dashboardSection" data-section-node class="section active animate-in fade-in transition-all">
       <Dashboard client:load />
    </div>
 
-   <div id="posSection" class="section hidden animate-in fade-in transition-all">
+   <div id="posSection" data-section-node class="section hidden animate-in fade-in transition-all">
       <TouchPOS client:load />
    </div>
 
-   <div id="tablesSection" class="section hidden animate-in fade-in transition-all">
+   <div id="tablesSection" data-section-node class="section hidden animate-in fade-in transition-all">
       <Tables client:load />
    </div>
 
-   <div id="kitchenSection" class="section hidden animate-in fade-in transition-all">
+   <div id="kitchenSection" data-section-node class="section hidden animate-in fade-in transition-all">
       <KDS client:load />
    </div>
 
-   <div id="menuSection" class="section hidden animate-in fade-in transition-all">
+   <div id="menuSection" data-section-node class="section hidden animate-in fade-in transition-all">
       <MenuManager client:load />
    </div>
 
-   <div id="analyticsSection" class="section hidden animate-in fade-in transition-all">
+   <div id="analyticsSection" data-section-node class="section hidden animate-in fade-in transition-all">
       <MatrixAnalytics client:only="react" />
    </div>
 
-   <div id="waiterSection" class="section hidden animate-in fade-in transition-all">
+   <div id="waiterSection" data-section-node class="section hidden animate-in fade-in transition-all">
       <div class="max-w-6xl mx-auto p-10">
          <WaiterDashboard client:load />
       </div>
    </div>
 
-   <div id="settingsSection" class="section hidden animate-in fade-in transition-all">
+   <div id="settingsSection" data-section-node class="section hidden animate-in fade-in transition-all">
       <SettingsNode client:load />
    </div>
 
-   <div id="uploadSection" class="section hidden animate-in fade-in transition-all">
+   <div id="uploadSection" data-section-node class="section hidden animate-in fade-in transition-all">
       <div class="max-w-6xl mx-auto p-10">
          <SmartUpload client:load />
       </div>
    </div>
 
-   <div id="crmSection" class="section hidden animate-in fade-in transition-all">
+   <div id="crmSection" data-section-node class="section hidden animate-in fade-in transition-all">
       <div class="max-w-7xl mx-auto p-10">
          <CRMManager client:load />
       </div>
    </div>
 
-   <div id="reportsSection" class="section hidden animate-in fade-in transition-all">
+   <div id="reportsSection" data-section-node class="section hidden animate-in fade-in transition-all">
       <div class="max-w-7xl mx-auto p-10">
          <DailyReport client:load />
       </div>
