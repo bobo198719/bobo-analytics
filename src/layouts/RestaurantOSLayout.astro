@@ -410,22 +410,29 @@ const { title = "Restaurant OS" } = Astro.props;
             const h = window.location.hash.substring(1) || defaultHash;
             
             // --- ABSOLUTE HUB SYNC ---
-            const targetId = (window.location.hash.substring(1) || defaultHash) + 'Section';
+            let h;
+            try {
+                h = window.location.hash.substring(1) || defaultHash;
+            } catch(e) { h = 'dashboard'; }
+            
+            const targetId = h + 'Section';
             const allNodes = document.querySelectorAll('[data-section-node]');
             
-            allNodes.forEach(node => {
-                if (node.id === targetId) {
-                    node.style.setProperty('display', 'block', 'important');
-                    node.style.setProperty('opacity', '1', 'important');
-                    node.style.setProperty('z-index', '50', 'important');
-                    node.classList.remove('hidden');
-                } else {
-                    node.style.setProperty('display', 'none', 'important');
-                    node.style.setProperty('opacity', '0', 'important');
-                    node.style.setProperty('z-index', '0', 'important');
-                    node.classList.add('hidden');
-                }
-            });
+            if (allNodes.length > 0) {
+                allNodes.forEach(node => {
+                    if (node.id === targetId) {
+                        node.style.setProperty('display', 'block', 'important');
+                        node.style.setProperty('opacity', '1', 'important');
+                        node.style.setProperty('visibility', 'visible', 'important');
+                        node.classList.remove('hidden');
+                    } else {
+                        node.style.setProperty('display', 'none', 'important');
+                        node.style.setProperty('opacity', '0', 'important');
+                        node.style.setProperty('visibility', 'hidden', 'important');
+                        node.classList.add('hidden');
+                    }
+                });
+            }
 
             // Sync Sidebar Links
             document.querySelectorAll('.nav-link').forEach(link => {
