@@ -24,121 +24,98 @@ import "../styles/restaurant.css";
        <!-- Legacy Nav Halted to prevent Z-Index Conflicts -->
     </nav>
 
-   <div id="dashboardSection" data-section-node class="section active animate-in fade-in transition-all">
-      <Dashboard client:load />
-   </div>
+    <div id="dashboard" data-section-node class="section active animate-in fade-in transition-all">
+       <Dashboard client:load />
+    </div>
 
-   <div id="posSection" data-section-node class="section hidden animate-in fade-in transition-all">
-      <TouchPOS client:load />
-   </div>
+    <div id="pos" data-section-node class="section hidden animate-in fade-in transition-all">
+       <TouchPOS client:load />
+    </div>
 
-   <div id="tablesSection" data-section-node class="section hidden animate-in fade-in transition-all">
-      <Tables client:load />
-   </div>
+    <div id="tables" data-section-node class="section hidden animate-in fade-in transition-all">
+       <Tables client:load />
+    </div>
 
-   <div id="kitchenSection" data-section-node class="section hidden animate-in fade-in transition-all">
-      <KDS client:load />
-   </div>
+    <div id="kitchen" data-section-node class="section hidden animate-in fade-in transition-all">
+       <KDS client:load />
+    </div>
 
-   <div id="menuSection" data-section-node class="section hidden animate-in fade-in transition-all">
-      <MenuManager client:load />
-   </div>
+    <div id="menu" data-section-node class="section hidden animate-in fade-in transition-all">
+       <MenuManager client:load />
+    </div>
 
-   <div id="analyticsSection" data-section-node class="section hidden animate-in fade-in transition-all">
-      <MatrixAnalytics client:only="react" />
-   </div>
+    <div id="analytics" data-section-node class="section hidden animate-in fade-in transition-all">
+       <MatrixAnalytics client:only="react" />
+    </div>
 
-   <div id="waiterSection" data-section-node class="section hidden animate-in fade-in transition-all">
-      <div class="max-w-6xl mx-auto p-10">
-         <WaiterDashboard client:load />
-      </div>
-   </div>
+    <div id="waiter" data-section-node class="section hidden animate-in fade-in transition-all">
+       <div class="max-w-6xl mx-auto p-10">
+          <WaiterDashboard client:load />
+       </div>
+    </div>
 
-   <div id="settingsSection" data-section-node class="section hidden animate-in fade-in transition-all">
-      <SettingsNode client:load />
-   </div>
+    <div id="settings" data-section-node class="section hidden animate-in fade-in transition-all">
+       <SettingsNode client:load />
+    </div>
 
-   <div id="uploadSection" data-section-node class="section hidden animate-in fade-in transition-all">
-      <div class="max-w-6xl mx-auto p-10">
-         <SmartUpload client:load />
-      </div>
-   </div>
+    <div id="upload" data-section-node class="section hidden animate-in fade-in transition-all">
+       <div class="max-w-6xl mx-auto p-10">
+          <SmartUpload client:load />
+       </div>
+    </div>
 
-   <div id="crmSection" data-section-node class="section hidden animate-in fade-in transition-all">
-      <div class="max-w-7xl mx-auto p-10">
-         <CRMManager client:load />
-      </div>
-   </div>
+    <div id="crm" data-section-node class="section hidden animate-in fade-in transition-all">
+       <div class="max-w-7xl mx-auto p-10">
+          <CRMManager client:load />
+       </div>
+    </div>
 
-   <div id="reportsSection" data-section-node class="section hidden animate-in fade-in transition-all">
-      <div class="max-w-7xl mx-auto p-10">
-         <DailyReport client:load />
-      </div>
-   </div>
+    <div id="reports" data-section-node class="section hidden animate-in fade-in transition-all">
+       <div class="max-w-7xl mx-auto p-10">
+          <DailyReport client:load />
+       </div>
+    </div>
 
 </RestaurantOSLayout>
 
+<style is:global>
+  .section { display: none !important; }
+  .section.active { display: block !important; }
+  .section:target { display: block !important; }
+</style>
+
 <script is:inline>
-     // --- TERMINAL HUB NAVIGATION HEARTBEAT (100ms) ---
-     (function initializeTerminalSync() {
-        console.log("🔓 TERMINAL SYNC ACTIVE: Listening for Node Shifts");
-        const initialRole = localStorage.getItem('ro_role') || 'owner';
-        const dH = initialRole === 'waiter' ? 'pos' : initialRole === 'chef' ? 'kitchen' : 'dashboard';
+     (function hSync() {
+        console.log("🔓 TERMINAL SYNC ACTIVE");
+        const dR = localStorage.getItem('ro_role') || 'owner';
+        const dH = dR === 'waiter' ? 'pos' : dR === 'chef' ? 'kitchen' : 'dashboard';
 
-        function syncTerminalViewState() {
+        function sync() {
             let h;
-            try { 
-                h = window.location.hash.substring(1) || dH;
-            } catch(e) { h = 'dashboard'; }
+            try { h = window.location.hash.substring(1) || dH; } catch(e) { h = 'dashboard'; }
             
-            const targetId = h + 'Section';
-            const allNodes = document.querySelectorAll('[data-section-node]');
-            
-            if (allNodes.length > 0) {
-                allNodes.forEach(node => {
-                    if (node.id === targetId) {
-                        node.style.setProperty('display', 'block', 'important');
-                        node.style.setProperty('opacity', '1', 'important');
-                        node.style.setProperty('visibility', 'visible', 'important');
-                        node.style.setProperty('pointer-events', 'auto', 'important');
-                        node.classList.remove('hidden');
-                    } else {
-                        node.style.setProperty('display', 'none', 'important');
-                        node.style.setProperty('opacity', '0', 'important');
-                        node.style.setProperty('visibility', 'hidden', 'important');
-                        node.style.setProperty('pointer-events', 'none', 'important');
-                        node.classList.add('hidden');
-                    }
-                });
-            }
+            document.querySelectorAll('[data-section-node]').forEach(n => {
+                if (n.id === h) {
+                    n.style.setProperty('display', 'block', 'important');
+                    n.classList.remove('hidden');
+                } else {
+                    n.style.setProperty('display', 'none', 'important');
+                    n.classList.add('hidden');
+                }
+            });
 
-             // Sync Sidebar Links
-             document.querySelectorAll('.nav-link').forEach(link => {
-                 const href = link.getAttribute('href');
-                 const iA = href && (href.includes('#' + h) || (h === 'dashboard' && href.endsWith('dashboard')));
-                 link.classList.toggle('active', !!iA);
-                 
-                 // FORCE RELOAD on first click to ensure sync if stuck
-                 if (link.dataset.bound !== 'true') {
-                     link.addEventListener('click', () => {
-                         setTimeout(() => window.location.reload(), 50);
-                     });
-                     link.dataset.bound = 'true';
-                 }
-             });
-            
-            document.body.classList.toggle('pos-active-mode', h === 'pos');
+            document.querySelectorAll('.nav-link').forEach(l => {
+                const href = l.getAttribute('href');
+                const iA = href && (href.includes('#' + h) || (h === 'dashboard' && href.endsWith('dashboard')));
+                l.classList.toggle('active', !!iA);
+            });
         }
 
-        setInterval(syncTerminalViewState, 100);
-        window.addEventListener('hashchange', syncTerminalViewState);
-        document.addEventListener('DOMContentLoaded', syncTerminalViewState);
-        syncTerminalViewState();
-
-        // Control Exports
+        setInterval(sync, 100);
+        window.addEventListener('hashchange', sync);
+        sync();
+        
         window.switchToSection = (t) => { window.location.hash = t; };
-        window.toggleBranchMenu = () => { document.getElementById('branchMenu')?.classList.toggle('opacity-100'); };
-        window.toggleRoleMenu = () => { document.getElementById('roleMenu')?.classList.toggle('opacity-100'); };
         window.setAccessMode = (r, d) => { localStorage.setItem('ro_role', r); localStorage.setItem('ro_role_display', d); window.location.reload(); };
      })();
 </script>
