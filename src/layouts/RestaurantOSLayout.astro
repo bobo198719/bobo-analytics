@@ -399,8 +399,89 @@ const { title = "Restaurant OS" } = Astro.props;
      window.addEventListener('storage', (e) => {
         if (e.key === 'ro_identity') syncIdentity();
      });
-     // Also sync on frequent intervals for in-memory changes
      setInterval(syncIdentity, 2000);
+
+     // --- TERMINAL HUB NAVIGATION HEARTBEAT (100ms) ---
+     (function initializeTerminalSync() {
+        const initialRole = localStorage.getItem('ro_role') || 'owner';
+        const defaultHash = initialRole === 'waiter' ? 'pos' : initialRole === 'chef' ? 'kitchen' : 'dashboard';
+
+        function syncTerminalViewState() {
+            const h = window.location.hash.substring(1) || defaultHash;
+            
+            // Toggle Content Nodes
+            document.querySelectorAll('.section').forEach(sec => {
+                const isTarget = sec.id === (h + 'Section');
+                if (isTarget) {
+                    if (sec.style.display !== 'block') {
+                        sec.style.setProperty('display', 'block', 'important');
+                        sec.classList.remove('hidden');
+                        sec.classList.add('active');
+                    }
+                } else {
+                    if (sec.style.display !== 'none') {
+                        sec.style.setProperty('display', 'none', 'important');
+                        sec.classList.add('hidden');
+                        sec.classList.remove('active');
+                    }
+                }
+            });
+
+            // Sync Sidebar Links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                const href = link.getAttribute('href');
+                const iA = href && (href.includes('#' + h) || (h === 'dashboard' && href.endsWith('dashboard')));
+                link.classList.toggle('active', !!iA);
+            });
+            
+            document.body.classList.toggle('pos-active-mode', h === 'pos');
+        }
+
+        setInterval(syncTerminalViewState, 100);
+        window.addEventListener('hashchange', syncTerminalViewState);
+        document.addEventListener('DOMContentLoaded', syncTerminalViewState);
+        syncTerminalViewState();
+
+        // EXPORT RE-IMPLEMENTED CONTROLS
+        window.switchToSection = (t) => { window.location.hash = t; };
+        
+        window.toggleBranchMenu = () => {
+           const menu = document.getElementById('branchMenu');
+           if (!menu) return;
+           const isV = menu.classList.contains('opacity-100');
+           document.getElementById('roleMenu')?.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+           menu.classList.toggle('opacity-100', !isV);
+           menu.classList.toggle('translate-y-0', !isV);
+           menu.classList.toggle('pointer-events-auto', !isV);
+        };
+
+        window.toggleRoleMenu = () => {
+           const menu = document.getElementById('roleMenu');
+           if (!menu) return;
+           const isV = menu.classList.contains('opacity-100');
+           document.getElementById('branchMenu')?.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+           menu.classList.toggle('opacity-100', !isV);
+           menu.classList.toggle('translate-y-0', !isV);
+           menu.classList.toggle('pointer-events-auto', !isV);
+        };
+
+        window.setAccessMode = (role, display) => {
+           localStorage.setItem('ro_role', role);
+           localStorage.setItem('ro_role_display', display);
+           window.location.hash = role === 'waiter' ? '#pos' : role === 'chef' ? '#kitchen' : '#dashboard';
+           window.location.reload();
+        };
+
+        window.selectBranch = (n) => {
+           const b = document.getElementById('activeBranch');
+           if (b) b.innerText = n;
+           window.toggleBranchMenu();
+        };
+
+        const accessDisplay = localStorage.getItem('ro_role_display') || 'Owner Protocol';
+        const dEl = document.getElementById('activeRoleDisplay');
+        if (dEl) dEl.innerText = accessDisplay;
+     })();
   </script>
 </body>
 </html>
