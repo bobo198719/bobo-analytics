@@ -96,15 +96,30 @@ import "../styles/restaurant.css";
                 h = window.location.hash.substring(1) || dH; 
             } catch(e) { h = 'dashboard'; }
             
+            const nodes = document.querySelectorAll('[data-section-node]');
+            
+            if (nodes.length === 0) {
+                console.warn("⚠️ NAV CRITICAL: No Section Nodes Found!");
+                return;
+            }
+
             if (window._lastH !== h) {
-                console.log("🚀 TERMINAL SWITCH:", h);
+                console.log("🚀 TERMINAL SWITCH:", h, "(Nodes found:", nodes.length, ")");
                 window._lastH = h;
             }
             
-            document.querySelectorAll('[data-section-node]').forEach(n => {
-                const isActive = n.id === h;
-                n.style.setProperty('display', isActive ? 'block' : 'none', 'important');
-                if (isActive) n.classList.remove('hidden'); else n.classList.add('hidden');
+            nodes.forEach(n => {
+                try {
+                    const isActive = n.id === h;
+                    n.style.setProperty('display', isActive ? 'block' : 'none', 'important');
+                    if (isActive) {
+                        n.classList.remove('hidden');
+                        n.classList.add('active');
+                    } else {
+                        n.classList.add('hidden');
+                        n.classList.remove('active');
+                    }
+                } catch(e) { console.error("NodeSync Error for " + n.id, e); }
             });
 
             document.querySelectorAll('.nav-link').forEach(l => {
