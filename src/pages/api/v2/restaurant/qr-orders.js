@@ -7,32 +7,48 @@ const DB_CONFIG = {
     user: 'bobo_admin',
     password: 'BoboPass2026!',
     database: 'bobo_analytics',
-    connectTimeout: 5000, // INCREASED FOR PRODUCTION STABILITY
+    connectTimeout: 5000,
+};
+
+// Use a global pool to persist connections across serverless invocations
+let pool;
+const getPool = async () => {
+    if (pool) return pool;
+    const mysql = await import('mysql2/promise');
+    pool = mysql.createPool({
+        ...DB_CONFIG,
+        waitForConnections: true,
+        connectionLimit: 10,
+        maxIdle: 10,
+        idleTimeout: 60000,
+        enableKeepAlive: true,
+        keepAliveInitialDelay: 0,
+    });
+    return pool;
 };
 
 const persistToDb = async (order) => {
     try {
-        const mysql = await import('mysql2/promise');
-        const db = await mysql.createConnection(DB_CONFIG);
+        const db = await getPool();
         // MIGRATION: Ensure total_amount is decimal (V72)
         try { await db.query("ALTER TABLE restaurant_qr_orders MODIFY total_amount DECIMAL(10,2)"); } catch(e) {}
         await db.query(
             'INSERT IGNORE INTO restaurant_qr_orders (order_id, table_id, items, total_amount, status) VALUES (?, ?, ?, ?, ?)',
             [order.order_id, order.table_id, JSON.stringify(order.items), order.total_amount, order.status]
         );
-        await db.end();
+        // Note: Do not call db.end() on a pool unless shutting down the app
     } catch (e) {
-        // Silent fail (memory-first architecture)
+        console.error("[DB Persist Error]:", e.message);
     }
 };
 
 const syncStatusToDb = async (orderId, status) => {
     try {
-        const mysql = await import('mysql2/promise');
-        const db = await mysql.createConnection(DB_CONFIG);
+        const db = await getPool();
         await db.query('UPDATE restaurant_qr_orders SET status = ? WHERE order_id = ?', [status, orderId]);
-        await db.end();
-    } catch (e) {}
+    } catch (e) {
+        console.error("[DB Sync Error]:", e.message);
+    }
 };
 
 export async function GET({ request, url }) {
@@ -45,16 +61,11 @@ export async function GET({ request, url }) {
             return new Response(JSON.stringify({ order: memOrder }), { status: 200, headers: { 'Content-Type': 'application/json' } });
         }
         try {
-            const mysql = await import('mysql2/promise');
-            const db = await mysql.createConnection(DB_CONFIG);
+            const db = await getPool();
             const [rows] = await db.query('SELECT * FROM restaurant_qr_orders WHERE order_id = ?', [orderId]);
-            await db.end();
             if (rows[0]) global.__QR_ORDERS__.set(orderId, rows[0]);
-            
-            // VERY IMPORTANT: Return order ONLY if found, or null so tracker can clear it cleanly natively
             return new Response(JSON.stringify({ order: rows[0] || null }), { status: 200, headers: { 'Content-Type': 'application/json' } });
         } catch (e) {
-            // Even if DB times out, return null rather than 500 so UI can cleanly fallback
             return new Response(JSON.stringify({ order: null }), { status: 200, headers: { 'Content-Type': 'application/json' } });
         }
     }
@@ -62,20 +73,15 @@ export async function GET({ request, url }) {
     if (activeOnly) {
         let rows = [];
         try {
-            const mysql = await import('mysql2/promise');
-            const db = await mysql.createConnection(DB_CONFIG);
+            const db = await getPool();
             const [fetchedRows] = await db.query("SELECT * FROM restaurant_qr_orders WHERE status NOT IN ('paid', 'rejected')");
-            await db.end();
             rows = fetchedRows;
-            // Seed the memory cache for fast status polling
             rows.forEach(r => global.__QR_ORDERS__.set(r.order_id, r));
         } catch (e) {
             console.error("[QR Orders DB Fail]:", e.message);
         }
         
-        // Return DB rows if available, otherwise fallback to memory store
         const sourceData = rows.length > 0 ? rows : Array.from(global.__QR_ORDERS__.values());
-        
         const allOrders = sourceData
             .filter(o => o.status !== 'paid' && o.status !== 'rejected')
             .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
@@ -102,11 +108,8 @@ export async function POST({ request }) {
         };
 
         global.__QR_ORDERS__.set(orderId, order);
-        
-        // CRITICAL: Must await DB persistence in Serverless environments
         await persistToDb(order);
 
-        // Proxy the broadcast via HTTP to the VPS instead so we don't hold the WS connection open
         try {
             fetch('http://187.124.97.144:5000/api/v2/restaurant/admin/broadcast', {
                 method: 'POST',
