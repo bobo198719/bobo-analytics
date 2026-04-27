@@ -120,81 +120,56 @@ import "../styles/restaurant.css";
 </RestaurantOSLayout>
 
 <script is:inline>
+   const initialRole = localStorage.getItem('ro_role');
+   const defaultHash = initialRole === 'waiter' ? 'pos' : initialRole === 'chef' ? 'kitchen' : 'dashboard';
+
    window.switchToSection = function(target) {
-      console.log("📍 Terminal Hub: Switching to Node:", target);
-      if (!target) return;
+      console.log("📍 Terminal Request:", target);
+      window.location.hash = target;
+   }
+
+   // 🩺 ULTRA-STABLE HEARTBEAT SYNC (100ms)
+   function syncTerminalViewState() {
+      const target = window.location.hash.substring(1) || defaultHash;
       
-      const role = localStorage.getItem('ro_role') || 'owner';
-      
-      // Role Enforcement Protocol
-      if (role === 'chef' && !['kitchen', 'waiter', 'tables'].includes(target)) {
-          target = 'kitchen';
-          if (window.location.hash !== '#kitchen') window.history.replaceState(null, '', '#kitchen');
-      }
-      if (role === 'waiter' && !['pos', 'waiter', 'tables'].includes(target)) {
-          target = 'pos';
-          if (window.location.hash !== '#pos') window.history.replaceState(null, '', '#pos');
-      }
-      
-      // Node Toggle Cycle
       const sections = document.querySelectorAll('.section');
       sections.forEach(sec => {
-         sec.classList.add('hidden');
-         sec.classList.remove('active');
-         sec.style.display = 'none';
+         const isTarget = sec.id === (target + 'Section');
+         if (isTarget) {
+            if (sec.classList.contains('hidden') || sec.style.display === 'none') {
+               sec.classList.remove('hidden');
+               sec.classList.add('active');
+               sec.style.setProperty('display', 'block', 'important');
+               console.log("✨ Node Activated:", target);
+            }
+         } else {
+            if (!sec.classList.contains('hidden') || sec.style.display !== 'none') {
+               sec.classList.add('hidden');
+               sec.classList.remove('active');
+               sec.style.setProperty('display', 'none', 'important');
+            }
+         }
       });
-      
-      const targetSec = document.getElementById(target + 'Section');
-      if (targetSec) {
-         targetSec.classList.remove('hidden');
-         targetSec.classList.add('active');
-         targetSec.style.display = 'block';
-         console.log("✅ Node Synchronized:", target);
-      } else {
-         console.error("❌ Node Missing in DOM:", target + 'Section');
-         // Fallback to dashboard if target is ghost
-         if (target !== 'dashboard') window.switchToSection('dashboard');
-      }
 
-      // Sidebar UX Sync
+      // Sidebar Sync
       document.querySelectorAll('.nav-link').forEach(link => {
-          link.classList.remove('active');
           const href = link.getAttribute('href');
-          if (href && (href.includes('#' + target) || (target === 'dashboard' && href.endsWith('dashboard')))) {
-              link.classList.add('active');
-          }
+          const isActive = href && (href.includes('#' + target) || (target === 'dashboard' && href.endsWith('dashboard')));
+          link.classList.toggle('active', !!isActive);
       });
       
       document.body.classList.toggle('pos-active-mode', target === 'pos');
    }
 
-   // Primary Initialization
-   const initialRole = localStorage.getItem('ro_role');
-   const defaultHash = initialRole === 'waiter' ? 'pos' : initialRole === 'chef' ? 'kitchen' : 'dashboard';
-   
-   window.addEventListener('hashchange', () => {
-      const h = window.location.hash.substring(1);
-      window.switchToSection(h || defaultHash);
-   });
+   setInterval(syncTerminalViewState, 100);
+   window.addEventListener('hashchange', syncTerminalViewState);
 
-   // Initial Boot
-   document.addEventListener('DOMContentLoaded', () => {
-      const h = window.location.hash.substring(1);
-      window.switchToSection(h || defaultHash);
-   });
-   
-   // Initial Identity Sync
-   const accessDisplay = localStorage.getItem('ro_role_display') || 'Owner Protocol';
-   const displayEl = document.getElementById('activeRoleDisplay');
-   if (displayEl) displayEl.innerText = accessDisplay;
-   
-   // Sync on load
-   window.switchToSection(window.location.hash.substring(1) || defaultHash);
-
+   // UI Control Functions
    window.toggleBranchMenu = function() {
       const menu = document.getElementById('branchMenu');
+      if (!menu) return;
       const isVisible = menu.classList.contains('opacity-100');
-      document.getElementById('roleMenu').classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+      document.getElementById('roleMenu')?.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
       menu.classList.toggle('opacity-100', !isVisible);
       menu.classList.toggle('translate-y-0', !isVisible);
       menu.classList.toggle('pointer-events-auto', !isVisible);
@@ -202,8 +177,9 @@ import "../styles/restaurant.css";
 
    window.toggleRoleMenu = function() {
       const menu = document.getElementById('roleMenu');
+      if (!menu) return;
       const isVisible = menu.classList.contains('opacity-100');
-      document.getElementById('branchMenu').classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+      document.getElementById('branchMenu')?.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
       menu.classList.toggle('opacity-100', !isVisible);
       menu.classList.toggle('translate-y-0', !isVisible);
       menu.classList.toggle('pointer-events-auto', !isVisible);
@@ -217,9 +193,16 @@ import "../styles/restaurant.css";
    }
 
    window.selectBranch = function(name) {
-      document.getElementById('activeBranch').innerText = name;
+      const b = document.getElementById('activeBranch');
+      if (b) b.innerText = name;
       window.toggleBranchMenu();
    }
+
+   // Initial Sync
+   const accessDisplay = localStorage.getItem('ro_role_display') || 'Owner Protocol';
+   const dEl = document.getElementById('activeRoleDisplay');
+   if (dEl) dEl.innerText = accessDisplay;
+   syncTerminalViewState();
 </script>
 
 <style is:global>
