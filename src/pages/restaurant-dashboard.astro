@@ -121,11 +121,13 @@ import "../styles/restaurant.css";
 
 <script is:inline>
    function switchToSection(target) {
+      console.log("📍 Section Navigation Protocol Initiated:", target);
       if (!target) return;
       
       const role = localStorage.getItem('ro_role') || 'owner';
       
       if (role === 'chef' && !['kitchen', 'waiter', 'tables'].includes(target)) {
+          console.warn("Permission Intercept: Chef role restricted to service nodes.");
           target = 'kitchen';
           if (window.location.hash !== '#kitchen') {
               window.history.replaceState(null, '', '#kitchen');
@@ -133,20 +135,28 @@ import "../styles/restaurant.css";
       }
       
       if (role === 'waiter' && !['pos', 'waiter', 'tables'].includes(target)) {
+          console.warn("Permission Intercept: Waiter role restricted to POS/Service nodes.");
           target = 'pos';
           if (window.location.hash !== '#pos') {
               window.history.replaceState(null, '', '#pos');
           }
       }
       
+      console.log("🔓 Unlocking Terminal Section:", target + 'Section');
       document.querySelectorAll('.section').forEach(sec => {
          sec.classList.add('hidden');
          sec.classList.remove('active');
+         sec.style.display = 'none'; // Force hide
       });
+      
       const targetSec = document.getElementById(target + 'Section');
       if (targetSec) {
          targetSec.classList.remove('hidden');
          targetSec.classList.add('active');
+         targetSec.style.display = 'block'; // Force show
+         console.log("✅ Node Active:", target);
+      } else {
+         console.error("❌ Target Node Not Found in DOM:", target + 'Section');
       }
 
       // Sync Sidebar Active State
