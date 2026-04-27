@@ -92,16 +92,19 @@ import "../styles/restaurant.css";
 
         function sync() {
             let h;
-            try { h = window.location.hash.substring(1) || dH; } catch(e) { h = 'dashboard'; }
+            try { 
+                h = window.location.hash.substring(1) || dH; 
+            } catch(e) { h = 'dashboard'; }
+            
+            if (window._lastH !== h) {
+                console.log("🚀 TERMINAL SWITCH:", h);
+                window._lastH = h;
+            }
             
             document.querySelectorAll('[data-section-node]').forEach(n => {
-                if (n.id === h) {
-                    n.style.setProperty('display', 'block', 'important');
-                    n.classList.remove('hidden');
-                } else {
-                    n.style.setProperty('display', 'none', 'important');
-                    n.classList.add('hidden');
-                }
+                const isActive = n.id === h;
+                n.style.setProperty('display', isActive ? 'block' : 'none', 'important');
+                if (isActive) n.classList.remove('hidden'); else n.classList.add('hidden');
             });
 
             document.querySelectorAll('.nav-link').forEach(l => {

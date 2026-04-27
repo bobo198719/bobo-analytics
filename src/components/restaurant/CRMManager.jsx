@@ -20,6 +20,7 @@ const CRMManager = () => {
 
     const [campaignStatus, setCampaignStatus] = useState({});
     const [loadingCampaign, setLoadingCampaign] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
 
     const activateCampaign = async (campaignName) => {
         setLoadingCampaign(campaignName);
